@@ -12,6 +12,11 @@
  */
 
 import { anthropic } from '@ai-sdk/anthropic';
+import {
+  calculateModelCost,
+  FEATURE_COST_CEILINGS_USD,
+  type SupportedModel,
+} from '@colheita/config';
 import { generateText } from 'ai';
 import { type LayoutBlueprint, safeValidateBlueprint } from '../blueprint/schema.js';
 import {
@@ -20,20 +25,10 @@ import {
   ANALYZER_USER_PROMPT,
 } from '../prompts/analyzer.js';
 
-const MODEL_ID = 'claude-sonnet-4-5';
+const MODEL_ID: SupportedModel = 'claude-sonnet-4-5';
 
-// Tabela de preços (USD por 1M tokens)
-// Fonte: pricing oficial Anthropic. Atualizar quando mudar.
-// TODO(@colheita/config/pricing): mover pra config compartilhado quando criado
-const PRICING = {
-  inputPer1M: 3.0,
-  outputPer1M: 15.0,
-} as const;
-
-// Estimativa conservadora de custo MÁXIMO de uma análise.
-// Imagem grande + resposta longa raramente passa de $0.10.
-// Usado pra rejeitar requests antes de chamar a API quando há cost ceiling.
-const ESTIMATED_MAX_COST_PER_CALL_USD = 0.15;
+const ESTIMATED_MAX_COST_PER_CALL_USD =
+  FEATURE_COST_CEILINGS_USD.layoutInference.estimatedMaxPerCallUsd;
 
 export type AnalyzerInput =
   | { kind: 'url'; url: string; mimeType: string }
@@ -204,9 +199,10 @@ export async function analyzeLayout(opts: AnalyzerOptions): Promise<AnalyzerResp
 
     const tokensInput = result.usage.promptTokens;
     const tokensOutput = result.usage.completionTokens;
-    const costUsd =
-      (tokensInput / 1_000_000) * PRICING.inputPer1M +
-      (tokensOutput / 1_000_000) * PRICING.outputPer1M;
+    const costUsd = calculateModelCost(MODEL_ID, {
+      input: tokensInput,
+      output: tokensOutput,
+    });
 
     return {
       ok: true,
