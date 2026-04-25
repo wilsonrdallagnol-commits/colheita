@@ -48,3 +48,9 @@ infra/supabase/.temp
 
 # Doppler
 .doppler
+
+# Claude Code session storage
+.claude-handoff/
+
+# Vestigial wrapper (to be removed on next session restart)
+colheita-fundacao/

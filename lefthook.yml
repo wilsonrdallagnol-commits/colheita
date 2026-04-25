@@ -6,18 +6,14 @@ pre-commit:
       run: pnpm biome check --write {staged_files} && git add {staged_files}
     typecheck:
       glob: "*.{ts,tsx}"
-      run: pnpm turbo run typecheck --filter='...[HEAD]'
+      run: pnpm -r typecheck
 
 pre-push:
   commands:
     test:
-      run: pnpm turbo run test --filter='...[origin/main]'
+      run: pnpm -r test
 
 commit-msg:
   commands:
     conventional:
-      run: |
-        if ! grep -qE '^(feat|fix|docs|style|refactor|perf|test|chore|build|ci)(\(.+\))?: .{1,100}$' {1}; then
-          echo "Commit message must follow Conventional Commits: type(scope): subject"
-          exit 1
-        fi
+      run: node scripts/check-commit-msg.mjs {1}

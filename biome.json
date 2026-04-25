@@ -6,14 +6,16 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignore": [
-      "**/node_modules",
-      "**/.next",
-      "**/.turbo",
-      "**/dist",
-      "**/coverage",
-      "**/playwright-report",
-      "**/.vercel"
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/.next",
+      "!**/.turbo",
+      "!**/dist",
+      "!**/coverage",
+      "!**/playwright-report",
+      "!**/.vercel",
+      "!**/pnpm-lock.yaml"
     ]
   },
   "formatter": {
@@ -23,8 +25,12 @@
     "lineWidth": 100,
     "lineEnding": "lf"
   },
-  "organizeImports": {
-    "enabled": true
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
   },
   "linter": {
     "enabled": true,
@@ -36,7 +42,7 @@
         "useExhaustiveDependencies": "error"
       },
       "suspicious": {
-        "noConsoleLog": "warn",
+        "noConsole": "warn",
         "noExplicitAny": "error"
       },
       "style": {
