@@ -108,13 +108,5 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # M5: RLS test suite ainda nao implementado.
-      # Quando packages/db tiver tests/rls.test.ts, esse step rodara
-      # e bloqueara merge se isolamento entre tenants quebrar.
-      - name: Run RLS tests (skipped until M5)
-        run: |
-          if pnpm --filter @colheita/db exec test -t "RLS" --run 2>/dev/null; then
-            echo "RLS suite passed"
-          else
-            echo "::warning::RLS suite ainda nao implementado (item M5 pendente)"
-          fi
+      - name: Run RLS tests
+        run: pnpm --filter @colheita/db test

@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-25 (após sessão Claude Code: bootstrap + Fase A parcial)
-**Fase atual:** 0 — Fundação (Fase A do `/hm-engineer` em fechamento)
-**Próximo milestone:** M5 (RLS suite) + M3 (partitioning) → `/hm-designer`
+**Última atualização:** 2026-04-25 (M5 RLS suite implementado)
+**Fase atual:** 0 — Fundação (Fase A do `/hm-engineer` fechando — só M3 pendente)
+**Próximo milestone:** M3 (partitioning audit_events) → `/hm-designer`
 
 ---
 
@@ -68,9 +68,19 @@ Repo estava com `.git` numa pasta e os arquivos da fundação numa subpasta — 
 - **B1** (`d08e914`) — `@colheita/config/pricing.ts` com `MODEL_PRICING` (Sonnet 4.5, Opus 4, Haiku 4.5), `FEATURE_COST_CEILINGS_USD`, `calculateModelCost()`. Analyzer agora consome do config.
 - **A6 fim** (`a8124a6`) — `check (jsonb_typeof(...))` adicionado em 0004 (4 colunas), 0005 (2 colunas), 0006 (2 colunas).
 
-### Ainda pendente da Fase A (deferido por orçamento de crédito desta sessão)
+### M5 — concluído nesta sessão
 
-- [ ] **M5** — RLS test suite com Postgres real via Docker. Esboço: testcontainers ou `infra:up` + 2 tenants + queries cruzadas. Job CI já reservado e emite warning até a suite existir.
+- [x] **M5** (`TBD`) — `packages/db/tests/rls.test.ts` com 20 testes contra Postgres 16 real.
+  - `auth.tenant_id()`: NULL sem JWT, NULL com UUID inválido, UUID correto com JWT válido
+  - `auth.has_role()`: false sem roles, true/false por presença no array do JWT
+  - `tenants`: cada tenant vê apenas o próprio row; sem JWT → vazio
+  - `products`: isolamento cruzado A↔B; UUID falso → vazio; sem JWT → vazio
+  - `roles` e `product_categories`: cross-tenant bloqueado
+  - CI job `rls` agora roda `pnpm --filter @colheita/db test` (placeholder removido)
+  - Setup idempotente: `DROP SCHEMA public CASCADE` + stubs auth + migrations em ordem
+
+### Ainda pendente da Fase A
+
 - [ ] **M3** — Particionar `audit_events` por mês com `pg_partman` (precisa nova migration + ADR explicando trade-offs e janela de retenção).
 
 ---
@@ -163,7 +173,7 @@ Para considerar Fase 0 fechada e começar Fase 1:
 - [x] Schema completo do banco (6 migrations + JSONB checks completos via A6)
 - [x] RLS hardenizado (C1) e secrets fora do código (C2)
 - [x] CI bloqueante rodando (M1) — 4 jobs paralelos no GitHub Actions
-- [ ] RLS test suite com 2 tenants (M5)
+- [x] RLS test suite com 2 tenants (M5) — 20 testes passando
 - [ ] `pnpm dev` sobe todas as apps com sucesso
 - [ ] `pnpm db:migrate` + `pnpm db:seed` funciona end-to-end
 - [ ] Primeiro template de ficha técnica gera PDF do Xcensis
