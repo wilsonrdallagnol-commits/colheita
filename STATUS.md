@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-23 (gerado durante `/hm-init` + `/hm-engineer`)
-**Fase atual:** 0 — Fundação
-**Próximo milestone:** fechar engineer + designer + qa antes de começar Fase 1
+**Última atualização:** 2026-04-25 (após sessão Claude Code: bootstrap + Fase A parcial)
+**Fase atual:** 0 — Fundação (Fase A do `/hm-engineer` em fechamento)
+**Próximo milestone:** M5 (RLS suite) + M3 (partitioning) → `/hm-designer`
 
 ---
 
@@ -58,21 +58,26 @@ Toda tabela com `tenant_id`, RLS habilitado, índices corretos, soft-delete onde
 - **A5** — `pgvector` removido da fundação (será adicionado em Fase 2 com Knowledge Base)
 - **A6 parcial** — Checks `jsonb_typeof()` em foundation, PIM, DAM
 
+### Sessão Claude Code 2026-04-25 — bootstrap + Fase A (parcial)
+
+Repo estava com `.git` numa pasta e os arquivos da fundação numa subpasta — git via tudo como deletado. Estrutura corrigida (fundação de volta na raiz do repo). Lefthook + biome + tsconfig precisaram de fixes pra rodar no Windows. Estes commits compõem a Fase A parcialmente fechada:
+
+- **bootstrap** (`c578819`) — `@colheita/config/package.json` faltando, `tsconfig.json` faltando em `db`/`config`, biome 2.0 com schema antigo, lefthook chamando `if`/`turbo --filter` que não funciona no Windows. Tudo consertado; CI passa local.
+- **M1** (`27b776e`) — `.github/workflows/ci.yml` com 4 jobs paralelos (lint, typecheck, test, rls). Job `rls` sobe `postgres:16` como service e tem placeholder pra suite M5.
+- **M2** (`b921e09`) — `@colheita/tokens` com `TenantThemeTokens` (Zod schema versionado), `DEFAULT_THEME_TOKENS`, `parseTenantThemeTokens()`. Drizzle `tenants.themeTokens` agora `$type<TenantThemeTokens>()`.
+- **B1** (`d08e914`) — `@colheita/config/pricing.ts` com `MODEL_PRICING` (Sonnet 4.5, Opus 4, Haiku 4.5), `FEATURE_COST_CEILINGS_USD`, `calculateModelCost()`. Analyzer agora consome do config.
+- **A6 fim** (`a8124a6`) — `check (jsonb_typeof(...))` adicionado em 0004 (4 colunas), 0005 (2 colunas), 0006 (2 colunas).
+
+### Ainda pendente da Fase A (deferido por orçamento de crédito desta sessão)
+
+- [ ] **M5** — RLS test suite com Postgres real via Docker. Esboço: testcontainers ou `infra:up` + 2 tenants + queries cruzadas. Job CI já reservado e emite warning até a suite existir.
+- [ ] **M3** — Particionar `audit_events` por mês com `pg_partman` (precisa nova migration + ADR explicando trade-offs e janela de retenção).
+
 ---
 
 ## 🔧 Pendente — Fixes do `/hm-engineer`
 
-Estes são os fixes restantes do relatório do engineer. **Atacar antes de começar Fase 1.**
-
-### Médios
-- [ ] **A6 (resto)** — Adicionar `check (jsonb_typeof(...))` nos jsonb das migrations 0004, 0005, 0006
-- [ ] **M1** — Criar `.github/workflows/ci.yml` com lint + typecheck + test + RLS-test bloqueante
-- [ ] **M2** — Definir tipo TypeScript de `tenants.theme_tokens` em `@colheita/tokens` e referenciar em Drizzle
-- [ ] **M3** — Particionar `audit_events` por mês (ADR + migration usando `pg_partman`)
-- [ ] **M5** — Suite `tests/rls.test.ts` que sobe banco, cria 2 tenants e valida isolamento
-
-### Baixos
-- [ ] **B1** — Mover pricing do analyzer pra `packages/config/pricing.ts` versionado
+Tudo fechado nesta sessão exceto M5 e M3 acima. Quando voltarem, atacar M5 antes — é a rede de segurança que valida RLS.
 
 ---
 
@@ -155,9 +160,9 @@ Depois das skills validarem a fundação:
 Para considerar Fase 0 fechada e começar Fase 1:
 
 - [x] ARCHITECTURE.md aprovado
-- [x] Schema completo do banco (6 migrations)
+- [x] Schema completo do banco (6 migrations + JSONB checks completos via A6)
 - [x] RLS hardenizado (C1) e secrets fora do código (C2)
-- [ ] CI bloqueante rodando (M1)
+- [x] CI bloqueante rodando (M1) — 4 jobs paralelos no GitHub Actions
 - [ ] RLS test suite com 2 tenants (M5)
 - [ ] `pnpm dev` sobe todas as apps com sucesso
 - [ ] `pnpm db:migrate` + `pnpm db:seed` funciona end-to-end
