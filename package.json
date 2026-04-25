@@ -1,0 +1,41 @@
+{
+  "name": "colheita",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Programa Colheita Argho — Plataforma multi-tenant de operação interna",
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "typecheck": "turbo run typecheck",
+    "format": "biome format --write .",
+    "check": "biome check --write .",
+    "infra:up": "docker compose -f infra/docker/docker-compose.yml up -d",
+    "infra:down": "docker compose -f infra/docker/docker-compose.yml down",
+    "infra:reset": "docker compose -f infra/docker/docker-compose.yml down -v && pnpm infra:up",
+    "db:migrate": "pnpm --filter @colheita/db migrate",
+    "db:generate": "pnpm --filter @colheita/db generate",
+    "db:seed": "pnpm --filter @colheita/db seed",
+    "db:studio": "pnpm --filter @colheita/db studio",
+    "tenant:create": "pnpm --filter @colheita/db tenant:create",
+    "tokens:build": "pnpm --filter @colheita/tokens build",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.0.0",
+    "@types/node": "22.7.0",
+    "lefthook": "1.7.22",
+    "turbo": "2.3.0",
+    "typescript": "5.6.3"
+  },
+  "pnpm": {
+    "overrides": {}
+  }
+}

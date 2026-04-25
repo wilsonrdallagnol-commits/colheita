@@ -1,0 +1,50 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+.next
+.turbo
+dist
+build
+out
+*.tsbuildinfo
+
+# Testing
+coverage
+playwright-report
+test-results
+.vitest-cache
+
+# Env
+.env
+.env.local
+.env.*.local
+infra/docker/.env
+!.env.example
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Vercel
+.vercel
+
+# Supabase local
+infra/supabase/.branches
+infra/supabase/.temp
+
+# Doppler
+.doppler

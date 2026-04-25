@@ -1,0 +1,23 @@
+pre-commit:
+  parallel: true
+  commands:
+    biome:
+      glob: "*.{ts,tsx,js,jsx,json}"
+      run: pnpm biome check --write {staged_files} && git add {staged_files}
+    typecheck:
+      glob: "*.{ts,tsx}"
+      run: pnpm turbo run typecheck --filter='...[HEAD]'
+
+pre-push:
+  commands:
+    test:
+      run: pnpm turbo run test --filter='...[origin/main]'
+
+commit-msg:
+  commands:
+    conventional:
+      run: |
+        if ! grep -qE '^(feat|fix|docs|style|refactor|perf|test|chore|build|ci)(\(.+\))?: .{1,100}$' {1}; then
+          echo "Commit message must follow Conventional Commits: type(scope): subject"
+          exit 1
+        fi

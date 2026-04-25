@@ -1,0 +1,168 @@
+# ============================================================================
+# Colheita — Supabase Local Stack
+# ============================================================================
+# Uso: pnpm infra:up (a partir da raiz)
+#
+# Pré-requisito: copie .env.example pra .env (ao lado deste arquivo) antes
+# de rodar. O docker-compose carrega variáveis automaticamente.
+#
+# Studio: http://localhost:54323
+# Inbucket (emails locais): http://localhost:54324
+#
+# DEV ONLY — não usar essa stack em produção.
+# Em produção: Supabase Cloud (managed) com credentials via Doppler/Vercel env.
+# ============================================================================
+
+name: colheita
+
+x-defaults: &defaults
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  db:
+    <<: *defaults
+    image: supabase/postgres:15.8.1.020
+    ports:
+      - "127.0.0.1:54322:5432"  # bind apenas em loopback
+    environment:
+      POSTGRES_HOST: /var/run/postgresql
+      POSTGRES_PASSWORD: ${LOCAL_POSTGRES_PASSWORD:?LOCAL_POSTGRES_PASSWORD must be set in .env}
+      POSTGRES_DB: postgres
+      JWT_SECRET: ${LOCAL_JWT_SECRET:?LOCAL_JWT_SECRET must be set in .env}
+      JWT_EXP: 3600
+    volumes:
+      - colheita_db:/var/lib/postgresql/data
+      - ../supabase/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    command:
+      - postgres
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
+      - -c
+      - log_min_messages=fatal
+
+  auth:
+    <<: *defaults
+    image: supabase/gotrue:v2.163.4
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:${LOCAL_POSTGRES_PASSWORD}@db:5432/postgres
+      GOTRUE_SITE_URL: http://localhost:3000
+      GOTRUE_URI_ALLOW_LIST: http://localhost:3000,http://localhost:3001,http://localhost:3002
+      GOTRUE_JWT_SECRET: ${LOCAL_JWT_SECRET}
+      GOTRUE_JWT_EXP: 3600
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_DISABLE_SIGNUP: "false"
+      GOTRUE_MAILER_AUTOCONFIRM: "true"
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_SMTP_HOST: inbucket
+      GOTRUE_SMTP_PORT: 2500
+      GOTRUE_SMTP_ADMIN_EMAIL: dev@colheita.local
+
+  rest:
+    <<: *defaults
+    image: postgrest/postgrest:v12.2.3
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${LOCAL_POSTGRES_PASSWORD}@db:5432/postgres
+      PGRST_DB_SCHEMAS: public,storage
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${LOCAL_JWT_SECRET}
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+
+  storage:
+    <<: *defaults
+    image: supabase/storage-api:v1.13.3
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ANON_KEY: ${LOCAL_ANON_KEY:?LOCAL_ANON_KEY must be set in .env}
+      SERVICE_KEY: ${LOCAL_SERVICE_ROLE_KEY:?LOCAL_SERVICE_ROLE_KEY must be set in .env}
+      POSTGREST_URL: http://rest:3000
+      PGRST_JWT_SECRET: ${LOCAL_JWT_SECRET}
+      DATABASE_URL: postgres://supabase_storage_admin:${LOCAL_POSTGRES_PASSWORD}@db:5432/postgres
+      FILE_SIZE_LIMIT: 524288000
+      STORAGE_BACKEND: file
+      FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+      TENANT_ID: stub
+      REGION: local
+      GLOBAL_S3_BUCKET: stub
+    volumes:
+      - colheita_storage:/var/lib/storage
+
+  kong:
+    <<: *defaults
+    image: kong:3.7.1
+    ports:
+      - "127.0.0.1:54321:8000"
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /var/lib/kong/kong.yml
+      KONG_DNS_ORDER: LAST,A,CNAME
+      KONG_PLUGINS: request-transformer,cors,key-auth,acl,basic-auth
+    volumes:
+      - ./kong.yml:/var/lib/kong/kong.yml:ro
+
+  studio:
+    <<: *defaults
+    image: supabase/studio:20241014-c083b3b
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:54323:3000"
+    environment:
+      STUDIO_PG_META_URL: http://meta:8080
+      POSTGRES_PASSWORD: ${LOCAL_POSTGRES_PASSWORD}
+      DEFAULT_ORGANIZATION_NAME: Argho
+      DEFAULT_PROJECT_NAME: Colheita
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_PUBLIC_URL: http://localhost:54321
+      SUPABASE_ANON_KEY: ${LOCAL_ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${LOCAL_SERVICE_ROLE_KEY}
+
+  meta:
+    <<: *defaults
+    image: supabase/postgres-meta:v0.84.2
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PG_META_PORT: 8080
+      PG_META_DB_HOST: db
+      PG_META_DB_PORT: 5432
+      PG_META_DB_NAME: postgres
+      PG_META_DB_USER: supabase_admin
+      PG_META_DB_PASSWORD: ${LOCAL_POSTGRES_PASSWORD}
+
+  inbucket:
+    # DEV ONLY — captura emails locais. NUNCA expor externamente.
+    # Resend é usado em produção; aqui apenas pra dev test de magic links.
+    <<: *defaults
+    image: inbucket/inbucket:3.0.4
+    ports:
+      - "127.0.0.1:54324:9000"  # Web UI — bind apenas loopback
+      - "127.0.0.1:54325:2500"  # SMTP
+
+volumes:
+  colheita_db:
+    name: colheita_db
+  colheita_storage:
+    name: colheita_storage
