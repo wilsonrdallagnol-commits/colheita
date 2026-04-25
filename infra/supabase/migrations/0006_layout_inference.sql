@@ -95,10 +95,11 @@ create table public.layout_blueprints (
   --     "emphasis": "product_first"
   --   }
   -- }
-  blueprint       jsonb not null,
+  blueprint       jsonb not null check (jsonb_typeof(blueprint) = 'object'),
 
   -- Análise bruta do vision model (preserva pra debug e melhoria contínua)
-  raw_analysis    jsonb not null default '{}'::jsonb,
+  raw_analysis    jsonb not null default '{}'::jsonb
+                  check (jsonb_typeof(raw_analysis) = 'object'),
 
   -- Status do pipeline
   status          text not null default 'draft' check (

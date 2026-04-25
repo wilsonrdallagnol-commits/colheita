@@ -12,12 +12,13 @@ create table public.material_templates (
   category      text not null check (category in ('datasheet', 'banner', 'social_post', 'catalog', 'presentation', 'flyer', 'other')),
 
   -- Formato/dimensões
-  format        jsonb not null,
+  format        jsonb not null check (jsonb_typeof(format) = 'object'),
   -- { "width": 1080, "height": 1350, "unit": "px", "dpi": 72 }
   -- ou { "width": 210, "height": 297, "unit": "mm", "dpi": 300 }
 
   -- Schema esperado de input (zod-compatible JSON Schema)
-  input_schema  jsonb not null default '{}'::jsonb,
+  input_schema  jsonb not null default '{}'::jsonb
+                check (jsonb_typeof(input_schema) = 'object'),
 
   -- Componente React responsável pelo render (referência ao package generator)
   component_ref text not null,
@@ -54,13 +55,14 @@ create table public.generated_materials (
   template_id   uuid not null references public.material_templates(id) on delete restrict,
 
   -- Input usado na geração (snapshot — não muda mesmo se source mudar)
-  input_data    jsonb not null,
+  input_data    jsonb not null check (jsonb_typeof(input_data) = 'object'),
 
   -- Referências de origem (pra auditoria e relacionamento)
   product_ids   uuid[] default '{}',
 
   -- Outputs gerados (pode haver múltiplos formatos: PDF + PNG)
-  outputs       jsonb not null default '[]'::jsonb,
+  outputs       jsonb not null default '[]'::jsonb
+                check (jsonb_typeof(outputs) = 'array'),
   -- [{ "format": "pdf", "asset_id": "...", "url": "..." }, { "format": "png", ... }]
 
   -- Status do job

@@ -93,7 +93,8 @@ create table public.learning_lessons (
   type            text not null check (type in ('video', 'article', 'quiz', 'simulation', 'document', 'interactive')),
 
   -- Conteúdo (varia por tipo)
-  content         jsonb not null default '{}'::jsonb,
+  content         jsonb not null default '{}'::jsonb
+                  check (jsonb_typeof(content) = 'object'),
   -- video: { "asset_id": "...", "duration_s": 300, "transcript": "..." }
   -- article: { "markdown": "..." }
   -- quiz: { "questions": [...], "passing_score": 70 }
@@ -137,7 +138,8 @@ create table public.learning_progress (
   status      text not null default 'in_progress' check (status in ('not_started', 'in_progress', 'completed', 'failed')),
   score       numeric(5,2),
   attempts    integer not null default 0,
-  data        jsonb not null default '{}'::jsonb,    -- respostas de quiz, eventos de simulação
+  data        jsonb not null default '{}'::jsonb
+              check (jsonb_typeof(data) = 'object'),  -- respostas de quiz, eventos de simulação
   started_at  timestamptz default now(),
   completed_at timestamptz,
   updated_at  timestamptz not null default now(),
