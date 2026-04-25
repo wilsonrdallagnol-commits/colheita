@@ -73,8 +73,7 @@ export const xcensisBlueprintFixture: LayoutBlueprint = {
       weight: 0.12,
       itemCount: 3,
       layoutHint: 'grid',
-      notes:
-        'Três colunas paralelas: cada uma com ícone temático, título em caps e bullets curtos',
+      notes: 'Três colunas paralelas: cada uma com ícone temático, título em caps e bullets curtos',
     },
     {
       id: 'positioning_block',

@@ -11,8 +11,8 @@
  *   4. @colheita/generator render(spec)  → PDF/PNG via Playwright
  */
 
-export * from './blueprint/schema.js';
 export * from './analyzer/index.js';
+export * from './blueprint/schema.js';
 export * from './compiler/index.js';
 export {
   ANALYZER_PROMPT_VERSION,

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { LayoutBlueprintSchema, safeValidateBlueprint } from './blueprint/schema.js';
-import { compileBlueprint } from './compiler/index.js';
 import type { LayoutBlueprint } from './blueprint/schema.js';
+import { safeValidateBlueprint } from './blueprint/schema.js';
+import { compileBlueprint } from './compiler/index.js';
 
 const validBlueprint: LayoutBlueprint = {
   format: {

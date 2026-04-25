@@ -8,39 +8,38 @@
  * é aplicado no momento do render via @colheita/tokens.
  */
 
+import { relations, sql } from 'drizzle-orm';
 import {
-  pgTable,
-  uuid,
-  text,
-  timestamp,
-  integer,
+  type AnyPgColumn,
   boolean,
+  index,
+  integer,
   jsonb,
   numeric,
-  index,
+  pgTable,
+  text,
+  timestamp,
   uniqueIndex,
-  type AnyPgColumn,
+  uuid,
 } from 'drizzle-orm/pg-core';
-import { relations, sql } from 'drizzle-orm';
-import { tenants, users } from './index.js';
-import { assets } from './index.js';
+import { assets, tenants, users } from './index.js';
 
 // ============================================================================
 // Tipos do Blueprint (validados por Zod no app)
 // ============================================================================
 
 export type LayoutFormat = {
-  aspectRatio: string;                     // "9:16", "16:9", "1:1", "210:297" (A4)
+  aspectRatio: string; // "9:16", "16:9", "1:1", "210:297" (A4)
   orientation: 'portrait' | 'landscape' | 'square';
   intendedDpi: 72 | 150 | 300;
   intendedMedium: 'screen' | 'print' | 'social' | 'presentation';
 };
 
 export type LayoutGrid = {
-  columns: number;                         // 4, 6, 8, 12
+  columns: number; // 4, 6, 8, 12
   rows: number | 'auto';
   density: 'minimal' | 'medium' | 'high' | 'maximal';
-  gutterRelative: number;                  // 0.0–1.0
+  gutterRelative: number; // 0.0–1.0
 };
 
 export type LayoutRegionType =
@@ -62,14 +61,14 @@ export type LayoutRegionType =
   | 'decorative';
 
 export type LayoutRegion = {
-  id: string;                              // 'header', 'hero', 'specs'
+  id: string; // 'header', 'hero', 'specs'
   type: LayoutRegionType;
   position: 'top' | 'upper' | 'center' | 'lower' | 'bottom' | 'left' | 'right';
-  weight: number;                          // 0.0–1.0 — proporção vertical/horizontal
-  hierarchy?: string[];                    // pra blocos com sub-elementos
+  weight: number; // 0.0–1.0 — proporção vertical/horizontal
+  hierarchy?: string[]; // pra blocos com sub-elementos
   itemCount?: number;
   layoutHint?: 'horizontal_chips' | 'vertical_stack' | 'grid' | 'carousel' | 'overlap';
-  notes?: string;                          // observação livre do vision model
+  notes?: string; // observação livre do vision model
 };
 
 export type LayoutVisualIntent = {
@@ -97,8 +96,12 @@ export const layoutReferences = pgTable(
   'layout_references',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    tenantId: uuid('tenant_id').notNull().references(() => tenants.id, { onDelete: 'cascade' }),
-    assetId: uuid('asset_id').notNull().references(() => assets.id, { onDelete: 'restrict' }),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    assetId: uuid('asset_id')
+      .notNull()
+      .references(() => assets.id, { onDelete: 'restrict' }),
     title: text('title').notNull(),
     description: text('description'),
     sourceUrl: text('source_url'),
@@ -133,7 +136,9 @@ export const layoutBlueprints = pgTable(
   'layout_blueprints',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    tenantId: uuid('tenant_id').notNull().references(() => tenants.id, { onDelete: 'cascade' }),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
     referenceId: uuid('reference_id')
       .notNull()
       .references(() => layoutReferences.id, { onDelete: 'cascade' }),

@@ -1,20 +1,20 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
   "vcs": {
-    "enabled": true,
+    "enabled": false,
     "clientKind": "git",
-    "useIgnoreFile": true
+    "useIgnoreFile": false
   },
   "files": {
     "includes": [
-      "**",
-      "!**/node_modules",
-      "!**/.next",
-      "!**/.turbo",
-      "!**/dist",
-      "!**/coverage",
-      "!**/playwright-report",
-      "!**/.vercel",
+      "**/*.{ts,tsx,js,jsx,mjs,cjs,json}",
+      "!**/node_modules/**",
+      "!**/.next/**",
+      "!**/.turbo/**",
+      "!**/dist/**",
+      "!**/coverage/**",
+      "!**/playwright-report/**",
+      "!**/.vercel/**",
       "!**/pnpm-lock.yaml"
     ]
   },
@@ -62,5 +62,17 @@
       "semicolons": "always",
       "arrowParentheses": "always"
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["scripts/**/*.{js,mjs,cjs}", "**/*.config.{ts,js,mjs}"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
+    }
+  ]
 }

@@ -74,11 +74,7 @@ export const LayoutRegionSchema = z.object({
     .regex(/^[a-z][a-z0-9_]*$/, 'id deve ser snake_case começando com letra'),
   type: LayoutRegionTypeSchema,
   position: z.enum(['top', 'upper', 'center', 'lower', 'bottom', 'left', 'right']),
-  weight: z
-    .number()
-    .min(0)
-    .max(1)
-    .describe('Proporção do espaço ocupado (0.0 a 1.0)'),
+  weight: z.number().min(0).max(1).describe('Proporção do espaço ocupado (0.0 a 1.0)'),
   hierarchy: z.array(z.string()).optional(),
   itemCount: z.number().int().nonnegative().optional(),
   layoutHint: z
@@ -94,20 +90,11 @@ export type LayoutRegion = z.infer<typeof LayoutRegionSchema>;
 // ============================================================================
 
 export const LayoutVisualIntentSchema = z.object({
-  mood: z.enum([
-    'technical_premium',
-    'editorial',
-    'promotional',
-    'minimal',
-    'bold',
-    'cinematic',
-  ]),
+  mood: z.enum(['technical_premium', 'editorial', 'promotional', 'minimal', 'bold', 'cinematic']),
   density: z.enum(['minimal', 'medium', 'high', 'maximal']),
   balance: z.enum(['centered', 'asymmetric', 'left_heavy', 'right_heavy']),
   emphasis: z.enum(['product_first', 'data_first', 'message_first', 'visual_first']),
-  inferredPalette: z
-    .enum(['dark', 'light', 'high_contrast', 'gradient_heavy'])
-    .optional(),
+  inferredPalette: z.enum(['dark', 'light', 'high_contrast', 'gradient_heavy']).optional(),
 });
 
 export type LayoutVisualIntent = z.infer<typeof LayoutVisualIntentSchema>;

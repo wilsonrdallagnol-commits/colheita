@@ -13,10 +13,7 @@
 
 import { anthropic } from '@ai-sdk/anthropic';
 import { generateText } from 'ai';
-import {
-  type LayoutBlueprint,
-  safeValidateBlueprint,
-} from '../blueprint/schema.js';
+import { type LayoutBlueprint, safeValidateBlueprint } from '../blueprint/schema.js';
 import {
   ANALYZER_PROMPT_VERSION,
   ANALYZER_SYSTEM_PROMPT,
@@ -59,14 +56,17 @@ export type AnalysisResult = {
 
 export type AnalysisError = {
   ok: false;
-  error: 'invalid_blueprint' | 'model_error' | 'timeout' | 'cost_ceiling_exceeded' | 'invalid_input';
+  error:
+    | 'invalid_blueprint'
+    | 'model_error'
+    | 'timeout'
+    | 'cost_ceiling_exceeded'
+    | 'invalid_input';
   details: string;
   raw?: string;
 };
 
-export type AnalyzerResponse =
-  | ({ ok: true } & AnalysisResult)
-  | AnalysisError;
+export type AnalyzerResponse = ({ ok: true } & AnalysisResult) | AnalysisError;
 
 export type AnalyzerOptions = {
   input: AnalyzerInput;
@@ -100,13 +100,7 @@ export type AnalyzerOptions = {
  * }
  */
 export async function analyzeLayout(opts: AnalyzerOptions): Promise<AnalyzerResponse> {
-  const {
-    input,
-    timeoutMs = 60_000,
-    maxRetries = 2,
-    maxCostUsd,
-    consumedCostUsd = 0,
-  } = opts;
+  const { input, timeoutMs = 60_000, maxRetries = 2, maxCostUsd, consumedCostUsd = 0 } = opts;
 
   // ============================================================================
   // Pre-flight: cost ceiling
@@ -174,9 +168,7 @@ export async function analyzeLayout(opts: AnalyzerOptions): Promise<AnalyzerResp
         // Retry só em falhas transitórias (rate limit, network, 5xx) — AI SDK trata
         maxRetries,
       }),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('timeout')), timeoutMs),
-      ),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), timeoutMs)),
     ]);
 
     const durationMs = Date.now() - startedAt;

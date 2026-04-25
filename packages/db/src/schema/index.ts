@@ -8,20 +8,21 @@
  * Aqui mantemos a tipagem alinhada.
  */
 
+import type { TenantThemeTokens } from '@colheita/tokens';
+import { relations, sql } from 'drizzle-orm';
 import {
-  pgTable,
-  uuid,
-  text,
-  timestamp,
-  integer,
+  type AnyPgColumn,
   bigint,
-  jsonb,
   date,
   index,
+  integer,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
   unique,
-  type AnyPgColumn,
+  uuid,
 } from 'drizzle-orm/pg-core';
-import { relations, sql } from 'drizzle-orm';
 
 // ============================================================================
 // TENANTS
@@ -36,9 +37,14 @@ export const tenants = pgTable(
     displayName: text('display_name').notNull(),
     logoUrl: text('logo_url'),
     primaryDomain: text('primary_domain').unique(),
-    status: text('status', { enum: ['active', 'suspended', 'archived'] }).notNull().default('active'),
+    status: text('status', { enum: ['active', 'suspended', 'archived'] })
+      .notNull()
+      .default('active'),
     settings: jsonb('settings').$type<Record<string, unknown>>().notNull().default({}),
-    themeTokens: jsonb('theme_tokens').$type<Record<string, unknown>>().notNull().default({}),
+    themeTokens: jsonb('theme_tokens')
+      .$type<TenantThemeTokens>()
+      .notNull()
+      .default(sql`'{}'::jsonb`),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
@@ -58,11 +64,15 @@ export const users = pgTable(
   'users',
   {
     id: uuid('id').primaryKey(),
-    tenantId: uuid('tenant_id').notNull().references(() => tenants.id, { onDelete: 'restrict' }),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'restrict' }),
     email: text('email').notNull(),
     fullName: text('full_name'),
     avatarUrl: text('avatar_url'),
-    status: text('status', { enum: ['active', 'invited', 'suspended'] }).notNull().default('active'),
+    status: text('status', { enum: ['active', 'invited', 'suspended'] })
+      .notNull()
+      .default('active'),
     preferences: jsonb('preferences').$type<Record<string, unknown>>().notNull().default({}),
     lastSeenAt: timestamp('last_seen_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -86,11 +96,15 @@ export const productCategories = pgTable(
   'product_categories',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    tenantId: uuid('tenant_id').notNull().references(() => tenants.id, { onDelete: 'cascade' }),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
     slug: text('slug').notNull(),
     name: text('name').notNull(),
     description: text('description'),
-    parentId: uuid('parent_id').references((): AnyPgColumn => productCategories.id, { onDelete: 'set null' }),
+    parentId: uuid('parent_id').references((): AnyPgColumn => productCategories.id, {
+      onDelete: 'set null',
+    }),
     sortOrder: integer('sort_order').notNull().default(0),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
@@ -102,8 +116,8 @@ export const productCategories = pgTable(
 );
 
 export type ProductComposition = {
-  macros?: Record<string, number>;       // { N: 10, P2O5: 5, K2O: 6 }
-  micros?: Record<string, number>;       // { Fe: 7.0, Zn: 0.8 }
+  macros?: Record<string, number>; // { N: 10, P2O5: 5, K2O: 6 }
+  micros?: Record<string, number>; // { Fe: 7.0, Zn: 0.8 }
   others?: Record<string, number>;
 };
 
@@ -126,13 +140,19 @@ export const products = pgTable(
   'products',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    tenantId: uuid('tenant_id').notNull().references(() => tenants.id, { onDelete: 'cascade' }),
-    categoryId: uuid('category_id').references(() => productCategories.id, { onDelete: 'set null' }),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    categoryId: uuid('category_id').references(() => productCategories.id, {
+      onDelete: 'set null',
+    }),
     slug: text('slug').notNull(),
     name: text('name').notNull(),
     tagline: text('tagline'),
     description: text('description'),
-    status: text('status', { enum: ['draft', 'published', 'archived'] }).notNull().default('draft'),
+    status: text('status', { enum: ['draft', 'published', 'archived'] })
+      .notNull()
+      .default('draft'),
     publishedAt: timestamp('published_at', { withTimezone: true }),
     composition: jsonb('composition').$type<ProductComposition>().notNull().default({}),
     technicalSpecs: jsonb('technical_specs').$type<Record<string, unknown>>().notNull().default({}),
@@ -167,7 +187,9 @@ export const assets = pgTable(
   'assets',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    tenantId: uuid('tenant_id').notNull().references(() => tenants.id, { onDelete: 'cascade' }),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
     collectionId: uuid('collection_id'),
     filename: text('filename').notNull(),
     originalName: text('original_name').notNull(),
@@ -182,10 +204,15 @@ export const assets = pgTable(
     description: text('description'),
     altText: text('alt_text'),
     tags: text('tags').array().notNull().default(sql`ARRAY[]::text[]`),
-    license: text('license', { enum: ['internal', 'public', 'restricted', 'licensed'] }).default('internal'),
+    license: text('license', { enum: ['internal', 'public', 'restricted', 'licensed'] }).default(
+      'internal',
+    ),
     licenseNotes: text('license_notes'),
     expiresAt: date('expires_at'),
-    variants: jsonb('variants').$type<Array<{ label: string; path: string; width?: number; height?: number }>>().notNull().default([]),
+    variants: jsonb('variants')
+      .$type<Array<{ label: string; path: string; width?: number; height?: number }>>()
+      .notNull()
+      .default([]),
     version: integer('version').notNull().default(1),
     parentId: uuid('parent_id'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -217,7 +244,10 @@ export const usersRelations = relations(users, ({ one }) => ({
 
 export const productsRelations = relations(products, ({ one }) => ({
   tenant: one(tenants, { fields: [products.tenantId], references: [tenants.id] }),
-  category: one(productCategories, { fields: [products.categoryId], references: [productCategories.id] }),
+  category: one(productCategories, {
+    fields: [products.categoryId],
+    references: [productCategories.id],
+  }),
   heroAsset: one(assets, { fields: [products.heroAssetId], references: [assets.id] }),
 }));
 

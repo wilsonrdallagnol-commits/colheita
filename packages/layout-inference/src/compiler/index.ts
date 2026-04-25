@@ -106,9 +106,7 @@ export type CompileError = {
   details: string;
 };
 
-export type CompileResult =
-  | { ok: true; spec: RenderSpec }
-  | { ok: false; errors: CompileError[] };
+export type CompileResult = { ok: true; spec: RenderSpec } | { ok: false; errors: CompileError[] };
 
 export function compileBlueprint(opts: {
   blueprint: LayoutBlueprint;
