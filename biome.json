@@ -65,11 +65,18 @@
   },
   "overrides": [
     {
-      "includes": ["scripts/**/*.{js,mjs,cjs}", "**/*.config.{ts,js,mjs}"],
+      "includes": [
+        "scripts/**/*.{js,mjs,cjs,ts}",
+        "**/src/scripts/**/*.ts",
+        "**/*.config.{ts,js,mjs}"
+      ],
       "linter": {
         "rules": {
           "suspicious": {
             "noConsole": "off"
+          },
+          "style": {
+            "noNonNullAssertion": "off"
           }
         }
       }

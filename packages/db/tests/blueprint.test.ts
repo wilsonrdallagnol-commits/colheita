@@ -18,9 +18,9 @@ import postgres from 'postgres';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { closeDb, setupDb } from './helpers/setup.js';
 
-const DB_URL =
-  process.env.DATABASE_URL ?? 'postgres://postgres:postgres@localhost:5432/colheita_test';
-
+// Sem fallback: se DATABASE_URL não está definido, pula os testes graciosamente
+// (mesmo padrão de rls.test.ts — evita falhas em ambientes sem Postgres)
+const DB_URL = process.env.DATABASE_URL;
 const describeBp = DB_URL ? describe : describe.skip;
 
 let sql: postgres.Sql;
@@ -78,6 +78,7 @@ async function createBlueprintFixture() {
 // ============================================================================
 
 beforeAll(async () => {
+  if (!DB_URL) return; // skip setup when no DB
   await setupDb();
   // Conexão superuser separada para os testes de constraint (sem SET ROLE)
   sql = postgres(DB_URL, { max: 1, onnotice: () => {} });
