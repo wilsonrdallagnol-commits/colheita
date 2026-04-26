@@ -452,21 +452,83 @@ const PRODUCTS = [
 
   // ── ADJUVANTES ────────────────────────────────────────────────────────────
   {
-    slug: 'operate',
-    name: 'Operate',
+    slug: 'operate-plus',
+    name: 'Operate Plus',
     category: 'adjuvantes',
-    tagline: 'Adjuvante espalhante adesivo e condicionador de pH para caldas agrícolas',
+    tagline: 'Adjuvante espalhante adesivo premium com condicionador de pH',
     description:
-      'Adjuvante espalhante adesivo e condicionador de pH para caldas fitossanitárias e nutricionais. Reduz a tensão superficial da calda, aumenta a cobertura foliar e acidifica o pH para a faixa ideal de eficácia dos ativos. Compatível com herbicidas, fungicidas, inseticidas e fertilizantes foliares.',
+      'Adjuvante espalhante adesivo de alto desempenho com condicionador de pH para caldas fitossanitárias e nutricionais. Reduz a tensão superficial da calda, aumenta a cobertura e penetração foliar e estabiliza o pH na faixa ideal de eficácia dos ativos. Formulação premium da linha Operate.',
     status: 'published' as const,
     composition: {},
     technicalSpecs: {
       product_type: 'Adjuvante Espalhante Adesivo / Condicionador de pH',
       application_modes: ['Calda Fitossanitária', 'Calda Foliar Nutricional'],
+      linha: 'Operate',
     },
     packaging: [
-      { type: 'bottle', volumeL: 1, sku: 'OPERATE-1L' },
-      { type: 'drum', volumeL: 20, sku: 'OPERATE-20L' },
+      { type: 'bottle', volumeL: 1, sku: 'OPERATE-PLUS-1L' },
+      { type: 'drum', volumeL: 20, sku: 'OPERATE-PLUS-20L' },
+    ],
+  },
+  {
+    slug: 'operate-citronela',
+    name: 'Operate Citronela',
+    category: 'adjuvantes',
+    tagline: 'Adjuvante espalhante com óleo essencial de citronela',
+    description:
+      'Adjuvante espalhante adesivo com óleo essencial de citronela. Combina a função de espalhante e condicionador de pH com o efeito repelente natural da citronela, indicado para programas de manejo integrado que valorizam insumos de menor impacto ambiental.',
+    status: 'published' as const,
+    composition: {},
+    technicalSpecs: {
+      product_type: 'Adjuvante Espalhante Adesivo com Óleo Essencial',
+      application_modes: ['Calda Fitossanitária', 'Calda Foliar Nutricional'],
+      linha: 'Operate',
+      active_ingredient: 'Óleo essencial de citronela',
+    },
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'OPERATE-CITRONELA-1L' },
+      { type: 'drum', volumeL: 20, sku: 'OPERATE-CITRONELA-20L' },
+    ],
+  },
+  {
+    slug: 'operate-4em1',
+    name: 'Operate 4em1',
+    category: 'adjuvantes',
+    tagline: 'Adjuvante multifuncional: espalhante, adesivo, condicionador e anti-espumante',
+    description:
+      'Adjuvante multifuncional que reúne em uma única solução 4 funções: espalhante, adesivo, condicionador de pH e anti-espumante. Simplifica o preparo de caldas e garante máxima eficiência fitossanitária e nutricional com uma só adição ao tanque.',
+    status: 'published' as const,
+    composition: {},
+    technicalSpecs: {
+      product_type:
+        'Adjuvante Multifuncional (Espalhante + Adesivo + Condicionador + Anti-espumante)',
+      application_modes: ['Calda Fitossanitária', 'Calda Foliar Nutricional'],
+      linha: 'Operate',
+      functions: ['Espalhante', 'Adesivo', 'Condicionador de pH', 'Anti-espumante'],
+    },
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'OPERATE-4EM1-1L' },
+      { type: 'drum', volumeL: 20, sku: 'OPERATE-4EM1-20L' },
+    ],
+  },
+  {
+    slug: 'operate-orange',
+    name: 'Operate Orange',
+    category: 'adjuvantes',
+    tagline: 'Adjuvante espalhante com óleo essencial de laranja',
+    description:
+      'Adjuvante espalhante adesivo com óleo essencial de laranja (D-limoneno). Combina a eficiência do espalhante convencional com o poder solvente e penetrante do D-limoneno, potencializando a absorção cuticular de defensivos e nutrientes. Indicado para culturas de alto valor e programas de produção integrada.',
+    status: 'published' as const,
+    composition: {},
+    technicalSpecs: {
+      product_type: 'Adjuvante Espalhante Adesivo com Óleo Essencial',
+      application_modes: ['Calda Fitossanitária', 'Calda Foliar Nutricional'],
+      linha: 'Operate',
+      active_ingredient: 'Óleo essencial de laranja (D-limoneno)',
+    },
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'OPERATE-ORANGE-1L' },
+      { type: 'drum', volumeL: 20, sku: 'OPERATE-ORANGE-20L' },
     ],
   },
 ] as const;
