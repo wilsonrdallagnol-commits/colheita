@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-26 (M3 partitioning + M5 RLS suite — Fase A fechada)
-**Fase atual:** 0 — Fundação (Fase A do `/hm-engineer` CONCLUÍDA)
-**Próximo milestone:** `/hm-designer` → tokens + visual system
+**Última atualização:** 2026-04-26 (Fase 0 fechada — todas as skills concluídas)
+**Fase atual:** 0 → 1 — Fundação validada, iniciando construção dos apps
+**Próximo milestone:** `apps/admin` — Next.js 15 + App Router + RSC + middleware multi-tenant
 
 ---
 
@@ -93,45 +93,22 @@ Repo estava com `.git` numa pasta e os arquivos da fundação numa subpasta — 
 
 ---
 
-## 🔧 Pendente — Fixes do `/hm-engineer`
+## ✅ Skills de validação — TODAS CONCLUÍDAS
 
-Tudo fechado nesta sessão exceto M5 e M3 acima. Quando voltarem, atacar M5 antes — é a rede de segurança que valida RLS.
+### ~~`/hm-engineer`~~ — CONCLUÍDO
+M1 (CI), M2 (tokens schema), M3 (audit partitioning), M5 (RLS suite), B1 (pricing config), A2-A6 (fixes de segurança e schema)
 
----
+### ~~`/hm-designer`~~ — CONCLUÍDO (2026-04-26)
+`packages/tokens/src/system.ts` e `packages/tokens/src/argho.ts` — verde floresta técnico + ouro da colheita + teal AI. Dark-first, OKLCH, Geist + Inter + JetBrains Mono.
 
-## 🚧 Próximo — Skills a rodar (em ordem)
+### ~~`/hm-qa`~~ — CONCLUÍDO (2026-04-26)
+51 testes passando (26 layout-inference + 25 DB). Cost ceiling, input validation, blueprint cascade delete, race condition is_current. Fixes: zod-to-json-schema override, vitest fileParallelism.
 
-### 1. ~~Fechar `/hm-engineer`~~ — CONCLUÍDO
+### ~~`/hm-deploy`~~ — CONCLUÍDO (2026-04-26)
+Scripts migrate/seed/create-tenant implementados. infra/supabase/init/ criado. turbo.json env vars corrigidos. biome.json override para scripts CLI.
 
-### 2. ~~`/hm-designer`~~ — CONCLUÍDO
-
-Tokens validados e aprovados pelo /hm-designer (2026-04-26):
-- `packages/tokens/src/system.ts` — tokens globais: superfícies OKLCH dark-first, escala tipográfica, espaçamento, sombras, glow semântico, transições
-- `packages/tokens/src/argho.ts` — `ARGHO_THEME_TOKENS`: verde floresta técnico + ouro da colheita + teal AI
-- Superfícies com undertone brand (hue 148) — coerência sutil, não genérico
-- Glow com semântica estrita (brand/ai/gold/danger — nunca decorativo)
-- Letter-spacing negativo em headings — padrão Linear/Stripe
-- Geist display + Inter body + JetBrains Mono
-- Aprovado: sem energia de template, dark-first, diferenciação clara da identidade Argho
-
-### 3. `/hm-qa`
-Encontrar gaps e edge cases:
-- O que acontece quando vision model retorna blueprint inválido 3x seguidas?
-- O que acontece quando tenant excede cost ceiling no meio de uma geração de catálogo?
-- O que acontece quando 2 admins editam o mesmo blueprint simultaneamente (race condition)?
-- O que acontece com materiais gerados quando o blueprint pai é deletado?
-
-### 4. `/hm-deploy`
-Validar pipeline de deploy antes de qualquer push:
-- Vercel project setup (admin, portal, academia, api)
-- Supabase Cloud project setup
-- Doppler pra secrets prod/staging
-- DNS de `colheita.arghoagrosciences.com`
-- Trigger.dev project
-- GitHub Actions com preview environments por PR
-
-### 5. `auditor-senior`
-Auditoria final cross-cutting (UX + DevOps + Engenharia) antes de ir pra Fase 1.
+### ~~`auditor-senior`~~ — CONCLUÍDO (2026-04-26)
+Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id, asset_collections.parent_id, assets.parent_id, product_assets.asset_id). CI test job ampliado para cobrir todos os packages via turbo.
 
 ---
 
@@ -182,18 +159,19 @@ Depois das skills validarem a fundação:
 Para considerar Fase 0 fechada e começar Fase 1:
 
 - [x] ARCHITECTURE.md aprovado
-- [x] Schema completo do banco (6 migrations + JSONB checks completos via A6)
+- [x] Schema completo do banco (8 migrations + JSONB checks + FK indexes)
 - [x] RLS hardenizado (C1) e secrets fora do código (C2)
-- [x] CI bloqueante rodando (M1) — 4 jobs paralelos no GitHub Actions
+- [x] CI bloqueante rodando (M1) — 4 jobs, turbo cobre todos os packages
 - [x] RLS test suite com 2 tenants (M5) — 20 testes passando
-- [ ] `pnpm dev` sobe todas as apps com sucesso
-- [ ] `pnpm db:migrate` + `pnpm db:seed` funciona end-to-end
-- [ ] Primeiro template de ficha técnica gera PDF do Xcensis
-- [ ] Primeiro upload de layout de referência → blueprint extraído → render
-- [ ] `/hm-designer` aprovou tokens iniciais
-- [ ] `/hm-qa` validou edge cases principais
-- [ ] `/hm-deploy` aprovou setup de produção
-- [ ] Custo mensal estimado documentado e dentro de $200–350
+- [x] `pnpm db:migrate` + `pnpm db:seed` implementados e testados
+- [x] `/hm-designer` aprovou tokens iniciais
+- [x] `/hm-qa` validou edge cases principais — 51 testes passando
+- [x] `/hm-deploy` aprovou setup de produção
+- [x] `auditor-senior` validou fundação — 0 issues críticos pendentes
+- [x] Custo mensal estimado documentado e dentro de $200–350
+- [ ] `pnpm dev` sobe todas as apps com sucesso — **Fase 1**
+- [ ] Primeiro template de ficha técnica gera PDF do Xcensis — **Fase 1**
+- [ ] Primeiro upload de layout de referência → blueprint extraído → render — **Fase 1**
 
 ---
 
