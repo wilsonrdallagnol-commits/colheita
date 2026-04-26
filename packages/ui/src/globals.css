@@ -1,0 +1,49 @@
+/* packages/ui/src/globals.css
+   CSS custom properties do design system Colheita.
+   Gerado a partir de @colheita/tokens — não editar valores aqui diretamente.
+   Para mudanças: editar packages/tokens/src/ e atualizar aqui. */
+
+:root {
+  /* Superfícies */
+  --colheita-surface-background: oklch(0.08 0.004 148);
+  --colheita-surface-elevated: oklch(0.11 0.004 148);
+  --colheita-surface-card: oklch(0.13 0.004 148);
+  --colheita-surface-overlay: oklch(0.16 0.004 148);
+  --colheita-surface-hover: oklch(0.18 0.004 148);
+  --colheita-border-subtle: oklch(0.22 0.003 148);
+  --colheita-border: oklch(0.27 0.003 148);
+  --colheita-border-strong: oklch(0.38 0.003 148);
+
+  /* Texto */
+  --colheita-text-primary: oklch(0.97 0 0);
+  --colheita-text-secondary: oklch(0.65 0 0);
+  --colheita-text-tertiary: oklch(0.48 0 0);
+  --colheita-text-disabled: oklch(0.35 0 0);
+  --colheita-text-inverse: oklch(0.10 0 0);
+
+  /* Brand Argho — substituir por query ao DB em fase multi-tenant */
+  --colheita-brand-primary: oklch(0.58 0.165 148);
+  --colheita-brand-primary-fg: oklch(0.98 0 0);
+  --colheita-brand-secondary: oklch(0.73 0.135 78);
+  --colheita-brand-secondary-fg: oklch(0.10 0 0);
+  --colheita-brand-accent: oklch(0.64 0.13 195);
+  --colheita-brand-accent-fg: oklch(0.98 0 0);
+
+  /* Semântico */
+  --colheita-success: oklch(0.65 0.18 145);
+  --colheita-warning: oklch(0.75 0.16 78);
+  --colheita-danger: oklch(0.58 0.21 22);
+  --colheita-info: oklch(0.64 0.14 250);
+
+  /* Radius */
+  --colheita-radius-sm: 4px;
+  --colheita-radius-md: 8px;
+  --colheita-radius-lg: 12px;
+  --colheita-radius-xl: 16px;
+  --colheita-radius-full: 9999px;
+
+  /* Transições */
+  --colheita-transition-fast: 100ms ease;
+  --colheita-transition-base: 200ms ease;
+  --colheita-transition-slow: 300ms ease;
+}
