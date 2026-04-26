@@ -73,6 +73,7 @@ const MIGRATION_FILES = [
   '0005_academia.sql',
   '0006_layout_inference.sql',
   '0007_audit_partitioning.sql',
+  '0008_fk_indexes.sql',
 ] as const;
 
 // ============================================================================
