@@ -103,11 +103,16 @@ Tudo fechado nesta sessão exceto M5 e M3 acima. Quando voltarem, atacar M5 ante
 
 ### 1. ~~Fechar `/hm-engineer`~~ — CONCLUÍDO
 
-### 2. `/hm-designer`
-Auditar a sensibilidade visual do que vai sair pro usuário:
-- Tokens iniciais ainda não foram extraídos do Xcensis → criar `packages/tokens/` com tokens base (cores, tipografia, espaçamento, sombras, glow)
-- Validar contra padrão Apple/Linear/Stripe definido no CLAUDE.md
-- Definir tema base + tema Argho como override
+### 2. ~~`/hm-designer`~~ — CONCLUÍDO
+
+Tokens validados e aprovados pelo /hm-designer (2026-04-26):
+- `packages/tokens/src/system.ts` — tokens globais: superfícies OKLCH dark-first, escala tipográfica, espaçamento, sombras, glow semântico, transições
+- `packages/tokens/src/argho.ts` — `ARGHO_THEME_TOKENS`: verde floresta técnico + ouro da colheita + teal AI
+- Superfícies com undertone brand (hue 148) — coerência sutil, não genérico
+- Glow com semântica estrita (brand/ai/gold/danger — nunca decorativo)
+- Letter-spacing negativo em headings — padrão Linear/Stripe
+- Geist display + Inter body + JetBrains Mono
+- Aprovado: sem energia de template, dark-first, diferenciação clara da identidade Argho
 
 ### 3. `/hm-qa`
 Encontrar gaps e edge cases:
