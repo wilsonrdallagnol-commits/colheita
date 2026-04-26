@@ -72,14 +72,16 @@ const MIGRATION_FILES = [
   '0004_generator.sql',
   '0005_academia.sql',
   '0006_layout_inference.sql',
+  '0007_audit_partitioning.sql',
 ] as const;
 
 // ============================================================================
 // setupDb — cria schema limpo e aplica migrations
 // ============================================================================
 export async function setupDb(): Promise<void> {
+  // max: 1 — obrigatório quando migrations contêm BEGIN/COMMIT explícito em sql.unsafe()
   // onnotice suprime NOTICE do DROP CASCADE e CREATE SCHEMA IF NOT EXISTS (esperados)
-  sql = postgres(DB_URL, { max: 5, onnotice: () => {} });
+  sql = postgres(DB_URL, { max: 1, onnotice: () => {} });
 
   // Limpa o schema público para garantir idempotência entre runs locais
   await sql.unsafe(`

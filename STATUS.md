@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-25 (M5 RLS suite implementado)
-**Fase atual:** 0 — Fundação (Fase A do `/hm-engineer` fechando — só M3 pendente)
-**Próximo milestone:** M3 (partitioning audit_events) → `/hm-designer`
+**Última atualização:** 2026-04-26 (M3 partitioning + M5 RLS suite — Fase A fechada)
+**Fase atual:** 0 — Fundação (Fase A do `/hm-engineer` CONCLUÍDA)
+**Próximo milestone:** `/hm-designer` → tokens + visual system
 
 ---
 
@@ -79,9 +79,17 @@ Repo estava com `.git` numa pasta e os arquivos da fundação numa subpasta — 
   - CI job `rls` agora roda `pnpm --filter @colheita/db test` (placeholder removido)
   - Setup idempotente: `DROP SCHEMA public CASCADE` + stubs auth + migrations em ordem
 
-### Ainda pendente da Fase A
+### M3 — concluído nesta sessão
 
-- [ ] **M3** — Particionar `audit_events` por mês com `pg_partman` (precisa nova migration + ADR explicando trade-offs e janela de retenção).
+- [x] **M3** (`TBD`) — `0007_audit_partitioning.sql` + down + ADR 0007.
+  - Native Postgres 16 range partitioning por mês em `created_at`
+  - PK composta `(id, created_at)` — obrigatório para partitioned tables
+  - Partições pré-criadas: 2026-04 a 2026-07 + DEFAULT (safety net)
+  - Índices e RLS definidos no parent, herdados pelas partições
+  - pg_partman reservado para Fase 1 (Supabase Cloud tem a extensão)
+  - ADR documenta retenção de 12 meses, arquivamento via Trigger.dev
+
+**Fase A do `/hm-engineer` CONCLUÍDA.**
 
 ---
 
@@ -93,8 +101,7 @@ Tudo fechado nesta sessão exceto M5 e M3 acima. Quando voltarem, atacar M5 ante
 
 ## 🚧 Próximo — Skills a rodar (em ordem)
 
-### 1. Fechar `/hm-engineer`
-Aplicar os fixes pendentes acima. **Começar por M5 (RLS test) — é o teste mais importante do projeto inteiro.**
+### 1. ~~Fechar `/hm-engineer`~~ — CONCLUÍDO
 
 ### 2. `/hm-designer`
 Auditar a sensibilidade visual do que vai sair pro usuário:
