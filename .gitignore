@@ -52,5 +52,8 @@ infra/supabase/.temp
 # Claude Code session storage
 .claude-handoff/
 
+# Git worktrees
+.worktrees/
+
 # Vestigial wrapper (to be removed on next session restart)
 colheita-fundacao/
