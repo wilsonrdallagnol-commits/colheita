@@ -52,13 +52,14 @@ services:
 
   auth:
     <<: *defaults
-    image: supabase/gotrue:v2.163.4
+    image: supabase/auth:v2.168.0
     depends_on:
       db:
         condition: service_healthy
     environment:
       GOTRUE_API_HOST: 0.0.0.0
       GOTRUE_API_PORT: 9999
+      API_EXTERNAL_URL: http://localhost:54321
       GOTRUE_DB_DRIVER: postgres
       GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:${LOCAL_POSTGRES_PASSWORD}@db:5432/postgres
       GOTRUE_SITE_URL: http://localhost:3000
