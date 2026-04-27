@@ -3,7 +3,7 @@ pre-commit:
   commands:
     biome:
       glob: "*.{ts,tsx,js,jsx,json}"
-      run: pnpm biome check --write {staged_files} && git add {staged_files}
+      run: pnpm biome check --write --staged && git add -u
     typecheck:
       glob: "*.{ts,tsx}"
       run: pnpm -r typecheck
