@@ -6,7 +6,7 @@
 import { Input } from '@colheita/ui';
 import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useCallback, useState, useTransition } from 'react';
+import { useCallback, useRef, useState, useTransition } from 'react';
 
 interface ProdutoFiltersProps {
   categorias: Array<{ slug: string; name: string }>;
@@ -20,6 +20,7 @@ export function ProdutoFilters({ categorias, initialQ, initialCategoria }: Produ
 
   const [q, setQ] = useState(initialQ);
   const [currentCategoria, setCurrentCategoria] = useState(initialCategoria);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const updateURL = useCallback(
     (newQ: string, newCat: string) => {
@@ -41,8 +42,8 @@ export function ProdutoFilters({ categorias, initialQ, initialCategoria }: Produ
   const handleSearchChange = useCallback(
     (value: string) => {
       setQ(value);
-      const timeout = setTimeout(() => updateURL(value, currentCategoria), 300);
-      return () => clearTimeout(timeout);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => updateURL(value, currentCategoria), 300);
     },
     [currentCategoria, updateURL],
   );

@@ -21,6 +21,12 @@ export function createServerClient(cookieStore: ReadonlyRequestCookies) {
   );
 }
 
+/**
+ * Retorna a sessão atual lendo o JWT do cookie SEM validação no servidor Supabase.
+ * AVISO: Não usar para decisões de autorização — o JWT pode estar adulterado.
+ * Para autorização, use sempre `getUser()` ou `requireAuth()`.
+ * Use `getSession()` apenas para leituras não-sensíveis (ex: exibir email na UI).
+ */
 export async function getSession(cookieStore: ReadonlyRequestCookies) {
   const supabase = createServerClient(cookieStore);
   const {
