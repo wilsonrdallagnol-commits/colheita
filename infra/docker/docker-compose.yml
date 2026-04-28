@@ -73,6 +73,9 @@ services:
       GOTRUE_SMTP_HOST: inbucket
       GOTRUE_SMTP_PORT: 2500
       GOTRUE_SMTP_ADMIN_EMAIL: dev@colheita.local
+      # Hook: injeta tenant_id no JWT via função Postgres
+      GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_ENABLED: "true"
+      GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_URI: "pg-functions://postgres/auth/custom_access_token_hook"
 
   rest:
     <<: *defaults
