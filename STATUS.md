@@ -1,6 +1,6 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (academia CRUD completo incl. edição de módulo, ADRs 0002-0006, /conta distribuidor, Safra contracts)
+**Última atualização:** 2026-04-29 (NavEntrarLink ?next=, health check DB, ficha técnica PDF portal+api, Safra webhook tipado, ADR 0008)
 **Fase atual:** 1 — 4 apps + generator ✅ — fase encerrada
 **Próximo milestone:** pnpm dev end-to-end (Docker stack local) + packages/ui 16 componentes compiler (Fase 2)
 
@@ -142,11 +142,12 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 ## ✅ apps/api — MVP concluído (2026-04-29)
 
 ### Funcionalidades entregues
-- [x] `GET /api/health` — health check com versão e timestamp
+- [x] `GET /api/health` — health check com versão, timestamp, latência e status DB (retorna 503 se DB indisponível)
 - [x] `GET /api/v1/catalog` — catálogo público de produtos (ISR 5min, CORS *, RSC)
 - [x] `GET /api/v1/catalog/:slug` — detalhe do produto por slug
+- [x] `GET /api/v1/catalog/:slug/ficha-tecnica` — download PDF autenticado (distributores), retorna `application/pdf`
 - [x] `GET /api/v1/categories` — categorias de produtos (ISR 10min, CORS *)
-- [x] `POST /api/webhooks/safra` — receiver com HMAC-SHA256 (X-Safra-Signature)
+- [x] `POST /api/webhooks/safra` — receiver com HMAC-SHA256 (X-Safra-Signature), roteamento tipado por 5 tipos de evento
 - [x] Root page JSON com índice de endpoints
 - [x] `.env.example` atualizado com `SAFRA_WEBHOOK_SECRET`
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
@@ -160,11 +161,14 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Detalhe da trilha: índice de módulos e lições com estimativa de duração
 - [x] Visualizador de lição: artigo (markdown), vídeo stub, quiz stub, breadcrumb
 - [x] Auth magic link: `/entrar` + `/auth/callback` (redireciona para `/meu-progresso`)
+- [x] `?next=` propagado por todo o fluxo de magic link: NavEntrarLink → hidden input no form → `emailRedirectTo` → callback → redirect
+- [x] Proteção contra open redirect no callback: `next` validado (`startsWith('/')` e `!startsWith('//')`)
+- [x] `NavEntrarLink` — client component com `usePathname()` que preserva a página atual como `?next=` no header
 - [x] Middleware: trilhas públicas, `/meu-progresso` protegido
 - [x] Dashboard `/meu-progresso`: atividade recente + certificações ativas (RSC)
 - [x] Rota `/trilhas/[slug]/iniciar` redireciona para primeira lição do primeiro módulo
 - [x] Botão "Sair" no `/meu-progresso` (signOut server action)
-- [x] Auth-aware header nav: "Entrar" para guests, "Meu Progresso" + "Sair" para autenticados
+- [x] Auth-aware header nav: "Entrar" (com ?next=) para guests, "Meu Progresso" + "Sair" para autenticados
 - [x] MarkCompleteButton chama `router.refresh()` após upsert — UI atualiza imediatamente
 - [x] Markdown renderer SSR-safe (`components/markdown.tsx`) — headings, listas, tabelas, code blocks, blockquotes, inline bold/italic/code
 - [x] Navegação prev/next entre lições (busca parallel, ordenação por módulo+lição sort_order)
@@ -181,7 +185,11 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Catálogo público: listagem por categoria, cards com link para detalhe
 - [x] Detalhe do produto: composição garantida (dual-format), specs técnicas, embalagens
 - [x] Auth magic link: `/entrar` com `useActionState` + `signInWithMagicLink` server action
-- [x] Callback OAuth: `/auth/callback` troca code por sessão, redireciona para `/conta`
+- [x] `?next=` propagado por todo o fluxo: link "Entrar" → hidden input → `emailRedirectTo` → callback → redirect
+- [x] Proteção contra open redirect no callback: validação `startsWith('/') && !startsWith('//')`
+- [x] Detalhe do produto: botão "Baixar Ficha Técnica (PDF)" para autenticados; CTA login com `?next=` para anônimos
+- [x] Rota portal-local `GET /produtos/:slug/ficha-tecnica` — resolve cookie cross-domain sem depender de `apps/api`
+- [x] Callback OAuth: `/auth/callback` troca code por sessão, redireciona para `next` ou `/conta`
 - [x] Middleware customizado: catálogo público, `/conta/*` protegido, `/entrar` redireciona autenticados
 - [x] Área do distribuidor: `/conta` com progresso Academia, certificações, produtos disponíveis (stats, listas reais)
 - [x] Botão "Sair" no `/conta` (signOut server action)
@@ -201,6 +209,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Suporte a logo do tenant, número MAPA, tagline, descrição
 - [x] 12 testes unitários (renderToStaticMarkup, sem browser) — todos passando
 - [x] TypeScript strict 0 erros; biome limpo
+- [x] [ADR 0008](./docs/DECISIONS/0008-generator-pdf-engine.md) — decisão de engine PDF (React → renderToStaticMarkup → Playwright); nota sobre `@sparticuz/chromium` para Vercel serverless
 
 ---
 
@@ -236,13 +245,9 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 ## 📐 Decisões registradas
 
 - [ADR 0001](./docs/DECISIONS/0001-layout-inference-engine.md) — Layout Inference Engine
-
-### A registrar (vão virar ADRs no Claude Code)
-- ADR 0002 — Multi-tenancy via RLS (shared schema)
-- ADR 0003 — Drizzle ORM sobre Prisma
-- ADR 0004 — Connection pooling (Supavisor transaction mode em produção)
-- ADR 0005 — Anthropic como provider único de LLM
-- ADR 0006 — Trigger.dev pra background jobs
+- [ADR 0002–0006](./docs/DECISIONS/) — Multi-tenancy RLS, Drizzle ORM, Connection Pooling, Anthropic LLM, Trigger.dev
+- [ADR 0007](./docs/DECISIONS/0007-audit-partitioning.md) — Audit Events particionamento nativo Postgres 16 por mês
+- [ADR 0008](./docs/DECISIONS/0008-generator-pdf-engine.md) — Generator PDF engine (React → Playwright)
 
 ---
 
