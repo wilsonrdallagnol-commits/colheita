@@ -10,7 +10,22 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
-  return { title: slug.replace(/-/g, ' ') };
+  const cookieStore = await cookies();
+  const supabase = createServerClient(cookieStore);
+
+  const { data } = await supabase
+    .from('learning_tracks')
+    .select('title, subtitle')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .single();
+
+  if (!data) return { title: slug.replace(/-/g, ' ') };
+
+  return {
+    title: `${data.title} — Academia Argho`,
+    description: data.subtitle ?? undefined,
+  };
 }
 
 const LEVEL_LABELS: Record<string, string> = {

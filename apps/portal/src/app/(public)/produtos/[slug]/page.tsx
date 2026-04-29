@@ -11,7 +11,23 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
-  return { title: slug.replace(/-/g, ' ') };
+  const cookieStore = await cookies();
+  const supabase = createServerClient(cookieStore);
+
+  const { data } = await supabase
+    .from('products')
+    .select('name, tagline')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .is('deleted_at', null)
+    .single();
+
+  if (!data) return { title: slug.replace(/-/g, ' ') };
+
+  return {
+    title: `${data.name} — Argho`,
+    description: data.tagline ?? undefined,
+  };
 }
 
 function packagingLabel(p: ProductPackaging[number]) {
