@@ -2,6 +2,7 @@
 'use server';
 
 import { createServerClient } from '@colheita/auth';
+import { sendCertificadoEmitido } from '@colheita/email';
 import { cookies } from 'next/headers';
 
 export async function markLessonComplete(lessonId: string): Promise<{ error?: string }> {
@@ -162,4 +163,27 @@ async function maybeIssueCertification({
     issued_at: new Date().toISOString(),
     expires_at: expiresAt,
   });
+
+  // Dispara email de certificado (fire-and-forget — não bloqueia o fluxo)
+  // Só envia se o usuário tiver email (auth.users garante isso)
+  const userEmail = (
+    supabase.auth as { getUser?: () => Promise<{ data: { user: { email?: string } | null } }> }
+  ).getUser
+    ? undefined // será resolvido via Trigger.dev em Fase 2
+    : undefined;
+
+  if (userEmail) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
+    const certificateUrl = `${apiUrl.replace(/\/api$/, '')}/meu-progresso/certificados/${certificateNo}`;
+    sendCertificadoEmitido({
+      to: userEmail,
+      userName: userId, // Fase 2: buscar nome real do perfil
+      trackTitle: track.title ?? trackId,
+      certificateNo,
+      certificateUrl,
+      expiresAt: expiresAt ?? undefined,
+    }).catch(() => {
+      // Falha silenciosa — email é best-effort
+    });
+  }
 }

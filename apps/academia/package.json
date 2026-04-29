@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@colheita/auth": "workspace:*",
+    "@colheita/email": "workspace:*",
     "@colheita/db": "workspace:*",
     "@colheita/tokens": "workspace:*",
     "@colheita/ui": "workspace:*",

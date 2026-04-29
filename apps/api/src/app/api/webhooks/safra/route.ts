@@ -6,6 +6,7 @@
 // Header esperado: X-Safra-Signature: sha256=<hex>
 // Segredo: SAFRA_WEBHOOK_SECRET (env)
 
+import { sendPedidoConfirmado } from '@colheita/email';
 import type {
   SafraClienteCadastrado,
   SafraInventarioAtualizado,
@@ -24,8 +25,30 @@ const WEBHOOK_SECRET = process.env.SAFRA_WEBHOOK_SECRET ?? '';
 // Cada handler recebe o evento tipado e retorna { queued: boolean }.
 // Fase 1 produção: substituir o stub por `await tasks.trigger(...)` do Trigger.dev.
 
-async function handlePedidoCriado(_event: SafraPedidoCriado): Promise<{ queued: boolean }> {
-  // TODO (Trigger.dev): await tasks.trigger('safra-pedido-criado', { event: _event })
+async function handlePedidoCriado(event: SafraPedidoCriado): Promise<{ queued: boolean }> {
+  // TODO (Trigger.dev Fase 2): await tasks.trigger('safra-pedido-criado', { event })
+
+  // Envia email de confirmação ao distribuidor (RESEND_NOTIFY_EMAIL ou env por tenant)
+  const notifyEmail = process.env.RESEND_NOTIFY_EMAIL;
+  if (notifyEmail) {
+    const itens = event.data.itens.map((item) => ({
+      produto: item.produto_nome,
+      quantidade: item.quantidade,
+      unidade: item.unidade,
+    }));
+
+    sendPedidoConfirmado({
+      to: notifyEmail,
+      pedidoId: event.data.pedido_id,
+      clienteNome: event.data.distribuidor_nome,
+      tenantName: process.env.RESEND_TENANT_NAME ?? 'Argho Distribuidora',
+      itens,
+      valorTotal: event.data.total_liquido,
+    }).catch(() => {
+      // Falha silenciosa — email é best-effort, webhook sempre retorna 200
+    });
+  }
+
   return { queued: false };
 }
 

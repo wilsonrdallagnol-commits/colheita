@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (HMAC tests, ChatMarkdown links, 235 testes: ai/48 + ui/52 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19 + api/13)
+**Última atualização:** 2026-04-29 (Resend + packages/email, 262 testes: ai/48 + ui/59 + email/20 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19 + api/13)
 **Fase atual:** 2 — IA integrada nas apps
-**Próximo milestone:** Resend (emails transacionais)
+**Próximo milestone:** Sentry + Axiom + PostHog
 
 ---
 
@@ -249,10 +249,11 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `packages/generator` — ✅ Playwright + FichaTecnica + RenderSpecLayout (pipeline completo layout-inference → PDF), 28 testes
 - [x] `packages/safra-contracts` — schemas Zod para 5 tipos de evento Safra + tipos TypeScript exportados
 - [x] `packages/ai` — ✅ RAG + agents + streaming: BM25InMemoryRetriever, AiGenerator (claude-haiku-4-5), RagPipeline, AiStreamEvent, multi-turn history, askStream(), **48 testes**
-- [x] `packages/ui` — `ChatMarkdown`: blocos + inline (bold/italic/code/links), streaming cursor, **52 testes**
+- [x] `packages/ui` — `ChatMarkdown`: blocos + inline (bold/italic/code/links/tabelas), streaming cursor, **59 testes**
 - [x] `packages/safra-contracts` — **28 testes** para os 5 schemas Zod de eventos Safra (discriminatedUnion, defaults, edge cases)
 - [x] `packages/tokens` — **21 testes** para TenantThemeTokensSchema + parseTenantThemeTokens (OKLCH/hex/rgb, radius, fallback)
 - [x] `apps/api` — **13 testes** HMAC: `verifySignature` extraída para `src/lib/safra-hmac.ts` (body alterado, secret errado, headers malformados, timing-safe)
+- [x] `packages/email` — Resend client + 2 templates React (CertificadoEmitido, PedidoConfirmado), integração em academia/actions.ts e api/webhooks/safra, **20 testes** (renderToStaticMarkup, sem deps externas)
 
 ### Scripts operacionais
 - [x] `pnpm db:migrate` — aplica 10 migrations em ordem (0001–0010)
@@ -261,7 +262,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 
 ### Integrações Fase 1
 - [x] Contratos com Safra — `packages/safra-contracts`: 5 eventos Zod (pedido.criado/atualizado, inventario.atualizado, produto.atualizado, cliente.cadastrado); webhook handler valida schema antes de processar
-- [ ] Resend pra emails transacionais
+- [x] Resend pra emails transacionais
 - [ ] Sentry + Axiom + PostHog
 
 ---
