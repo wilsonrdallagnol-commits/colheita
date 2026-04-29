@@ -12,6 +12,7 @@
   "dependencies": {
     "@colheita/auth": "workspace:*",
     "@colheita/db": "workspace:*",
+    "@colheita/generator": "workspace:*",
     "@colheita/safra-contracts": "workspace:*",
     "@colheita/tokens": "workspace:*",
     "next": "15.3.1",

@@ -9,6 +9,7 @@ const API_INDEX = {
     categories: '/api/v1/categories',
     tracks: '/api/v1/tracks',
     trackDetail: '/api/v1/tracks/:slug',
+    fichaTecnica: '/api/v1/catalog/:slug/ficha-tecnica',
     webhooks: { safra: '/api/webhooks/safra' },
   },
   docs: 'https://docs.argho.com.br/api',
