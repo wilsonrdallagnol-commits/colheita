@@ -246,7 +246,8 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `packages/auth` — `createServerClient`, `requireAuth`, `updateSession`, middleware multi-tenant, 19 testes
 - [x] `packages/generator` — ✅ Playwright + FichaTecnica + RenderSpecLayout (pipeline completo layout-inference → PDF), 28 testes
 - [x] `packages/safra-contracts` — schemas Zod para 5 tipos de evento Safra + tipos TypeScript exportados
-- [x] `packages/ai` — ✅ RAG + agents: BM25InMemoryRetriever, AiGenerator (Claude Haiku), RagPipeline, search_products + search_lessons tools, 39 testes, commit 60332e6
+- [x] `packages/ai` — ✅ RAG + agents + streaming: BM25InMemoryRetriever, AiGenerator (claude-haiku-4-5), RagPipeline, AiStreamEvent, multi-turn conversation history, 41 testes
+- [x] `packages/ui` — `ChatMarkdown` component: renderizador markdown para bolhas de chat (blocos + inline), 46 testes no total
 
 ### Scripts operacionais
 - [x] `pnpm db:migrate` — aplica 10 migrations em ordem (0001–0010)
