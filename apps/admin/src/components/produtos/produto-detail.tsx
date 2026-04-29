@@ -1,6 +1,6 @@
 // apps/admin/src/components/produtos/produto-detail.tsx
 
-import type { ProductComposition, ProductPackaging } from '@colheita/db';
+import type { ProductApplication, ProductComposition, ProductPackaging } from '@colheita/db';
 import {
   Badge,
   Separator,
@@ -21,6 +21,7 @@ interface ProdutoDetailProps {
     composition: ProductComposition;
     technicalSpecs: Record<string, unknown>;
     packaging: ProductPackaging;
+    applications: ProductApplication[];
     category: { name: string } | null;
     registrationNo: string | null;
   };
@@ -252,6 +253,52 @@ export function ProdutoDetail({ produto }: ProdutoDetailProps) {
           </div>
         )}
       </div>
+
+      {/* Indicações por Cultura */}
+      {produto.applications.length > 0 && (
+        <div style={{ marginTop: '32px' }}>
+          <Separator style={{ marginBottom: '24px' }} />
+          <h2
+            style={{
+              fontSize: '0.6875rem',
+              fontWeight: '600',
+              color: 'var(--colheita-text-tertiary)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              marginBottom: '16px',
+            }}
+          >
+            Indicações por Cultura
+          </h2>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Cultura</TableHead>
+                <TableHead>Estádio</TableHead>
+                <TableHead>Dose/ha</TableHead>
+                <TableHead>Observações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {produto.applications.map((app, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: stable positional list
+                <TableRow key={i}>
+                  <TableCell style={{ fontWeight: '500' }}>{app.crop}</TableCell>
+                  <TableCell>{app.stage ?? '—'}</TableCell>
+                  <TableCell style={{ fontFamily: 'var(--font-mono)' }}>
+                    {app.dosePerHa} {app.unit}
+                  </TableCell>
+                  <TableCell
+                    style={{ fontSize: '0.8125rem', color: 'var(--colheita-text-secondary)' }}
+                  >
+                    {app.notes ?? '—'}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 }

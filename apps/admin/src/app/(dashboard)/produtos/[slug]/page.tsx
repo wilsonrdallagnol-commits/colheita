@@ -1,6 +1,6 @@
 // apps/admin/src/app/(dashboard)/produtos/[slug]/page.tsx
 import { createServerClient, requireAuth } from '@colheita/auth';
-import type { ProductComposition, ProductPackaging } from '@colheita/db';
+import type { ProductApplication, ProductComposition, ProductPackaging } from '@colheita/db';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -53,6 +53,7 @@ export default async function ProdutoPage({ params }: PageProps) {
       composition,
       technical_specs,
       packaging,
+      applications,
       category:product_categories(name),
       registrations:regulatory_registrations(registration_no)
     `)
@@ -132,6 +133,7 @@ export default async function ProdutoPage({ params }: PageProps) {
           composition: (data.composition ?? {}) as ProductComposition,
           technicalSpecs: (data.technical_specs ?? {}) as Record<string, unknown>,
           packaging: (data.packaging ?? []) as ProductPackaging,
+          applications: (data.applications ?? []) as ProductApplication[],
           category,
           registrationNo: registration?.registration_no ?? null,
         }}
