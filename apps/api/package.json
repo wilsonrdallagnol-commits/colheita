@@ -10,7 +10,9 @@
     "lint": "biome check src"
   },
   "dependencies": {
+    "@colheita/ai": "workspace:*",
     "@colheita/auth": "workspace:*",
+    "zod": "3.23.8",
     "@colheita/db": "workspace:*",
     "@colheita/generator": "workspace:*",
     "@colheita/safra-contracts": "workspace:*",

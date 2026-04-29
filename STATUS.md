@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (16 compiler blocks @colheita/ui, RenderSpecLayout + generateFromRenderSpec, 28 testes no generator, browser dialogs removidos dos action components)
-**Fase atual:** 1 — 4 apps + generator ✅ — fase encerrada
-**Próximo milestone:** pnpm dev end-to-end (Docker stack local) + packages/ui 16 componentes compiler (Fase 2)
+**Última atualização:** 2026-04-29 (`@colheita/ai` — RAG pipeline + BM25 + agent tools; 39 testes; Fase 2 fundação)
+**Fase atual:** 2 — pacotes de IA (em progresso)
+**Próximo milestone:** Integração `@colheita/ai` nas apps (admin: chat agent; api: endpoint `/api/v1/agent`)
 
 ---
 
@@ -243,7 +243,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `packages/auth` — `createServerClient`, `requireAuth`, `updateSession`, middleware multi-tenant, 19 testes
 - [x] `packages/generator` — ✅ Playwright + FichaTecnica + RenderSpecLayout (pipeline completo layout-inference → PDF), 28 testes
 - [x] `packages/safra-contracts` — schemas Zod para 5 tipos de evento Safra + tipos TypeScript exportados
-- [ ] `packages/ai` — RAG + agents (Fase 2)
+- [x] `packages/ai` — ✅ RAG + agents: BM25InMemoryRetriever, AiGenerator (Claude Haiku), RagPipeline, search_products + search_lessons tools, 39 testes, commit 60332e6
 
 ### Scripts operacionais
 - [x] `pnpm db:migrate` — aplica 10 migrations em ordem (0001–0010)
