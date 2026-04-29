@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps) {
   if (!data) return { title: slug.replace(/-/g, ' ') };
 
   return {
-    title: `${data.name} — Argho`,
+    title: data.name,
     description: data.tagline ?? undefined,
   };
 }

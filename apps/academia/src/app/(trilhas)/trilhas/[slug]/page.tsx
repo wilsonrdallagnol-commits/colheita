@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: PageProps) {
   if (!data) return { title: slug.replace(/-/g, ' ') };
 
   return {
-    title: `${data.title} — Academia Argho`,
+    title: data.title,
     description: data.subtitle ?? undefined,
   };
 }
