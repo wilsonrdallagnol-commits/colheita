@@ -1126,6 +1126,51 @@ async function run() {
       console.log(`  ✅  Produto: ${product.name}`);
     }
 
+    // ── Registros MAPA ────────────────────────────────────────────────────
+    // Produto lookup por slug para obter IDs
+    const productRows = await sql<{ id: string; slug: string }[]>`
+      SELECT id, slug FROM public.products WHERE tenant_id = ${tenantId}
+    `;
+    const productIdBySlug: Record<string, string> = {};
+    for (const row of productRows) productIdBySlug[row.slug] = row.id;
+
+    for (const product of PRODUCTS) {
+      const regNo =
+        'technicalSpecs' in product &&
+        typeof product.technicalSpecs === 'object' &&
+        product.technicalSpecs !== null &&
+        'registration_mapa' in product.technicalSpecs
+          ? (product.technicalSpecs.registration_mapa as string)
+          : null;
+
+      if (!regNo) continue;
+
+      const productId = productIdBySlug[product.slug];
+      if (!productId) continue;
+
+      const regDate =
+        'technicalSpecs' in product &&
+        typeof product.technicalSpecs === 'object' &&
+        product.technicalSpecs !== null &&
+        'registration_date' in product.technicalSpecs
+          ? (product.technicalSpecs.registration_date as string)
+          : null;
+
+      await sql`
+        INSERT INTO public.regulatory_registrations (
+          tenant_id, product_id, authority, registration_no, issued_at, status
+        )
+        SELECT ${tenantId}, ${productId}, 'MAPA', ${regNo}, ${regDate}, 'active'
+        WHERE NOT EXISTS (
+          SELECT 1 FROM public.regulatory_registrations
+          WHERE tenant_id = ${tenantId}
+            AND product_id = ${productId}
+            AND authority = 'MAPA'
+        )
+      `;
+      console.log(`  ✅  MAPA: ${product.name} — ${regNo}`);
+    }
+
     // ── Trilhas de aprendizado ────────────────────────────────────────────
     let totalLessons = 0;
     for (const track of TRACKS) {
