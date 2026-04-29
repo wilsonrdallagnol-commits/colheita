@@ -1,5 +1,5 @@
 // apps/portal/src/app/(public)/produtos/[slug]/page.tsx
-import { createServerClient } from '@colheita/auth';
+import { createServerClient, getSession } from '@colheita/auth';
 import type { ProductComposition, ProductPackaging } from '@colheita/db';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
@@ -58,6 +58,9 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
   const category = Array.isArray(data.category)
     ? (data.category[0] ?? null)
     : (data.category ?? null);
+
+  const session = await getSession(cookieStore);
+  const isAuthenticated = !!session;
 
   const composition = (data.composition ?? {}) as ProductComposition;
   const technicalSpecs = (data.technical_specs ?? {}) as Record<string, unknown>;
@@ -326,6 +329,55 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
               </div>
             </div>
           )}
+
+          {/* Ficha técnica download */}
+          <div
+            style={{
+              paddingTop: '4px',
+              borderTop: '1px solid var(--colheita-border-subtle)',
+            }}
+          >
+            {isAuthenticated ? (
+              <a
+                href={`/produtos/${slug}/ficha-tecnica`}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  padding: '10px 16px',
+                  borderRadius: 'var(--colheita-radius-md)',
+                  backgroundColor: 'var(--colheita-brand-primary)',
+                  color: '#fff',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  textDecoration: 'none',
+                  textAlign: 'center',
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                ↓ Baixar Ficha Técnica (PDF)
+              </a>
+            ) : (
+              <Link
+                href={`/entrar?next=/produtos/${slug}`}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  padding: '10px 16px',
+                  borderRadius: 'var(--colheita-radius-md)',
+                  border: '1px solid var(--colheita-border)',
+                  backgroundColor: 'transparent',
+                  color: 'var(--colheita-text-secondary)',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  textDecoration: 'none',
+                  textAlign: 'center',
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                Entrar para baixar a ficha técnica
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -12,6 +12,7 @@
   "dependencies": {
     "@colheita/auth": "workspace:*",
     "@colheita/db": "workspace:*",
+    "@colheita/generator": "workspace:*",
     "@colheita/tokens": "workspace:*",
     "@colheita/ui": "workspace:*",
     "geist": "^1.3.1",

@@ -194,6 +194,9 @@ importers:
       '@colheita/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@colheita/generator':
+        specifier: workspace:*
+        version: link:../../packages/generator
       '@colheita/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
