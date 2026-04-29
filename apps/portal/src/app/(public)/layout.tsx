@@ -3,6 +3,7 @@ import { createServerClient } from '@colheita/auth';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { ChatWidget } from '@/components/chat-widget';
 import { NavEntrarLink } from '@/components/nav-entrar-link';
 import { signOut } from '@/lib/actions/auth';
 
@@ -118,6 +119,9 @@ export default async function PublicLayout({ children }: { children: ReactNode }
 
       {/* Page content */}
       <main style={{ flex: 1 }}>{children}</main>
+
+      {/* Chat widget — só para distribuidores autenticados */}
+      {user && <ChatWidget />}
 
       {/* Footer */}
       <footer
