@@ -7,7 +7,7 @@
  */
 
 import { ChatMarkdown } from '@colheita/ui';
-import { Send } from 'lucide-react';
+import { RotateCcw, Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 interface Message {
@@ -35,14 +35,16 @@ const SUGGESTED_QUERIES = [
   'Quais produtos têm registro MAPA?',
 ];
 
+const INITIAL_MESSAGES: Message[] = [
+  {
+    id: '0',
+    role: 'assistant',
+    text: 'Olá! Sou o assistente da Argho. Posso responder perguntas sobre produtos do catálogo e trilhas de aprendizado da Academia. O que deseja saber?',
+  },
+];
+
 export function AdminChatPanel() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '0',
-      role: 'assistant',
-      text: 'Olá! Sou o assistente da Argho. Posso responder perguntas sobre produtos do catálogo e trilhas de aprendizado da Academia. O que deseja saber?',
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [conversationHistory, setConversationHistory] = useState<ConversationTurn[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -145,6 +147,12 @@ export function AdminChatPanel() {
     }
   }
 
+  function handleClear() {
+    if (loading) return;
+    setMessages(INITIAL_MESSAGES);
+    setConversationHistory([]);
+  }
+
   const showSuggestions = messages.length === 1;
 
   return (
@@ -158,6 +166,49 @@ export function AdminChatPanel() {
         padding: '0 32px',
       }}
     >
+      {/* Toolbar */}
+      {messages.length > 1 && !loading && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            paddingTop: '16px',
+          }}
+        >
+          <button
+            type="button"
+            onClick={handleClear}
+            aria-label="Limpar conversa"
+            title="Limpar conversa"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '4px 10px',
+              borderRadius: '8px',
+              border: '1px solid var(--colheita-border)',
+              backgroundColor: 'transparent',
+              color: 'var(--colheita-text-tertiary)',
+              fontSize: '0.75rem',
+              cursor: 'pointer',
+              transition: 'border-color 150ms, color 150ms',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor =
+                'var(--colheita-border-hover, var(--colheita-border))';
+              e.currentTarget.style.color = 'var(--colheita-text-secondary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--colheita-border)';
+              e.currentTarget.style.color = 'var(--colheita-text-tertiary)';
+            }}
+          >
+            <RotateCcw size={12} />
+            Nova conversa
+          </button>
+        </div>
+      )}
+
       {/* Messages */}
       <div
         style={{

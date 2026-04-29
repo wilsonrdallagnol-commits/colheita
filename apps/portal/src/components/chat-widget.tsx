@@ -84,15 +84,34 @@ function SendIcon() {
   );
 }
 
+function ClearIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <title>Limpar conversa</title>
+      <polyline points="1 4 1 10 7 10" />
+      <path d="M3.51 15a9 9 0 1 0 .49-4.5" />
+    </svg>
+  );
+}
+
+const INITIAL_MESSAGES: Message[] = [
+  {
+    id: '0',
+    role: 'assistant',
+    text: 'Olá! Sou o assistente da Argho. Pergunte sobre produtos, doses, culturas ou trilhas de aprendizado.',
+  },
+];
+
 export function ChatWidget() {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '0',
-      role: 'assistant',
-      text: 'Olá! Sou o assistente da Argho. Pergunte sobre produtos, doses, culturas ou trilhas de aprendizado.',
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [conversationHistory, setConversationHistory] = useState<ConversationTurn[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -194,6 +213,12 @@ export function ChatWidget() {
     }
   }
 
+  function handleClear() {
+    if (loading) return;
+    setMessages(INITIAL_MESSAGES);
+    setConversationHistory([]);
+  }
+
   return (
     <>
       {/* Floating button */}
@@ -269,7 +294,7 @@ export function ChatWidget() {
                 flexShrink: 0,
               }}
             />
-            <div>
+            <div style={{ flex: 1 }}>
               <div
                 style={{
                   fontSize: '0.875rem',
@@ -284,6 +309,38 @@ export function ChatWidget() {
                 Produtos · Academia
               </div>
             </div>
+            {messages.length > 1 && !loading && (
+              <button
+                type="button"
+                onClick={handleClear}
+                aria-label="Limpar conversa"
+                title="Limpar conversa"
+                style={{
+                  flexShrink: 0,
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: 'transparent',
+                  color: 'var(--colheita-text-tertiary)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'color 150ms, background-color 150ms',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = 'var(--colheita-text-primary)';
+                  e.currentTarget.style.backgroundColor = 'var(--colheita-surface-hover)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = 'var(--colheita-text-tertiary)';
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
+              >
+                <ClearIcon />
+              </button>
+            )}
           </div>
 
           {/* Messages */}
