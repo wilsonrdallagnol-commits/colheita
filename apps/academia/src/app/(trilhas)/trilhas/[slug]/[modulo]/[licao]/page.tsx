@@ -11,8 +11,40 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps) {
-  const { licao } = await params;
-  return { title: licao.replace(/-/g, ' ') };
+  const { slug, modulo, licao } = await params;
+  const cookieStore = await cookies();
+  const supabase = createServerClient(cookieStore);
+
+  const { data } = await supabase
+    .from('learning_lessons')
+    .select(
+      `title,
+       learning_modules!inner(
+         title,
+         learning_tracks!inner(title)
+       )`,
+    )
+    .eq('slug', licao)
+    .eq('learning_modules.slug', modulo)
+    .eq('learning_modules.learning_tracks.slug', slug)
+    .single();
+
+  if (!data) return { title: licao.replace(/-/g, ' ') };
+
+  const mod = Array.isArray(data.learning_modules)
+    ? data.learning_modules[0]
+    : data.learning_modules;
+  const track = mod
+    ? Array.isArray(mod.learning_tracks)
+      ? mod.learning_tracks[0]
+      : mod.learning_tracks
+    : null;
+
+  const pageTitle = track ? `${data.title} — ${track.title}` : data.title;
+  return {
+    title: pageTitle,
+    description: `${mod?.title ?? ''} · Academia Argho`,
+  };
 }
 
 export default async function LicaoPage({ params }: PageProps) {
