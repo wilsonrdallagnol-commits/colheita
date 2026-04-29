@@ -20,7 +20,18 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
-  return { title: slug.replace(/-/g, ' ') };
+  const cookieStore = await cookies();
+  const supabase = createServerClient(cookieStore);
+
+  const { data } = await supabase
+    .from('products')
+    .select('name')
+    .eq('slug', slug)
+    .is('deleted_at', null)
+    .single();
+
+  if (!data) return { title: slug.replace(/-/g, ' ') };
+  return { title: data.name };
 }
 
 export default async function ProdutoPage({ params }: PageProps) {
