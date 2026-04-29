@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (DAM admin section, 275 testes: ai/48 + ui/59 + email/20 + observability/13 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19 + api/13)
+**Última atualização:** 2026-04-29 (packages/jobs + DAM admin, 275 testes: ai/48 + ui/59 + email/20 + observability/13 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19 + api/13)
 **Fase atual:** 2 — IA integrada nas apps
-**Próximo milestone:** packages/jobs (Trigger.dev background jobs)
+**Próximo milestone:** Trigger.dev v3 deploy (TRIGGER_PROJECT_REF + trigger deploy)
 
 ---
 
