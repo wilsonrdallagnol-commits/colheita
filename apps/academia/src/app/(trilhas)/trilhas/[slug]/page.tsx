@@ -34,19 +34,24 @@ export default async function TrilhaDetailPage({ params }: PageProps) {
   const cookieStore = await cookies();
   const supabase = createServerClient(cookieStore);
 
-  const { data: trilha, error } = await supabase
-    .from('learning_tracks')
-    .select(
-      `id, title, subtitle, description, level, estimated_minutes,
-       grants_certification, certification_validity_days, audience,
-       learning_modules(
-         id, slug, title, description, sort_order,
-         learning_lessons(id, slug, title, type, estimated_minutes, is_required, sort_order)
-       )`,
-    )
-    .eq('slug', slug)
-    .eq('status', 'published')
-    .single();
+  // Parallel: track data + auth
+  const [{ data: trilha, error }, { data: authData }] = await Promise.all([
+    supabase
+      .from('learning_tracks')
+      .select(
+        `id, title, subtitle, description, level, estimated_minutes,
+         grants_certification, certification_validity_days, audience,
+         learning_modules(
+           id, slug, title, description, sort_order,
+           learning_lessons(id, slug, title, type, estimated_minutes, is_required, sort_order)
+         )`,
+      )
+      .eq('slug', slug)
+      .eq('status', 'published')
+      .single(),
+
+    supabase.auth.getUser(),
+  ]);
 
   if (error || !trilha) {
     notFound();
@@ -64,6 +69,28 @@ export default async function TrilhaDetailPage({ params }: PageProps) {
     (acc, m) => acc + (Array.isArray(m.learning_lessons) ? m.learning_lessons.length : 0),
     0,
   );
+
+  // Fetch completed lesson IDs for the current user (if logged in)
+  const user = authData?.user ?? null;
+  const completedLessonIds = new Set<string>();
+  if (user) {
+    const allLessonIds = modules.flatMap((m) =>
+      Array.isArray(m.learning_lessons) ? m.learning_lessons.map((l) => l.id) : [],
+    );
+    if (allLessonIds.length > 0) {
+      const { data: progressRows } = await supabase
+        .from('learning_progress')
+        .select('lesson_id')
+        .eq('user_id', user.id)
+        .eq('status', 'completed')
+        .in('lesson_id', allLessonIds);
+      for (const row of progressRows ?? []) {
+        completedLessonIds.add(row.lesson_id);
+      }
+    }
+  }
+
+  const completedCount = completedLessonIds.size;
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 32px' }}>
@@ -157,6 +184,21 @@ export default async function TrilhaDetailPage({ params }: PageProps) {
               }}
             >
               Conteúdo ({totalLessons} {totalLessons === 1 ? 'lição' : 'lições'})
+              {user && totalLessons > 0 && (
+                <span
+                  style={{
+                    marginLeft: '10px',
+                    fontSize: '0.75rem',
+                    fontWeight: 500,
+                    color:
+                      completedCount === totalLessons
+                        ? 'var(--colheita-success, #16a34a)'
+                        : 'var(--colheita-text-tertiary)',
+                  }}
+                >
+                  {completedCount}/{totalLessons} concluídas
+                </span>
+              )}
             </h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -236,24 +278,42 @@ export default async function TrilhaDetailPage({ params }: PageProps) {
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <span
-                            style={{
-                              fontSize: '0.75rem',
-                              fontWeight: '500',
-                              color: 'var(--colheita-text-tertiary)',
-                              width: '20px',
-                              textAlign: 'right',
-                              flexShrink: 0,
-                            }}
-                          >
-                            {lessonIndex + 1}
-                          </span>
+                          {completedLessonIds.has(lesson.id) ? (
+                            <span
+                              style={{
+                                fontSize: '0.75rem',
+                                fontWeight: '600',
+                                color: 'var(--colheita-success, #16a34a)',
+                                width: '20px',
+                                textAlign: 'right',
+                                flexShrink: 0,
+                              }}
+                              title="Concluída"
+                            >
+                              ✓
+                            </span>
+                          ) : (
+                            <span
+                              style={{
+                                fontSize: '0.75rem',
+                                fontWeight: '500',
+                                color: 'var(--colheita-text-tertiary)',
+                                width: '20px',
+                                textAlign: 'right',
+                                flexShrink: 0,
+                              }}
+                            >
+                              {lessonIndex + 1}
+                            </span>
+                          )}
                           <div>
                             <p
                               style={{
                                 fontSize: '0.875rem',
                                 fontWeight: '500',
-                                color: 'var(--colheita-text-primary)',
+                                color: completedLessonIds.has(lesson.id)
+                                  ? 'var(--colheita-text-secondary)'
+                                  : 'var(--colheita-text-primary)',
                               }}
                             >
                               {lesson.title}
