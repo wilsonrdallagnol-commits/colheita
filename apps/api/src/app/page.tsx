@@ -6,6 +6,7 @@ const API_INDEX = {
     health: '/api/health',
     catalog: '/api/v1/catalog',
     catalogItem: '/api/v1/catalog/:slug',
+    categories: '/api/v1/categories',
     webhooks: { safra: '/api/webhooks/safra' },
   },
   docs: 'https://docs.argho.com.br/api',
