@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ModuloActions } from '@/components/academia/modulo-actions';
 import { ModuloForm } from '@/components/academia/modulo-form';
+import { TrilhaActions } from '@/components/academia/trilha-actions';
 import { createModulo } from '@/lib/actions/academia';
 
 interface PageProps {
@@ -138,9 +139,12 @@ export default async function TrilhaDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        <Button asChild variant="outline" size="sm">
-          <Link href={`/academia/${slug}/editar`}>Editar trilha</Link>
-        </Button>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <TrilhaActions trilhaId={trilha.id} currentStatus={trilha.status} />
+          <Button asChild variant="outline" size="sm">
+            <Link href={`/academia/${slug}/editar`}>Editar trilha</Link>
+          </Button>
+        </div>
       </div>
 
       {/* Módulos */}

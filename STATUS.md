@@ -1,6 +1,6 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (admin academia CRUD completo — trilhas + módulos + lições)
+**Última atualização:** 2026-04-29 (academia CRUD completo, ADRs 0002-0006, portal /conta distribuidor)
 **Fase atual:** 1 — 4 apps + generator ✅ — fase encerrada
 **Próximo milestone:** pnpm dev end-to-end (Docker stack local) + packages/ui 16 componentes compiler (Fase 2)
 
@@ -131,6 +131,9 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Academia — Lições: listar no detalhe do módulo, criar inline, editar (`/[slug]/[mod]/[lic]/editar`), excluir
 - [x] Academia — Server actions: `createTrilha`, `updateTrilha`, `publishTrilha`, `archiveTrilha`, `createModulo`, `deleteModulo`, `createLicao`, `updateLicao`, `deleteLicao`
 - [x] Academia — Conteúdo dinâmico: artigo (Markdown), vídeo (URL), outros tipos via SDK
+- [x] Academia — TrilhaActions: botões Publicar / Arquivar direto no detalhe da trilha
+- [x] Academia — Loading states Skeleton em todas as páginas (lista, detalhe trilha, detalhe módulo)
+- [x] ADRs 0002–0006: multi-tenancy RLS, Drizzle ORM, connection pooling, Anthropic LLM, Trigger.dev
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
 ---
@@ -179,7 +182,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Auth magic link: `/entrar` com `useActionState` + `signInWithMagicLink` server action
 - [x] Callback OAuth: `/auth/callback` troca code por sessão, redireciona para `/conta`
 - [x] Middleware customizado: catálogo público, `/conta/*` protegido, `/entrar` redireciona autenticados
-- [x] Área do distribuidor: `/conta` stub com guard de autenticação via RSC layout
+- [x] Área do distribuidor: `/conta` com progresso Academia, certificações, produtos disponíveis (stats, listas reais)
 - [x] Botão "Sair" no `/conta` (signOut server action)
 - [x] Auth-aware header nav: "Entrar" para guests, "Minha Conta" + "Sair" para autenticados
 - [x] Busca por nome/tagline (`?q=`) e filtro por categoria (`?category=slug`) — URL params, sem JS
