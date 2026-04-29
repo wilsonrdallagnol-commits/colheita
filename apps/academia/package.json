@@ -12,6 +12,7 @@
   "dependencies": {
     "@colheita/auth": "workspace:*",
     "@colheita/email": "workspace:*",
+    "@colheita/jobs": "workspace:*",
     "@colheita/observability": "workspace:*",
     "@colheita/db": "workspace:*",
     "@colheita/tokens": "workspace:*",

@@ -5,8 +5,13 @@
 //
 // Header esperado: X-Safra-Signature: sha256=<hex>
 // Segredo: SAFRA_WEBHOOK_SECRET (env)
+//
+// Arquitetura:
+//   Com TRIGGER_SECRET_KEY: dispara safraEventoJob (assíncrono, retry, observável)
+//   Sem TRIGGER_SECRET_KEY: fallback síncrono (dev local sem Trigger.dev)
 
 import { sendPedidoConfirmado } from '@colheita/email';
+import { safraEventoJob } from '@colheita/jobs';
 import type {
   SafraClienteCadastrado,
   SafraInventarioAtualizado,
@@ -20,62 +25,45 @@ import { verifySignature } from '../../../../lib/safra-hmac.js';
 
 const WEBHOOK_SECRET = process.env.SAFRA_WEBHOOK_SECRET ?? '';
 
-// ── Handlers por tipo de evento ───────────────────────────────────────────────
+// ── Fallback handlers (dev sem Trigger.dev) ───────────────────────────────────
 //
-// Cada handler recebe o evento tipado e retorna { queued: boolean }.
-// Fase 1 produção: substituir o stub por `await tasks.trigger(...)` do Trigger.dev.
+// Usados apenas quando TRIGGER_SECRET_KEY não está configurado.
+// Em produção, tudo vai via safraEventoJob.
 
-async function handlePedidoCriado(event: SafraPedidoCriado): Promise<{ queued: boolean }> {
-  // TODO (Trigger.dev Fase 2): await tasks.trigger('safra-pedido-criado', { event })
-
-  // Envia email de confirmação ao distribuidor (RESEND_NOTIFY_EMAIL ou env por tenant)
+async function fallbackPedidoCriado(event: SafraPedidoCriado): Promise<void> {
   const notifyEmail = process.env.RESEND_NOTIFY_EMAIL;
-  if (notifyEmail) {
-    const itens = event.data.itens.map((item) => ({
+  if (!notifyEmail) return;
+
+  sendPedidoConfirmado({
+    to: notifyEmail,
+    pedidoId: event.data.pedido_id,
+    clienteNome: event.data.distribuidor_nome,
+    tenantName: process.env.RESEND_TENANT_NAME ?? 'Argho Distribuidora',
+    itens: event.data.itens.map((item) => ({
       produto: item.produto_nome,
       quantidade: item.quantidade,
       unidade: item.unidade,
-    }));
-
-    sendPedidoConfirmado({
-      to: notifyEmail,
-      pedidoId: event.data.pedido_id,
-      clienteNome: event.data.distribuidor_nome,
-      tenantName: process.env.RESEND_TENANT_NAME ?? 'Argho Distribuidora',
-      itens,
-      valorTotal: event.data.total_liquido,
-    }).catch(() => {
-      // Falha silenciosa — email é best-effort, webhook sempre retorna 200
-    });
-  }
-
-  return { queued: false };
+    })),
+    valorTotal: event.data.total_liquido,
+  }).catch(() => {
+    // Falha silenciosa — webhook sempre retorna 200
+  });
 }
 
-async function handlePedidoAtualizado(_event: SafraPedidoAtualizado): Promise<{ queued: boolean }> {
-  // TODO (Trigger.dev): await tasks.trigger('safra-pedido-atualizado', { event: _event })
-  return { queued: false };
+async function fallbackPedidoAtualizado(_event: SafraPedidoAtualizado): Promise<void> {
+  // Fase 2: atualizar status
 }
 
-async function handleInventarioAtualizado(
-  _event: SafraInventarioAtualizado,
-): Promise<{ queued: boolean }> {
-  // TODO (Trigger.dev): await tasks.trigger('safra-inventario-atualizado', { event: _event })
-  return { queued: false };
+async function fallbackInventarioAtualizado(_event: SafraInventarioAtualizado): Promise<void> {
+  // Fase 2: sincronizar estoque
 }
 
-async function handleProdutoAtualizado(
-  _event: SafraProdutoAtualizado,
-): Promise<{ queued: boolean }> {
-  // TODO (Trigger.dev): await tasks.trigger('safra-produto-atualizado', { event: _event })
-  return { queued: false };
+async function fallbackProdutoAtualizado(_event: SafraProdutoAtualizado): Promise<void> {
+  // Fase 2: atualizar PIM
 }
 
-async function handleClienteCadastrado(
-  _event: SafraClienteCadastrado,
-): Promise<{ queued: boolean }> {
-  // TODO (Trigger.dev): await tasks.trigger('safra-cliente-cadastrado', { event: _event })
-  return { queued: false };
+async function fallbackClienteCadastrado(_event: SafraClienteCadastrado): Promise<void> {
+  // Fase 2: criar distribuidor
 }
 
 // ── Route handler ─────────────────────────────────────────────────────────────
@@ -109,34 +97,51 @@ export async function POST(request: NextRequest) {
 
   const event = parsed.data;
 
-  // Roteamento tipado por evento — cada handler é isolado e pronto para Trigger.dev
-  let result: { queued: boolean };
-  switch (event.event) {
-    case 'pedido.criado':
-      result = await handlePedidoCriado(event);
-      break;
-    case 'pedido.atualizado':
-      result = await handlePedidoAtualizado(event);
-      break;
-    case 'inventario.atualizado':
-      result = await handleInventarioAtualizado(event);
-      break;
-    case 'produto.atualizado':
-      result = await handleProdutoAtualizado(event);
-      break;
-    case 'cliente.cadastrado':
-      result = await handleClienteCadastrado(event);
-      break;
-  }
+  // Com Trigger.dev configurado: dispara job assíncrono e retorna imediatamente
+  if (process.env.TRIGGER_SECRET_KEY) {
+    safraEventoJob
+      .trigger({
+        event,
+        tenantId: event.tenant_id,
+        receivedAt: new Date().toISOString(),
+      })
+      .catch(() => {
+        // Não expor falha do Trigger.dev — webhook ainda retorna 200
+      });
 
-  return NextResponse.json(
-    {
+    return NextResponse.json({
       received: true,
       event: event.event,
       tenant_id: event.tenant_id,
-      queued: result.queued,
+      queued: true,
       processedAt: new Date().toISOString(),
-    },
-    { status: 200 },
-  );
+    });
+  }
+
+  // Sem Trigger.dev (dev local): fallback síncrono/fire-and-forget
+  switch (event.event) {
+    case 'pedido.criado':
+      await fallbackPedidoCriado(event);
+      break;
+    case 'pedido.atualizado':
+      await fallbackPedidoAtualizado(event);
+      break;
+    case 'inventario.atualizado':
+      await fallbackInventarioAtualizado(event);
+      break;
+    case 'produto.atualizado':
+      await fallbackProdutoAtualizado(event);
+      break;
+    case 'cliente.cadastrado':
+      await fallbackClienteCadastrado(event);
+      break;
+  }
+
+  return NextResponse.json({
+    received: true,
+    event: event.event,
+    tenant_id: event.tenant_id,
+    queued: false,
+    processedAt: new Date().toISOString(),
+  });
 }

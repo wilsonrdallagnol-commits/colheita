@@ -3,6 +3,7 @@
 
 import { createServerClient } from '@colheita/auth';
 import { sendCertificadoEmitido } from '@colheita/email';
+import { sendCertificadoEmitidoJob } from '@colheita/jobs';
 import { cookies } from 'next/headers';
 
 export async function markLessonComplete(lessonId: string): Promise<{ error?: string }> {
@@ -165,25 +166,35 @@ async function maybeIssueCertification({
   });
 
   // Dispara email de certificado (fire-and-forget — não bloqueia o fluxo)
-  // Só envia se o usuário tiver email (auth.users garante isso)
-  const userEmail = (
-    supabase.auth as { getUser?: () => Promise<{ data: { user: { email?: string } | null } }> }
-  ).getUser
-    ? undefined // será resolvido via Trigger.dev em Fase 2
-    : undefined;
+  const {
+    data: { user: authUser },
+  } = await supabase.auth.getUser();
+
+  const userEmail = authUser?.email;
 
   if (userEmail) {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
-    const certificateUrl = `${apiUrl.replace(/\/api$/, '')}/meu-progresso/certificados/${certificateNo}`;
-    sendCertificadoEmitido({
+    const academiaUrl = process.env.NEXT_PUBLIC_ACADEMIA_URL ?? '';
+    const certificateUrl = `${academiaUrl}/meu-progresso/certificados/${certificateNo}`;
+
+    const emailPayload = {
       to: userEmail,
-      userName: userId, // Fase 2: buscar nome real do perfil
+      userName: userEmail, // Fase 2: buscar nome real do perfil
       trackTitle: track.title ?? trackId,
       certificateNo,
       certificateUrl,
       expiresAt: expiresAt ?? undefined,
-    }).catch(() => {
-      // Falha silenciosa — email é best-effort
-    });
+    };
+
+    if (process.env.TRIGGER_SECRET_KEY) {
+      // Com Trigger.dev: enfileira job com retry automático
+      sendCertificadoEmitidoJob.trigger(emailPayload).catch(() => {
+        // Falha silenciosa — certificado já foi emitido
+      });
+    } else {
+      // Dev sem Trigger.dev: envia diretamente via Resend
+      sendCertificadoEmitido(emailPayload).catch(() => {
+        // Falha silenciosa — email é best-effort
+      });
+    }
   }
 }
