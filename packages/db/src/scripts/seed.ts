@@ -68,6 +68,43 @@ const PRODUCTS = [
       { type: 'bag', weightKg: 1, sku: 'XCENSIS-1KG' },
       { type: 'bag', weightKg: 5, sku: 'XCENSIS-5KG' },
     ],
+    applications: [
+      {
+        crop: 'Soja',
+        stage: 'V3–V5',
+        dosePerHa: 500,
+        unit: 'g',
+        notes: 'Aplicar com Operate Plus. Compatível com biológicos.',
+      },
+      {
+        crop: 'Milho',
+        stage: 'V4–V6',
+        dosePerHa: 600,
+        unit: 'g',
+        notes: 'Pode ser misturado com herbicidas pós-emergentes.',
+      },
+      {
+        crop: 'Café',
+        stage: 'Florescimento e enchimento de grãos',
+        dosePerHa: 400,
+        unit: 'g',
+        notes: 'Repetir a cada 30 dias em períodos críticos.',
+      },
+      {
+        crop: 'Banana',
+        stage: 'Produção mensal',
+        dosePerHa: 300,
+        unit: 'g',
+        notes: 'Via fertirrigação: diluir 1 kg em 200 L.',
+      },
+      {
+        crop: 'Tomate',
+        stage: 'Florescimento ao início de maturação',
+        dosePerHa: 500,
+        unit: 'g',
+        notes: 'Evitar aplicação em horas de maior insolação.',
+      },
+    ],
   },
   {
     slug: 'stron',
@@ -126,6 +163,29 @@ const PRODUCTS = [
       { type: 'bag', weightKg: 1, sku: 'GROW-FILLING-1KG' },
       { type: 'bag', weightKg: 5, sku: 'GROW-FILLING-5KG' },
     ],
+    applications: [
+      {
+        crop: 'Soja',
+        stage: 'R3–R5 (enchimento de grãos)',
+        dosePerHa: 500,
+        unit: 'g',
+        notes: 'Combinar com Xcensis ("dupla final") para máxima eficiência.',
+      },
+      {
+        crop: 'Milho',
+        stage: 'R2–R4',
+        dosePerHa: 600,
+        unit: 'g',
+        notes: 'Aplicar antes das 9h ou após as 17h.',
+      },
+      {
+        crop: 'Trigo',
+        stage: 'Espigamento',
+        dosePerHa: 400,
+        unit: 'g',
+        notes: 'Dissolver em 200 L de água por hectare.',
+      },
+    ],
   },
   {
     slug: 'grow-calcium',
@@ -150,6 +210,36 @@ const PRODUCTS = [
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'GROW-CALCIUM-1L' },
       { type: 'drum', volumeL: 20, sku: 'GROW-CALCIUM-20L' },
+    ],
+    applications: [
+      {
+        crop: 'Tomate',
+        stage: 'Frutificação até maturação',
+        dosePerHa: 1.5,
+        unit: 'l',
+        notes: 'Previne podridão apical. Intervalo de 7–10 dias.',
+      },
+      {
+        crop: 'Alface',
+        stage: 'Toda a produção',
+        dosePerHa: 0.5,
+        unit: 'l',
+        notes: 'Via fertirrigação semanal.',
+      },
+      {
+        crop: 'Maçã',
+        stage: 'Pós-florescimento e pré-colheita',
+        dosePerHa: 1.0,
+        unit: 'l',
+        notes: 'Reduz bitter-pit e russeting.',
+      },
+      {
+        crop: 'Banana',
+        stage: 'Desenvolvimento do cacho',
+        dosePerHa: 1.0,
+        unit: 'l',
+        notes: 'Aplicar via foliar no coração do cacho.',
+      },
     ],
   },
   {
@@ -230,6 +320,29 @@ const PRODUCTS = [
       ],
     },
     packaging: [{ type: 'bag', weightKg: 1, sku: 'GROW-MOB-1KG' }],
+    applications: [
+      {
+        crop: 'Soja',
+        stage: 'V3 (pré-inoculação)',
+        dosePerHa: 500,
+        unit: 'g',
+        notes: 'Não misturar com inoculante no tanque. Aplicar separadamente.',
+      },
+      {
+        crop: 'Milho',
+        stage: 'V4–V6',
+        dosePerHa: 400,
+        unit: 'g',
+        notes: 'Favorece enraizamento e antecipa o florescimento.',
+      },
+      {
+        crop: 'Girassol',
+        stage: 'Pré-florescimento',
+        dosePerHa: 400,
+        unit: 'g',
+        notes: 'B essencial para fertilização do grão.',
+      },
+    ],
   },
   {
     slug: 'grow-sulfur',
@@ -995,7 +1108,7 @@ async function run() {
           ${sql.json(JSON.parse(JSON.stringify(product.composition)))},
           ${sql.json(JSON.parse(JSON.stringify(product.technicalSpecs)))},
           ${sql.json(JSON.parse(JSON.stringify(product.packaging)))},
-          ${sql.json([])},
+          ${sql.json(JSON.parse(JSON.stringify('applications' in product ? product.applications : [])))},
           ${product.status === 'published' ? new Date().toISOString() : null}
         )
         ON CONFLICT (tenant_id, slug) DO UPDATE
@@ -1007,6 +1120,7 @@ async function run() {
             composition     = EXCLUDED.composition,
             technical_specs = EXCLUDED.technical_specs,
             packaging       = EXCLUDED.packaging,
+            applications    = EXCLUDED.applications,
             updated_at      = now()
       `;
       console.log(`  ✅  Produto: ${product.name}`);
