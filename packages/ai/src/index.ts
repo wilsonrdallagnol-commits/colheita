@@ -58,3 +58,6 @@ export type {
   RetrievalResult,
   Retriever,
 } from './types.js';
+export type { EmbeddingProvider } from './vector-retriever.js';
+// Vector Retriever (produção: pgvector)
+export { SupabaseVectorRetriever } from './vector-retriever.js';

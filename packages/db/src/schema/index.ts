@@ -297,3 +297,4 @@ export * from './dam.js';
 export * from './foundation.js';
 export * from './generator.js';
 export * from './layout-inference.js';
+export * from './vectors.js';
