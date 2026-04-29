@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (apps/portal MVP concluído — catálogo público + auth flow)
-**Fase atual:** 1 — Admin PIM + Portal Distribuidor operacionais
-**Próximo milestone:** pnpm dev funcional end-to-end + apps/academia LMS MVP
+**Última atualização:** 2026-04-29 (apps/academia MVP concluído — LMS trilhas + certificações)
+**Fase atual:** 1 — Admin PIM + Portal + Academia operacionais (3 de 4 apps)
+**Próximo milestone:** apps/api MVP + turbo dev monorepo end-to-end
 
 ---
 
@@ -129,6 +129,20 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 
 ---
 
+## ✅ apps/academia — MVP concluído (2026-04-29)
+
+### Funcionalidades entregues
+- [x] Catálogo público de trilhas agrupado por nível (iniciante → especialista)
+- [x] Detalhe da trilha: índice de módulos e lições com estimativa de duração
+- [x] Visualizador de lição: artigo (markdown), vídeo stub, quiz stub, breadcrumb
+- [x] Auth magic link: `/entrar` + `/auth/callback` (redireciona para `/meu-progresso`)
+- [x] Middleware: trilhas públicas, `/meu-progresso` protegido
+- [x] Dashboard `/meu-progresso`: atividade recente + certificações ativas (RSC)
+- [x] Páginas de erro e 404 globais
+- [x] Biome 2.0 limpo + TypeScript strict 0 erros
+
+---
+
 ## ✅ apps/portal — MVP concluído (2026-04-29)
 
 ### Funcionalidades entregues
@@ -148,7 +162,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 ### Apps Next.js
 - [x] `apps/admin` — ✅ MVP completo (PIM + auth + dashboard)
 - [x] `apps/portal` — ✅ MVP completo (catálogo público + auth magic link + área do distribuidor)
-- [ ] `apps/academia` — LMS
+- [x] `apps/academia` — ✅ MVP completo (trilhas + lições + progresso + certificações)
 - [ ] `apps/api` — contratos públicos + integração Safra
 
 ### Pacotes core
