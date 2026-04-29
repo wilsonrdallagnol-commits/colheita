@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (apps/admin MVP concluído — PIM completo)
-**Fase atual:** 1 — Admin PIM operacional, próximo: portal distribuidores ou seed + deploy
-**Próximo milestone:** seed Argho + pnpm dev funcional end-to-end
+**Última atualização:** 2026-04-29 (apps/portal MVP concluído — catálogo público + auth flow)
+**Fase atual:** 1 — Admin PIM + Portal Distribuidor operacionais
+**Próximo milestone:** pnpm dev funcional end-to-end + apps/academia LMS MVP
 
 ---
 
@@ -129,11 +129,25 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 
 ---
 
+## ✅ apps/portal — MVP concluído (2026-04-29)
+
+### Funcionalidades entregues
+- [x] Catálogo público: listagem por categoria, cards com link para detalhe
+- [x] Detalhe do produto: composição garantida (dual-format), specs técnicas, embalagens
+- [x] Auth magic link: `/entrar` com `useActionState` + `signInWithMagicLink` server action
+- [x] Callback OAuth: `/auth/callback` troca code por sessão, redireciona para `/conta`
+- [x] Middleware customizado: catálogo público, `/conta/*` protegido, `/entrar` redireciona autenticados
+- [x] Área do distribuidor: `/conta` stub com guard de autenticação via RSC layout
+- [x] Páginas de erro: `not-found.tsx` (404) e `error.tsx` (error boundary)
+- [x] Biome 2.0 limpo + TypeScript strict 0 erros
+
+---
+
 ## 🏗️ Próximo — Fase 1 continuação
 
 ### Apps Next.js
-- [ ] `apps/admin` — ✅ MVP completo
-- [ ] `apps/portal` — distribuidores
+- [x] `apps/admin` — ✅ MVP completo (PIM + auth + dashboard)
+- [x] `apps/portal` — ✅ MVP completo (catálogo público + auth magic link + área do distribuidor)
 - [ ] `apps/academia` — LMS
 - [ ] `apps/api` — contratos públicos + integração Safra
 
