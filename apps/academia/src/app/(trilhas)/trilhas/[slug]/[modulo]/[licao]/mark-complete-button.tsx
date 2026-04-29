@@ -1,6 +1,7 @@
 // apps/academia/src/app/(trilhas)/trilhas/[slug]/[modulo]/[licao]/mark-complete-button.tsx
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { markLessonComplete } from './actions.js';
 
@@ -10,6 +11,7 @@ interface MarkCompleteButtonProps {
 }
 
 export function MarkCompleteButton({ lessonId, isCompleted }: MarkCompleteButtonProps) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
 
   if (isCompleted) {
@@ -40,6 +42,7 @@ export function MarkCompleteButton({ lessonId, isCompleted }: MarkCompleteButton
       onClick={() => {
         startTransition(async () => {
           await markLessonComplete(lessonId);
+          router.refresh();
         });
       }}
       style={{

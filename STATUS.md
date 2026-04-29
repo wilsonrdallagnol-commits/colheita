@@ -1,6 +1,6 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (polishes Fase 1: markdown, nav, busca, progress, packaging)
+**Última atualização:** 2026-04-29 (Drizzle schema sync completo, /iniciar, auth nav, mark-complete fix)
 **Fase atual:** 1 — 4 apps + generator ✅ — fase encerrada
 **Próximo milestone:** pnpm dev end-to-end (Docker stack local) + packages/ui 16 componentes compiler (Fase 2)
 
@@ -36,7 +36,8 @@
 Toda tabela com `tenant_id`, RLS habilitado, índices corretos, soft-delete onde aplicável.
 
 ### Pacote `@colheita/db`
-- Schema Drizzle espelhando as migrations
+- Schema Drizzle espelhando todas as 10 migrations (roles, user_roles, audit_events, regulatory_registrations, asset_collections, product_assets, material_templates, generated_materials, learning_tracks, learning_modules, learning_lessons, learning_progress, certifications, layout_references, layout_blueprints)
+- Organizado em arquivos de domínio: `foundation.ts`, `dam.ts`, `generator.ts`, `academia.ts`, `layout-inference.ts`
 - Cliente tipado consciente de pooling (Supavisor transaction mode em prod, direct em dev)
 - Estrutura de scripts: migrate, seed, tenant:create
 
@@ -135,6 +136,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `GET /api/health` — health check com versão e timestamp
 - [x] `GET /api/v1/catalog` — catálogo público de produtos (ISR 5min, CORS *, RSC)
 - [x] `GET /api/v1/catalog/:slug` — detalhe do produto por slug
+- [x] `GET /api/v1/categories` — categorias de produtos (ISR 10min, CORS *)
 - [x] `POST /api/webhooks/safra` — receiver com HMAC-SHA256 (X-Safra-Signature)
 - [x] Root page JSON com índice de endpoints
 - [x] `.env.example` atualizado com `SAFRA_WEBHOOK_SECRET`
@@ -153,6 +155,8 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Dashboard `/meu-progresso`: atividade recente + certificações ativas (RSC)
 - [x] Rota `/trilhas/[slug]/iniciar` redireciona para primeira lição do primeiro módulo
 - [x] Botão "Sair" no `/meu-progresso` (signOut server action)
+- [x] Auth-aware header nav: "Entrar" para guests, "Meu Progresso" + "Sair" para autenticados
+- [x] MarkCompleteButton chama `router.refresh()` após upsert — UI atualiza imediatamente
 - [x] Markdown renderer SSR-safe (`components/markdown.tsx`) — headings, listas, tabelas, code blocks, blockquotes, inline bold/italic/code
 - [x] Navegação prev/next entre lições (busca parallel, ordenação por módulo+lição sort_order)
 - [x] `generateMetadata` da lição usa título real do banco (title + track title)
@@ -172,6 +176,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Middleware customizado: catálogo público, `/conta/*` protegido, `/entrar` redireciona autenticados
 - [x] Área do distribuidor: `/conta` stub com guard de autenticação via RSC layout
 - [x] Botão "Sair" no `/conta` (signOut server action)
+- [x] Auth-aware header nav: "Entrar" para guests, "Minha Conta" + "Sair" para autenticados
 - [x] Busca por nome/tagline (`?q=`) e filtro por categoria (`?category=slug`) — URL params, sem JS
 - [x] Páginas de erro: `not-found.tsx` (404) e `error.tsx` (error boundary)
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
