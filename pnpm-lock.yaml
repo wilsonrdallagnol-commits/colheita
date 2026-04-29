@@ -247,6 +247,34 @@ importers:
         specifier: 5.6.3
         version: 5.6.3
 
+  packages/ai:
+    dependencies:
+      '@anthropic-ai/sdk':
+        specifier: 0.32.1
+        version: 0.32.1
+      '@colheita/config':
+        specifier: workspace:*
+        version: link:../config
+      '@colheita/db':
+        specifier: workspace:*
+        version: link:../db
+      zod:
+        specifier: 3.23.8
+        version: 3.23.8
+      zod-to-json-schema:
+        specifier: 3.24.1
+        version: 3.24.1(zod@3.23.8)
+    devDependencies:
+      '@types/node':
+        specifier: 22.7.0
+        version: 22.7.0
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+      vitest:
+        specifier: 2.1.4
+        version: 2.1.4(@types/node@22.7.0)(lightningcss@1.32.0)
+
   packages/auth:
     dependencies:
       '@supabase/ssr':

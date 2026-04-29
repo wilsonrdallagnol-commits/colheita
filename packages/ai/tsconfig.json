@@ -1,0 +1,9 @@
+{
+  "extends": "@colheita/config/tsconfig.base.json",
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "outDir": "dist"
+  },
+  "include": ["src", "tests"]
+}
