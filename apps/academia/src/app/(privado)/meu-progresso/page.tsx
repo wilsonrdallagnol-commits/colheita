@@ -234,13 +234,16 @@ export default async function MeuProgressoPage() {
                   : '—';
 
                 return (
-                  <div
+                  <Link
                     key={cert.certificate_no}
+                    href={`/meu-progresso/certificados/${cert.certificate_no}`}
                     style={{
+                      display: 'block',
                       padding: '16px 20px',
                       border: '1px solid var(--colheita-border)',
                       borderRadius: 'var(--colheita-radius-lg)',
                       backgroundColor: 'var(--colheita-surface-elevated)',
+                      textDecoration: 'none',
                     }}
                   >
                     <p
@@ -272,9 +275,9 @@ export default async function MeuProgressoPage() {
                         marginTop: '8px',
                       }}
                     >
-                      #{cert.certificate_no}
+                      #{cert.certificate_no} →
                     </p>
-                  </div>
+                  </Link>
                 );
               })
             ) : (
