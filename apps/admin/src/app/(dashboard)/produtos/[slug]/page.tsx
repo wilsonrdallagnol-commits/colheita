@@ -82,8 +82,34 @@ export default async function ProdutoPage({ params }: PageProps) {
       </Breadcrumb>
 
       {/* Barra de ações */}
-      <div style={{ marginBottom: '28px' }}>
+      <div
+        style={{
+          marginBottom: '28px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <ProdutoActions slug={slug} status={data.status} />
+        <a
+          href={`/produtos/${slug}/ficha-tecnica`}
+          download={`ficha-tecnica-${slug}.pdf`}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '7px 16px',
+            borderRadius: 'var(--colheita-radius-md)',
+            border: '1px solid var(--colheita-border)',
+            backgroundColor: 'var(--colheita-surface-elevated)',
+            color: 'var(--colheita-text-secondary)',
+            fontSize: '0.8125rem',
+            fontWeight: '500',
+            textDecoration: 'none',
+          }}
+        >
+          ↓ Ficha Técnica PDF
+        </a>
       </div>
 
       <ProdutoDetail
