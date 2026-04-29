@@ -18,7 +18,8 @@ export type ProdutoFormState = {
       | 'category_id'
       | 'composition'
       | 'technical_specs'
-      | 'packaging',
+      | 'packaging'
+      | 'applications',
       string
     >
   >;
@@ -112,6 +113,7 @@ export async function updateProduto(
   const compositionRaw = String(formData.get('composition') ?? '{}').trim() || '{}';
   const technicalSpecsRaw = String(formData.get('technical_specs') ?? '{}').trim() || '{}';
   const packagingRaw = String(formData.get('packaging') ?? '[]').trim() || '[]';
+  const applicationsRaw = String(formData.get('applications') ?? '[]').trim() || '[]';
 
   if (!name) {
     return { fieldErrors: { name: 'Nome é obrigatório.' } };
@@ -121,6 +123,7 @@ export async function updateProduto(
   let composition: Record<string, unknown>;
   let technicalSpecs: Record<string, unknown>;
   let packaging: unknown[];
+  let applications: unknown[];
   try {
     composition = JSON.parse(compositionRaw) as Record<string, unknown>;
   } catch {
@@ -140,6 +143,13 @@ export async function updateProduto(
       fieldErrors: { packaging: 'JSON inválido. Esperado array: [{"type":"frasco","volumeL":1}]' },
     };
   }
+  try {
+    const parsed = JSON.parse(applicationsRaw);
+    if (!Array.isArray(parsed)) throw new Error('not an array');
+    applications = parsed as unknown[];
+  } catch {
+    return { fieldErrors: { applications: 'Erro ao processar indicações. Tente novamente.' } };
+  }
 
   const { error } = await supabase
     .from('products')
@@ -151,6 +161,7 @@ export async function updateProduto(
       composition,
       technical_specs: technicalSpecs,
       packaging,
+      applications,
       updated_at: new Date().toISOString(),
     })
     .eq('slug', slug)

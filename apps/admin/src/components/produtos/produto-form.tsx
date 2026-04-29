@@ -1,10 +1,12 @@
 // apps/admin/src/components/produtos/produto-form.tsx
 'use client';
 
+import type { ProductApplication } from '@colheita/db';
 import { Button, Input, Textarea } from '@colheita/ui';
 import Link from 'next/link';
 import { useActionState, useId } from 'react';
 import type { ProdutoFormState } from '@/lib/actions/produtos';
+import { ApplicationsEditor } from './applications-editor';
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -27,6 +29,7 @@ interface ProdutoFormProps {
     composition?: Record<string, unknown> | null;
     technical_specs?: Record<string, unknown> | null;
     packaging?: unknown[] | null;
+    applications?: ProductApplication[] | null;
   };
 }
 
@@ -73,6 +76,7 @@ export function ProdutoForm({
   const compositionId = `${uid}-composition`;
   const technicalSpecsId = `${uid}-technical-specs`;
   const packagingId = `${uid}-packaging`;
+  const applicationsId = `${uid}-applications`;
 
   return (
     <form action={formAction} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -265,6 +269,24 @@ export function ProdutoForm({
         />
         {state?.fieldErrors?.packaging && <p style={errorStyle}>{state.fieldErrors.packaging}</p>}
         <p style={hintStyle}>Array de objetos com type + weightKg ou volumeL.</p>
+      </div>
+
+      {/* Indicações por Cultura */}
+      <div>
+        <p
+          id={applicationsId}
+          style={{
+            ...labelStyle,
+            marginBottom: '10px',
+          }}
+        >
+          Indicações por Cultura
+        </p>
+        <ApplicationsEditor
+          defaultValue={(defaultValues.applications ?? []) as ProductApplication[]}
+          disabled={pending}
+          errorMessage={state?.fieldErrors?.applications}
+        />
       </div>
 
       {/* Ações */}
