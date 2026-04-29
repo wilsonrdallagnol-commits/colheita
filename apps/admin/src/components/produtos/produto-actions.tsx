@@ -3,7 +3,7 @@
 
 import { Button } from '@colheita/ui';
 import Link from 'next/link';
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { archiveProduto, draftProduto, publishProduto } from '@/lib/actions/produtos';
 
 interface ProdutoActionsProps {
@@ -13,58 +13,77 @@ interface ProdutoActionsProps {
 
 export function ProdutoActions({ slug, status }: ProdutoActionsProps) {
   const [isPending, startTransition] = useTransition();
+  const [actionError, setActionError] = useState<string | null>(null);
 
-  function handlePublish() {
+  function handle(fn: () => Promise<{ error?: string }>) {
+    setActionError(null);
     startTransition(async () => {
-      await publishProduto(slug);
-    });
-  }
-
-  function handleArchive() {
-    startTransition(async () => {
-      await archiveProduto(slug);
-    });
-  }
-
-  function handleDraft() {
-    startTransition(async () => {
-      await draftProduto(slug);
+      const result = await fn();
+      if (result.error) setActionError(result.error);
     });
   }
 
   return (
-    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-      {/* Editar — sempre visível */}
-      <Button variant="outline" size="sm" asChild>
-        <Link href={`/produtos/${slug}/editar`}>Editar</Link>
-      </Button>
-
-      {/* Publicar — só se draft ou archived */}
-      {status !== 'published' && (
-        <Button size="sm" disabled={isPending} onClick={handlePublish}>
-          {isPending ? 'Publicando...' : 'Publicar'}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        {/* Editar — sempre visível */}
+        <Button variant="outline" size="sm" asChild>
+          <Link href={`/produtos/${slug}/editar`}>Editar</Link>
         </Button>
-      )}
 
-      {/* Reverter para rascunho — só se published */}
-      {status === 'published' && (
-        <Button variant="outline" size="sm" disabled={isPending} onClick={handleDraft}>
-          {isPending ? 'Revertendo...' : 'Voltar para rascunho'}
-        </Button>
-      )}
+        {/* Publicar — só se draft ou archived */}
+        {status !== 'published' && (
+          <Button size="sm" disabled={isPending} onClick={() => handle(() => publishProduto(slug))}>
+            {isPending ? 'Publicando...' : 'Publicar'}
+          </Button>
+        )}
 
-      {/* Arquivar — só se draft ou published */}
-      {status !== 'archived' && (
-        <Button variant="ghost" size="sm" disabled={isPending} onClick={handleArchive}>
-          {isPending ? 'Arquivando...' : 'Arquivar'}
-        </Button>
-      )}
+        {/* Reverter para rascunho — só se published */}
+        {status === 'published' && (
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={isPending}
+            onClick={() => handle(() => draftProduto(slug))}
+          >
+            {isPending ? 'Revertendo...' : 'Voltar para rascunho'}
+          </Button>
+        )}
 
-      {/* Reativar como rascunho — só se archived */}
-      {status === 'archived' && (
-        <Button variant="outline" size="sm" disabled={isPending} onClick={handleDraft}>
-          {isPending ? 'Reativando...' : 'Reativar como rascunho'}
-        </Button>
+        {/* Arquivar — só se draft ou published */}
+        {status !== 'archived' && (
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={isPending}
+            onClick={() => handle(() => archiveProduto(slug))}
+          >
+            {isPending ? 'Arquivando...' : 'Arquivar'}
+          </Button>
+        )}
+
+        {/* Reativar como rascunho — só se archived */}
+        {status === 'archived' && (
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={isPending}
+            onClick={() => handle(() => draftProduto(slug))}
+          >
+            {isPending ? 'Reativando...' : 'Reativar como rascunho'}
+          </Button>
+        )}
+      </div>
+
+      {actionError && (
+        <p
+          style={{
+            fontSize: '0.8125rem',
+            color: 'var(--colheita-danger)',
+          }}
+        >
+          {actionError}
+        </p>
       )}
     </div>
   );
