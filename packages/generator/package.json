@@ -15,7 +15,9 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@colheita/layout-inference": "workspace:*",
     "@colheita/tokens": "workspace:*",
+    "@colheita/ui": "workspace:*",
     "playwright-core": "1.49.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

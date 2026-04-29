@@ -314,9 +314,15 @@ importers:
 
   packages/generator:
     dependencies:
+      '@colheita/layout-inference':
+        specifier: workspace:*
+        version: link:../layout-inference
       '@colheita/tokens':
         specifier: workspace:*
         version: link:../tokens
+      '@colheita/ui':
+        specifier: workspace:*
+        version: link:../ui
       playwright-core:
         specifier: 1.49.1
         version: 1.49.1

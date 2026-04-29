@@ -4,7 +4,9 @@ import { renderToPdf } from './render.js';
 import { FichaTecnica } from './templates/FichaTecnica.js';
 import type { FichaTecnicaData, GenerateOptions, GenerateResult } from './types.js';
 
+export { type GenerateFromSpecOptions, generateFromRenderSpec } from './generate-spec.js';
 export { FichaTecnica } from './templates/FichaTecnica.js';
+export { RenderSpecLayout } from './templates/RenderSpecLayout.js';
 export type {
   FichaTecnicaData,
   GenerateOptions,
