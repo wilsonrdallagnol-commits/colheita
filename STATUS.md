@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (`@colheita/ai` integrado em todas as apps — endpoint `/api/v1/agent`, chat widgets portal + academia + admin)
+**Última atualização:** 2026-04-29 (askStream 48 testes, botão "Limpar conversa", 28 testes safra-contracts — total 195 testes sem Docker)
 **Fase atual:** 2 — IA integrada nas apps
-**Próximo milestone:** Resend (emails transacionais) ou melhorias de UX
+**Próximo milestone:** Resend (emails transacionais) ou testes do webhook handler
 
 ---
 
@@ -190,6 +190,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Loading state para página de certificado
 - [x] Páginas de erro e 404 globais
 - [x] Chat widget flutuante (Assistente IA) para usuários autenticados — chama `/api/v1/agent`
+- [x] Chat widget: streaming SSE, multi-turn history (10 turnos), ChatMarkdown, botão "Limpar conversa"
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
 ---
@@ -213,6 +214,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Detalhe do produto: botão "Baixar Ficha Técnica (PDF)" para autenticados; CTA login com `?next=` para anônimos
 - [x] Loading state para `/conta` (skeleton)
 - [x] Chat widget flutuante (Assistente IA) para usuários autenticados — chama `/api/v1/agent`
+- [x] Chat widget: streaming SSE, multi-turn history, ChatMarkdown, botão "Limpar conversa"
 - [x] Páginas de erro: `not-found.tsx` (404) e `error.tsx` (error boundary)
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
@@ -246,8 +248,9 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `packages/auth` — `createServerClient`, `requireAuth`, `updateSession`, middleware multi-tenant, 19 testes
 - [x] `packages/generator` — ✅ Playwright + FichaTecnica + RenderSpecLayout (pipeline completo layout-inference → PDF), 28 testes
 - [x] `packages/safra-contracts` — schemas Zod para 5 tipos de evento Safra + tipos TypeScript exportados
-- [x] `packages/ai` — ✅ RAG + agents + streaming: BM25InMemoryRetriever, AiGenerator (claude-haiku-4-5), RagPipeline, AiStreamEvent, multi-turn conversation history, 41 testes
-- [x] `packages/ui` — `ChatMarkdown` component: renderizador markdown para bolhas de chat (blocos + inline), 46 testes no total
+- [x] `packages/ai` — ✅ RAG + agents + streaming: BM25InMemoryRetriever, AiGenerator (claude-haiku-4-5), RagPipeline, AiStreamEvent, multi-turn conversation history, askStream(), **48 testes**
+- [x] `packages/ui` — `ChatMarkdown` component: renderizador markdown para bolhas de chat (blocos + inline), **46 testes** no total
+- [x] `packages/safra-contracts` — **28 testes** para os 5 schemas Zod de eventos Safra (discriminatedUnion, defaults, edge cases)
 
 ### Scripts operacionais
 - [x] `pnpm db:migrate` — aplica 10 migrations em ordem (0001–0010)
