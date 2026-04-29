@@ -20,6 +20,11 @@ interface AgentResponse {
   error?: string;
 }
 
+interface ConversationTurn {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
 
 const SUGGESTED_QUERIES = [
@@ -37,6 +42,7 @@ export function AdminChatPanel() {
       text: 'Olá! Sou o assistente da Argho. Posso responder perguntas sobre produtos do catálogo e trilhas de aprendizado da Academia. O que deseja saber?',
     },
   ]);
+  const [conversationHistory, setConversationHistory] = useState<ConversationTurn[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -61,21 +67,28 @@ export function AdminChatPanel() {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: text, topK: 5 }),
+        body: JSON.stringify({ query: text, topK: 5, conversationHistory }),
       });
 
       const data = (await res.json()) as AgentResponse;
 
+      const answerText = res.ok
+        ? (data.answer ?? 'Sem resposta.')
+        : (data.error ?? 'Erro ao processar pergunta.');
+
       setMessages((prev) => [
         ...prev,
-        {
-          id: `${Date.now()}-a`,
-          role: 'assistant',
-          text: res.ok
-            ? (data.answer ?? 'Sem resposta.')
-            : (data.error ?? 'Erro ao processar pergunta.'),
-        },
+        { id: `${Date.now()}-a`, role: 'assistant', text: answerText },
       ]);
+
+      // Atualiza histórico para próxima mensagem (max 10 turnos)
+      setConversationHistory((prev) =>
+        [
+          ...prev,
+          { role: 'user' as const, content: text },
+          { role: 'assistant' as const, content: answerText },
+        ].slice(-10),
+      );
     } catch {
       setMessages((prev) => [
         ...prev,

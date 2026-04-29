@@ -28,7 +28,14 @@
  */
 
 import type { AiGenerator } from './generator.js';
-import type { AiAnswer, AiChunk, DocumentKind, RagConfig, Retriever } from './types.js';
+import type {
+  AiAnswer,
+  AiChunk,
+  ConversationTurn,
+  DocumentKind,
+  RagConfig,
+  Retriever,
+} from './types.js';
 
 // ============================================================================
 // Types
@@ -43,6 +50,11 @@ export interface AskInput {
   config?: Pick<RagConfig, 'topK' | 'minScore' | 'maxTokens'>;
   /** Instrução adicional de sistema passada ao generator */
   systemHint?: string;
+  /**
+   * Histórico da conversa para respostas multi-turn.
+   * Passado diretamente ao AiGenerator para contexto de turno anterior.
+   */
+  conversationHistory?: ConversationTurn[];
 }
 
 // ============================================================================
@@ -101,6 +113,7 @@ export class RagPipeline {
       context,
       tenantId: input.tenantId,
       systemHint: input.systemHint,
+      conversationHistory: input.conversationHistory,
     });
   }
 }

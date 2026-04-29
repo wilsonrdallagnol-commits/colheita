@@ -20,7 +20,7 @@
  *   500 — erro interno
  */
 
-import type { AiDocument, DocumentKind } from '@colheita/ai';
+import type { AiDocument, ConversationTurn, DocumentKind } from '@colheita/ai';
 import { AiGenerator, BM25InMemoryRetriever, chunkDocuments, RagPipeline } from '@colheita/ai';
 import { createServerClient, requireAuth } from '@colheita/auth';
 import { cookies } from 'next/headers';
@@ -39,10 +39,17 @@ const CORS_HEADERS = {
 // Request schema
 // ============================================================================
 
+const ConversationTurnSchema = z.object({
+  role: z.enum(['user', 'assistant']),
+  content: z.string().max(4000),
+});
+
 const AgentRequestSchema = z.object({
   query: z.string().min(1).max(500),
   kinds: z.array(z.enum(['product', 'lesson', 'category', 'track', 'certification'])).optional(),
   topK: z.number().int().min(1).max(10).default(5),
+  /** Histórico de até 10 turnos de conversa para suporte multi-turn */
+  conversationHistory: z.array(ConversationTurnSchema).max(10).optional(),
 });
 
 // ============================================================================
@@ -204,7 +211,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { query, kinds, topK } = parsed.data;
+  const { query, kinds, topK, conversationHistory } = parsed.data;
 
   // 3. Busca documentos do tenant
   const supabase = createServerClient(cookieStore);
@@ -231,7 +238,12 @@ export async function POST(request: NextRequest) {
     const generator = new AiGenerator();
     const pipeline = new RagPipeline(retriever, generator, { topK, minScore: 0.05 });
 
-    const answer = await pipeline.ask({ query, tenantId, kinds });
+    const answer = await pipeline.ask({
+      query,
+      tenantId,
+      kinds,
+      conversationHistory: conversationHistory as ConversationTurn[] | undefined,
+    });
 
     return NextResponse.json(
       {

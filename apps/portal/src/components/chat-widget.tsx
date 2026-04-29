@@ -26,6 +26,11 @@ interface AgentResponse {
   error?: string;
 }
 
+interface ConversationTurn {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
 
 function ChatIcon() {
@@ -87,6 +92,7 @@ export function ChatWidget() {
       text: 'Olá! Sou o assistente da Argho. Pergunte sobre produtos, doses, culturas ou trilhas de aprendizado.',
     },
   ]);
+  const [conversationHistory, setConversationHistory] = useState<ConversationTurn[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -112,19 +118,30 @@ export function ChatWidget() {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, topK: 5 }),
+        body: JSON.stringify({ query, topK: 5, conversationHistory }),
       });
 
       const data = (await res.json()) as AgentResponse;
 
+      const answerText = res.ok
+        ? (data.answer ?? 'Sem resposta.')
+        : (data.error ?? 'Erro ao processar pergunta.');
+
       const assistantMsg: Message = {
         id: `${Date.now()}-a`,
         role: 'assistant',
-        text: res.ok
-          ? (data.answer ?? 'Sem resposta.')
-          : (data.error ?? 'Erro ao processar pergunta.'),
+        text: answerText,
       };
       setMessages((prev) => [...prev, assistantMsg]);
+
+      // Atualiza histórico para próxima mensagem (max 10 turnos)
+      setConversationHistory((prev) =>
+        [
+          ...prev,
+          { role: 'user' as const, content: query },
+          { role: 'assistant' as const, content: answerText },
+        ].slice(-10),
+      );
     } catch {
       setMessages((prev) => [
         ...prev,

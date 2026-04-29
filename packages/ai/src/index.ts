@@ -49,6 +49,7 @@ export type {
   AiChunk,
   AiDocument,
   AiTool,
+  ConversationTurn,
   DocumentKind,
   GenerationInput,
   RagConfig,

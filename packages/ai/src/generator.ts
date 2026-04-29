@@ -78,13 +78,24 @@ export class AiGenerator {
     const contextBlock = buildContextBlock(input.context);
     const systemPrompt = buildSystemPrompt(input.systemHint);
 
-    const userMessage = `## Contexto\n\n${contextBlock}\n\n## Pergunta\n\n${input.query}`;
+    // Inclui até 10 turnos de histórico (5 pares Q/A) antes da pergunta atual.
+    // O contexto RAG vai apenas na mensagem atual para economizar tokens.
+    const MAX_HISTORY_TURNS = 10;
+    const history = (input.conversationHistory ?? []).slice(-MAX_HISTORY_TURNS);
+
+    const messages: { role: 'user' | 'assistant'; content: string }[] = [
+      ...history,
+      {
+        role: 'user',
+        content: `## Contexto\n\n${contextBlock}\n\n## Pergunta\n\n${input.query}`,
+      },
+    ];
 
     const response = await this.client.messages.create({
       model: this.model,
       max_tokens: this.maxTokens,
       system: systemPrompt,
-      messages: [{ role: 'user', content: userMessage }],
+      messages,
     });
 
     const textBlock = response.content.find((b) => b.type === 'text');

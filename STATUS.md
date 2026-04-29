@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (`@colheita/ai` — RAG pipeline + BM25 + agent tools; 39 testes; Fase 2 fundação)
-**Fase atual:** 2 — pacotes de IA (em progresso)
-**Próximo milestone:** Integração `@colheita/ai` nas apps (admin: chat agent; api: endpoint `/api/v1/agent`)
+**Última atualização:** 2026-04-29 (`@colheita/ai` integrado em todas as apps — endpoint `/api/v1/agent`, chat widgets portal + academia + admin)
+**Fase atual:** 2 — IA integrada nas apps
+**Próximo milestone:** Resend (emails transacionais) ou melhorias de UX
 
 ---
 
@@ -156,6 +156,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `GET /api/v1/catalog/:slug` — detalhe do produto por slug
 - [x] `GET /api/v1/catalog/:slug/ficha-tecnica` — download PDF autenticado (distributores), retorna `application/pdf`
 - [x] `GET /api/v1/categories` — categorias de produtos (ISR 10min, CORS *)
+- [x] `POST /api/v1/agent` — RAG endpoint: busca produtos + lições via BM25, gera resposta com Claude Haiku; autenticado, multi-tenant, retorna `{ answer, sources, usage }`
 - [x] `POST /api/webhooks/safra` — receiver com HMAC-SHA256 (X-Safra-Signature), roteamento tipado por 5 tipos de evento
 - [x] Root page JSON com índice de endpoints
 - [x] `.env.example` atualizado com `SAFRA_WEBHOOK_SECRET`
@@ -188,6 +189,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Cards de certificação no `/meu-progresso` linkam para detalhe
 - [x] Loading state para página de certificado
 - [x] Páginas de erro e 404 globais
+- [x] Chat widget flutuante (Assistente IA) para usuários autenticados — chama `/api/v1/agent`
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
 ---
@@ -210,6 +212,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Busca por nome/tagline (`?q=`) e filtro por categoria (`?category=slug`) — URL params, sem JS
 - [x] Detalhe do produto: botão "Baixar Ficha Técnica (PDF)" para autenticados; CTA login com `?next=` para anônimos
 - [x] Loading state para `/conta` (skeleton)
+- [x] Chat widget flutuante (Assistente IA) para usuários autenticados — chama `/api/v1/agent`
 - [x] Páginas de erro: `not-found.tsx` (404) e `error.tsx` (error boundary)
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
@@ -231,10 +234,10 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 ## 🏗️ Próximo — Fase 1 continuação
 
 ### Apps Next.js
-- [x] `apps/admin` — ✅ MVP completo (PIM + auth + dashboard) — porta 3000
-- [x] `apps/portal` — ✅ MVP completo (catálogo público + auth magic link + área do distribuidor + logout) — porta 3001
-- [x] `apps/academia` — ✅ MVP completo (trilhas + lições + progresso + certificações + logout) — porta 3002
-- [x] `apps/api` — ✅ MVP completo (catalog REST + health + webhook Safra HMAC) — porta 3003
+- [x] `apps/admin` — ✅ MVP completo (PIM + auth + dashboard + Assistente IA `/assistente`) — porta 3000
+- [x] `apps/portal` — ✅ MVP completo (catálogo público + auth magic link + área do distribuidor + chat widget IA) — porta 3001
+- [x] `apps/academia` — ✅ MVP completo (trilhas + lições + progresso + certificações + chat widget IA) — porta 3002
+- [x] `apps/api` — ✅ MVP completo (catalog REST + health + webhook Safra HMAC + `/api/v1/agent` RAG) — porta 3003
 
 ### Pacotes core
 - [x] `packages/tokens` — design tokens OKLCH dark-first (system + argho theme)

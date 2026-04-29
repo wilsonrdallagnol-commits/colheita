@@ -123,6 +123,15 @@ export interface Retriever {
 // ============================================================================
 
 /**
+ * Um turno de conversa anterior (histórico multi-turn).
+ * Compatível com o formato de mensagens da Anthropic SDK.
+ */
+export interface ConversationTurn {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+/**
  * Pergunta + contexto recuperado passados ao gerador.
  */
 export interface GenerationInput {
@@ -132,6 +141,12 @@ export interface GenerationInput {
   systemHint?: string;
   /** ID do tenant para rastreamento */
   tenantId: string;
+  /**
+   * Histórico de conversas anteriores para suporte multi-turn.
+   * Máximo recomendado: 10 turnos (5 pares pergunta/resposta).
+   * Turnos mais antigos são descartados automaticamente para controle de custo.
+   */
+  conversationHistory?: ConversationTurn[];
 }
 
 /**
