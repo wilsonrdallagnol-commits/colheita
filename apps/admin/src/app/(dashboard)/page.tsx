@@ -72,6 +72,9 @@ export default async function DashboardPage() {
     { count: rascunhos },
     { count: arquivados },
     { count: totalCategorias },
+    { count: totalTrilhas },
+    { count: trilhasPublicadas },
+    { count: totalLicoes },
   ] = await Promise.all([
     supabase.from('products').select('id', { count: 'exact', head: true }).is('deleted_at', null),
     supabase
@@ -90,6 +93,12 @@ export default async function DashboardPage() {
       .eq('status', 'archived')
       .is('deleted_at', null),
     supabase.from('product_categories').select('id', { count: 'exact', head: true }),
+    supabase.from('learning_tracks').select('id', { count: 'exact', head: true }),
+    supabase
+      .from('learning_tracks')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'published'),
+    supabase.from('learning_lessons').select('id', { count: 'exact', head: true }),
   ]);
 
   // Busca produtos recentes
@@ -169,6 +178,24 @@ export default async function DashboardPage() {
           label="Categorias"
           value={totalCategorias ?? 0}
           href="/categorias"
+          accent="var(--colheita-text-primary)"
+        />
+        <StatCard
+          label="Trilhas"
+          value={totalTrilhas ?? 0}
+          href="/academia"
+          accent="var(--colheita-text-primary)"
+        />
+        <StatCard
+          label="Trilhas publicadas"
+          value={trilhasPublicadas ?? 0}
+          href="/academia"
+          accent="var(--colheita-success)"
+        />
+        <StatCard
+          label="Lições"
+          value={totalLicoes ?? 0}
+          href="/academia"
           accent="var(--colheita-text-primary)"
         />
       </div>
