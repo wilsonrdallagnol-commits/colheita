@@ -37,6 +37,7 @@ const MIGRATION_FILES = [
   '0007_audit_partitioning.sql',
   '0008_fk_indexes.sql',
   '0009_auth_hook.sql',
+  '0010_public_read_policies.sql',
 ] as const;
 
 async function run() {
