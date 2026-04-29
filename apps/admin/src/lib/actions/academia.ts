@@ -1,0 +1,255 @@
+// apps/admin/src/lib/actions/academia.ts
+'use server';
+
+import { createServerClient, requireAuth } from '@colheita/auth';
+import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+
+// ── Tipos ─────────────────────────────────────────────────────────────────────
+
+export type TrilhaFormState = {
+  error?: string;
+  fieldErrors?: Partial<
+    Record<'title' | 'slug' | 'subtitle' | 'description' | 'level' | 'status', string>
+  >;
+} | null;
+
+export type ModuloFormState = {
+  error?: string;
+  fieldErrors?: Partial<Record<'title' | 'slug' | 'description' | 'sort_order', string>>;
+} | null;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[àáâãä]/g, 'a')
+    .replace(/[èéêë]/g, 'e')
+    .replace(/[ìíîï]/g, 'i')
+    .replace(/[òóôõö]/g, 'o')
+    .replace(/[ùúûü]/g, 'u')
+    .replace(/ç/g, 'c')
+    .replace(/ñ/g, 'n')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+async function getTenantId(supabase: ReturnType<typeof createServerClient>) {
+  const { data: userAuth } = await supabase.auth.getUser();
+  if (!userAuth.user) return null;
+  const { data: userData } = await supabase
+    .from('users')
+    .select('tenant_id')
+    .eq('id', userAuth.user.id)
+    .single();
+  return userData?.tenant_id ?? null;
+}
+
+// ── createTrilha ──────────────────────────────────────────────────────────────
+
+export async function createTrilha(
+  _prevState: TrilhaFormState,
+  formData: FormData,
+): Promise<TrilhaFormState> {
+  const cookieStore = await cookies();
+  await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  const title = String(formData.get('title') ?? '').trim();
+  const subtitle = String(formData.get('subtitle') ?? '').trim() || null;
+  const description = String(formData.get('description') ?? '').trim() || null;
+  const level = String(formData.get('level') ?? 'beginner').trim();
+  const status = String(formData.get('status') ?? 'draft').trim();
+  const audienceRaw = String(formData.get('audience') ?? '').trim();
+  const audience = audienceRaw
+    ? audienceRaw
+        .split(',')
+        .map((a) => a.trim())
+        .filter(Boolean)
+    : [];
+
+  if (!title) {
+    return { fieldErrors: { title: 'Título é obrigatório.' } };
+  }
+
+  const slug = slugify(title);
+  if (!slug) {
+    return { fieldErrors: { title: 'Título inválido — não gerou um slug válido.' } };
+  }
+
+  const tenantId = await getTenantId(supabase);
+  if (!tenantId) return { error: 'Tenant não encontrado.' };
+
+  const { error } = await supabase.from('learning_tracks').insert({
+    slug,
+    title,
+    subtitle,
+    description,
+    level,
+    status,
+    audience,
+    tenant_id: tenantId,
+    sort_order: 0,
+  });
+
+  if (error) {
+    if (error.code === '23505') {
+      return { fieldErrors: { title: 'Já existe uma trilha com esse título.' } };
+    }
+    return { error: 'Erro ao criar trilha. Tente novamente.' };
+  }
+
+  revalidatePath('/academia');
+  redirect('/academia');
+}
+
+// ── updateTrilha ──────────────────────────────────────────────────────────────
+
+export async function updateTrilha(
+  id: string,
+  _prevState: TrilhaFormState,
+  formData: FormData,
+): Promise<TrilhaFormState> {
+  const cookieStore = await cookies();
+  await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  const title = String(formData.get('title') ?? '').trim();
+  const subtitle = String(formData.get('subtitle') ?? '').trim() || null;
+  const description = String(formData.get('description') ?? '').trim() || null;
+  const level = String(formData.get('level') ?? 'beginner').trim();
+  const status = String(formData.get('status') ?? 'draft').trim();
+  const audienceRaw = String(formData.get('audience') ?? '').trim();
+  const audience = audienceRaw
+    ? audienceRaw
+        .split(',')
+        .map((a) => a.trim())
+        .filter(Boolean)
+    : [];
+  const grantsCertification = formData.get('grants_certification') === 'true';
+
+  if (!title) {
+    return { fieldErrors: { title: 'Título é obrigatório.' } };
+  }
+
+  const { error } = await supabase
+    .from('learning_tracks')
+    .update({
+      title,
+      subtitle,
+      description,
+      level,
+      status,
+      audience,
+      grants_certification: grantsCertification,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id);
+
+  if (error) {
+    return { error: 'Erro ao salvar trilha.' };
+  }
+
+  revalidatePath('/academia');
+  redirect('/academia');
+}
+
+// ── publishTrilha / archiveTrilha ─────────────────────────────────────────────
+
+export async function publishTrilha(id: string): Promise<{ error?: string }> {
+  const cookieStore = await cookies();
+  await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  const { error } = await supabase
+    .from('learning_tracks')
+    .update({ status: 'published', published_at: new Date().toISOString() })
+    .eq('id', id);
+
+  if (error) return { error: 'Erro ao publicar trilha.' };
+
+  revalidatePath('/academia');
+  return {};
+}
+
+export async function archiveTrilha(id: string): Promise<{ error?: string }> {
+  const cookieStore = await cookies();
+  await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  const { error } = await supabase
+    .from('learning_tracks')
+    .update({ status: 'archived' })
+    .eq('id', id);
+
+  if (error) return { error: 'Erro ao arquivar trilha.' };
+
+  revalidatePath('/academia');
+  return {};
+}
+
+// ── createModulo ──────────────────────────────────────────────────────────────
+
+export async function createModulo(
+  trackId: string,
+  _prevState: ModuloFormState,
+  formData: FormData,
+): Promise<ModuloFormState> {
+  const cookieStore = await cookies();
+  await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  const title = String(formData.get('title') ?? '').trim();
+  const description = String(formData.get('description') ?? '').trim() || null;
+  const sortOrderRaw = String(formData.get('sort_order') ?? '0').trim();
+  const sortOrder = Number.isNaN(Number(sortOrderRaw)) ? 0 : Number(sortOrderRaw);
+
+  if (!title) {
+    return { fieldErrors: { title: 'Título é obrigatório.' } };
+  }
+
+  const slug = slugify(title);
+  if (!slug) {
+    return { fieldErrors: { title: 'Título inválido — não gerou um slug válido.' } };
+  }
+
+  const tenantId = await getTenantId(supabase);
+  if (!tenantId) return { error: 'Tenant não encontrado.' };
+
+  const { error } = await supabase.from('learning_modules').insert({
+    slug,
+    title,
+    description,
+    sort_order: sortOrder,
+    track_id: trackId,
+    tenant_id: tenantId,
+  });
+
+  if (error) {
+    if (error.code === '23505') {
+      return { fieldErrors: { title: 'Já existe um módulo com esse título nessa trilha.' } };
+    }
+    return { error: 'Erro ao criar módulo.' };
+  }
+
+  revalidatePath('/academia');
+  return null;
+}
+
+// ── deleteModulo ──────────────────────────────────────────────────────────────
+
+export async function deleteModulo(id: string): Promise<{ error?: string }> {
+  const cookieStore = await cookies();
+  await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  const { error } = await supabase.from('learning_modules').delete().eq('id', id);
+  if (error) return { error: 'Erro ao excluir módulo.' };
+
+  revalidatePath('/academia');
+  return {};
+}

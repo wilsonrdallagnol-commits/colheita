@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@colheita/ui';
-import { FolderOpen, LayoutDashboard, LogOut, Package } from 'lucide-react';
+import { BookOpen, FolderOpen, LayoutDashboard, LogOut, Package } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTransition } from 'react';
@@ -20,6 +20,7 @@ const NAV_ITEMS = [
   { href: '/', label: 'Visão geral', icon: LayoutDashboard, exact: true },
   { href: '/produtos', label: 'Produtos', icon: Package, exact: false },
   { href: '/categorias', label: 'Categorias', icon: FolderOpen, exact: false },
+  { href: '/academia', label: 'Academia', icon: BookOpen, exact: false },
 ];
 
 interface AppSidebarProps {
