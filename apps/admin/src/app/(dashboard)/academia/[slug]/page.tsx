@@ -240,7 +240,10 @@ export default async function TrilhaDetailPage({ params }: PageProps) {
                     <span style={{ fontSize: '0.8125rem', color: 'var(--colheita-text-tertiary)' }}>
                       {lessonsCount} {lessonsCount === 1 ? 'lição' : 'lições'}
                     </span>
-                    <ModuloActions moduloId={mod.id} />
+                    <ModuloActions
+                      moduloId={mod.id}
+                      editHref={`/academia/${slug}/${mod.slug}/editar`}
+                    />
                   </div>
                 </div>
               );
