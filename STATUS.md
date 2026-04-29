@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (packages/generator MVP — ficha técnica PDF + polishes finais nas 4 apps)
-**Fase atual:** 1 — 4 apps + generator ✅
-**Próximo milestone:** pnpm dev end-to-end (Docker stack local) + packages/generator rota de download no admin
+**Última atualização:** 2026-04-29 (academia: Markdown renderer SSR-safe integrado no visualizador de lição)
+**Fase atual:** 1 — 4 apps + generator + markdown ✅
+**Próximo milestone:** pnpm dev end-to-end (Docker stack local) + pacotes UI/tokens completos para Fase 2
 
 ---
 
@@ -153,6 +153,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Dashboard `/meu-progresso`: atividade recente + certificações ativas (RSC)
 - [x] Rota `/trilhas/[slug]/iniciar` redireciona para primeira lição do primeiro módulo
 - [x] Botão "Sair" no `/meu-progresso` (signOut server action)
+- [x] Markdown renderer SSR-safe (`components/markdown.tsx`) — headings, listas, tabelas, code blocks, blockquotes, inline bold/italic/code
 - [x] Páginas de erro e 404 globais
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
@@ -194,16 +195,17 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `apps/api` — ✅ MVP completo (catalog REST + health + webhook Safra HMAC) — porta 3003
 
 ### Pacotes core
-- [ ] `packages/tokens` — design tokens via Style Dictionary (extraídos do Xcensis)
-- [ ] `packages/ui` — shadcn customizado + componentes do mapa do compiler (`TenantBrandHeader`, `HeadlineBlock`, `ProductCenterpiece`, `DataGrid`, `IconGrid`, etc — 16 componentes mapeados em `layout-inference/compiler`)
-- [ ] `packages/auth` — middleware Next.js + propagação de tenant_id no JWT
-- [x] `packages/generator` — ✅ Playwright + template FichaTecnica React → PDF
+- [x] `packages/tokens` — design tokens OKLCH dark-first (system + argho theme)
+- [x] `packages/ui` — 10 componentes shadcn customizados (Button, Badge, Card, Table, Input, Textarea, Sidebar, Skeleton, Breadcrumb, Separator)
+- [ ] `packages/ui` — 16 componentes do compiler (`TenantBrandHeader`, `HeadlineBlock`, `ProductCenterpiece`, `DataGrid`, `IconGrid`, etc) — **Fase 2**
+- [x] `packages/auth` — `createServerClient`, `requireAuth`, `updateSession`, middleware multi-tenant, 19 testes
+- [x] `packages/generator` — ✅ Playwright + template FichaTecnica React → PDF, 12 testes
 - [ ] `packages/ai` — RAG + agents (Fase 2)
 
 ### Scripts operacionais
-- [ ] `pnpm db:migrate` funcional (atualmente esqueleto)
-- [ ] `pnpm db:seed` populando Argho como tenant + Xcensis como produto demo
-- [ ] `pnpm tenant:create` CLI
+- [x] `pnpm db:migrate` — aplica 10 migrations em ordem (0001–0010)
+- [x] `pnpm db:seed` — Argho como tenant + Xcensis + 2 trilhas de aprendizado com 7 lições
+- [x] `pnpm tenant:create` — CLI `--slug=<slug> --name="<Name>"`
 
 ### Integrações Fase 1
 - [ ] Contratos com Safra (eventos, webhooks, schema compartilhado)

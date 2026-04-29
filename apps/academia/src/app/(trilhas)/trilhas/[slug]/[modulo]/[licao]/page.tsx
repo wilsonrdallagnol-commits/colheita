@@ -20,20 +20,33 @@ export default async function LicaoPage({ params }: PageProps) {
   const cookieStore = await cookies();
   const supabase = createServerClient(cookieStore);
 
-  // Fetch lesson via joined query
-  const { data, error } = await supabase
-    .from('learning_lessons')
-    .select(
-      `id, title, type, content, estimated_minutes, is_required,
-       learning_modules!inner(
-         slug, title,
-         learning_tracks!inner(slug, title)
-       )`,
-    )
-    .eq('slug', licao)
-    .eq('learning_modules.slug', modulo)
-    .eq('learning_modules.learning_tracks.slug', slug)
-    .single();
+  // Fetch lesson + all siblings for prev/next navigation in parallel
+  const [{ data, error }, { data: allLessons }, { data: authData }] = await Promise.all([
+    supabase
+      .from('learning_lessons')
+      .select(
+        `id, title, type, content, estimated_minutes, is_required,
+         learning_modules!inner(
+           slug, title,
+           learning_tracks!inner(slug, title)
+         )`,
+      )
+      .eq('slug', licao)
+      .eq('learning_modules.slug', modulo)
+      .eq('learning_modules.learning_tracks.slug', slug)
+      .single(),
+
+    // All lessons in this track — for prev/next links
+    supabase
+      .from('learning_lessons')
+      .select(
+        `slug, sort_order,
+         learning_modules!inner(slug, sort_order, learning_tracks!inner(slug))`,
+      )
+      .eq('learning_modules.learning_tracks.slug', slug),
+
+    supabase.auth.getUser(),
+  ]);
 
   if (error || !data) {
     notFound();
@@ -51,10 +64,39 @@ export default async function LicaoPage({ params }: PageProps) {
   const content = data.content as Record<string, unknown>;
   const markdown = typeof content.markdown === 'string' ? content.markdown : null;
 
+  // Build flat sorted lesson list for prev/next navigation
+  type LessonNav = {
+    lessonSlug: string;
+    moduleSlug: string;
+    moduleSortOrder: number;
+    lessonSortOrder: number;
+  };
+  const lessonList: LessonNav[] = (allLessons ?? [])
+    .map((l) => {
+      const lMod = Array.isArray(l.learning_modules) ? l.learning_modules[0] : l.learning_modules;
+      if (!lMod) return null;
+      return {
+        lessonSlug: l.slug,
+        moduleSlug: lMod.slug,
+        moduleSortOrder: lMod.sort_order ?? 0,
+        lessonSortOrder: l.sort_order ?? 0,
+      };
+    })
+    .filter((l): l is LessonNav => l !== null)
+    .sort((a, b) =>
+      a.moduleSortOrder !== b.moduleSortOrder
+        ? a.moduleSortOrder - b.moduleSortOrder
+        : a.lessonSortOrder - b.lessonSortOrder,
+    );
+
+  const currentIdx = lessonList.findIndex((l) => l.lessonSlug === licao && l.moduleSlug === modulo);
+  const prevLesson = currentIdx > 0 ? lessonList[currentIdx - 1] : null;
+  const nextLesson =
+    currentIdx >= 0 && currentIdx < lessonList.length - 1 ? lessonList[currentIdx + 1] : null;
+
+  const user = authData?.user ?? null;
+
   // Check if the logged-in user has already completed this lesson
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   let isCompleted = false;
   if (user) {
@@ -189,12 +231,101 @@ export default async function LicaoPage({ params }: PageProps) {
         )}
       </div>
 
-      {/* Navigation */}
+      {/* Prev/Next lesson navigation */}
+      {(prevLesson ?? nextLesson) && (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '12px',
+            marginTop: '48px',
+          }}
+        >
+          {prevLesson ? (
+            <Link
+              href={`/trilhas/${slug}/${prevLesson.moduleSlug}/${prevLesson.lessonSlug}`}
+              style={{
+                display: 'block',
+                padding: '14px 18px',
+                borderRadius: 'var(--colheita-radius-md)',
+                border: '1px solid var(--colheita-border)',
+                backgroundColor: 'var(--colheita-surface-card)',
+                textDecoration: 'none',
+              }}
+            >
+              <p
+                style={{
+                  fontSize: '0.6875rem',
+                  fontWeight: '600',
+                  color: 'var(--colheita-text-tertiary)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  marginBottom: '4px',
+                }}
+              >
+                ← Anterior
+              </p>
+              <p
+                style={{
+                  fontSize: '0.875rem',
+                  color: 'var(--colheita-text-secondary)',
+                  lineHeight: 1.4,
+                }}
+              >
+                {prevLesson.lessonSlug.replace(/-/g, ' ')}
+              </p>
+            </Link>
+          ) : (
+            <div />
+          )}
+          {nextLesson ? (
+            <Link
+              href={`/trilhas/${slug}/${nextLesson.moduleSlug}/${nextLesson.lessonSlug}`}
+              style={{
+                display: 'block',
+                padding: '14px 18px',
+                borderRadius: 'var(--colheita-radius-md)',
+                border: '1px solid var(--colheita-border)',
+                backgroundColor: 'var(--colheita-surface-card)',
+                textDecoration: 'none',
+                textAlign: 'right',
+              }}
+            >
+              <p
+                style={{
+                  fontSize: '0.6875rem',
+                  fontWeight: '600',
+                  color: 'var(--colheita-text-tertiary)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  marginBottom: '4px',
+                }}
+              >
+                Próxima →
+              </p>
+              <p
+                style={{
+                  fontSize: '0.875rem',
+                  color: 'var(--colheita-text-secondary)',
+                  lineHeight: 1.4,
+                }}
+              >
+                {nextLesson.lessonSlug.replace(/-/g, ' ')}
+              </p>
+            </Link>
+          ) : (
+            <div />
+          )}
+        </div>
+      )}
+
+      {/* Action bar — mark complete / sign in */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'space-between',
-          marginTop: '48px',
+          alignItems: 'center',
+          marginTop: '24px',
           paddingTop: '24px',
           borderTop: '1px solid var(--colheita-border-subtle)',
         }}
