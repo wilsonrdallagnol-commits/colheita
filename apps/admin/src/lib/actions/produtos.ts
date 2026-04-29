@@ -67,6 +67,15 @@ export async function createProduto(
     return { fieldErrors: { name: 'Nome inválido — não gerou um slug válido.' } };
   }
 
+  const applicationsRaw = String(formData.get('applications') ?? '[]').trim() || '[]';
+  let applications: unknown[] = [];
+  try {
+    const parsed = JSON.parse(applicationsRaw);
+    if (Array.isArray(parsed)) applications = parsed as unknown[];
+  } catch {
+    // ignore parse error on create — defaults to []
+  }
+
   const { data, error } = await supabase
     .from('products')
     .insert({
@@ -79,7 +88,7 @@ export async function createProduto(
       composition: {},
       technical_specs: {},
       packaging: [],
-      applications: [],
+      applications,
     })
     .select('slug')
     .single();
