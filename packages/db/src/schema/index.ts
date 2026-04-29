@@ -180,6 +180,43 @@ export type Product = typeof products.$inferSelect;
 export type NewProduct = typeof products.$inferInsert;
 
 // ============================================================================
+// REGULATORY REGISTRATIONS
+// ============================================================================
+
+export const regulatoryRegistrations = pgTable(
+  'regulatory_registrations',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    productId: uuid('product_id')
+      .notNull()
+      .references(() => products.id, { onDelete: 'cascade' }),
+    authority: text('authority', {
+      enum: ['MAPA', 'ANVISA', 'IBAMA', 'STATE', 'OTHER'],
+    }).notNull(),
+    registrationNo: text('registration_no').notNull(),
+    issuedAt: date('issued_at'),
+    expiresAt: date('expires_at'),
+    status: text('status', { enum: ['active', 'expired', 'pending', 'revoked'] })
+      .notNull()
+      .default('active'),
+    documentUrl: text('document_url'),
+    notes: text('notes'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    productIdx: index('regulatory_product_idx').on(table.tenantId, table.productId),
+    expiresIdx: index('regulatory_expires_idx').on(table.tenantId, table.expiresAt),
+  }),
+);
+
+export type RegulatoryRegistration = typeof regulatoryRegistrations.$inferSelect;
+export type NewRegulatoryRegistration = typeof regulatoryRegistrations.$inferInsert;
+
+// ============================================================================
 // ASSETS (DAM)
 // ============================================================================
 
@@ -242,16 +279,21 @@ export const usersRelations = relations(users, ({ one }) => ({
   tenant: one(tenants, { fields: [users.tenantId], references: [tenants.id] }),
 }));
 
-export const productsRelations = relations(products, ({ one }) => ({
+export const productsRelations = relations(products, ({ one, many }) => ({
   tenant: one(tenants, { fields: [products.tenantId], references: [tenants.id] }),
   category: one(productCategories, {
     fields: [products.categoryId],
     references: [productCategories.id],
   }),
   heroAsset: one(assets, { fields: [products.heroAssetId], references: [assets.id] }),
+  registrations: many(regulatoryRegistrations),
 }));
 
+export * from './academia.js';
+export * from './dam.js';
 // ============================================================================
-// LAYOUT INFERENCE — re-export
+// DOMAIN RE-EXPORTS
 // ============================================================================
+export * from './foundation.js';
+export * from './generator.js';
 export * from './layout-inference.js';
