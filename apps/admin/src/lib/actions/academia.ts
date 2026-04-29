@@ -71,6 +71,10 @@ export async function createTrilha(
         .map((a) => a.trim())
         .filter(Boolean)
     : [];
+  const grantsCertification = formData.get('grants_certification') === 'true';
+  const validityRaw = String(formData.get('certification_validity_days') ?? '').trim();
+  const certificationValidityDays =
+    grantsCertification && validityRaw !== '' ? Number.parseInt(validityRaw, 10) || null : null;
 
   if (!title) {
     return { fieldErrors: { title: 'Título é obrigatório.' } };
@@ -92,6 +96,8 @@ export async function createTrilha(
     level,
     status,
     audience,
+    grants_certification: grantsCertification,
+    certification_validity_days: certificationValidityDays,
     tenant_id: tenantId,
     sort_order: 0,
   });
