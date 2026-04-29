@@ -145,6 +145,9 @@ importers:
       '@colheita/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@colheita/safra-contracts':
+        specifier: workspace:*
+        version: link:../../packages/safra-contracts
       '@colheita/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
@@ -367,6 +370,19 @@ importers:
       vitest:
         specifier: 2.1.4
         version: 2.1.4(@types/node@22.7.0)(lightningcss@1.32.0)
+
+  packages/safra-contracts:
+    dependencies:
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
+    devDependencies:
+      '@colheita/config':
+        specifier: workspace:*
+        version: link:../config
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
 
   packages/tokens:
     dependencies:

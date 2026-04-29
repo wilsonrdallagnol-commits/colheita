@@ -1,6 +1,6 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (academia CRUD completo, ADRs 0002-0006, portal /conta distribuidor)
+**Última atualização:** 2026-04-29 (academia CRUD, ADRs 0002-0006, /conta distribuidor, Safra contracts)
 **Fase atual:** 1 — 4 apps + generator ✅ — fase encerrada
 **Próximo milestone:** pnpm dev end-to-end (Docker stack local) + packages/ui 16 componentes compiler (Fase 2)
 
@@ -217,6 +217,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [ ] `packages/ui` — 16 componentes do compiler (`TenantBrandHeader`, `HeadlineBlock`, `ProductCenterpiece`, `DataGrid`, `IconGrid`, etc) — **Fase 2**
 - [x] `packages/auth` — `createServerClient`, `requireAuth`, `updateSession`, middleware multi-tenant, 19 testes
 - [x] `packages/generator` — ✅ Playwright + template FichaTecnica React → PDF, 12 testes
+- [x] `packages/safra-contracts` — schemas Zod para 5 tipos de evento Safra + tipos TypeScript exportados
 - [ ] `packages/ai` — RAG + agents (Fase 2)
 
 ### Scripts operacionais
@@ -225,7 +226,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `pnpm tenant:create` — CLI `--slug=<slug> --name="<Name>"`
 
 ### Integrações Fase 1
-- [ ] Contratos com Safra (eventos, webhooks, schema compartilhado)
+- [x] Contratos com Safra — `packages/safra-contracts`: 5 eventos Zod (pedido.criado/atualizado, inventario.atualizado, produto.atualizado, cliente.cadastrado); webhook handler valida schema antes de processar
 - [ ] Resend pra emails transacionais
 - [ ] Sentry + Axiom + PostHog
 

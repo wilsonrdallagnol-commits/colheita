@@ -7,6 +7,7 @@
 // Segredo: SAFRA_WEBHOOK_SECRET (env)
 
 import { createHmac, timingSafeEqual } from 'node:crypto';
+import { SafraEventSchema } from '@colheita/safra-contracts';
 import { type NextRequest, NextResponse } from 'next/server';
 
 const WEBHOOK_SECRET = process.env.SAFRA_WEBHOOK_SECRET;
@@ -34,23 +35,39 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Assinatura inválida.' }, { status: 401 });
   }
 
-  let payload: unknown;
+  let raw: unknown;
   try {
-    payload = JSON.parse(body);
+    raw = JSON.parse(body);
   } catch {
     return NextResponse.json({ error: 'Payload inválido.' }, { status: 400 });
   }
 
-  // TODO: Processar evento via Trigger.dev (Fase 1 produção)
-  // Ex: disparo de sync de pedidos, atualizações de inventário, etc.
-  //
-  // Por enquanto, apenas loga e confirma o recebimento.
-  const event = (payload as Record<string, unknown>).event ?? 'unknown';
+  // Valida o payload contra o schema de eventos Safra
+  const parsed = SafraEventSchema.safeParse(raw);
+  if (!parsed.success) {
+    return NextResponse.json(
+      {
+        error: 'Evento desconhecido ou schema inválido.',
+        details: parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`),
+      },
+      { status: 422 },
+    );
+  }
 
+  const event = parsed.data;
+
+  // TODO: Processar evento via Trigger.dev (Fase 1 produção)
+  // Ex:
+  //   if (event.event === 'pedido.criado') {
+  //     await tasks.trigger('process-safra-order', { event });
+  //   }
+  //
+  // Por enquanto, apenas confirma o recebimento com o tipo inferido.
   return NextResponse.json(
     {
       received: true,
-      event,
+      event: event.event,
+      tenant_id: event.tenant_id,
       processedAt: new Date().toISOString(),
     },
     { status: 200 },
