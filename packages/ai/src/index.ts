@@ -48,6 +48,7 @@ export type {
   AiAnswer,
   AiChunk,
   AiDocument,
+  AiStreamEvent,
   AiTool,
   ConversationTurn,
   DocumentKind,

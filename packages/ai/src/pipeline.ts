@@ -31,6 +31,7 @@ import type { AiGenerator } from './generator.js';
 import type {
   AiAnswer,
   AiChunk,
+  AiStreamEvent,
   ConversationTurn,
   DocumentKind,
   RagConfig,
@@ -91,24 +92,40 @@ export class RagPipeline {
     return this.retriever.purge(tenantId);
   }
 
-  /**
-   * Responde uma pergunta em linguagem natural usando RAG.
-   */
-  async ask(input: AskInput): Promise<AiAnswer> {
+  /** Builds the shared retrieval context for ask() and askStream(). */
+  private async retrieveContext(input: AskInput) {
     const topK = input.config?.topK ?? this.config.topK;
     const minScore = input.config?.minScore ?? this.config.minScore;
-
-    // 1. Retrieve
-    const context = await this.retriever.retrieve({
+    return this.retriever.retrieve({
       query: input.query,
       tenantId: input.tenantId,
       kinds: input.kinds,
       topK,
       minScore,
     });
+  }
 
-    // 2. Generate
+  /**
+   * Responde uma pergunta em linguagem natural usando RAG.
+   */
+  async ask(input: AskInput): Promise<AiAnswer> {
+    const context = await this.retrieveContext(input);
     return this.generator.generate({
+      query: input.query,
+      context,
+      tenantId: input.tenantId,
+      systemHint: input.systemHint,
+      conversationHistory: input.conversationHistory,
+    });
+  }
+
+  /**
+   * Versão streaming de ask() — yields AiStreamEvent enquanto Claude gera.
+   * Use para endpoints SSE (text/event-stream).
+   */
+  async *askStream(input: AskInput): AsyncGenerator<AiStreamEvent, void, undefined> {
+    const context = await this.retrieveContext(input);
+    yield* this.generator.generateStream({
       query: input.query,
       context,
       tenantId: input.tenantId,

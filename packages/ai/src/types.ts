@@ -164,6 +164,19 @@ export interface AiAnswer {
   };
 }
 
+/**
+ * Evento de streaming do gerador.
+ * `delta` — fragmento de texto a ser acumulado pelo cliente.
+ * `done`  — sinaliza fim da stream, inclui sources e usage.
+ */
+export type AiStreamEvent =
+  | { type: 'delta'; text: string }
+  | {
+      type: 'done';
+      sources: AiChunk[];
+      usage: { inputTokens: number; outputTokens: number };
+    };
+
 // ============================================================================
 // Agent tools
 // ============================================================================

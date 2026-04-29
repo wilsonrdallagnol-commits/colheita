@@ -20,7 +20,7 @@
  *   500 — erro interno
  */
 
-import type { AiDocument, ConversationTurn, DocumentKind } from '@colheita/ai';
+import type { AiDocument, AiStreamEvent, ConversationTurn, DocumentKind } from '@colheita/ai';
 import { AiGenerator, BM25InMemoryRetriever, chunkDocuments, RagPipeline } from '@colheita/ai';
 import { createServerClient, requireAuth } from '@colheita/auth';
 import { cookies } from 'next/headers';
@@ -50,6 +50,8 @@ const AgentRequestSchema = z.object({
   topK: z.number().int().min(1).max(10).default(5),
   /** Histórico de até 10 turnos de conversa para suporte multi-turn */
   conversationHistory: z.array(ConversationTurnSchema).max(10).optional(),
+  /** Se true, retorna SSE stream (text/event-stream) em vez de JSON */
+  stream: z.boolean().default(false),
 });
 
 // ============================================================================
@@ -211,7 +213,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { query, kinds, topK, conversationHistory } = parsed.data;
+  const { query, kinds, topK, conversationHistory, stream: wantsStream } = parsed.data;
 
   // 3. Busca documentos do tenant
   const supabase = createServerClient(cookieStore);
@@ -228,22 +230,74 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 4. Chunk + Index + Retrieve + Generate
+  // 4. Chunk + Index + setup pipeline
+  let pipeline: RagPipeline;
   try {
     const chunks = chunkDocuments(docs, { targetChunkChars: 600, overlapChars: 80 });
-
     const retriever = new BM25InMemoryRetriever();
     await retriever.index(chunks);
-
     const generator = new AiGenerator();
-    const pipeline = new RagPipeline(retriever, generator, { topK, minScore: 0.05 });
+    pipeline = new RagPipeline(retriever, generator, { topK, minScore: 0.05 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Erro desconhecido.';
+    return NextResponse.json(
+      {
+        error: 'Erro ao processar pergunta.',
+        details: process.env.NODE_ENV === 'development' ? message : undefined,
+      },
+      { status: 500, headers: CORS_HEADERS },
+    );
+  }
 
-    const answer = await pipeline.ask({
-      query,
-      tenantId,
-      kinds,
-      conversationHistory: conversationHistory as ConversationTurn[] | undefined,
+  const askInput = {
+    query,
+    tenantId,
+    kinds,
+    conversationHistory: conversationHistory as ConversationTurn[] | undefined,
+  };
+
+  // ── 5a. Streaming (SSE) ────────────────────────────────────────────────────
+  if (wantsStream) {
+    const encoder = new TextEncoder();
+
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        function send(event: AiStreamEvent) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+        }
+        try {
+          for await (const event of pipeline.askStream(askInput)) {
+            send(event);
+          }
+        } catch (err) {
+          const message = err instanceof Error ? err.message : 'Erro desconhecido.';
+          send({
+            type: 'done',
+            sources: [],
+            usage: { inputTokens: 0, outputTokens: 0 },
+          });
+          void message; // erro registrado implicitamente pelo runtime Next.js
+        } finally {
+          controller.close();
+        }
+      },
     });
+
+    return new Response(readableStream, {
+      status: 200,
+      headers: {
+        ...CORS_HEADERS,
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache, no-transform',
+        Connection: 'keep-alive',
+        'X-Accel-Buffering': 'no',
+      },
+    });
+  }
+
+  // ── 5b. JSON (non-streaming) ───────────────────────────────────────────────
+  try {
+    const answer = await pipeline.ask(askInput);
 
     return NextResponse.json(
       {

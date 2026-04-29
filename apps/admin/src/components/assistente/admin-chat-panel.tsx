@@ -62,42 +62,75 @@ export function AdminChatPanel() {
     setInput('');
     setLoading(true);
 
+    const assistantId = `${Date.now()}-a`;
+    setMessages((prev) => [...prev, { id: assistantId, role: 'assistant', text: '' }]);
+
+    let finalText = '';
+
     try {
       const res = await fetch(`${API_URL}/api/v1/agent`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: text, topK: 5, conversationHistory }),
+        body: JSON.stringify({ query: text, topK: 5, conversationHistory, stream: true }),
       });
 
-      const data = (await res.json()) as AgentResponse;
+      if (!res.ok || !res.body) {
+        const data = (await res.json()) as AgentResponse;
+        finalText = data.error ?? 'Erro ao processar pergunta.';
+        setMessages((prev) =>
+          prev.map((m) => (m.id === assistantId ? { ...m, text: finalText } : m)),
+        );
+      } else {
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
 
-      const answerText = res.ok
-        ? (data.answer ?? 'Sem resposta.')
-        : (data.error ?? 'Erro ao processar pergunta.');
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-      setMessages((prev) => [
-        ...prev,
-        { id: `${Date.now()}-a`, role: 'assistant', text: answerText },
-      ]);
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() ?? '';
 
-      // Atualiza histórico para próxima mensagem (max 10 turnos)
-      setConversationHistory((prev) =>
-        [
-          ...prev,
-          { role: 'user' as const, content: text },
-          { role: 'assistant' as const, content: answerText },
-        ].slice(-10),
-      );
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            try {
+              const event = JSON.parse(line.slice(6)) as { type: string; text?: string };
+              if (event.type === 'delta' && event.text) {
+                finalText += event.text;
+                setMessages((prev) =>
+                  prev.map((m) => (m.id === assistantId ? { ...m, text: finalText } : m)),
+                );
+              }
+            } catch {
+              // linha malformada — ignorar
+            }
+          }
+        }
+      }
+
+      if (finalText) {
+        setConversationHistory((prev) =>
+          [
+            ...prev,
+            { role: 'user' as const, content: text },
+            { role: 'assistant' as const, content: finalText },
+          ].slice(-10),
+        );
+      }
     } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `${Date.now()}-err`,
-          role: 'assistant',
-          text: 'Não consegui conectar ao servidor. Verifique se o serviço de API está rodando.',
-        },
-      ]);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantId
+            ? {
+                ...m,
+                text: 'Não consegui conectar ao servidor. Verifique se o serviço de API está rodando.',
+              }
+            : m,
+        ),
+      );
     } finally {
       setLoading(false);
       setTimeout(() => textareaRef.current?.focus(), 50);
