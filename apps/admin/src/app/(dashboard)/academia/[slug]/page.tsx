@@ -45,7 +45,7 @@ export default async function TrilhaDetailPage({ params }: PageProps) {
   const { data: trilha, error } = await supabase
     .from('learning_tracks')
     .select(
-      `id, slug, title, subtitle, level, status, grants_certification, audience, estimated_minutes,
+      `id, slug, title, subtitle, level, status, grants_certification, certification_validity_days, audience, estimated_minutes,
        learning_modules(
          id, slug, title, description, sort_order,
          learning_lessons(count)
@@ -132,6 +132,9 @@ export default async function TrilhaDetailPage({ params }: PageProps) {
             {trilha.grants_certification && (
               <Badge variant="secondary" style={{ fontSize: '0.6875rem' }}>
                 Certificado
+                {trilha.certification_validity_days
+                  ? ` · ${trilha.certification_validity_days}d`
+                  : ''}
               </Badge>
             )}
             {trilha.audience.length > 0 && (
