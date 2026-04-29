@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (Sentry + Axiom + PostHog, 275 testes: ai/48 + ui/59 + email/20 + observability/13 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19 + api/13)
+**Última atualização:** 2026-04-29 (DAM admin section, 275 testes: ai/48 + ui/59 + email/20 + observability/13 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19 + api/13)
 **Fase atual:** 2 — IA integrada nas apps
-**Próximo milestone:** Fase 1 completa — verificação de deploy
+**Próximo milestone:** packages/jobs (Trigger.dev background jobs)
 
 ---
 
@@ -116,6 +116,10 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 ## ✅ apps/admin — MVP concluído (2026-04-28/29)
 
 ### Funcionalidades entregues
+- [x] **DAM** — `/midias`: asset browser com grid responsivo, filtros por tipo (image/video/document/audio/other), empty state
+- [x] **DAM** — `/midias/colecoes`: listagem e criação de coleções com server action + slugify automático
+- [x] DAM: loading skeletons em assets grid e collections list; sidebar com ícone Mídias
+- [x] DAM: botão "Enviar arquivo" desabilitado com tooltip (aguarda Supabase Storage)
 - [x] Auth completo: login, logout, middleware de proteção de rotas, callback OAuth
 - [x] `@colheita/auth`: `createServerClient`, `requireAuth`, `updateSession` middleware, test suite (19 testes)
 - [x] `@colheita/ui`: Button, Badge, Card, Table, Input, Textarea, Sidebar, Skeleton, Breadcrumb, Separator
