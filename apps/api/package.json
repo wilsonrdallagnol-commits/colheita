@@ -1,0 +1,29 @@
+{
+  "name": "@colheita/api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3003",
+    "build": "next build",
+    "start": "next start --port 3003",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check src"
+  },
+  "dependencies": {
+    "@colheita/auth": "workspace:*",
+    "@colheita/db": "workspace:*",
+    "@colheita/tokens": "workspace:*",
+    "next": "15.3.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.45.0"
+  },
+  "devDependencies": {
+    "@colheita/config": "workspace:*",
+    "@types/node": "22.7.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "5.6.3"
+  }
+}
