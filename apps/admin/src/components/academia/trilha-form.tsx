@@ -2,7 +2,7 @@
 'use client';
 
 import { Button, Input, Textarea } from '@colheita/ui';
-import { useActionState, useId } from 'react';
+import { useActionState, useId, useState } from 'react';
 import type { TrilhaFormState } from '@/lib/actions/academia';
 
 interface TrilhaFormProps {
@@ -15,6 +15,7 @@ interface TrilhaFormProps {
     status?: string;
     audience?: string[] | null;
     grants_certification?: boolean;
+    certification_validity_days?: number | null;
   };
   submitLabel?: string;
 }
@@ -34,6 +35,7 @@ const STATUSES = [
 
 export function TrilhaForm({ action, defaultValues, submitLabel = 'Salvar' }: TrilhaFormProps) {
   const [state, formAction, pending] = useActionState(action, null);
+  const [grantsCert, setGrantsCert] = useState(defaultValues?.grants_certification ?? false);
 
   const titleId = useId();
   const subtitleId = useId();
@@ -41,6 +43,7 @@ export function TrilhaForm({ action, defaultValues, submitLabel = 'Salvar' }: Tr
   const levelId = useId();
   const statusId = useId();
   const audienceId = useId();
+  const validityId = useId();
 
   const fieldStyle = { marginBottom: '24px' };
   const labelStyle = {
@@ -184,21 +187,56 @@ export function TrilhaForm({ action, defaultValues, submitLabel = 'Salvar' }: Tr
       </div>
 
       {/* Certificado */}
-      <div style={{ ...fieldStyle, display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <input
-          type="checkbox"
-          id="grants_certification"
-          name="grants_certification"
-          value="true"
-          defaultChecked={defaultValues?.grants_certification ?? false}
-          style={{ width: '16px', height: '16px', cursor: 'pointer' }}
-        />
-        <label
-          htmlFor="grants_certification"
-          style={{ ...labelStyle, marginBottom: 0, cursor: 'pointer' }}
-        >
-          Emite certificado ao concluir
-        </label>
+      <div style={fieldStyle}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+          <input
+            type="checkbox"
+            id="grants_certification"
+            name="grants_certification"
+            value="true"
+            checked={grantsCert}
+            onChange={(e) => setGrantsCert(e.target.checked)}
+            style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+          />
+          <label
+            htmlFor="grants_certification"
+            style={{ ...labelStyle, marginBottom: 0, cursor: 'pointer' }}
+          >
+            Emite certificado ao concluir
+          </label>
+        </div>
+
+        {grantsCert && (
+          <div style={{ paddingLeft: '26px' }}>
+            <label htmlFor={validityId} style={labelStyle}>
+              Validade do certificado (dias)
+            </label>
+            <Input
+              id={validityId}
+              name="certification_validity_days"
+              type="number"
+              min="1"
+              step="1"
+              disabled={pending}
+              defaultValue={
+                defaultValues?.certification_validity_days != null
+                  ? String(defaultValues.certification_validity_days)
+                  : ''
+              }
+              placeholder="Ex: 365 (deixe vazio para sem prazo)"
+              style={{ maxWidth: '280px' }}
+            />
+            <p
+              style={{
+                fontSize: '0.75rem',
+                color: 'var(--colheita-text-tertiary)',
+                marginTop: '4px',
+              }}
+            >
+              Dias a partir da emissão. Deixe vazio para certificado sem prazo de validade.
+            </p>
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'flex', gap: '12px' }}>

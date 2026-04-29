@@ -27,7 +27,9 @@ export default async function EditarTrilhaPage({ params }: PageProps) {
 
   const { data: trilha, error } = await supabase
     .from('learning_tracks')
-    .select('id, title, subtitle, description, level, status, audience, grants_certification')
+    .select(
+      'id, title, subtitle, description, level, status, audience, grants_certification, certification_validity_days',
+    )
     .eq('slug', slug)
     .single();
 
@@ -99,6 +101,7 @@ export default async function EditarTrilhaPage({ params }: PageProps) {
           status: trilha.status,
           audience: trilha.audience,
           grants_certification: trilha.grants_certification,
+          certification_validity_days: trilha.certification_validity_days,
         }}
         submitLabel="Salvar alterações"
       />
