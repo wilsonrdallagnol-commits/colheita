@@ -13,13 +13,25 @@ export async function signInWithMagicLink(
     return { error: 'Email inválido.' };
   }
 
+  // `next` é um path relativo passado pelo formulário (validado na página)
+  const nextRaw = formData.get('next');
+  const next =
+    typeof nextRaw === 'string' && nextRaw.startsWith('/') && !nextRaw.startsWith('//')
+      ? nextRaw
+      : null;
+
   const cookieStore = await cookies();
   const supabase = createServerClient(cookieStore);
+
+  const baseUrl = process.env.NEXT_PUBLIC_PORTAL_URL ?? '';
+  const callbackUrl = next
+    ? `${baseUrl}/auth/callback?next=${encodeURIComponent(next)}`
+    : `${baseUrl}/auth/callback`;
 
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_PORTAL_URL}/auth/callback`,
+      emailRedirectTo: callbackUrl,
     },
   });
 

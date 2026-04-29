@@ -6,7 +6,13 @@ import { type NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/conta';
+  const nextRaw = searchParams.get('next');
+
+  // Valida que `next` é um path relativo para prevenir open redirect
+  const next =
+    typeof nextRaw === 'string' && nextRaw.startsWith('/') && !nextRaw.startsWith('//')
+      ? nextRaw
+      : '/conta';
 
   if (!code) {
     return NextResponse.redirect(new URL('/entrar?error=missing_code', origin));
