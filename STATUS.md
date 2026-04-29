@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (apps/api MVP concluído — 4 de 4 apps Fase 1 completas)
-**Fase atual:** 1 — Todas as 4 apps Next.js operacionais ✅
-**Próximo milestone:** pnpm dev end-to-end + packages/generator (PDF de ficha técnica)
+**Última atualização:** 2026-04-29 (packages/generator MVP — ficha técnica PDF + polishes finais nas 4 apps)
+**Fase atual:** 1 — 4 apps + generator ✅
+**Próximo milestone:** pnpm dev end-to-end (Docker stack local) + packages/generator rota de download no admin
 
 ---
 
@@ -151,6 +151,8 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Auth magic link: `/entrar` + `/auth/callback` (redireciona para `/meu-progresso`)
 - [x] Middleware: trilhas públicas, `/meu-progresso` protegido
 - [x] Dashboard `/meu-progresso`: atividade recente + certificações ativas (RSC)
+- [x] Rota `/trilhas/[slug]/iniciar` redireciona para primeira lição do primeiro módulo
+- [x] Botão "Sair" no `/meu-progresso` (signOut server action)
 - [x] Páginas de erro e 404 globais
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
@@ -165,8 +167,21 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Callback OAuth: `/auth/callback` troca code por sessão, redireciona para `/conta`
 - [x] Middleware customizado: catálogo público, `/conta/*` protegido, `/entrar` redireciona autenticados
 - [x] Área do distribuidor: `/conta` stub com guard de autenticação via RSC layout
+- [x] Botão "Sair" no `/conta` (signOut server action)
 - [x] Páginas de erro: `not-found.tsx` (404) e `error.tsx` (error boundary)
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
+
+---
+
+## ✅ packages/generator — MVP concluído (2026-04-29)
+
+### Funcionalidades entregues
+- [x] `generateFichaTecnica(data, options?) → Promise<{ pdf: Buffer, html: string }>`
+- [x] Template `FichaTecnica` (React, inline styles): composição garantida, specs técnicas, embalagens, indicações por cultura
+- [x] `renderToPdf()` com playwright-core (Chromium headless, A4 portrait)
+- [x] Suporte a logo do tenant, número MAPA, tagline, descrição
+- [x] 12 testes unitários (renderToStaticMarkup, sem browser) — todos passando
+- [x] TypeScript strict 0 erros; biome limpo
 
 ---
 
@@ -174,15 +189,15 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 
 ### Apps Next.js
 - [x] `apps/admin` — ✅ MVP completo (PIM + auth + dashboard) — porta 3000
-- [x] `apps/portal` — ✅ MVP completo (catálogo público + auth magic link + área do distribuidor) — porta 3001
-- [x] `apps/academia` — ✅ MVP completo (trilhas + lições + progresso + certificações) — porta 3002
+- [x] `apps/portal` — ✅ MVP completo (catálogo público + auth magic link + área do distribuidor + logout) — porta 3001
+- [x] `apps/academia` — ✅ MVP completo (trilhas + lições + progresso + certificações + logout) — porta 3002
 - [x] `apps/api` — ✅ MVP completo (catalog REST + health + webhook Safra HMAC) — porta 3003
 
 ### Pacotes core
 - [ ] `packages/tokens` — design tokens via Style Dictionary (extraídos do Xcensis)
 - [ ] `packages/ui` — shadcn customizado + componentes do mapa do compiler (`TenantBrandHeader`, `HeadlineBlock`, `ProductCenterpiece`, `DataGrid`, `IconGrid`, etc — 16 componentes mapeados em `layout-inference/compiler`)
 - [ ] `packages/auth` — middleware Next.js + propagação de tenant_id no JWT
-- [ ] `packages/generator` — Playwright + templates React → PDF/PNG
+- [x] `packages/generator` — ✅ Playwright + template FichaTecnica React → PDF
 - [ ] `packages/ai` — RAG + agents (Fase 2)
 
 ### Scripts operacionais
@@ -226,7 +241,7 @@ Para considerar Fase 0 fechada e começar Fase 1:
 - [x] `auditor-senior` validou fundação — 0 issues críticos pendentes
 - [x] Custo mensal estimado documentado e dentro de $200–350
 - [ ] `pnpm dev` sobe todas as apps com sucesso — **Fase 1**
-- [ ] Primeiro template de ficha técnica gera PDF do Xcensis — **Fase 1**
+- [x] Primeiro template de ficha técnica gera PDF do Xcensis — **✅ packages/generator**
 - [ ] Primeiro upload de layout de referência → blueprint extraído → render — **Fase 1**
 
 ---
