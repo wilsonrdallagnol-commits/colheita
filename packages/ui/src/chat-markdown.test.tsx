@@ -108,3 +108,44 @@ describe('ChatMarkdown — cursor de streaming', () => {
     expect(html).toContain('Xcensis é um ferti');
   });
 });
+
+describe('ChatMarkdown — links inline', () => {
+  it('renderiza link [texto](url) como <a>', () => {
+    const html = render('Veja o [catálogo](https://argho.com.br/catalogo) agora.');
+    expect(html).toContain('<a');
+    expect(html).toContain('catálogo');
+    expect(html).toContain('https://argho.com.br/catalogo');
+  });
+
+  it('link tem target="_blank" e rel="noopener noreferrer"', () => {
+    const html = render('[Xcensis](https://argho.com.br/xcensis)');
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain('rel="noopener noreferrer"');
+  });
+
+  it('renderiza múltiplos links na mesma linha', () => {
+    const html = render('Ver [produto A](https://a.com) e [produto B](https://b.com) no catálogo.');
+    const count = (html.match(/<a/g) ?? []).length;
+    expect(count).toBe(2);
+    expect(html).toContain('produto A');
+    expect(html).toContain('produto B');
+  });
+
+  it('renderiza link junto com negrito na mesma linha', () => {
+    const html = render('**Xcensis** em [ficha técnica](https://argho.com.br/ficha).');
+    expect(html).toContain('<strong');
+    expect(html).toContain('<a');
+  });
+
+  it('não cria link para texto simples com parênteses', () => {
+    const html = render('Dose recomendada (1L/ha) por ciclo.');
+    expect(html).not.toContain('<a');
+    expect(html).toContain('(1L/ha)');
+  });
+
+  it('não processa links dentro de bloco de código', () => {
+    const html = render('```\n[link](url)\n```');
+    expect(html).not.toContain('<a');
+    expect(html).toContain('[link](url)');
+  });
+});

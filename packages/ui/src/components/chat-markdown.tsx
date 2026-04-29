@@ -33,6 +33,8 @@ function renderInline(text: string, baseKey: string): ReactNode[] {
     const boldMatch = remaining.match(/\*\*([^*]+)\*\*/);
     // Itálico *text* (sem ser **)
     const italicMatch = remaining.match(/(?<!\*)\*([^*]+)\*(?!\*)/);
+    // Link [texto](url)
+    const linkMatch = remaining.match(/\[([^\]]+)\]\(([^)]+)\)/);
 
     const candidates = [
       codeMatch ? { pos: codeMatch.index ?? Infinity, match: codeMatch, kind: 'code' } : null,
@@ -40,6 +42,7 @@ function renderInline(text: string, baseKey: string): ReactNode[] {
       italicMatch
         ? { pos: italicMatch.index ?? Infinity, match: italicMatch, kind: 'italic' }
         : null,
+      linkMatch ? { pos: linkMatch.index ?? Infinity, match: linkMatch, kind: 'link' } : null,
     ].filter((c): c is NonNullable<typeof c> => c !== null);
 
     if (candidates.length === 0) {
@@ -74,6 +77,19 @@ function renderInline(text: string, baseKey: string): ReactNode[] {
         <strong key={key} style={{ fontWeight: 600 }}>
           {content}
         </strong>,
+      );
+    } else if (kind === 'link') {
+      const href = match[2] ?? '';
+      nodes.push(
+        <a
+          key={key}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: '2px' }}
+        >
+          {content}
+        </a>,
       );
     } else {
       nodes.push(<em key={key}>{content}</em>);
