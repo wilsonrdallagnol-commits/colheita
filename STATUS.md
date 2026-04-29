@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (academia: Markdown renderer SSR-safe integrado no visualizador de lição)
-**Fase atual:** 1 — 4 apps + generator + markdown ✅
-**Próximo milestone:** pnpm dev end-to-end (Docker stack local) + pacotes UI/tokens completos para Fase 2
+**Última atualização:** 2026-04-29 (polishes Fase 1: markdown, nav, busca, progress, packaging)
+**Fase atual:** 1 — 4 apps + generator ✅ — fase encerrada
+**Próximo milestone:** pnpm dev end-to-end (Docker stack local) + packages/ui 16 componentes compiler (Fase 2)
 
 ---
 
@@ -121,7 +121,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Dashboard home com stats (total, publicados, rascunhos, arquivados, categorias) + recentes
 - [x] PIM Produtos: listar (busca + filtros status + filtros categoria), criar, editar, ver detalhe
 - [x] PIM Produtos: publicar, arquivar, reverter rascunho, com feedback de erro
-- [x] PIM Produtos: campos composição e especificações técnicas (JSON livre com validação)
+- [x] PIM Produtos: campos composição, especificações técnicas e **embalagens** (JSON com validação)
 - [x] PIM Categorias: listar, criar, editar, excluir (bloqueio se houver produtos)
 - [x] Sidebar: Visão geral, Produtos, Categorias, logout com feedback
 - [x] Loading states (Skeleton) em todas as páginas assíncronas
@@ -154,6 +154,9 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Rota `/trilhas/[slug]/iniciar` redireciona para primeira lição do primeiro módulo
 - [x] Botão "Sair" no `/meu-progresso` (signOut server action)
 - [x] Markdown renderer SSR-safe (`components/markdown.tsx`) — headings, listas, tabelas, code blocks, blockquotes, inline bold/italic/code
+- [x] Navegação prev/next entre lições (busca parallel, ordenação por módulo+lição sort_order)
+- [x] `generateMetadata` da lição usa título real do banco (title + track title)
+- [x] Indicadores de progresso na trilha: ✓ nas lições concluídas + contador "X/N"
 - [x] Páginas de erro e 404 globais
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
@@ -169,6 +172,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Middleware customizado: catálogo público, `/conta/*` protegido, `/entrar` redireciona autenticados
 - [x] Área do distribuidor: `/conta` stub com guard de autenticação via RSC layout
 - [x] Botão "Sair" no `/conta` (signOut server action)
+- [x] Busca por nome/tagline (`?q=`) e filtro por categoria (`?category=slug`) — URL params, sem JS
 - [x] Páginas de erro: `not-found.tsx` (404) e `error.tsx` (error boundary)
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
