@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (askStream 48 testes, botão "Limpar conversa", 28 testes safra-contracts — total 195 testes sem Docker)
+**Última atualização:** 2026-04-29 (ChatMarkdown links, 222 testes sem Docker: ai/48 + ui/52 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19)
 **Fase atual:** 2 — IA integrada nas apps
-**Próximo milestone:** Resend (emails transacionais) ou testes do webhook handler
+**Próximo milestone:** Resend (emails transacionais)
 
 ---
 
@@ -248,9 +248,10 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `packages/auth` — `createServerClient`, `requireAuth`, `updateSession`, middleware multi-tenant, 19 testes
 - [x] `packages/generator` — ✅ Playwright + FichaTecnica + RenderSpecLayout (pipeline completo layout-inference → PDF), 28 testes
 - [x] `packages/safra-contracts` — schemas Zod para 5 tipos de evento Safra + tipos TypeScript exportados
-- [x] `packages/ai` — ✅ RAG + agents + streaming: BM25InMemoryRetriever, AiGenerator (claude-haiku-4-5), RagPipeline, AiStreamEvent, multi-turn conversation history, askStream(), **48 testes**
-- [x] `packages/ui` — `ChatMarkdown` component: renderizador markdown para bolhas de chat (blocos + inline), **46 testes** no total
+- [x] `packages/ai` — ✅ RAG + agents + streaming: BM25InMemoryRetriever, AiGenerator (claude-haiku-4-5), RagPipeline, AiStreamEvent, multi-turn history, askStream(), **48 testes**
+- [x] `packages/ui` — `ChatMarkdown`: blocos + inline (bold/italic/code/links), streaming cursor, **52 testes**
 - [x] `packages/safra-contracts` — **28 testes** para os 5 schemas Zod de eventos Safra (discriminatedUnion, defaults, edge cases)
+- [x] `packages/tokens` — **21 testes** para TenantThemeTokensSchema + parseTenantThemeTokens (OKLCH/hex/rgb, radius, fallback)
 
 ### Scripts operacionais
 - [x] `pnpm db:migrate` — aplica 10 migrations em ordem (0001–0010)
