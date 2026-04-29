@@ -1,6 +1,6 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (ChatMarkdown links, 222 testes sem Docker: ai/48 + ui/52 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19)
+**Última atualização:** 2026-04-29 (HMAC tests, ChatMarkdown links, 235 testes: ai/48 + ui/52 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19 + api/13)
 **Fase atual:** 2 — IA integrada nas apps
 **Próximo milestone:** Resend (emails transacionais)
 
@@ -252,6 +252,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `packages/ui` — `ChatMarkdown`: blocos + inline (bold/italic/code/links), streaming cursor, **52 testes**
 - [x] `packages/safra-contracts` — **28 testes** para os 5 schemas Zod de eventos Safra (discriminatedUnion, defaults, edge cases)
 - [x] `packages/tokens` — **21 testes** para TenantThemeTokensSchema + parseTenantThemeTokens (OKLCH/hex/rgb, radius, fallback)
+- [x] `apps/api` — **13 testes** HMAC: `verifySignature` extraída para `src/lib/safra-hmac.ts` (body alterado, secret errado, headers malformados, timing-safe)
 
 ### Scripts operacionais
 - [x] `pnpm db:migrate` — aplica 10 migrations em ordem (0001–0010)
