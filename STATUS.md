@@ -1,6 +1,6 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (loading states completos, error boundary admin, certification_validity_days no badge, loading do dashboard principal)
+**Última atualização:** 2026-04-29 (16 compiler blocks @colheita/ui, RenderSpecLayout + generateFromRenderSpec, 28 testes no generator, browser dialogs removidos dos action components)
 **Fase atual:** 1 — 4 apps + generator ✅ — fase encerrada
 **Próximo milestone:** pnpm dev end-to-end (Docker stack local) + packages/ui 16 componentes compiler (Fase 2)
 
@@ -239,9 +239,9 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 ### Pacotes core
 - [x] `packages/tokens` — design tokens OKLCH dark-first (system + argho theme)
 - [x] `packages/ui` — 10 componentes shadcn customizados (Button, Badge, Card, Table, Input, Textarea, Sidebar, Skeleton, Breadcrumb, Separator)
-- [ ] `packages/ui` — 16 componentes do compiler (`TenantBrandHeader`, `HeadlineBlock`, `ProductCenterpiece`, `DataGrid`, `IconGrid`, etc) — **Fase 2**
+- [x] `packages/ui` — 16 compiler blocks: `TenantBrandHeader`, `HeadlineBlock`, `SubheadlineBlock`, `ProductCenterpiece`, `ProductGallery`, `DataGrid`, `FeatureList`, `IconGrid`, `Testimonial`, `CtaBlock`, `TenantFooter`, `BadgeStrip`, `MediaBlock`, `QrCode`, `LegalBlock`, `Decorative`
 - [x] `packages/auth` — `createServerClient`, `requireAuth`, `updateSession`, middleware multi-tenant, 19 testes
-- [x] `packages/generator` — ✅ Playwright + template FichaTecnica React → PDF, 12 testes
+- [x] `packages/generator` — ✅ Playwright + FichaTecnica + RenderSpecLayout (pipeline completo layout-inference → PDF), 28 testes
 - [x] `packages/safra-contracts` — schemas Zod para 5 tipos de evento Safra + tipos TypeScript exportados
 - [ ] `packages/ai` — RAG + agents (Fase 2)
 
@@ -283,7 +283,7 @@ Para considerar Fase 0 fechada e começar Fase 1:
 - [x] Custo mensal estimado documentado e dentro de $200–350
 - [ ] `pnpm dev` sobe todas as apps com sucesso — **Fase 1**
 - [x] Primeiro template de ficha técnica gera PDF do Xcensis — **✅ packages/generator**
-- [ ] Primeiro upload de layout de referência → blueprint extraído → render — **Fase 1**
+- [x] Primeiro upload de layout de referência → blueprint extraído → render — **✅ RenderSpecLayout + generateFromRenderSpec**
 
 ---
 
