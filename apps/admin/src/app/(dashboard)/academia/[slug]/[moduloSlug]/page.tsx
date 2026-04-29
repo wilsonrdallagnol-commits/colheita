@@ -31,7 +31,14 @@ const LESSON_TYPE_LABELS: Record<string, string> = {
 
 export async function generateMetadata({ params }: PageProps) {
   const { moduloSlug } = await params;
-  return { title: moduloSlug };
+  const cookieStore = await cookies();
+  const supabase = createServerClient(cookieStore);
+  const { data } = await supabase
+    .from('learning_modules')
+    .select('title')
+    .eq('slug', moduloSlug)
+    .single();
+  return { title: data?.title ?? moduloSlug };
 }
 
 export default async function ModuloDetailPage({ params }: PageProps) {

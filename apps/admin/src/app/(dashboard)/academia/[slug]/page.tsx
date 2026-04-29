@@ -30,7 +30,10 @@ const LEVEL_LABELS: Record<string, string> = {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
-  return { title: slug };
+  const cookieStore = await cookies();
+  const supabase = createServerClient(cookieStore);
+  const { data } = await supabase.from('learning_tracks').select('title').eq('slug', slug).single();
+  return { title: data?.title ?? slug };
 }
 
 export default async function TrilhaDetailPage({ params }: PageProps) {
