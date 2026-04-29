@@ -125,6 +125,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] PIM Produtos: campos composição, especificações técnicas e **embalagens** (JSON com validação)
 - [x] PIM Produtos — detalhe: seção **Indicações por Cultura** (cultura, estádio, dose/ha, observações)
 - [x] PIM Produtos — detalhe: `generateMetadata` usa nome real do banco (não slug derivado)
+- [x] PIM Produtos — editar: editor dinâmico **Indicações por Cultura** com add/remove por linha (não raw JSON)
 - [x] PIM Categorias: listar, criar, editar, excluir (bloqueio se houver produtos)
 - [x] Sidebar: Visão geral, Produtos, Categorias, **Academia**, logout com feedback
 - [x] Loading states (Skeleton) em todas as páginas assíncronas
@@ -136,6 +137,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Academia — TrilhaActions: botões Publicar / Arquivar direto no detalhe da trilha
 - [x] Academia — edição de módulo: `ModuloEditForm` + página `/[slug]/[mod]/editar` + link "Editar" em `ModuloActions`
 - [x] Academia — Loading states Skeleton em todas as páginas (lista, detalhe trilha, detalhe módulo)
+- [x] Academia — `certification_validity_days` exibido condicionalmente no formulário de trilha (novo + editar); `createTrilha` também salva os campos de certificação
 - [x] ADRs 0002–0006: multi-tenancy RLS, Drizzle ORM, connection pooling, Anthropic LLM, Trigger.dev
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
@@ -177,6 +179,9 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `generateMetadata` da lição usa título real do banco (title + track title)
 - [x] Indicadores de progresso na trilha: ✓ nas lições concluídas + contador "X/N"
 - [x] Emissão automática de certificação ao concluir todas as lições obrigatórias da trilha (`grants_certification` + `certification_no` `ARGHO-{ano}-{hex8}`, validade por `certification_validity_days`)
+- [x] Página de detalhe do certificado: `/meu-progresso/certificados/[certificateNo]` (layout visual com faixa, validade, expiração, link para trilha)
+- [x] Cards de certificação no `/meu-progresso` linkam para detalhe
+- [x] Loading state para página de certificado
 - [x] Páginas de erro e 404 globais
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
@@ -198,6 +203,8 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Botão "Sair" no `/conta` (signOut server action)
 - [x] Auth-aware header nav: "Entrar" para guests, "Minha Conta" + "Sair" para autenticados
 - [x] Busca por nome/tagline (`?q=`) e filtro por categoria (`?category=slug`) — URL params, sem JS
+- [x] Detalhe do produto: botão "Baixar Ficha Técnica (PDF)" para autenticados; CTA login com `?next=` para anônimos
+- [x] Loading state para `/conta` (skeleton)
 - [x] Páginas de erro: `not-found.tsx` (404) e `error.tsx` (error boundary)
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
