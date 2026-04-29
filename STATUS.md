@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (apps/academia MVP concluído — LMS trilhas + certificações)
-**Fase atual:** 1 — Admin PIM + Portal + Academia operacionais (3 de 4 apps)
-**Próximo milestone:** apps/api MVP + turbo dev monorepo end-to-end
+**Última atualização:** 2026-04-29 (apps/api MVP concluído — 4 de 4 apps Fase 1 completas)
+**Fase atual:** 1 — Todas as 4 apps Next.js operacionais ✅
+**Próximo milestone:** pnpm dev end-to-end + packages/generator (PDF de ficha técnica)
 
 ---
 
@@ -129,6 +129,19 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 
 ---
 
+## ✅ apps/api — MVP concluído (2026-04-29)
+
+### Funcionalidades entregues
+- [x] `GET /api/health` — health check com versão e timestamp
+- [x] `GET /api/v1/catalog` — catálogo público de produtos (ISR 5min, CORS *, RSC)
+- [x] `GET /api/v1/catalog/:slug` — detalhe do produto por slug
+- [x] `POST /api/webhooks/safra` — receiver com HMAC-SHA256 (X-Safra-Signature)
+- [x] Root page JSON com índice de endpoints
+- [x] `.env.example` atualizado com `SAFRA_WEBHOOK_SECRET`
+- [x] Biome 2.0 limpo + TypeScript strict 0 erros
+
+---
+
 ## ✅ apps/academia — MVP concluído (2026-04-29)
 
 ### Funcionalidades entregues
@@ -160,10 +173,10 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 ## 🏗️ Próximo — Fase 1 continuação
 
 ### Apps Next.js
-- [x] `apps/admin` — ✅ MVP completo (PIM + auth + dashboard)
-- [x] `apps/portal` — ✅ MVP completo (catálogo público + auth magic link + área do distribuidor)
-- [x] `apps/academia` — ✅ MVP completo (trilhas + lições + progresso + certificações)
-- [ ] `apps/api` — contratos públicos + integração Safra
+- [x] `apps/admin` — ✅ MVP completo (PIM + auth + dashboard) — porta 3000
+- [x] `apps/portal` — ✅ MVP completo (catálogo público + auth magic link + área do distribuidor) — porta 3001
+- [x] `apps/academia` — ✅ MVP completo (trilhas + lições + progresso + certificações) — porta 3002
+- [x] `apps/api` — ✅ MVP completo (catalog REST + health + webhook Safra HMAC) — porta 3003
 
 ### Pacotes core
 - [ ] `packages/tokens` — design tokens via Style Dictionary (extraídos do Xcensis)
