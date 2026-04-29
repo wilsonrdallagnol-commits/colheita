@@ -1,8 +1,17 @@
 // apps/portal/src/app/(public)/layout.tsx
+import { createServerClient } from '@colheita/auth';
+import { cookies } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { signOut } from '@/lib/actions/auth';
 
-export default function PublicLayout({ children }: { children: ReactNode }) {
+export default async function PublicLayout({ children }: { children: ReactNode }) {
+  const cookieStore = await cookies();
+  const supabase = createServerClient(cookieStore);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Top navigation */}
@@ -57,7 +66,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
             </span>
           </Link>
 
-          <nav style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+          <nav style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
             <Link
               href="/"
               style={{
@@ -68,6 +77,54 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
             >
               Produtos
             </Link>
+
+            {user ? (
+              <>
+                <Link
+                  href="/conta"
+                  style={{
+                    fontSize: '0.875rem',
+                    color: 'var(--colheita-text-secondary)',
+                    textDecoration: 'none',
+                  }}
+                >
+                  Minha Conta
+                </Link>
+                <form action={signOut} style={{ margin: 0 }}>
+                  <button
+                    type="submit"
+                    style={{
+                      padding: '6px 14px',
+                      borderRadius: 'var(--colheita-radius-md)',
+                      backgroundColor: 'transparent',
+                      color: 'var(--colheita-text-tertiary)',
+                      fontSize: '0.8125rem',
+                      fontWeight: '500',
+                      border: '1px solid var(--colheita-border)',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Sair
+                  </button>
+                </form>
+              </>
+            ) : (
+              <Link
+                href="/entrar"
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: 'var(--colheita-radius-md)',
+                  backgroundColor: 'var(--colheita-brand-primary)',
+                  color: 'white',
+                  fontSize: '0.8125rem',
+                  fontWeight: '600',
+                  textDecoration: 'none',
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                Entrar
+              </Link>
+            )}
           </nav>
         </div>
       </header>
