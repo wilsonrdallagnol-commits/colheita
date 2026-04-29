@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AiGenerator } from '../src/generator.js';
 import { RagPipeline } from '../src/pipeline.js';
 import { BM25InMemoryRetriever } from '../src/retriever.js';
-import type { AiAnswer, AiChunk, GenerationInput } from '../src/types.js';
+import type { AiAnswer, AiChunk, ConversationTurn, GenerationInput } from '../src/types.js';
 
 /** Extrai o argumento da primeira chamada ao generate (lança se não foi chamado). */
 function firstGenerateCall(gen: AiGenerator): GenerationInput {
@@ -138,5 +138,31 @@ describe('RagPipeline', () => {
     const answer = await pipeline.ask({ query: 'produto', tenantId: TENANT });
     expect(answer.usage.inputTokens).toBe(10);
     expect(answer.usage.outputTokens).toBe(5);
+  });
+
+  it('ask() com conversationHistory passa histórico ao generator', async () => {
+    await pipeline.index([makeChunk('Xcensis fertilizante agrícola.')]);
+
+    const history: ConversationTurn[] = [
+      { role: 'user', content: 'O que é Xcensis?' },
+      { role: 'assistant', content: 'Xcensis é um fertilizante foliar.' },
+    ];
+
+    await pipeline.ask({
+      query: 'Qual a dose recomendada?',
+      tenantId: TENANT,
+      conversationHistory: history,
+    });
+
+    const call = firstGenerateCall(generator);
+    expect(call.conversationHistory).toEqual(history);
+  });
+
+  it('ask() sem conversationHistory não passa histórico ao generator', async () => {
+    await pipeline.index([makeChunk('Produto agrícola.')]);
+    await pipeline.ask({ query: 'produto', tenantId: TENANT });
+
+    const call = firstGenerateCall(generator);
+    expect(call.conversationHistory).toBeUndefined();
   });
 });
