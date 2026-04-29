@@ -240,6 +240,41 @@ export async function createModulo(
   return null;
 }
 
+// ── updateModulo ──────────────────────────────────────────────────────────────
+
+export async function updateModulo(
+  id: string,
+  _prevState: ModuloFormState,
+  formData: FormData,
+): Promise<ModuloFormState> {
+  const cookieStore = await cookies();
+  await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  const title = String(formData.get('title') ?? '').trim();
+  const description = String(formData.get('description') ?? '').trim() || null;
+
+  if (!title) {
+    return { fieldErrors: { title: 'Título é obrigatório.' } };
+  }
+
+  const { error } = await supabase
+    .from('learning_modules')
+    .update({
+      title,
+      description,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id);
+
+  if (error) {
+    return { error: 'Erro ao salvar módulo.' };
+  }
+
+  revalidatePath('/academia');
+  return null;
+}
+
 // ── deleteModulo ──────────────────────────────────────────────────────────────
 
 export async function deleteModulo(id: string): Promise<{ error?: string }> {

@@ -7,6 +7,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
+  Button,
 } from '@colheita/ui';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
@@ -110,25 +111,34 @@ export default async function ModuloDetailPage({ params }: PageProps) {
       {/* Header */}
       <div
         style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: '16px',
           marginBottom: '32px',
         }}
       >
-        <h1
-          style={{
-            fontSize: '1.5rem',
-            fontWeight: '600',
-            color: 'var(--colheita-text-primary)',
-            letterSpacing: '-0.025em',
-            marginBottom: '4px',
-          }}
-        >
-          {modulo.title}
-        </h1>
-        {modulo.description && (
-          <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
-            {modulo.description}
-          </p>
-        )}
+        <div>
+          <h1
+            style={{
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              color: 'var(--colheita-text-primary)',
+              letterSpacing: '-0.025em',
+              marginBottom: '4px',
+            }}
+          >
+            {modulo.title}
+          </h1>
+          {modulo.description && (
+            <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
+              {modulo.description}
+            </p>
+          )}
+        </div>
+        <Button asChild variant="outline" size="sm" style={{ flexShrink: 0 }}>
+          <Link href={`/academia/${slug}/${moduloSlug}/editar`}>Editar módulo</Link>
+        </Button>
       </div>
 
       {/* Lições */}
