@@ -1,6 +1,6 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (Drizzle schema sync completo, /iniciar, auth nav, mark-complete fix)
+**Última atualização:** 2026-04-29 (admin academia CRUD completo — trilhas + módulos + lições)
 **Fase atual:** 1 — 4 apps + generator ✅ — fase encerrada
 **Próximo milestone:** pnpm dev end-to-end (Docker stack local) + packages/ui 16 componentes compiler (Fase 2)
 
@@ -124,8 +124,13 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] PIM Produtos: publicar, arquivar, reverter rascunho, com feedback de erro
 - [x] PIM Produtos: campos composição, especificações técnicas e **embalagens** (JSON com validação)
 - [x] PIM Categorias: listar, criar, editar, excluir (bloqueio se houver produtos)
-- [x] Sidebar: Visão geral, Produtos, Categorias, logout com feedback
+- [x] Sidebar: Visão geral, Produtos, Categorias, **Academia**, logout com feedback
 - [x] Loading states (Skeleton) em todas as páginas assíncronas
+- [x] Academia — Trilhas: listar, criar (`/academia/nova`), editar (`/academia/[slug]/editar`)
+- [x] Academia — Módulos: criar inline no detalhe da trilha, excluir (com cascade), link para detalhe
+- [x] Academia — Lições: listar no detalhe do módulo, criar inline, editar (`/[slug]/[mod]/[lic]/editar`), excluir
+- [x] Academia — Server actions: `createTrilha`, `updateTrilha`, `publishTrilha`, `archiveTrilha`, `createModulo`, `deleteModulo`, `createLicao`, `updateLicao`, `deleteLicao`
+- [x] Academia — Conteúdo dinâmico: artigo (Markdown), vídeo (URL), outros tipos via SDK
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
 ---

@@ -253,3 +253,141 @@ export async function deleteModulo(id: string): Promise<{ error?: string }> {
   revalidatePath('/academia');
   return {};
 }
+
+// ── LicaoFormState ────────────────────────────────────────────────────────────
+
+export type LicaoFormState = {
+  error?: string;
+  fieldErrors?: Partial<
+    Record<'title' | 'type' | 'estimated_minutes' | 'content_markdown' | 'content_url', string>
+  >;
+} | null;
+
+// ── createLicao ───────────────────────────────────────────────────────────────
+
+export async function createLicao(
+  moduleId: string,
+  _prevState: LicaoFormState,
+  formData: FormData,
+): Promise<LicaoFormState> {
+  const cookieStore = await cookies();
+  await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  const title = String(formData.get('title') ?? '').trim();
+  const type = String(formData.get('type') ?? 'article').trim();
+  const estimatedMinutesRaw = String(formData.get('estimated_minutes') ?? '').trim();
+  const estimatedMinutes = estimatedMinutesRaw ? Number(estimatedMinutesRaw) : null;
+  const isRequired = formData.get('is_required') === 'true';
+  const sortOrderRaw = String(formData.get('sort_order') ?? '0').trim();
+  const sortOrder = Number.isNaN(Number(sortOrderRaw)) ? 0 : Number(sortOrderRaw);
+
+  if (!title) {
+    return { fieldErrors: { title: 'Título é obrigatório.' } };
+  }
+
+  const slug = slugify(title);
+  if (!slug) {
+    return { fieldErrors: { title: 'Título inválido — não gerou um slug válido.' } };
+  }
+
+  // Build content JSONB based on type
+  let content: Record<string, unknown> = {};
+  if (type === 'article') {
+    const markdown = String(formData.get('content_markdown') ?? '').trim();
+    content = { markdown };
+  } else if (type === 'video') {
+    const url = String(formData.get('content_url') ?? '').trim();
+    content = { url };
+  }
+
+  const tenantId = await getTenantId(supabase);
+  if (!tenantId) return { error: 'Tenant não encontrado.' };
+
+  const { error } = await supabase.from('learning_lessons').insert({
+    slug,
+    title,
+    type,
+    content,
+    estimated_minutes: estimatedMinutes,
+    is_required: isRequired,
+    sort_order: sortOrder,
+    module_id: moduleId,
+    tenant_id: tenantId,
+  });
+
+  if (error) {
+    if (error.code === '23505') {
+      return { fieldErrors: { title: 'Já existe uma lição com esse título neste módulo.' } };
+    }
+    return { error: 'Erro ao criar lição.' };
+  }
+
+  revalidatePath('/academia');
+  return null;
+}
+
+// ── updateLicao ───────────────────────────────────────────────────────────────
+
+export async function updateLicao(
+  id: string,
+  _prevState: LicaoFormState,
+  formData: FormData,
+): Promise<LicaoFormState> {
+  const cookieStore = await cookies();
+  await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  const title = String(formData.get('title') ?? '').trim();
+  const type = String(formData.get('type') ?? 'article').trim();
+  const estimatedMinutesRaw = String(formData.get('estimated_minutes') ?? '').trim();
+  const estimatedMinutes = estimatedMinutesRaw ? Number(estimatedMinutesRaw) : null;
+  const isRequired = formData.get('is_required') === 'true';
+
+  if (!title) {
+    return { fieldErrors: { title: 'Título é obrigatório.' } };
+  }
+
+  // Build content JSONB based on type
+  let content: Record<string, unknown> = {};
+  if (type === 'article') {
+    const markdown = String(formData.get('content_markdown') ?? '').trim();
+    content = { markdown };
+  } else if (type === 'video') {
+    const url = String(formData.get('content_url') ?? '').trim();
+    content = { url };
+  }
+
+  const { error } = await supabase
+    .from('learning_lessons')
+    .update({
+      title,
+      type,
+      content,
+      estimated_minutes: estimatedMinutes,
+      is_required: isRequired,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id);
+
+  if (error) {
+    return { error: 'Erro ao salvar lição.' };
+  }
+
+  revalidatePath('/academia');
+  return null;
+}
+
+// ── deleteLicao ───────────────────────────────────────────────────────────────
+
+export async function deleteLicao(id: string): Promise<{ error?: string }> {
+  const cookieStore = await cookies();
+  await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  const { error } = await supabase.from('learning_lessons').delete().eq('id', id);
+  if (error) return { error: 'Erro ao excluir lição.' };
+
+  revalidatePath('/academia');
+  return {};
+}

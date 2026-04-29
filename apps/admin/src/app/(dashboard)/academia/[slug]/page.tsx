@@ -198,16 +198,18 @@ export default async function TrilhaDetailPage({ params }: PageProps) {
                       >
                         {String(idx + 1).padStart(2, '0')}
                       </span>
-                      <span
+                      <Link
+                        href={`/academia/${slug}/${mod.slug}`}
                         style={{
                           fontSize: '0.9375rem',
                           fontWeight: '600',
                           color: 'var(--colheita-text-primary)',
                           letterSpacing: '-0.01em',
+                          textDecoration: 'none',
                         }}
                       >
                         {mod.title}
-                      </span>
+                      </Link>
                     </div>
                     {mod.description && (
                       <p
