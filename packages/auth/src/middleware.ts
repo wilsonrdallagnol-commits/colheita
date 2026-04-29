@@ -41,7 +41,7 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   }
 
   if (user && pathname === '/login') {
-    return NextResponse.redirect(new URL('/produtos', request.url));
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   return supabaseResponse;

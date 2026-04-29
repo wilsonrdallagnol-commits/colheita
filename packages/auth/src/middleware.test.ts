@@ -141,14 +141,14 @@ describe('rotas protegidas sem usuário autenticado', () => {
 // ── Rotas com usuário autenticado ─────────────────────────────────────────────
 
 describe('usuário autenticado', () => {
-  test('redireciona /login para /produtos quando o usuário já está logado', async () => {
+  test('redireciona /login para / (dashboard) quando o usuário já está logado', async () => {
     mockGetUser.mockResolvedValue({ data: { user: MOCK_USER }, error: null });
 
     await updateSession(makeRequest('http://localhost:3000/login'));
 
     expect(mockNextResponseRedirect).toHaveBeenCalledOnce();
     const redirectUrl: URL = mockNextResponseRedirect.mock.calls[0]?.[0] as URL;
-    expect(redirectUrl.pathname).toBe('/produtos');
+    expect(redirectUrl.pathname).toBe('/');
   });
 
   test('permite acesso a /produtos quando o usuário está autenticado', async () => {
