@@ -1,4 +1,5 @@
 -- infra/supabase/migrations/0010_public_read_policies.down.sql
+DROP POLICY IF EXISTS tenants_public_select ON public.tenants;
 DROP POLICY IF EXISTS product_categories_public_select ON public.product_categories;
 DROP POLICY IF EXISTS products_public_select ON public.products;
 DROP POLICY IF EXISTS regulatory_public_select ON public.regulatory_registrations;

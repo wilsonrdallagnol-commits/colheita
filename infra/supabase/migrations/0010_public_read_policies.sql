@@ -13,8 +13,19 @@
 --   autenticação. As políticas existentes (tenant_id = auth.tenant_id())
 --   continuam funcionando para usuários autenticados (OR semântico do RLS).
 --
--- Escopo: produtos publicados + conteúdo de aprendizado publicado.
+-- Escopo: tenants ativos + produtos publicados + conteúdo de aprendizado publicado.
 -- Tabelas sensíveis (users, roles, assets, audit_events) permanecem privadas.
+--
+-- IMPORTANTE: a política de tenants_public deve vir ANTES das demais porque as
+-- subqueries de produtos/trilhas fazem EXISTS em tenants. Sem essa política,
+-- o role anon não consegue SELECT em tenants e as subqueries retornam vazio.
+
+-- ============================================================================
+-- TENANTS — leitura pública de tenants ativos (necessária para subqueries abaixo)
+-- ============================================================================
+CREATE POLICY tenants_public_select ON public.tenants
+  FOR SELECT
+  USING (status = 'active');
 
 -- ============================================================================
 -- PRODUTO CATEGORIES — leitura pública (necessário para filtros no portal)
