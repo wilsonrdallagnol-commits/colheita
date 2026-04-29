@@ -1,6 +1,7 @@
 // apps/admin/src/app/(dashboard)/produtos/[slug]/ficha-tecnica/route.ts
 import { createServerClient, requireAuth } from '@colheita/auth';
 import type { ProductComposition, ProductPackaging } from '@colheita/db';
+import type { ProductApplication } from '@colheita/generator';
 import { generateFichaTecnica } from '@colheita/generator';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
@@ -27,7 +28,7 @@ export async function GET(_request: NextRequest, context: RouteContext) {
     supabase
       .from('products')
       .select(
-        `name, tagline, description, composition, technical_specs, packaging,
+        `name, tagline, description, composition, technical_specs, packaging, applications,
          registrations:regulatory_registrations(registration_no)`,
       )
       .eq('slug', slug)
@@ -48,6 +49,7 @@ export async function GET(_request: NextRequest, context: RouteContext) {
   const composition = (product.composition ?? {}) as ProductComposition;
   const technicalSpecs = (product.technical_specs ?? {}) as Record<string, unknown>;
   const packaging = (product.packaging ?? []) as ProductPackaging;
+  const applications = (product.applications ?? []) as ProductApplication[];
 
   const { pdf } = await generateFichaTecnica({
     productName: product.name,
@@ -65,7 +67,7 @@ export async function GET(_request: NextRequest, context: RouteContext) {
       volumeL: p.volumeL,
       sku: p.sku,
     })),
-    applications: [],
+    applications,
     tenantName: tenant?.name ?? 'Argho AgriSciences',
     tenantLogoUrl: tenant?.logo_url ?? undefined,
     mapaRegistration: registration?.registration_no ?? undefined,
