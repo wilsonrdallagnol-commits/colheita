@@ -24,6 +24,8 @@ interface ProdutoFormProps {
     tagline?: string | null;
     description?: string | null;
     category_id?: string | null;
+    composition?: Record<string, unknown> | null;
+    technical_specs?: Record<string, unknown> | null;
   };
 }
 
@@ -67,6 +69,8 @@ export function ProdutoForm({
   const taglineId = `${uid}-tagline`;
   const categoryId = `${uid}-category`;
   const descriptionId = `${uid}-description`;
+  const compositionId = `${uid}-composition`;
+  const technicalSpecsId = `${uid}-technical-specs`;
 
   return (
     <form action={formAction} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -173,6 +177,62 @@ export function ProdutoForm({
         />
         {state?.fieldErrors?.description && (
           <p style={errorStyle}>{state.fieldErrors.description}</p>
+        )}
+      </div>
+
+      {/* Composição (JSON) */}
+      <div>
+        <label htmlFor={compositionId} style={labelStyle}>
+          Composição{' '}
+          <span
+            style={{ fontSize: '0.75rem', fontWeight: 400, color: 'var(--colheita-text-tertiary)' }}
+          >
+            (JSON)
+          </span>
+        </label>
+        <Textarea
+          id={compositionId}
+          name="composition"
+          rows={6}
+          disabled={pending}
+          defaultValue={
+            defaultValues.composition && Object.keys(defaultValues.composition).length > 0
+              ? JSON.stringify(defaultValues.composition, null, 2)
+              : ''
+          }
+          placeholder={'{\n  "Boro": "0,75%",\n  "Manganês": "2,0%"\n}'}
+          style={{ fontFamily: 'monospace', fontSize: '0.8125rem' }}
+        />
+        {state?.fieldErrors?.composition && (
+          <p style={errorStyle}>{state.fieldErrors.composition}</p>
+        )}
+      </div>
+
+      {/* Especificações técnicas (JSON) */}
+      <div>
+        <label htmlFor={technicalSpecsId} style={labelStyle}>
+          Especificações técnicas{' '}
+          <span
+            style={{ fontSize: '0.75rem', fontWeight: 400, color: 'var(--colheita-text-tertiary)' }}
+          >
+            (JSON)
+          </span>
+        </label>
+        <Textarea
+          id={technicalSpecsId}
+          name="technical_specs"
+          rows={6}
+          disabled={pending}
+          defaultValue={
+            defaultValues.technical_specs && Object.keys(defaultValues.technical_specs).length > 0
+              ? JSON.stringify(defaultValues.technical_specs, null, 2)
+              : ''
+          }
+          placeholder={'{\n  "Densidade": "1,35 g/mL",\n  "pH": "6,0 – 7,0"\n}'}
+          style={{ fontFamily: 'monospace', fontSize: '0.8125rem' }}
+        />
+        {state?.fieldErrors?.technical_specs && (
+          <p style={errorStyle}>{state.fieldErrors.technical_specs}</p>
         )}
       </div>
 

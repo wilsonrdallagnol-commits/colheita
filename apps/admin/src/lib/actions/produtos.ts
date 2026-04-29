@@ -10,7 +10,12 @@ import { redirect } from 'next/navigation';
 
 export type ProdutoFormState = {
   error?: string;
-  fieldErrors?: Partial<Record<'name' | 'tagline' | 'description' | 'category_id', string>>;
+  fieldErrors?: Partial<
+    Record<
+      'name' | 'tagline' | 'description' | 'category_id' | 'composition' | 'technical_specs',
+      string
+    >
+  >;
 } | null;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -98,9 +103,25 @@ export async function updateProduto(
   const tagline = String(formData.get('tagline') ?? '').trim() || null;
   const description = String(formData.get('description') ?? '').trim() || null;
   const categoryId = String(formData.get('category_id') ?? '').trim() || null;
+  const compositionRaw = String(formData.get('composition') ?? '{}').trim() || '{}';
+  const technicalSpecsRaw = String(formData.get('technical_specs') ?? '{}').trim() || '{}';
 
   if (!name) {
     return { fieldErrors: { name: 'Nome é obrigatório.' } };
+  }
+
+  // Valida e parseia JSON dos campos avançados
+  let composition: Record<string, unknown>;
+  let technicalSpecs: Record<string, unknown>;
+  try {
+    composition = JSON.parse(compositionRaw) as Record<string, unknown>;
+  } catch {
+    return { fieldErrors: { composition: 'JSON inválido. Verifique a formatação.' } };
+  }
+  try {
+    technicalSpecs = JSON.parse(technicalSpecsRaw) as Record<string, unknown>;
+  } catch {
+    return { fieldErrors: { technical_specs: 'JSON inválido. Verifique a formatação.' } };
   }
 
   const { error } = await supabase
@@ -110,6 +131,8 @@ export async function updateProduto(
       tagline,
       description,
       category_id: categoryId,
+      composition,
+      technical_specs: technicalSpecs,
       updated_at: new Date().toISOString(),
     })
     .eq('slug', slug)
