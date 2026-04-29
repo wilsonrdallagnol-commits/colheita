@@ -534,6 +534,408 @@ const PRODUCTS = [
 ] as const;
 
 // ============================================================================
+// Academia — Trilhas, Módulos e Lições
+// ============================================================================
+
+const TRACKS = [
+  {
+    slug: 'micronutrientes-na-agricultura',
+    title: 'Micronutrientes na Agricultura Moderna',
+    subtitle: 'Fundamentos, deficiências e correção com produtos de alta eficiência',
+    description:
+      'Trilha completa sobre o papel dos micronutrientes na nutrição vegetal, diagnóstico de deficiências e correção com fertilizantes minerais complexados. Ao final, o aluno será capaz de indicar o produto certo para cada situação.',
+    audience: ['Vendedores Técnicos', 'Distribuidores', 'Técnicos Agrícolas'],
+    level: 'beginner' as const,
+    estimated_minutes: 90,
+    grants_certification: true,
+    certification_validity_days: 730,
+    sort_order: 1,
+    modules: [
+      {
+        slug: 'fundamentos-de-micronutrientes',
+        title: 'Fundamentos dos Micronutrientes',
+        description: 'O que são, por que importam e como diagnosticar deficiências no campo.',
+        sort_order: 1,
+        lessons: [
+          {
+            slug: 'o-que-sao-micronutrientes',
+            title: 'O Que São Micronutrientes?',
+            type: 'article' as const,
+            estimated_minutes: 10,
+            is_required: true,
+            sort_order: 1,
+            content: {
+              markdown: `# O Que São Micronutrientes?
+
+Micronutrientes são elementos essenciais absorvidos pelas plantas em pequenas quantidades — tipicamente menos de 100 mg/kg de matéria seca. Apesar da quantidade diminuta, sua ausência compromete funções metabólicas críticas que não podem ser substituídas por nenhum outro elemento.
+
+## Os 8 micronutrientes essenciais
+
+| Elemento | Símbolo | Função principal |
+|---|---|---|
+| Boro | B | Formação de parede celular, polinização, transporte de açúcares |
+| Cobre | Cu | Fotossíntese, síntese de lignina, respiração celular |
+| Ferro | Fe | Síntese de clorofila, transporte de elétrons |
+| Manganês | Mn | Fotossíntese (fotossistema II), ativação enzimática |
+| Molibdênio | Mo | Fixação biológica de N, redução de nitrato |
+| Zinco | Zn | Síntese de auxinas, ativação de mais de 300 enzimas |
+| Cloro | Cl | Osmorregulaçãoo, turgor |
+| Níquel | Ni | Metabolismo do nitrogênio (urease) |
+
+## Por que a quantidade não é tudo
+
+A relação entre micronutrientes e produtividade não é linear. A **Lei do Mínimo de Liebig** ainda se aplica: o crescimento é limitado pelo nutriente mais escasso, independentemente da abundância dos demais.
+
+Em solos com alta tecnologia agronômica — alta produtividade, alta exportação de grãos, sistema radicular comprimido por compactação — os micronutrientes se tornam fatores limitantes com frequência crescente.
+
+## Formas de fornecimento
+
+Há três formas principais de fornecer micronutrientes:
+
+1. **Via Solo**: maior reservatório, mas disponibilidade limitada por pH, oxidação e imobilização.
+2. **Via Semente**: eficiente para Mo e Zn em doses baixas.
+3. **Via Foliar**: rota direta — contorna limitações do solo. É aqui que os produtos Argho se destacam.
+
+A foliar é especialmente eficiente quando o solo está limitante (seca, pH inadequado, compactação) ou quando a demanda é pontual e intensa (florescimento, enchimento de grãos).`,
+            },
+          },
+          {
+            slug: 'diagnostico-de-deficiencias',
+            title: 'Diagnóstico de Deficiências no Campo',
+            type: 'article' as const,
+            estimated_minutes: 15,
+            is_required: true,
+            sort_order: 2,
+            content: {
+              markdown: `# Diagnóstico de Deficiências no Campo
+
+Identificar deficiências de micronutrientes precocemente é o que separa um programa nutricional reativo de um proativo. Os sintomas visuais surgem após a deficiência já ter impactado a fisiologia da planta — antecipar via análise foliar e histórico de área é sempre mais eficiente.
+
+## Sintomas visuais por elemento
+
+### Ferro (Fe)
+**Clorose internerval em folhas novas.** O Fe é pouco móvel no floema — quando falta, os tecidos jovens são afetados primeiro. Soja em solos com pH elevado é altamente suscetível.
+
+### Manganês (Mn)
+**Clorose internerval com manutenção do verde nas nervuras** — diferente do Fe, o Mn causa um mosaico mais difuso. Frequente em solos arenosos e com alto pH.
+
+### Zinco (Zn)
+**Folhas pequenas, entrenós curtos, bronzeamento em milho.** O Zn inibe a síntese de auxinas (IAA), causando internódios curtos ("canivete" em milho jovem).
+
+### Boro (B)
+**Morte do meristema apical, frutos deformados, casca rachada.** O B é essencial para a elongação celular e polinização. Em soja: vagens vazias e irregulares.
+
+### Cobre (Cu)
+**Folhas enroladas, azuladas ou com manchas necróticas nas pontas.** Frequente em solos orgânicos onde o Cu é quelado pela matéria orgânica.
+
+### Molibdênio (Mo)
+**Clorose generalizada + margeamento em folhas mais velhas (Mb é móvel).** Crítico para fixação de N em soja — deficiência de Mo mimetiza deficiência de N.
+
+## Análise foliar: o método objetivo
+
+A visualização de sintomas é útil, mas a análise foliar quantifica a real disponibilidade do elemento na planta:
+
+- **Coleta**: folha diagnóstica (3° folha do topo) em estádio específico por cultura
+- **Timing**: durante período crítico de demanda
+- **Interpretação**: comparar com faixas de suficiência da literatura (EMBRAPA, IAC)
+
+O ideal é cruzar análise foliar com análise de solo para entender se o problema é de disponibilidade no solo ou de absorção pela planta.`,
+            },
+          },
+        ],
+      },
+      {
+        slug: 'xcensis-aplicacoes-e-resultados',
+        title: 'Xcensis — Aplicações e Resultados',
+        description: 'Protocolo de uso, doses e resultados documentados do Xcensis em campo.',
+        sort_order: 2,
+        lessons: [
+          {
+            slug: 'xcensis-perfil-do-produto',
+            title: 'Xcensis — Perfil Completo do Produto',
+            type: 'article' as const,
+            estimated_minutes: 12,
+            is_required: true,
+            sort_order: 1,
+            content: {
+              markdown: `# Xcensis — Perfil Completo do Produto
+
+**Número de Registro MAPA: PR 002049-4.000006**
+
+## O que é o Xcensis?
+
+O Xcensis é um fertilizante mineral misto com formulação europeia (Espanha) especialmente desenvolvido para fornecer múltiplos micronutrientes via foliar e fertirrigação com alta eficiência de absorção.
+
+## Composição Garantida
+
+| Nutriente | Teor | Complexante |
+|---|---|---|
+| Ferro (Fe) | 7,0% | EDTA + Lignossulfonatos |
+| Manganês (Mn) | 3,5% | EDTA + Lignossulfonatos |
+| Zinco (Zn) | 0,8% | EDTA + Lignossulfonatos |
+| Boro (B) | 0,7% | Sacarídeos |
+| Cobre (Cu) | 0,4% | EDTA |
+| Molibdênio (Mo) | 0,3% | — |
+| Potássio (K₂O) | 4,0% | — |
+
+## Por que a complexação importa?
+
+Os micronutrientes no Xcensis são complexados com **EDTA (Etilenodiaminotetraacético)** e **Lignossulfonatos** — moléculas orgânicas que formam anéis ao redor do íon metálico, protegendo-o de:
+
+- **Precipitação**: o Fe2+ livre oxida a Fe3+ e precipita rapidamente. Complexado, mantém-se solúvel.
+- **Antagonismo iônico**: Ca²⁺ e Mg²⁺ em alta concentração competem com micronutrientes na absorção foliar. O complexo EDTA reduz esse efeito.
+- **Degradação UV**: em caldas expostas ao sol, micronutrientes livres degradam mais rápido.
+
+## pH 6 — compatibilidade com biológicos
+
+O pH 6 do Xcensis é cuidadosamente controlado para:
+1. Manter a solubilidade de todos os micronutrientes
+2. Ser compatível com a maioria dos biológicos (Bacillus spp. prosperam entre pH 6–8)
+3. Minimizar corrosão de tanques e bicos
+
+## Apresentações comerciais
+
+- **Saco 1 kg** (SKU: XCENSIS-1KG): ideal para testes em parcelas e pequenas áreas
+- **Saco 5 kg** (SKU: XCENSIS-5KG): volume para propriedades médias
+
+## Dose e modo de aplicação
+
+| Cultura | Estádio | Dose | Intervalo |
+|---|---|---|---|
+| Soja | V3–R1 | 300–500 g/ha | 14–21 dias |
+| Milho | V4–VT | 400–600 g/ha | 14–21 dias |
+| Café | Vegetativo/Granação | 500–700 g/ha | 21–28 dias |
+| Hortaliças | Todas as fases | 300–400 g/ha | 7–14 dias |
+
+Misturar em calda com adjuvante Operate Plus (100 mL/100 L de calda) para maximizar cobertura e penetração foliar.`,
+            },
+          },
+          {
+            slug: 'xcensis-programa-nutricional',
+            title: 'Montando um Programa Nutricional com Xcensis',
+            type: 'article' as const,
+            estimated_minutes: 15,
+            is_required: true,
+            sort_order: 2,
+            content: {
+              markdown: `# Montando um Programa Nutricional com Xcensis
+
+## O conceito de programa nutricional
+
+Aplicação única raramente resolve deficiências crônicas. Um programa nutricional eficaz distribui as aplicações ao longo do ciclo da cultura, suprindo a demanda no momento de maior necessidade fisiológica.
+
+## Programa básico para soja
+
+**Objetivo**: garantir suprimento de micronutrientes desde a emergência até o enchimento de grãos.
+
+### Aplicação 1 — V3 (3 folhas trifolioladas)
+- **Produto**: Xcensis 400 g/ha
+- **Mistura**: Algen 0,5 L/ha + Operate Plus 100 mL/100 L
+- **Objetivo**: estimular sistema radicular (P + K do Algen) + corrigir micronutrientes iniciais
+
+### Aplicação 2 — V6
+- **Produto**: Xcensis 500 g/ha + Stron 0,5 L/ha
+- **Objetivo**: manutenção nutricional + NPK em dose baixa para intensificar metabolismo
+
+### Aplicação 3 — R1 (início do florescimento)
+- **Produto**: Xcensis 400 g/ha + Grow Mob 400 g/ha
+- **Objetivo**: B e Mo para florescimento + fixação biológica de N
+
+### Aplicação 4 — R3 (início do enchimento)
+- **Produto**: Grow Filling 400 g/ha
+- **Objetivo**: K concentrado para enchimento de grãos
+
+## Mistura em tanque — checklist
+
+Antes de preparar a calda:
+- [ ] Verificar pH da água (ideal 5,5–6,5). Se necessário, usar Operate Plus para corrigir
+- [ ] Ordem de adição: água → produtos sólidos → líquidos → adjuvante por último
+- [ ] Fazer teste de jar (mistura em balde de 5 L antes do tanque)
+- [ ] Observar temperatura (acima de 30°C aumenta risco de precipitação)
+
+## Compatibilidade
+
+O Xcensis é **compatível** com:
+- Troian e Biovas (biológicos Bacillus)
+- Stron, Grow Filling, Grow Calcium, Grow Mob
+- A maioria dos fungicidas e inseticidas (verificar bula)
+
+**Evitar** mistura com:
+- Fosfatos concentrados (risco de precipitação de micronutrientes)
+- Produtos com pH < 4 (desnaturação dos complexantes)`,
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'nutricao-foliar-de-alta-eficiencia',
+    title: 'Nutrição Foliar de Alta Eficiência',
+    subtitle: 'Princípios, tecnologias e resultados práticos com o portfólio Argho',
+    description:
+      'Trilha intermediária que aprofunda os princípios da nutrição foliar e apresenta o portfólio completo de nutrição Argho. Para quem já conhece os fundamentos e quer dominar a argumentação técnica de vendas.',
+    audience: ['Vendedores Técnicos', 'Técnicos Agrícolas'],
+    level: 'intermediate' as const,
+    estimated_minutes: 120,
+    grants_certification: true,
+    certification_validity_days: 365,
+    sort_order: 2,
+    modules: [
+      {
+        slug: 'principios-da-nutricao-foliar',
+        title: 'Princípios da Nutrição Foliar',
+        description: 'Como os nutrientes penetram na folha e o que determina a eficiência.',
+        sort_order: 1,
+        lessons: [
+          {
+            slug: 'como-nutrientes-penetram-na-folha',
+            title: 'Como os Nutrientes Penetram na Folha',
+            type: 'article' as const,
+            estimated_minutes: 15,
+            is_required: true,
+            sort_order: 1,
+            content: {
+              markdown: `# Como os Nutrientes Penetram na Folha
+
+A nutrição foliar é frequentemente mal compreendida no mercado. Não é "qualquer líquido jogado na planta" — é uma rota metabólica específica com princípios biofísicos bem definidos.
+
+## A cutícula: a principal barreira
+
+A superfície foliar é coberta por uma cutícula composta por:
+- **Ceras epicuticulares**: camada exterior hidrofóbica (barreira primária)
+- **Cutina**: polímero de ácidos graxos (barreira secundária)
+- **Pectina**: zona aquosa na base (via de entrada de íons hidrofílicos)
+
+## Duas vias de entrada
+
+### Via estomática
+Os estômatos são poros naturais para trocas gasosas. São hidrofílicos e permitem entrada de soluções aquosas. **Limitação**: fecham com calor (acima de 30°C) e durante a noite.
+
+**Recomendação prática**: aplicar nas horas mais frescas do dia — cedo pela manhã ou fim da tarde. Temperatura de calda abaixo de 28°C.
+
+### Via cuticular apoplástica
+Íons podem penetrar através de "buracos aquosos" (aqueous pores) na cutícula. Esta via é favorecida por:
+- **Tamanho molecular pequeno**: moléculas menores penetram mais
+- **Surfactantes**: reduzem a tensão superficial, aumentando molhamento e penetração
+- **Hidratação da cera**: temperaturas amenas + umidade relativa acima de 60%
+
+## O papel dos adjuvantes
+
+Aqui entra o Operate Plus. Um adjuvante espalhante adesivo:
+1. **Reduz tensão superficial** de ~70 mN/m (água pura) para ~30 mN/m
+2. **Aumenta área de cobertura**: gotas se espalham em vez de escorrer
+3. **Prolonga tempo de secagem**: mais tempo de contato = mais absorção
+4. **Corrige pH**: pH ácido favorece a forma não ionizada de muitos nutrientes (maior lipossolubilidade)
+
+## Fatores que determinam eficiência
+
+| Fator | Impacto | Recomendação |
+|---|---|---|
+| Temperatura | Alto | Aplicar abaixo de 28°C |
+| Umidade relativa | Alto | >60% UR ideal |
+| Estádio da planta | Médio | Folhas jovens absorvem mais |
+| pH da calda | Alto | 5,5–6,5 ideal |
+| Tamanho de gota | Alto | 200–400 μm, cobertura uniforme |
+| Adjuvante | Muito alto | Sempre usar com foliar |`,
+            },
+          },
+        ],
+      },
+      {
+        slug: 'portfolio-foliar-argho',
+        title: 'Portfólio de Nutrição Foliar Argho',
+        description: 'Cada produto, quando usar e como argumentar tecnicamente.',
+        sort_order: 2,
+        lessons: [
+          {
+            slug: 'npk-foliar-stron',
+            title: 'NPK Foliar: Stron e suas Aplicações',
+            type: 'article' as const,
+            estimated_minutes: 12,
+            is_required: true,
+            sort_order: 1,
+            content: {
+              markdown: `# NPK Foliar: Stron e suas Aplicações
+
+## O que é o Stron?
+
+O **Stron** (N 4,5% | P₂O₅ 2% | K₂O 7,2%) é um fertilizante mineral misto fluido com NPK equilibrado para nutrição foliar, enriquecido com **aminoácidos** e **ácidos carboxílicos** de origem orgânica.
+
+**Registro MAPA: PR 002049-4.000014**
+
+## Diferenciais técnicos
+
+### Aminoácidos: mais que um rótulo
+Os aminoácidos no Stron (de origem hidrolisada) não são apenas "biostimulantes de marketing". Eles:
+- Fornecem N pré-formado (não precisa de fixação ou redução de nitrato)
+- Atuam como agentes quelantes fracos, melhorando a absorção de cátions
+- Estimulam atividade rizosférica quando chegam ao solo via escorrimento
+
+### Ácidos carboxílicos
+Aumentam a permeabilidade da cutícula e agem como veículo para os íons NPK — similar ao mecanismo de surfactante natural.
+
+## Quando usar Stron?
+
+### Situação 1: Demanda intensa de K no enchimento
+O K₂O 7,2% posiciona o Stron como suporte ao Grow Filling em programas mais intensivos. Combinar: **Stron 0,5 L/ha + Grow Filling 300 g/ha** em R3.
+
+### Situação 2: Corrida de safra — produto único para NPK
+Em situações de logística difícil ou baixo custo por hectare, o Stron oferece N+P+K em um único produto. Dose: 1–1,5 L/ha.
+
+### Situação 3: Pós-estresse
+Após geadas, granizos ou períodos de seca, o N+aminoácidos do Stron acelera a recuperação metabólica da planta.
+
+## Embalagens
+- Frasco 1 L (SKU: STRON-1L)
+- Tambor 20 L (SKU: STRON-20L)`,
+            },
+          },
+          {
+            slug: 'potassio-para-enchimento-grow-filling',
+            title: 'Potássio para Enchimento de Grãos: Grow Filling',
+            type: 'article' as const,
+            estimated_minutes: 10,
+            is_required: true,
+            sort_order: 2,
+            content: {
+              markdown: `# Potássio para Enchimento de Grãos: Grow Filling
+
+## O diferencial do K₂O 35%
+
+O **Grow Filling** (N 2% | K₂O 35%) é o produto mais concentrado em potássio do portfólio Argho. Com 35% de K₂O na formulação sólida, uma dose de 500 g/ha fornece 175 g de K₂O por hectare — equivalente a aplicações via solo que levam semanas para serem absorvidas.
+
+**Registro MAPA: PR 002049-4.000003**
+
+## Por que K no enchimento de grãos?
+
+Durante R3–R6 (enchimento) em soja, a demanda de K é máxima porque:
+1. **Transporte de fotoassimilados**: K é essencial para a abertura e fechamento do floema (carregamento de sacarose para os grãos)
+2. **Qualidade proteica**: K regula a síntese de proteínas de reserva
+3. **Turgor celular**: mantém as vagens tensionadas, reduzindo aborto de sementes
+
+Em solos com histórico de alta produtividade, o K disponível pode ser esgotado antes do final do ciclo — especialmente em solos arenosos com alta lixiviação.
+
+## Aplicação prática
+
+**Dose**: 400–600 g/ha
+**Estádio**: R3 (início do enchimento) em soja; R4–R5 em milho
+**Mistura**: Grow Filling + Xcensis (micronutrientes) + Operate Plus
+
+A combinação Grow Filling + Xcensis é chamada de "dupla final" no portfólio Argho — K concentrado + micronutrientes quelados em uma só passagem.
+
+## Forma sólida — por quê?
+
+A forma sólida permite maior concentração de K₂O sem os problemas de viscosidade e pH que líquidos concentrados em K teriam. Dissolve completamente em água a 20°C em menos de 2 minutos com agitação leve.`,
+            },
+          },
+        ],
+      },
+    ],
+  },
+] as const;
+
+// ============================================================================
 // Seed runner
 // ============================================================================
 async function run() {
@@ -610,8 +1012,94 @@ async function run() {
       console.log(`  ✅  Produto: ${product.name}`);
     }
 
+    // ── Trilhas de aprendizado ────────────────────────────────────────────
+    let totalLessons = 0;
+    for (const track of TRACKS) {
+      const [trackRow] = await sql`
+        INSERT INTO public.learning_tracks (
+          tenant_id, slug, title, subtitle, description,
+          audience, level, estimated_minutes,
+          grants_certification, certification_validity_days,
+          sort_order, status, published_at
+        )
+        VALUES (
+          ${tenantId},
+          ${track.slug},
+          ${track.title},
+          ${track.subtitle},
+          ${track.description},
+          ${sql.array(track.audience as unknown as string[])},
+          ${track.level},
+          ${track.estimated_minutes},
+          ${track.grants_certification},
+          ${track.certification_validity_days},
+          ${track.sort_order},
+          'published',
+          now()
+        )
+        ON CONFLICT (tenant_id, slug) DO UPDATE
+          SET
+            title                        = EXCLUDED.title,
+            subtitle                     = EXCLUDED.subtitle,
+            description                  = EXCLUDED.description,
+            level                        = EXCLUDED.level,
+            estimated_minutes            = EXCLUDED.estimated_minutes,
+            grants_certification         = EXCLUDED.grants_certification,
+            certification_validity_days  = EXCLUDED.certification_validity_days,
+            sort_order                   = EXCLUDED.sort_order,
+            updated_at                   = now()
+        RETURNING id, slug
+      `;
+      const trackId = trackRow?.id as string;
+      console.log(`  ✅  Trilha: ${track.title}`);
+
+      for (const mod of track.modules) {
+        const [modRow] = await sql`
+          INSERT INTO public.learning_modules (
+            tenant_id, track_id, slug, title, description, sort_order
+          )
+          VALUES (
+            ${tenantId}, ${trackId}, ${mod.slug},
+            ${mod.title}, ${mod.description}, ${mod.sort_order}
+          )
+          ON CONFLICT (track_id, slug) DO UPDATE
+            SET title = EXCLUDED.title,
+                description = EXCLUDED.description,
+                sort_order = EXCLUDED.sort_order,
+                updated_at = now()
+          RETURNING id, slug
+        `;
+        const moduleId = modRow?.id as string;
+
+        for (const lesson of mod.lessons) {
+          await sql`
+            INSERT INTO public.learning_lessons (
+              tenant_id, module_id, slug, title, type,
+              content, estimated_minutes, is_required, sort_order
+            )
+            VALUES (
+              ${tenantId}, ${moduleId}, ${lesson.slug},
+              ${lesson.title}, ${lesson.type},
+              ${sql.json(lesson.content)},
+              ${lesson.estimated_minutes},
+              ${lesson.is_required},
+              ${lesson.sort_order}
+            )
+            ON CONFLICT (module_id, slug) DO UPDATE
+              SET title = EXCLUDED.title,
+                  content = EXCLUDED.content,
+                  estimated_minutes = EXCLUDED.estimated_minutes,
+                  is_required = EXCLUDED.is_required,
+                  sort_order = EXCLUDED.sort_order,
+                  updated_at = now()
+          `;
+          totalLessons++;
+        }
+      }
+    }
+
     console.log(
-      `\n✅  Seed concluído — ${PRODUCTS.length} produtos, ${CATEGORIES.length} categorias.`,
+      `\n✅  Seed concluído — ${PRODUCTS.length} produtos, ${CATEGORIES.length} categorias, ${TRACKS.length} trilhas, ${totalLessons} lições.`,
     );
   } catch (err) {
     console.error('❌  Seed failed:', err);
