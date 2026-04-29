@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-26 (Fase 0 fechada — todas as skills concluídas)
-**Fase atual:** 0 → 1 — Fundação validada, iniciando construção dos apps
-**Próximo milestone:** `apps/admin` — Next.js 15 + App Router + RSC + middleware multi-tenant
+**Última atualização:** 2026-04-29 (apps/admin MVP concluído — PIM completo)
+**Fase atual:** 1 — Admin PIM operacional, próximo: portal distribuidores ou seed + deploy
+**Próximo milestone:** seed Argho + pnpm dev funcional end-to-end
 
 ---
 
@@ -112,12 +112,27 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 
 ---
 
-## 🏗️ Próximo — Construção da Fase 1
+## ✅ apps/admin — MVP concluído (2026-04-28/29)
 
-Depois das skills validarem a fundação:
+### Funcionalidades entregues
+- [x] Auth completo: login, logout, middleware de proteção de rotas, callback OAuth
+- [x] `@colheita/auth`: `createServerClient`, `requireAuth`, `updateSession` middleware, test suite (19 testes)
+- [x] `@colheita/ui`: Button, Badge, Card, Table, Input, Textarea, Sidebar, Skeleton, Breadcrumb, Separator
+- [x] Dashboard home com stats (total, publicados, rascunhos, arquivados, categorias) + recentes
+- [x] PIM Produtos: listar (busca + filtros status + filtros categoria), criar, editar, ver detalhe
+- [x] PIM Produtos: publicar, arquivar, reverter rascunho, com feedback de erro
+- [x] PIM Produtos: campos composição e especificações técnicas (JSON livre com validação)
+- [x] PIM Categorias: listar, criar, editar, excluir (bloqueio se houver produtos)
+- [x] Sidebar: Visão geral, Produtos, Categorias, logout com feedback
+- [x] Loading states (Skeleton) em todas as páginas assíncronas
+- [x] Biome 2.0 limpo + TypeScript strict 0 erros
+
+---
+
+## 🏗️ Próximo — Fase 1 continuação
 
 ### Apps Next.js
-- [ ] `apps/admin` — Next.js 15 + App Router + RSC + middleware multi-tenant
+- [ ] `apps/admin` — ✅ MVP completo
 - [ ] `apps/portal` — distribuidores
 - [ ] `apps/academia` — LMS
 - [ ] `apps/api` — contratos públicos + integração Safra
