@@ -60,11 +60,19 @@ function packagingLabel(p: ProductPackaging[number]) {
 }
 
 export function ProdutoDetail({ produto }: ProdutoDetailProps) {
-  const allNutrients = {
+  // Suporta tanto o formato estruturado {macros, micros, others} quanto JSON flat
+  const structured = {
     ...produto.composition.macros,
     ...produto.composition.micros,
     ...produto.composition.others,
   };
+  const isStructured = Object.keys(structured).length > 0;
+  const flat = Object.fromEntries(
+    Object.entries(produto.composition as Record<string, unknown>).filter(
+      ([k]) => !['macros', 'micros', 'others'].includes(k),
+    ),
+  );
+  const allNutrients = isStructured ? structured : flat;
 
   const hasComposition = Object.keys(allNutrients).length > 0;
   // biome-ignore lint/complexity/useLiteralKeys: snake_case key required for DB field access

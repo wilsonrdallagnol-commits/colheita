@@ -13,9 +13,12 @@ import Link from 'next/link';
 import { ProdutoFilters } from '@/components/produtos/produto-filters';
 import { ProdutoGrid } from '@/components/produtos/produto-grid';
 
+type ProdutoStatus = 'draft' | 'published' | 'archived';
+
 interface SearchParams {
   q?: string;
   categoria?: string;
+  status?: string;
 }
 
 export const metadata = { title: 'Produtos' };
@@ -24,6 +27,7 @@ async function fetchProdutos(
   supabase: ReturnType<typeof createServerClient>,
   q?: string,
   categoria?: string,
+  status?: string,
 ) {
   const { data: categorias } = await supabase
     .from('product_categories')
@@ -46,6 +50,10 @@ async function fetchProdutos(
     query = query.eq('category_id', categoryId);
   }
 
+  if (status && ['draft', 'published', 'archived'].includes(status)) {
+    query = query.eq('status', status);
+  }
+
   if (q) {
     query = query.or(`name.ilike.%${q}%,tagline.ilike.%${q}%`);
   }
@@ -56,7 +64,7 @@ async function fetchProdutos(
     categorias: categorias ?? [],
     produtos: (produtos ?? []).map((p) => ({
       ...p,
-      status: p.status as 'draft' | 'published' | 'archived',
+      status: p.status as ProdutoStatus,
       category: Array.isArray(p.category) ? (p.category[0] ?? null) : (p.category ?? null),
     })),
   };
@@ -67,11 +75,11 @@ export default async function ProdutosPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const { q, categoria } = await searchParams;
+  const { q, categoria, status } = await searchParams;
   const cookieStore = await cookies();
   const supabase = createServerClient(cookieStore);
 
-  const { categorias, produtos } = await fetchProdutos(supabase, q, categoria);
+  const { categorias, produtos } = await fetchProdutos(supabase, q, categoria, status);
 
   return (
     <div style={{ padding: '32px' }}>
@@ -125,6 +133,7 @@ export default async function ProdutosPage({
           categorias={categorias}
           initialQ={q ?? ''}
           initialCategoria={categoria ?? ''}
+          initialStatus={(status as ProdutoStatus | undefined) ?? ''}
         />
       </div>
 

@@ -10,15 +10,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@colheita/ui';
-import { FolderOpen, LogOut, Package } from 'lucide-react';
+import { FolderOpen, LayoutDashboard, LogOut, Package } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTransition } from 'react';
 import { signOut } from '@/lib/actions/auth';
 
 const NAV_ITEMS = [
-  { href: '/produtos', label: 'Produtos', icon: Package },
-  { href: '/categorias', label: 'Categorias', icon: FolderOpen },
+  { href: '/', label: 'Visão geral', icon: LayoutDashboard, exact: true },
+  { href: '/produtos', label: 'Produtos', icon: Package, exact: false },
+  { href: '/categorias', label: 'Categorias', icon: FolderOpen, exact: false },
 ];
 
 interface AppSidebarProps {
@@ -66,7 +67,10 @@ export function AppSidebar({ userEmail }: AppSidebarProps) {
         <SidebarMenu>
           {NAV_ITEMS.map((item) => (
             <SidebarMenuItem key={item.href}>
-              <SidebarMenuButton asChild isActive={pathname.startsWith(item.href)}>
+              <SidebarMenuButton
+                asChild
+                isActive={item.exact ? pathname === item.href : pathname.startsWith(item.href)}
+              >
                 <Link
                   href={item.href}
                   style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%' }}
