@@ -1,11 +1,17 @@
 // apps/portal/next.config.ts
+import { DEFAULT_SENTRY_OPTIONS, withSentryConfig } from '@colheita/observability/next-config';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@colheita/auth', '@colheita/ui', '@colheita/tokens', '@colheita/db'],
+  transpilePackages: [
+    '@colheita/auth',
+    '@colheita/email',
+    '@colheita/observability',
+    '@colheita/ui',
+    '@colheita/tokens',
+    '@colheita/db',
+  ],
   webpack(config) {
-    // Resolve .js extensions in workspace packages (TypeScript ESM convention)
-    // to their actual .ts/.tsx source files when bundling with transpilePackages.
     config.resolve.extensionAlias = {
       '.js': ['.js', '.ts', '.tsx'],
       '.jsx': ['.jsx', '.tsx'],
@@ -14,4 +20,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, { ...DEFAULT_SENTRY_OPTIONS });

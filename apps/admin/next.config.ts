@@ -1,9 +1,11 @@
 // apps/admin/next.config.ts
+import { DEFAULT_SENTRY_OPTIONS, withSentryConfig } from '@colheita/observability/next-config';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   transpilePackages: [
     '@colheita/auth',
+    '@colheita/observability',
     '@colheita/ui',
     '@colheita/tokens',
     '@colheita/db',
@@ -20,4 +22,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, { ...DEFAULT_SENTRY_OPTIONS });

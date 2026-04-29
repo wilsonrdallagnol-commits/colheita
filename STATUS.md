@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (Resend + packages/email, 262 testes: ai/48 + ui/59 + email/20 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19 + api/13)
+**Última atualização:** 2026-04-29 (Sentry + Axiom + PostHog, 275 testes: ai/48 + ui/59 + email/20 + observability/13 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19 + api/13)
 **Fase atual:** 2 — IA integrada nas apps
-**Próximo milestone:** Sentry + Axiom + PostHog
+**Próximo milestone:** Fase 1 completa — verificação de deploy
 
 ---
 
@@ -254,6 +254,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `packages/tokens` — **21 testes** para TenantThemeTokensSchema + parseTenantThemeTokens (OKLCH/hex/rgb, radius, fallback)
 - [x] `apps/api` — **13 testes** HMAC: `verifySignature` extraída para `src/lib/safra-hmac.ts` (body alterado, secret errado, headers malformados, timing-safe)
 - [x] `packages/email` — Resend client + 2 templates React (CertificadoEmitido, PedidoConfirmado), integração em academia/actions.ts e api/webhooks/safra, **20 testes** (renderToStaticMarkup, sem deps externas)
+- [x] `packages/observability` — Sentry (captureError/Warning/setSentryUser + initClient/Server/Edge), Axiom logger (ColheitaLogger + createLogger), PostHog provider + usePageview, **13 testes**; Sentry config files em todas as 4 apps; PostHog provider em portal + academia layouts
 
 ### Scripts operacionais
 - [x] `pnpm db:migrate` — aplica 10 migrations em ordem (0001–0010)
@@ -263,7 +264,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 ### Integrações Fase 1
 - [x] Contratos com Safra — `packages/safra-contracts`: 5 eventos Zod (pedido.criado/atualizado, inventario.atualizado, produto.atualizado, cliente.cadastrado); webhook handler valida schema antes de processar
 - [x] Resend pra emails transacionais
-- [ ] Sentry + Axiom + PostHog
+- [x] Sentry + Axiom + PostHog
 
 ---
 
