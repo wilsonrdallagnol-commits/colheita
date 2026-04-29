@@ -32,4 +32,5 @@ export {
   TableHeader,
   TableRow,
 } from './components/table.js';
+export { Textarea, type TextareaProps } from './components/textarea.js';
 export { cn } from './lib/utils.js';

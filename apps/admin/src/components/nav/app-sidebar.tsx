@@ -10,9 +10,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@colheita/ui';
-import { Package } from 'lucide-react';
+import { LogOut, Package } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTransition } from 'react';
+import { signOut } from '@/lib/actions/auth';
 
 const NAV_ITEMS = [{ href: '/produtos', label: 'Produtos', icon: Package }];
 
@@ -22,6 +24,13 @@ interface AppSidebarProps {
 
 export function AppSidebar({ userEmail }: AppSidebarProps) {
   const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
+
+  function handleSignOut() {
+    startTransition(async () => {
+      await signOut();
+    });
+  }
 
   return (
     <Sidebar>
@@ -68,21 +77,56 @@ export function AppSidebar({ userEmail }: AppSidebarProps) {
         </SidebarMenu>
       </SidebarContent>
 
-      {userEmail && (
-        <SidebarFooter>
-          <div
+      <SidebarFooter>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {userEmail && (
+            <div
+              style={{
+                fontSize: '0.75rem',
+                color: 'var(--colheita-text-tertiary)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {userEmail}
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={handleSignOut}
+            disabled={isPending}
             style={{
-              fontSize: '0.75rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '6px 8px',
+              borderRadius: 'var(--colheita-radius-md)',
+              border: 'none',
+              background: 'none',
+              cursor: isPending ? 'not-allowed' : 'pointer',
               color: 'var(--colheita-text-tertiary)',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
+              fontSize: '0.8125rem',
+              width: '100%',
+              textAlign: 'left',
+              opacity: isPending ? 0.5 : 1,
+              transition: 'color 0.15s, background-color 0.15s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--colheita-surface-hover)';
+              e.currentTarget.style.color = 'var(--colheita-text-primary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = 'var(--colheita-text-tertiary)';
             }}
           >
-            {userEmail}
-          </div>
-        </SidebarFooter>
-      )}
+            <LogOut size={14} style={{ flexShrink: 0 }} />
+            <span>{isPending ? 'Saindo...' : 'Sair'}</span>
+          </button>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }

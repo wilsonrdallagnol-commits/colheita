@@ -1,7 +1,7 @@
 // apps/admin/src/components/produtos/produto-form.tsx
 'use client';
 
-import { Button, Input } from '@colheita/ui';
+import { Button, Input, Textarea } from '@colheita/ui';
 import Link from 'next/link';
 import { useActionState, useId } from 'react';
 import type { ProdutoFormState } from '@/lib/actions/produtos';
@@ -163,27 +163,13 @@ export function ProdutoForm({
         <label htmlFor={descriptionId} style={labelStyle}>
           Descrição
         </label>
-        <textarea
+        <Textarea
           id={descriptionId}
           name="description"
           rows={6}
           disabled={pending}
           defaultValue={defaultValues.description ?? ''}
           placeholder="Descrição técnica completa do produto..."
-          style={{
-            width: '100%',
-            padding: '8px 12px',
-            borderRadius: 'var(--colheita-radius-md)',
-            border: '1px solid var(--colheita-border)',
-            backgroundColor: 'var(--colheita-surface-elevated)',
-            color: 'var(--colheita-text-primary)',
-            fontSize: '0.875rem',
-            lineHeight: '1.5',
-            resize: 'vertical',
-            outline: 'none',
-            fontFamily: 'inherit',
-            boxSizing: 'border-box',
-          }}
         />
         {state?.fieldErrors?.description && (
           <p style={errorStyle}>{state.fieldErrors.description}</p>
