@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (packages/jobs + DAM admin, 313 testes: ai/48 + ui/59 + email/20 + observability/13 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19 + api/13 + jobs/38)
-**Fase atual:** 2 — IA integrada nas apps
-**Próximo milestone:** Trigger.dev v3 deploy (TRIGGER_PROJECT_REF + trigger deploy)
+**Última atualização:** 2026-04-29 (pgvector Knowledge Base + VectorRetriever + audit log, 326 testes: ai/61 + ui/59 + email/20 + observability/13 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19 + api/13 + jobs/38)
+**Fase atual:** 2 — Knowledge Base + pgvector
+**Próximo milestone:** EmbeddingProvider (Voyage AI) + job de re-indexação automática
 
 ---
 
@@ -25,13 +25,18 @@
 - `infra/docker/.env.example` — template de secrets dev-only
 - Bind em loopback (segurança) + log rotation + healthchecks
 
-### Schema do banco — 6 migrations SQL
+### Schema do banco — 11 migrations SQL
 1. `0001_foundation.sql` — tenants, users, roles, audit_events + helpers RLS hardenizados
 2. `0002_pim.sql` — products, categories, regulatory_registrations
 3. `0003_dam.sql` — assets, collections, product_assets
 4. `0004_generator.sql` — material_templates, generated_materials
 5. `0005_academia.sql` — learning_tracks, modules, lessons, progress, certifications
 6. `0006_layout_inference.sql` (+ down) — layout_references, layout_blueprints
+7. `0007_audit_partitioning.sql` (+ down) — particionamento nativo Postgres 16 por mês
+8. `0008_fk_indexes.sql` (+ down) — 4 índices FK ausentes
+9. `0009_auth_hook.sql` (+ down) — `custom_access_token_hook` para tenant_id no JWT
+10. `0010_public_read_policies.sql` (+ down) — políticas de leitura pública (catálogo)
+11. `0011_vectors.sql` (+ down) — pgvector: `product_embeddings` + `lesson_embeddings` (HNSW), `match_*` SQL functions (SECURITY DEFINER)
 
 Toda tabela com `tenant_id`, RLS habilitado, índices corretos, soft-delete onde aplicável.
 
@@ -148,6 +153,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Academia app — loading.tsx para viewer de lição (`[slug]/[modulo]/[licao]`) e `/iniciar`
 - [x] Portal — loading.tsx para catálogo público (`(public)/loading.tsx`)
 - [x] ADRs 0002–0006: multi-tenancy RLS, Drizzle ORM, connection pooling, Anthropic LLM, Trigger.dev
+- [x] Admin — `/auditoria`: log de audit_events paginado (50/pág), filtros por ação + recurso, tabela com color-coding, skeleton loading, sidebar link (ClipboardList)
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
 ---
@@ -260,6 +266,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `packages/email` — Resend client + 2 templates React (CertificadoEmitido, PedidoConfirmado), integração em academia/actions.ts e api/webhooks/safra, **20 testes** (renderToStaticMarkup, sem deps externas)
 - [x] `packages/observability` — Sentry (captureError/Warning/setSentryUser + initClient/Server/Edge), Axiom logger (ColheitaLogger + createLogger), PostHog provider + usePageview, **13 testes**; Sentry config files em todas as 4 apps; PostHog provider em portal + academia layouts
 - [x] `packages/jobs` — Trigger.dev v3 background jobs: `sendCertificadoEmitidoJob`, `sendPedidoConfirmadoJob`, `gerarFichaTecnicaJob`, `safraEventoJob`; conditional dispatch (TRIGGER_SECRET_KEY); wired to apps/academia + apps/api; **38 testes** (schema validation Zod + task API)
+- [x] `packages/ai` — `SupabaseVectorRetriever`: pgvector HNSW retriever com `EmbeddingProvider` interface; `index()` upsert por chunk_type, `retrieve()` via `match_*` RPCs, `purge()` por tenant; **13 novos testes** (mocks, sem DB real) — ai total: **61 testes**
 
 ### Scripts operacionais
 - [x] `pnpm db:migrate` — aplica 10 migrations em ordem (0001–0010)
