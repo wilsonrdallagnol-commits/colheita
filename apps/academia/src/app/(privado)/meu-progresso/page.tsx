@@ -2,6 +2,7 @@
 import { createServerClient } from '@colheita/auth';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import { signOut } from '@/lib/actions/auth';
 
 export const metadata = { title: 'Meu Progresso' };
 
@@ -43,21 +44,48 @@ export default async function MeuProgressoPage() {
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 32px' }}>
       {/* Header */}
-      <div style={{ marginBottom: '40px' }}>
-        <h1
-          style={{
-            fontSize: '1.875rem',
-            fontWeight: '600',
-            color: 'var(--colheita-text-primary)',
-            letterSpacing: '-0.025em',
-            marginBottom: '8px',
-          }}
-        >
-          Meu Progresso
-        </h1>
-        <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
-          {user?.email}
-        </p>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          marginBottom: '40px',
+        }}
+      >
+        <div>
+          <h1
+            style={{
+              fontSize: '1.875rem',
+              fontWeight: '600',
+              color: 'var(--colheita-text-primary)',
+              letterSpacing: '-0.025em',
+              marginBottom: '8px',
+            }}
+          >
+            Meu Progresso
+          </h1>
+          <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
+            {user?.email}
+          </p>
+        </div>
+
+        <form action={signOut}>
+          <button
+            type="submit"
+            style={{
+              padding: '8px 16px',
+              borderRadius: 'var(--colheita-radius-md)',
+              backgroundColor: 'transparent',
+              color: 'var(--colheita-text-secondary)',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              border: '1px solid var(--colheita-border)',
+              cursor: 'pointer',
+            }}
+          >
+            Sair
+          </button>
+        </form>
       </div>
 
       <div

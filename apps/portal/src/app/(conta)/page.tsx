@@ -1,6 +1,7 @@
 // apps/portal/src/app/(conta)/page.tsx
 import { createServerClient } from '@colheita/auth';
 import { cookies } from 'next/headers';
+import { signOut } from '@/lib/actions/auth';
 
 export const metadata = { title: 'Minha Conta' };
 
@@ -20,26 +21,54 @@ export default async function ContaPage() {
       }}
     >
       <div style={{ maxWidth: '720px', margin: '0 auto' }}>
-        <h1
+        <div
           style={{
-            fontSize: '1.5rem',
-            fontWeight: '600',
-            color: 'var(--colheita-text-primary)',
-            letterSpacing: '-0.02em',
-            marginBottom: '8px',
-          }}
-        >
-          Minha Conta
-        </h1>
-        <p
-          style={{
-            fontSize: '0.875rem',
-            color: 'var(--colheita-text-secondary)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
             marginBottom: '32px',
           }}
         >
-          {user?.email}
-        </p>
+          <div>
+            <h1
+              style={{
+                fontSize: '1.5rem',
+                fontWeight: '600',
+                color: 'var(--colheita-text-primary)',
+                letterSpacing: '-0.02em',
+                marginBottom: '4px',
+              }}
+            >
+              Minha Conta
+            </h1>
+            <p
+              style={{
+                fontSize: '0.875rem',
+                color: 'var(--colheita-text-secondary)',
+              }}
+            >
+              {user?.email}
+            </p>
+          </div>
+
+          <form action={signOut}>
+            <button
+              type="submit"
+              style={{
+                padding: '8px 16px',
+                borderRadius: 'var(--colheita-radius-md)',
+                backgroundColor: 'transparent',
+                color: 'var(--colheita-text-secondary)',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                border: '1px solid var(--colheita-border)',
+                cursor: 'pointer',
+              }}
+            >
+              Sair
+            </button>
+          </form>
+        </div>
 
         <div
           style={{
