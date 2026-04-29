@@ -23,6 +23,7 @@
     "NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA",
     "VERCEL_GIT_COMMIT_SHA",
     "AXIOM_TOKEN",
+    "AXIOM_DATASET",
     "NEXT_PUBLIC_POSTHOG_KEY",
     "NEXT_PUBLIC_POSTHOG_HOST",
     "NEXT_PUBLIC_ADMIN_URL",
@@ -45,7 +46,7 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
+      "outputs": []
     },
     "test:e2e": {
       "dependsOn": ["^build"],
