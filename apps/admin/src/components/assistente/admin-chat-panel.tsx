@@ -6,6 +6,7 @@
  * Chama POST NEXT_PUBLIC_API_URL/api/v1/agent.
  */
 
+import { ChatMarkdown } from '@colheita/ui';
 import { Send } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -203,12 +204,14 @@ export function AdminChatPanel() {
                     : 'var(--colheita-surface-elevated)',
                 color: msg.role === 'user' ? '#fff' : 'var(--colheita-text-primary)',
                 fontSize: '0.875rem',
-                lineHeight: 1.65,
-                whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
               }}
             >
-              {msg.text}
+              {msg.role === 'user' ? (
+                <span style={{ whiteSpace: 'pre-wrap', lineHeight: 1.65 }}>{msg.text}</span>
+              ) : (
+                <ChatMarkdown>{msg.text || '▋'}</ChatMarkdown>
+              )}
             </div>
           </div>
         ))}

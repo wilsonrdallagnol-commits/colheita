@@ -19,6 +19,10 @@ export {
 } from './components/breadcrumb.js';
 export { Button, type ButtonProps, buttonVariants } from './components/button.js';
 export { Card, CardContent, CardFooter, CardHeader, CardTitle } from './components/card.js';
+// ============================================================================
+// Chat
+// ============================================================================
+export { ChatMarkdown, type ChatMarkdownProps } from './components/chat-markdown.js';
 export {
   type AutoContent,
   type CompilerTheme,

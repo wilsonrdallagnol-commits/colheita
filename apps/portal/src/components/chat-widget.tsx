@@ -7,6 +7,7 @@
  * Só renderizado quando o usuário está autenticado.
  */
 
+import { ChatMarkdown } from '@colheita/ui';
 import { useEffect, useRef, useState } from 'react';
 
 interface Message {
@@ -315,12 +316,14 @@ export function ChatWidget() {
                         : 'var(--colheita-surface-elevated)',
                     color: msg.role === 'user' ? '#fff' : 'var(--colheita-text-primary)',
                     fontSize: '0.8125rem',
-                    lineHeight: 1.55,
-                    whiteSpace: 'pre-wrap',
                     wordBreak: 'break-word',
                   }}
                 >
-                  {msg.text}
+                  {msg.role === 'user' ? (
+                    <span style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</span>
+                  ) : (
+                    <ChatMarkdown>{msg.text || '▋'}</ChatMarkdown>
+                  )}
                 </div>
               </div>
             ))}
