@@ -3,6 +3,7 @@ import { createServerClient } from '@colheita/auth';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { MarkCompleteButton } from './mark-complete-button.js';
 
 interface PageProps {
   params: Promise<{ slug: string; modulo: string; licao: string }>;
@@ -48,6 +49,22 @@ export default async function LicaoPage({ params }: PageProps) {
 
   const content = data.content as Record<string, unknown>;
   const markdown = typeof content.markdown === 'string' ? content.markdown : null;
+
+  // Check if the logged-in user has already completed this lesson
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let isCompleted = false;
+  if (user) {
+    const { data: progress } = await supabase
+      .from('learning_progress')
+      .select('status')
+      .eq('user_id', user.id)
+      .eq('lesson_id', data.id)
+      .single();
+    isCompleted = progress?.status === 'completed';
+  }
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '48px 32px' }}>
@@ -191,21 +208,26 @@ export default async function LicaoPage({ params }: PageProps) {
         >
           ← Voltar à trilha
         </Link>
-        <button
-          type="button"
-          style={{
-            padding: '8px 20px',
-            borderRadius: 'var(--colheita-radius-md)',
-            backgroundColor: 'var(--colheita-brand-primary)',
-            color: 'white',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            border: 'none',
-            cursor: 'pointer',
-          }}
-        >
-          Marcar como concluída
-        </button>
+        {user ? (
+          <MarkCompleteButton lessonId={data.id} isCompleted={isCompleted} />
+        ) : (
+          <Link
+            href={`/entrar?next=/trilhas/${slug}/${modulo}/${licao}`}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '8px 20px',
+              borderRadius: 'var(--colheita-radius-md)',
+              backgroundColor: 'var(--colheita-brand-primary)',
+              color: 'white',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              textDecoration: 'none',
+            }}
+          >
+            Entrar para acompanhar progresso
+          </Link>
+        )}
       </div>
     </div>
   );
