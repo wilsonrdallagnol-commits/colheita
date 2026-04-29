@@ -149,3 +149,60 @@ describe('ChatMarkdown — links inline', () => {
     expect(html).toContain('[link](url)');
   });
 });
+
+describe('ChatMarkdown — tabelas', () => {
+  const TABLE_MD =
+    '| Produto | Dose | Cultura |\n|---------|------|--------|\n| Xcensis | 1L/ha | Soja |\n| Argho Plus | 2L/ha | Milho |';
+
+  it('renderiza <table> para tabela markdown', () => {
+    const html = render(TABLE_MD);
+    expect(html).toContain('<table');
+  });
+
+  it('renderiza <thead> com <th> para linha de cabeçalho', () => {
+    const html = render(TABLE_MD);
+    expect(html).toContain('<thead');
+    expect(html).toContain('<th');
+    expect(html).toContain('Produto');
+    expect(html).toContain('Dose');
+    expect(html).toContain('Cultura');
+  });
+
+  it('renderiza <tbody> com <td> para células de dados', () => {
+    const html = render(TABLE_MD);
+    expect(html).toContain('<tbody');
+    expect(html).toContain('<td');
+    expect(html).toContain('Xcensis');
+    expect(html).toContain('1L/ha');
+  });
+
+  it('número correto de linhas de dados no tbody', () => {
+    const html = render(TABLE_MD);
+    const tdCount = (html.match(/<tr/g) ?? []).length;
+    // 1 header row + 2 data rows = 3 <tr>
+    expect(tdCount).toBe(3);
+  });
+
+  it('ignora linha separadora (|---|---| etc)', () => {
+    const html = render(TABLE_MD);
+    // A linha separadora não deve aparecer como dado
+    expect(html).not.toContain('---');
+    expect(html).not.toContain('------');
+  });
+
+  it('renderiza conteúdo inline (bold) dentro de célula de tabela', () => {
+    const boldTable = '| Produto | Dose |\n|---------|------|\n| **Xcensis** | 1L/ha |';
+    const html = render(boldTable);
+    expect(html).toContain('<strong');
+    expect(html).toContain('Xcensis');
+  });
+
+  it('renderiza parágrafo antes e tabela depois', () => {
+    const mixed =
+      'Dados de dosagem:\n\n| Produto | Dose |\n|---------|------|\n| Xcensis | 1L/ha |';
+    const html = render(mixed);
+    expect(html).toContain('<p');
+    expect(html).toContain('<table');
+    expect(html).toContain('Dados de dosagem');
+  });
+});

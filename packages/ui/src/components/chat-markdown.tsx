@@ -110,7 +110,21 @@ type Block =
   | { kind: 'ul'; items: string[] }
   | { kind: 'ol'; items: string[] }
   | { kind: 'code'; lang: string; code: string }
-  | { kind: 'heading'; level: number; text: string };
+  | { kind: 'heading'; level: number; text: string }
+  | { kind: 'table'; headers: string[]; rows: string[][] };
+
+/** Verifica se uma linha é separadora de tabela (ex: |---|---|) */
+function isTableSeparator(line: string): boolean {
+  return /^\|[\s\-:|]+\|/.test(line);
+}
+
+/** Divide uma linha de tabela em células, descartando pipes externos */
+function parseTableRow(line: string): string[] {
+  return line
+    .split('|')
+    .slice(1, -1) // remove primeiro e último elemento (podem ser vazios)
+    .map((cell) => cell.trim());
+}
 
 function parseBlocks(markdown: string): Block[] {
   const blocks: Block[] = [];
@@ -165,6 +179,19 @@ function parseBlocks(markdown: string): Block[] {
         i++;
       }
       blocks.push({ kind: 'ol', items });
+      continue;
+    }
+
+    // Tabela markdown  |col|col|
+    if (line.startsWith('|') && i + 1 < lines.length && isTableSeparator(lines[i + 1] ?? '')) {
+      const headers = parseTableRow(line);
+      i += 2; // consume header row + separator
+      const rows: string[][] = [];
+      while (i < lines.length && (lines[i] ?? '').startsWith('|')) {
+        rows.push(parseTableRow(lines[i] ?? ''));
+        i++;
+      }
+      blocks.push({ kind: 'table', headers, rows });
       continue;
     }
 
@@ -251,6 +278,52 @@ export function ChatMarkdown({ children, style }: ChatMarkdownProps) {
             <p key={key} style={{ margin: 0, fontWeight: 600, fontSize, lineHeight: 1.4 }}>
               {renderInline(block.text, key)}
             </p>
+          );
+        }
+
+        if (block.kind === 'table') {
+          return (
+            <div key={key} style={{ overflowX: 'auto' }}>
+              <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: '0.8125rem' }}>
+                <thead>
+                  <tr>
+                    {block.headers.map((h, hi) => (
+                      // biome-ignore lint/suspicious/noArrayIndexKey: stable table headers
+                      <th
+                        key={hi}
+                        style={{
+                          padding: '6px 10px',
+                          borderBottom: '1px solid rgba(0,0,0,0.15)',
+                          textAlign: 'left',
+                          fontWeight: 600,
+                        }}
+                      >
+                        {renderInline(h, `${key}-th-${hi}`)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {block.rows.map((row, ri) => (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: stable rows
+                    <tr key={ri}>
+                      {row.map((cell, ci) => (
+                        // biome-ignore lint/suspicious/noArrayIndexKey: stable table cells
+                        <td
+                          key={ci}
+                          style={{
+                            padding: '5px 10px',
+                            borderBottom: '1px solid rgba(0,0,0,0.08)',
+                          }}
+                        >
+                          {renderInline(cell, `${key}-td-${ri}-${ci}`)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           );
         }
 
