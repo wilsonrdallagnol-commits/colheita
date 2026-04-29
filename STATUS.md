@@ -1,6 +1,6 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (certificação automática, Indicações por Cultura, seed MAPA registrations, NavEntrarLink portal, applications seed)
+**Última atualização:** 2026-04-29 (loading states completos, error boundary admin, certification_validity_days no badge, loading do dashboard principal)
 **Fase atual:** 1 — 4 apps + generator ✅ — fase encerrada
 **Próximo milestone:** pnpm dev end-to-end (Docker stack local) + packages/ui 16 componentes compiler (Fase 2)
 
@@ -138,6 +138,11 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Academia — edição de módulo: `ModuloEditForm` + página `/[slug]/[mod]/editar` + link "Editar" em `ModuloActions`
 - [x] Academia — Loading states Skeleton em todas as páginas (lista, detalhe trilha, detalhe módulo)
 - [x] Academia — `certification_validity_days` exibido condicionalmente no formulário de trilha (novo + editar); `createTrilha` também salva os campos de certificação
+- [x] Academia — detalhe da trilha exibe `certification_validity_days` no badge "Certificado" (ex: "Certificado · 365d")
+- [x] Admin — loading.tsx adicionado para dashboard principal, editar trilha, editar módulo, editar lição, lista de categorias, editar categoria
+- [x] Admin — `error.tsx` (error boundary) e `not-found.tsx` globais
+- [x] Academia app — loading.tsx para viewer de lição (`[slug]/[modulo]/[licao]`) e `/iniciar`
+- [x] Portal — loading.tsx para catálogo público (`(public)/loading.tsx`)
 - [x] ADRs 0002–0006: multi-tenancy RLS, Drizzle ORM, connection pooling, Anthropic LLM, Trigger.dev
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
