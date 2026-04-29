@@ -1,0 +1,34 @@
+/* apps/academia/src/app/globals.css */
+@import "tailwindcss";
+@import "@colheita/ui/globals.css";
+
+/* Tailwind v4: definir tokens customizados para uso em classes utilitárias */
+@theme {
+  --color-brand: var(--colheita-brand-primary);
+  --color-brand-fg: var(--colheita-brand-primary-fg);
+  --color-surface: var(--colheita-surface-background);
+  --color-surface-elevated: var(--colheita-surface-elevated);
+  --color-surface-card: var(--colheita-surface-card);
+  --color-border: var(--colheita-border);
+  --color-border-subtle: var(--colheita-border-subtle);
+  --color-text: var(--colheita-text-primary);
+  --color-text-secondary: var(--colheita-text-secondary);
+  --color-text-tertiary: var(--colheita-text-tertiary);
+
+  --font-display: var(--font-geist-sans), "Inter", -apple-system, system-ui, sans-serif;
+  --font-body: "Inter", -apple-system, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+}
+
+html,
+body {
+  background-color: var(--colheita-surface-background);
+  color: var(--colheita-text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
