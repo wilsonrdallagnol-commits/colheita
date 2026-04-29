@@ -1,0 +1,9 @@
+{
+  "extends": "@colheita/config/tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "jsx": "preserve",
+    "jsxImportSource": "react"
+  },
+  "include": ["src/**/*", "trigger.config.ts"]
+}
