@@ -3,6 +3,7 @@ import { createServerClient } from '@colheita/auth';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { NavEntrarLink } from '@/components/nav-entrar-link';
 import { signOut } from '@/lib/actions/auth';
 
 export default async function PublicLayout({ children }: { children: ReactNode }) {
@@ -109,21 +110,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
                 </form>
               </>
             ) : (
-              <Link
-                href="/entrar"
-                style={{
-                  padding: '6px 14px',
-                  borderRadius: 'var(--colheita-radius-md)',
-                  backgroundColor: 'var(--colheita-brand-primary)',
-                  color: 'white',
-                  fontSize: '0.8125rem',
-                  fontWeight: '600',
-                  textDecoration: 'none',
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                Entrar
-              </Link>
+              <NavEntrarLink />
             )}
           </nav>
         </div>
