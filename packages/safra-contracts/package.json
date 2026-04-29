@@ -10,13 +10,16 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "lint": "biome check src"
+    "lint": "biome check src",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@colheita/config": "workspace:*",
-    "typescript": "5.6.3"
+    "typescript": "5.6.3",
+    "vitest": "2.1.4"
   }
 }
