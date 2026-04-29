@@ -1,6 +1,6 @@
 // apps/portal/src/app/(public)/produtos/[slug]/page.tsx
 import { createServerClient, getSession } from '@colheita/auth';
-import type { ProductComposition, ProductPackaging } from '@colheita/db';
+import type { ProductApplication, ProductComposition, ProductPackaging } from '@colheita/db';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -44,7 +44,7 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
   const { data, error } = await supabase
     .from('products')
     .select(
-      'id, name, tagline, description, composition, technical_specs, packaging, category:product_categories(name)',
+      'id, name, tagline, description, composition, technical_specs, packaging, applications, category:product_categories(name)',
     )
     .eq('slug', slug)
     .eq('status', 'published')
@@ -65,6 +65,7 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
   const composition = (data.composition ?? {}) as ProductComposition;
   const technicalSpecs = (data.technical_specs ?? {}) as Record<string, unknown>;
   const packaging = (data.packaging ?? []) as ProductPackaging;
+  const applications = (data.applications ?? []) as ProductApplication[];
 
   // Resolve nutrients from structured or flat format
   const structured = {
@@ -233,6 +234,98 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
                       }}
                     >
                       {String(value)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Applications */}
+          {applications.length > 0 && (
+            <div>
+              <h2
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  color: 'var(--colheita-text-tertiary)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  marginBottom: '14px',
+                }}
+              >
+                Indicações por Cultura
+              </h2>
+              <div
+                style={{
+                  border: '1px solid var(--colheita-border)',
+                  borderRadius: 'var(--colheita-radius-lg)',
+                  overflow: 'hidden',
+                }}
+              >
+                {/* Header */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr 100px 1.5fr',
+                    padding: '10px 20px',
+                    backgroundColor: 'var(--colheita-surface-elevated)',
+                    borderBottom: '1px solid var(--colheita-border)',
+                    gap: '12px',
+                  }}
+                >
+                  {['Cultura', 'Estádio', 'Dose/ha', 'Observações'].map((h) => (
+                    <span
+                      key={h}
+                      style={{
+                        fontSize: '0.6875rem',
+                        fontWeight: '600',
+                        color: 'var(--colheita-text-tertiary)',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.06em',
+                      }}
+                    >
+                      {h}
+                    </span>
+                  ))}
+                </div>
+                {applications.map((app, i) => (
+                  <div
+                    // biome-ignore lint/suspicious/noArrayIndexKey: stable positional list
+                    key={i}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr 100px 1.5fr',
+                      padding: '12px 20px',
+                      gap: '12px',
+                      borderBottom:
+                        i < applications.length - 1
+                          ? '1px solid var(--colheita-border-subtle)'
+                          : 'none',
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: '0.875rem',
+                        fontWeight: '500',
+                        color: 'var(--colheita-text-primary)',
+                      }}
+                    >
+                      {app.crop}
+                    </span>
+                    <span style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
+                      {app.stage ?? '—'}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '0.875rem',
+                        color: 'var(--colheita-text-secondary)',
+                        fontFamily: 'var(--font-mono)',
+                      }}
+                    >
+                      {app.dosePerHa} {app.unit}
+                    </span>
+                    <span style={{ fontSize: '0.8125rem', color: 'var(--colheita-text-tertiary)' }}>
+                      {app.notes ?? '—'}
                     </span>
                   </div>
                 ))}
