@@ -10,13 +10,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@colheita/ui';
-import { LogOut, Package } from 'lucide-react';
+import { FolderOpen, LogOut, Package } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTransition } from 'react';
 import { signOut } from '@/lib/actions/auth';
 
-const NAV_ITEMS = [{ href: '/produtos', label: 'Produtos', icon: Package }];
+const NAV_ITEMS = [
+  { href: '/produtos', label: 'Produtos', icon: Package },
+  { href: '/categorias', label: 'Categorias', icon: FolderOpen },
+];
 
 interface AppSidebarProps {
   userEmail?: string;
