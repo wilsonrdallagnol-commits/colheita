@@ -6,7 +6,6 @@
 // Header esperado: X-Safra-Signature: sha256=<hex>
 // Segredo: SAFRA_WEBHOOK_SECRET (env)
 
-import { createHmac, timingSafeEqual } from 'node:crypto';
 import type {
   SafraClienteCadastrado,
   SafraInventarioAtualizado,
@@ -16,23 +15,9 @@ import type {
 } from '@colheita/safra-contracts';
 import { SafraEventSchema } from '@colheita/safra-contracts';
 import { type NextRequest, NextResponse } from 'next/server';
+import { verifySignature } from '../../../../lib/safra-hmac.js';
 
-const WEBHOOK_SECRET = process.env.SAFRA_WEBHOOK_SECRET;
-
-function verifySignature(body: string, signatureHeader: string | null): boolean {
-  if (!WEBHOOK_SECRET || !signatureHeader) return false;
-
-  const [scheme, signature] = signatureHeader.split('=');
-  if (scheme !== 'sha256' || !signature) return false;
-
-  const expected = createHmac('sha256', WEBHOOK_SECRET).update(body, 'utf8').digest('hex');
-
-  try {
-    return timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(signature, 'hex'));
-  } catch {
-    return false;
-  }
-}
+const WEBHOOK_SECRET = process.env.SAFRA_WEBHOOK_SECRET ?? '';
 
 // ── Handlers por tipo de evento ───────────────────────────────────────────────
 //
@@ -76,7 +61,7 @@ export async function POST(request: NextRequest) {
   const body = await request.text();
   const signature = request.headers.get('X-Safra-Signature');
 
-  if (!verifySignature(body, signature)) {
+  if (!verifySignature(body, signature, WEBHOOK_SECRET)) {
     return NextResponse.json({ error: 'Assinatura inválida.' }, { status: 401 });
   }
 
