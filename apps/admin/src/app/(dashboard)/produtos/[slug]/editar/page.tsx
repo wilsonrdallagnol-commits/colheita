@@ -35,7 +35,9 @@ export default async function EditarProdutoPage({ params, searchParams }: PagePr
   const [{ data: produto, error }, { data: categorias }] = await Promise.all([
     supabase
       .from('products')
-      .select('id, name, tagline, description, status, category_id, composition, technical_specs')
+      .select(
+        'id, name, tagline, description, status, category_id, composition, technical_specs, packaging',
+      )
       .eq('slug', slug)
       .is('deleted_at', null)
       .single(),
@@ -120,6 +122,7 @@ export default async function EditarProdutoPage({ params, searchParams }: PagePr
           category_id: produto.category_id,
           composition: produto.composition as Record<string, unknown> | null,
           technical_specs: produto.technical_specs as Record<string, unknown> | null,
+          packaging: produto.packaging as unknown[] | null,
         }}
       />
     </div>

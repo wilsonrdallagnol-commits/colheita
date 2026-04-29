@@ -26,6 +26,7 @@ interface ProdutoFormProps {
     category_id?: string | null;
     composition?: Record<string, unknown> | null;
     technical_specs?: Record<string, unknown> | null;
+    packaging?: unknown[] | null;
   };
 }
 
@@ -71,6 +72,7 @@ export function ProdutoForm({
   const descriptionId = `${uid}-description`;
   const compositionId = `${uid}-composition`;
   const technicalSpecsId = `${uid}-technical-specs`;
+  const packagingId = `${uid}-packaging`;
 
   return (
     <form action={formAction} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -234,6 +236,35 @@ export function ProdutoForm({
         {state?.fieldErrors?.technical_specs && (
           <p style={errorStyle}>{state.fieldErrors.technical_specs}</p>
         )}
+      </div>
+
+      {/* Embalagens (JSON array) */}
+      <div>
+        <label htmlFor={packagingId} style={labelStyle}>
+          Embalagens{' '}
+          <span
+            style={{ fontSize: '0.75rem', fontWeight: 400, color: 'var(--colheita-text-tertiary)' }}
+          >
+            (JSON)
+          </span>
+        </label>
+        <Textarea
+          id={packagingId}
+          name="packaging"
+          rows={4}
+          disabled={pending}
+          defaultValue={
+            defaultValues.packaging && defaultValues.packaging.length > 0
+              ? JSON.stringify(defaultValues.packaging, null, 2)
+              : ''
+          }
+          placeholder={
+            '[\n  {"type": "frasco", "volumeL": 1},\n  {"type": "galão", "volumeL": 5}\n]'
+          }
+          style={{ fontFamily: 'monospace', fontSize: '0.8125rem' }}
+        />
+        {state?.fieldErrors?.packaging && <p style={errorStyle}>{state.fieldErrors.packaging}</p>}
+        <p style={hintStyle}>Array de objetos com type + weightKg ou volumeL.</p>
       </div>
 
       {/* Ações */}

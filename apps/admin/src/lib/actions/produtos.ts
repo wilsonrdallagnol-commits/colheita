@@ -12,7 +12,13 @@ export type ProdutoFormState = {
   error?: string;
   fieldErrors?: Partial<
     Record<
-      'name' | 'tagline' | 'description' | 'category_id' | 'composition' | 'technical_specs',
+      | 'name'
+      | 'tagline'
+      | 'description'
+      | 'category_id'
+      | 'composition'
+      | 'technical_specs'
+      | 'packaging',
       string
     >
   >;
@@ -105,6 +111,7 @@ export async function updateProduto(
   const categoryId = String(formData.get('category_id') ?? '').trim() || null;
   const compositionRaw = String(formData.get('composition') ?? '{}').trim() || '{}';
   const technicalSpecsRaw = String(formData.get('technical_specs') ?? '{}').trim() || '{}';
+  const packagingRaw = String(formData.get('packaging') ?? '[]').trim() || '[]';
 
   if (!name) {
     return { fieldErrors: { name: 'Nome é obrigatório.' } };
@@ -113,6 +120,7 @@ export async function updateProduto(
   // Valida e parseia JSON dos campos avançados
   let composition: Record<string, unknown>;
   let technicalSpecs: Record<string, unknown>;
+  let packaging: unknown[];
   try {
     composition = JSON.parse(compositionRaw) as Record<string, unknown>;
   } catch {
@@ -122,6 +130,15 @@ export async function updateProduto(
     technicalSpecs = JSON.parse(technicalSpecsRaw) as Record<string, unknown>;
   } catch {
     return { fieldErrors: { technical_specs: 'JSON inválido. Verifique a formatação.' } };
+  }
+  try {
+    const parsed = JSON.parse(packagingRaw);
+    if (!Array.isArray(parsed)) throw new Error('not an array');
+    packaging = parsed as unknown[];
+  } catch {
+    return {
+      fieldErrors: { packaging: 'JSON inválido. Esperado array: [{"type":"frasco","volumeL":1}]' },
+    };
   }
 
   const { error } = await supabase
@@ -133,6 +150,7 @@ export async function updateProduto(
       category_id: categoryId,
       composition,
       technical_specs: technicalSpecs,
+      packaging,
       updated_at: new Date().toISOString(),
     })
     .eq('slug', slug)
