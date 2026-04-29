@@ -1,6 +1,6 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (NavEntrarLink ?next=, health check DB, ficha técnica PDF portal+api, Safra webhook tipado, ADR 0008)
+**Última atualização:** 2026-04-29 (certificação automática, Indicações por Cultura, seed MAPA registrations, NavEntrarLink portal, applications seed)
 **Fase atual:** 1 — 4 apps + generator ✅ — fase encerrada
 **Próximo milestone:** pnpm dev end-to-end (Docker stack local) + packages/ui 16 componentes compiler (Fase 2)
 
@@ -123,6 +123,8 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] PIM Produtos: listar (busca + filtros status + filtros categoria), criar, editar, ver detalhe
 - [x] PIM Produtos: publicar, arquivar, reverter rascunho, com feedback de erro
 - [x] PIM Produtos: campos composição, especificações técnicas e **embalagens** (JSON com validação)
+- [x] PIM Produtos — detalhe: seção **Indicações por Cultura** (cultura, estádio, dose/ha, observações)
+- [x] PIM Produtos — detalhe: `generateMetadata` usa nome real do banco (não slug derivado)
 - [x] PIM Categorias: listar, criar, editar, excluir (bloqueio se houver produtos)
 - [x] Sidebar: Visão geral, Produtos, Categorias, **Academia**, logout com feedback
 - [x] Loading states (Skeleton) em todas as páginas assíncronas
@@ -174,6 +176,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Navegação prev/next entre lições (busca parallel, ordenação por módulo+lição sort_order)
 - [x] `generateMetadata` da lição usa título real do banco (title + track title)
 - [x] Indicadores de progresso na trilha: ✓ nas lições concluídas + contador "X/N"
+- [x] Emissão automática de certificação ao concluir todas as lições obrigatórias da trilha (`grants_certification` + `certification_no` `ARGHO-{ano}-{hex8}`, validade por `certification_validity_days`)
 - [x] Páginas de erro e 404 globais
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
@@ -183,7 +186,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 
 ### Funcionalidades entregues
 - [x] Catálogo público: listagem por categoria, cards com link para detalhe
-- [x] Detalhe do produto: composição garantida (dual-format), specs técnicas, embalagens
+- [x] Detalhe do produto: composição garantida (dual-format), specs técnicas, embalagens, **Indicações por Cultura**
 - [x] Auth magic link: `/entrar` com `useActionState` + `signInWithMagicLink` server action
 - [x] `?next=` propagado por todo o fluxo: link "Entrar" → hidden input → `emailRedirectTo` → callback → redirect
 - [x] Proteção contra open redirect no callback: validação `startsWith('/') && !startsWith('//')`
@@ -232,7 +235,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 
 ### Scripts operacionais
 - [x] `pnpm db:migrate` — aplica 10 migrations em ordem (0001–0010)
-- [x] `pnpm db:seed` — Argho como tenant + Xcensis + 2 trilhas de aprendizado com 7 lições
+- [x] `pnpm db:seed` — Argho como tenant + Xcensis + 2 trilhas de aprendizado com 7 lições + `applications` (Indicações por Cultura) em 4 produtos + `regulatory_registrations` para 12 produtos MAPA
 - [x] `pnpm tenant:create` — CLI `--slug=<slug> --name="<Name>"`
 
 ### Integrações Fase 1
