@@ -3,6 +3,7 @@ import { createServerClient } from '@colheita/auth';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Markdown } from '@/components/markdown';
 import { MarkCompleteButton } from './mark-complete-button.js';
 
 interface PageProps {
@@ -145,7 +146,7 @@ export default async function LicaoPage({ params }: PageProps) {
         }}
       >
         {data.type === 'article' && markdown ? (
-          <div style={{ whiteSpace: 'pre-line' }}>{markdown}</div>
+          <Markdown content={markdown} />
         ) : data.type === 'video' ? (
           <div
             style={{
