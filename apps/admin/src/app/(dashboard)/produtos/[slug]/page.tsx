@@ -11,6 +11,7 @@ import {
 } from '@colheita/ui';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
+import { ProdutoActions } from '@/components/produtos/produto-actions';
 import { ProdutoDetail } from '@/components/produtos/produto-detail';
 
 interface PageProps {
@@ -79,6 +80,11 @@ export default async function ProdutoPage({ params }: PageProps) {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
+
+      {/* Barra de ações */}
+      <div style={{ marginBottom: '28px' }}>
+        <ProdutoActions slug={slug} status={data.status} />
+      </div>
 
       <ProdutoDetail
         produto={{

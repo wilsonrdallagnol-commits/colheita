@@ -6,8 +6,10 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
+  Button,
 } from '@colheita/ui';
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 import { ProdutoFilters } from '@/components/produtos/produto-filters';
 import { ProdutoGrid } from '@/components/produtos/produto-grid';
 
@@ -87,21 +89,35 @@ export default async function ProdutosPage({
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div style={{ marginBottom: '32px' }}>
-        <h1
-          style={{
-            fontSize: '1.5rem',
-            fontWeight: '600',
-            color: 'var(--colheita-text-primary)',
-            letterSpacing: '-0.025em',
-            marginBottom: '4px',
-          }}
-        >
-          Produtos
-        </h1>
-        <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
-          {produtos.length} {produtos.length === 1 ? 'produto' : 'produtos'}
-        </p>
+      <div
+        style={{
+          marginBottom: '32px',
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: '16px',
+        }}
+      >
+        <div>
+          <h1
+            style={{
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              color: 'var(--colheita-text-primary)',
+              letterSpacing: '-0.025em',
+              marginBottom: '4px',
+            }}
+          >
+            Produtos
+          </h1>
+          <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
+            {produtos.length} {produtos.length === 1 ? 'produto' : 'produtos'}
+          </p>
+        </div>
+
+        <Button asChild size="sm">
+          <Link href="/produtos/novo">+ Novo produto</Link>
+        </Button>
       </div>
 
       <div style={{ marginBottom: '28px' }}>

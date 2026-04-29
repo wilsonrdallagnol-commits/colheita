@@ -2,11 +2,12 @@
 'use client';
 
 import { Button, Input } from '@colheita/ui';
-import { useActionState } from 'react';
+import { useActionState, useId } from 'react';
 import { signInWithMagicLink } from './actions.js';
 
 export default function LoginPage() {
   const [state, action, pending] = useActionState(signInWithMagicLink, null);
+  const emailId = useId();
 
   // Magic link enviado com sucesso — state is not null AND has no error
   if (state !== null && !state.error) {
@@ -155,7 +156,7 @@ export default function LoginPage() {
           <form action={action} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div>
               <label
-                htmlFor="email"
+                htmlFor={emailId}
                 style={{
                   display: 'block',
                   fontSize: '0.8125rem',
@@ -167,7 +168,7 @@ export default function LoginPage() {
                 Email
               </label>
               <Input
-                id="email"
+                id={emailId}
                 name="email"
                 type="email"
                 placeholder="seu@email.com"
