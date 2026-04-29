@@ -3,28 +3,55 @@ import { createServerClient } from '@colheita/auth';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 
-export const metadata = { title: 'Produtos' };
+export const metadata = { title: 'Produtos — Argho' };
 
 type Status = 'draft' | 'published' | 'archived';
 
-export default async function CatalogPage() {
+interface PageProps {
+  searchParams: Promise<{ q?: string; category?: string }>;
+}
+
+export default async function CatalogPage({ searchParams }: PageProps) {
+  const { q, category } = await searchParams;
   const cookieStore = await cookies();
   const supabase = createServerClient(cookieStore);
 
-  const { data: produtos } = await supabase
-    .from('products')
-    .select('id, slug, name, tagline, status, category:product_categories(id, name)')
-    .eq('status', 'published')
-    .is('deleted_at', null)
-    .order('name');
+  // Fetch categories and products in parallel
+  const [{ data: categorias }, { data: produtos }] = await Promise.all([
+    supabase.from('product_categories').select('id, slug, name').order('name'),
 
-  const produtosList = (produtos ?? []).map((p) => ({
-    ...p,
-    status: p.status as Status,
-    category: Array.isArray(p.category) ? (p.category[0] ?? null) : (p.category ?? null),
-  }));
+    (() => {
+      let query = supabase
+        .from('products')
+        .select(
+          'id, slug, name, tagline, status, category_id, category:product_categories(id, slug, name)',
+        )
+        .eq('status', 'published')
+        .is('deleted_at', null)
+        .order('name');
 
-  // Group by category
+      if (q?.trim()) {
+        query = query.or(`name.ilike.%${q.trim()}%,tagline.ilike.%${q.trim()}%`);
+      }
+
+      return query;
+    })(),
+  ]);
+
+  const categoriasList = categorias ?? [];
+
+  // Resolve active category filter
+  const activeCat = category ? (categoriasList.find((c) => c.slug === category) ?? null) : null;
+
+  const produtosList = (produtos ?? [])
+    .map((p) => ({
+      ...p,
+      status: p.status as Status,
+      category: Array.isArray(p.category) ? (p.category[0] ?? null) : (p.category ?? null),
+    }))
+    .filter((p) => !activeCat || p.category_id === activeCat.id);
+
+  // Group by category when not filtering
   const grouped = new Map<string, typeof produtosList>();
   const uncategorized: typeof produtosList = [];
 
@@ -39,10 +66,12 @@ export default async function CatalogPage() {
     }
   }
 
+  const hasFilter = Boolean(q?.trim() ?? activeCat);
+
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 32px' }}>
       {/* Hero */}
-      <div style={{ marginBottom: '56px', maxWidth: '640px' }}>
+      <div style={{ marginBottom: '40px', maxWidth: '640px' }}>
         <h1
           style={{
             fontSize: '2.25rem',
@@ -67,49 +96,136 @@ export default async function CatalogPage() {
         </p>
       </div>
 
-      {/* Categories with product grids */}
-      {Array.from(grouped.entries()).map(([catName, prods]) => (
-        <section key={catName} style={{ marginBottom: '48px' }}>
-          <h2
+      {/* Search bar */}
+      <form
+        method="GET"
+        style={{
+          display: 'flex',
+          gap: '8px',
+          marginBottom: '24px',
+          maxWidth: '480px',
+        }}
+      >
+        {activeCat && <input type="hidden" name="category" value={activeCat.slug} />}
+        <input
+          type="search"
+          name="q"
+          defaultValue={q ?? ''}
+          placeholder="Buscar produto..."
+          style={{
+            flex: 1,
+            height: '40px',
+            padding: '0 14px',
+            borderRadius: 'var(--colheita-radius-md)',
+            border: '1px solid var(--colheita-border)',
+            backgroundColor: 'var(--colheita-surface-elevated)',
+            color: 'var(--colheita-text-primary)',
+            fontSize: '0.9375rem',
+            outline: 'none',
+          }}
+        />
+        <button
+          type="submit"
+          style={{
+            height: '40px',
+            padding: '0 18px',
+            borderRadius: 'var(--colheita-radius-md)',
+            backgroundColor: 'var(--colheita-brand-primary)',
+            color: 'white',
+            fontSize: '0.875rem',
+            fontWeight: '500',
+            border: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          Buscar
+        </button>
+        {hasFilter && (
+          <Link
+            href="/"
             style={{
-              fontSize: '0.75rem',
-              fontWeight: '600',
-              color: 'var(--colheita-text-tertiary)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              marginBottom: '20px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              height: '40px',
+              padding: '0 14px',
+              borderRadius: 'var(--colheita-radius-md)',
+              border: '1px solid var(--colheita-border)',
+              fontSize: '0.8125rem',
+              color: 'var(--colheita-text-secondary)',
+              textDecoration: 'none',
             }}
           >
-            {catName}
-          </h2>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '16px',
-            }}
-          >
-            {prods.map((p) => (
-              <ProductCard key={p.slug} produto={p} />
-            ))}
-          </div>
-        </section>
-      ))}
+            Limpar
+          </Link>
+        )}
+      </form>
 
-      {uncategorized.length > 0 && (
-        <section style={{ marginBottom: '48px' }}>
-          <h2
+      {/* Category filter chips */}
+      {categoriasList.length > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            gap: '8px',
+            flexWrap: 'wrap',
+            marginBottom: '40px',
+          }}
+        >
+          <Link
+            href={q ? `/?q=${encodeURIComponent(q)}` : '/'}
             style={{
-              fontSize: '0.75rem',
-              fontWeight: '600',
-              color: 'var(--colheita-text-tertiary)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              marginBottom: '20px',
+              display: 'inline-block',
+              padding: '5px 14px',
+              borderRadius: '999px',
+              fontSize: '0.8125rem',
+              fontWeight: '500',
+              textDecoration: 'none',
+              border: `1px solid ${!activeCat ? 'var(--colheita-brand-primary)' : 'var(--colheita-border)'}`,
+              backgroundColor: !activeCat
+                ? 'color-mix(in srgb, var(--colheita-brand-primary) 12%, transparent)'
+                : 'transparent',
+              color: !activeCat
+                ? 'var(--colheita-brand-primary)'
+                : 'var(--colheita-text-secondary)',
             }}
           >
-            Outros
-          </h2>
+            Todos
+          </Link>
+          {categoriasList.map((c) => {
+            const isActive = activeCat?.id === c.id;
+            const href = q
+              ? `/?q=${encodeURIComponent(q)}&category=${c.slug}`
+              : `/?category=${c.slug}`;
+            return (
+              <Link
+                key={c.id}
+                href={href}
+                style={{
+                  display: 'inline-block',
+                  padding: '5px 14px',
+                  borderRadius: '999px',
+                  fontSize: '0.8125rem',
+                  fontWeight: '500',
+                  textDecoration: 'none',
+                  border: `1px solid ${isActive ? 'var(--colheita-brand-primary)' : 'var(--colheita-border)'}`,
+                  backgroundColor: isActive
+                    ? 'color-mix(in srgb, var(--colheita-brand-primary) 12%, transparent)'
+                    : 'transparent',
+                  color: isActive
+                    ? 'var(--colheita-brand-primary)'
+                    : 'var(--colheita-text-secondary)',
+                }}
+              >
+                {c.name}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Product grids */}
+      {activeCat ? (
+        /* Flat list when category filter is active */
+        produtosList.length > 0 ? (
           <div
             style={{
               display: 'grid',
@@ -117,11 +233,69 @@ export default async function CatalogPage() {
               gap: '16px',
             }}
           >
-            {uncategorized.map((p) => (
+            {produtosList.map((p) => (
               <ProductCard key={p.slug} produto={p} />
             ))}
           </div>
-        </section>
+        ) : null
+      ) : (
+        /* Grouped by category */
+        <>
+          {Array.from(grouped.entries()).map(([catName, prods]) => (
+            <section key={catName} style={{ marginBottom: '48px' }}>
+              <h2
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  color: 'var(--colheita-text-tertiary)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  marginBottom: '20px',
+                }}
+              >
+                {catName}
+              </h2>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                  gap: '16px',
+                }}
+              >
+                {prods.map((p) => (
+                  <ProductCard key={p.slug} produto={p} />
+                ))}
+              </div>
+            </section>
+          ))}
+          {uncategorized.length > 0 && (
+            <section style={{ marginBottom: '48px' }}>
+              <h2
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  color: 'var(--colheita-text-tertiary)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  marginBottom: '20px',
+                }}
+              >
+                Outros
+              </h2>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                  gap: '16px',
+                }}
+              >
+                {uncategorized.map((p) => (
+                  <ProductCard key={p.slug} produto={p} />
+                ))}
+              </div>
+            </section>
+          )}
+        </>
       )}
 
       {produtosList.length === 0 && (
@@ -132,7 +306,25 @@ export default async function CatalogPage() {
             color: 'var(--colheita-text-tertiary)',
           }}
         >
-          <p style={{ fontSize: '1rem' }}>Nenhum produto disponível no momento.</p>
+          <p style={{ fontSize: '1rem' }}>
+            {hasFilter
+              ? 'Nenhum produto encontrado para este filtro.'
+              : 'Nenhum produto disponível no momento.'}
+          </p>
+          {hasFilter && (
+            <Link
+              href="/"
+              style={{
+                display: 'inline-block',
+                marginTop: '12px',
+                fontSize: '0.875rem',
+                color: 'var(--colheita-brand-primary)',
+                textDecoration: 'none',
+              }}
+            >
+              Ver todos os produtos
+            </Link>
+          )}
         </div>
       )}
     </div>
