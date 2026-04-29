@@ -7,13 +7,33 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AiGenerator } from '../src/generator.js';
 import { RagPipeline } from '../src/pipeline.js';
 import { BM25InMemoryRetriever } from '../src/retriever.js';
-import type { AiAnswer, AiChunk, ConversationTurn, GenerationInput } from '../src/types.js';
+import type {
+  AiAnswer,
+  AiChunk,
+  AiStreamEvent,
+  ConversationTurn,
+  GenerationInput,
+} from '../src/types.js';
 
 /** Extrai o argumento da primeira chamada ao generate (lança se não foi chamado). */
 function firstGenerateCall(gen: AiGenerator): GenerationInput {
   const call = vi.mocked(gen.generate).mock.calls.at(0);
   if (!call) throw new Error('generator.generate não foi chamado');
   return call[0];
+}
+
+/** Extrai o argumento da primeira chamada ao generateStream (lança se não foi chamado). */
+function firstGenerateStreamCall(gen: AiGenerator): GenerationInput {
+  const call = vi.mocked(gen.generateStream).mock.calls.at(0);
+  if (!call) throw new Error('generator.generateStream não foi chamado');
+  return call[0];
+}
+
+/** Coleta todos os eventos de um AsyncGenerator em um array. */
+async function collect<T>(gen: AsyncGenerator<T>): Promise<T[]> {
+  const items: T[] = [];
+  for await (const item of gen) items.push(item);
+  return items;
 }
 
 const TENANT = '00000000-0000-0000-0000-000000000001';
@@ -25,6 +45,15 @@ function mockGenerator(answer: string = 'Resposta simulada.'): AiGenerator {
       sources: [],
       usage: { inputTokens: 10, outputTokens: 5 },
     } satisfies AiAnswer),
+    generateStream: vi.fn().mockImplementation(async function* () {
+      yield { type: 'delta' as const, text: 'Resposta ' };
+      yield { type: 'delta' as const, text: 'simulada.' };
+      yield {
+        type: 'done' as const,
+        sources: [],
+        usage: { inputTokens: 10, outputTokens: 5 },
+      } satisfies AiStreamEvent;
+    }),
   } as unknown as AiGenerator;
 }
 
@@ -164,5 +193,119 @@ describe('RagPipeline', () => {
 
     const call = firstGenerateCall(generator);
     expect(call.conversationHistory).toBeUndefined();
+  });
+});
+
+// ============================================================================
+// askStream() — cobertura do caminho de streaming
+// ============================================================================
+
+describe('RagPipeline — askStream()', () => {
+  let retriever: BM25InMemoryRetriever;
+  let generator: AiGenerator;
+  let pipeline: RagPipeline;
+
+  beforeEach(() => {
+    retriever = new BM25InMemoryRetriever();
+    generator = mockGenerator();
+    pipeline = new RagPipeline(retriever, generator);
+  });
+
+  it('yields eventos delta seguidos de done', async () => {
+    await pipeline.index([makeChunk('Xcensis para soja.')]);
+    const events = await collect(pipeline.askStream({ query: 'Xcensis', tenantId: TENANT }));
+
+    const deltas = events.filter((e) => e.type === 'delta');
+    const dones = events.filter((e) => e.type === 'done');
+
+    expect(deltas.length).toBeGreaterThanOrEqual(1);
+    expect(dones).toHaveLength(1);
+    // done é sempre o último evento
+    expect(events.at(-1)?.type).toBe('done');
+  });
+
+  it('concatenação dos deltas forma o texto completo', async () => {
+    await pipeline.index([makeChunk('Xcensis para soja.')]);
+    const events = await collect(pipeline.askStream({ query: 'Xcensis', tenantId: TENANT }));
+
+    const fullText = events
+      .filter((e): e is Extract<AiStreamEvent, { type: 'delta' }> => e.type === 'delta')
+      .map((e) => e.text)
+      .join('');
+
+    expect(fullText).toBe('Resposta simulada.');
+  });
+
+  it('done event contém usage com inputTokens e outputTokens', async () => {
+    await pipeline.index([makeChunk('Produto agrícola.')]);
+    const events = await collect(pipeline.askStream({ query: 'produto', tenantId: TENANT }));
+    const done = events.find(
+      (e): e is Extract<AiStreamEvent, { type: 'done' }> => e.type === 'done',
+    );
+
+    expect(done?.usage.inputTokens).toBe(10);
+    expect(done?.usage.outputTokens).toBe(5);
+  });
+
+  it('chama generateStream com query e contexto corretos', async () => {
+    await pipeline.index([
+      makeChunk('Xcensis fertilizante foliar para soja.'),
+      makeChunk('Dose: 1L/ha para soja.', 1),
+    ]);
+    await collect(pipeline.askStream({ query: 'Xcensis soja', tenantId: TENANT }));
+
+    expect(generator.generateStream).toHaveBeenCalledOnce();
+    const call = firstGenerateStreamCall(generator);
+    expect(call.query).toBe('Xcensis soja');
+    expect(call.context.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('passa conversationHistory ao generateStream', async () => {
+    await pipeline.index([makeChunk('Xcensis fertilizante agrícola.')]);
+
+    const history: ConversationTurn[] = [
+      { role: 'user', content: 'O que é Xcensis?' },
+      { role: 'assistant', content: 'Xcensis é um fertilizante foliar.' },
+    ];
+
+    await collect(
+      pipeline.askStream({
+        query: 'Qual a dose recomendada?',
+        tenantId: TENANT,
+        conversationHistory: history,
+      }),
+    );
+
+    const call = firstGenerateStreamCall(generator);
+    expect(call.conversationHistory).toEqual(history);
+  });
+
+  it('passa systemHint ao generateStream', async () => {
+    await pipeline.index([makeChunk('Produto agrícola.')]);
+    await collect(
+      pipeline.askStream({
+        query: 'produto',
+        tenantId: TENANT,
+        systemHint: 'Responda de forma técnica.',
+      }),
+    );
+
+    const call = firstGenerateStreamCall(generator);
+    expect(call.systemHint).toBe('Responda de forma técnica.');
+  });
+
+  it('topK override limita contexto passado ao generateStream', async () => {
+    await pipeline.index(
+      Array.from({ length: 5 }, (_, i) =>
+        makeChunk(`Xcensis informação número ${i + 1} sobre produto agrícola.`, i),
+      ),
+    );
+
+    await collect(
+      pipeline.askStream({ query: 'Xcensis informação', tenantId: TENANT, config: { topK: 2 } }),
+    );
+
+    const call = firstGenerateStreamCall(generator);
+    expect(call.context.length).toBeLessThanOrEqual(2);
   });
 });
