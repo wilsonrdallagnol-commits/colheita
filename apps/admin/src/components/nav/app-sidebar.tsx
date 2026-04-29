@@ -10,7 +10,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@colheita/ui';
-import { BookOpen, Bot, FolderOpen, Images, LayoutDashboard, LogOut, Package } from 'lucide-react';
+import {
+  BookOpen,
+  Bot,
+  ClipboardList,
+  FolderOpen,
+  Images,
+  LayoutDashboard,
+  LogOut,
+  Package,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTransition } from 'react';
@@ -23,6 +32,7 @@ const NAV_ITEMS = [
   { href: '/midias', label: 'Mídias', icon: Images, exact: false },
   { href: '/academia', label: 'Academia', icon: BookOpen, exact: false },
   { href: '/assistente', label: 'Assistente IA', icon: Bot, exact: false },
+  { href: '/auditoria', label: 'Auditoria', icon: ClipboardList, exact: false },
 ];
 
 interface AppSidebarProps {
