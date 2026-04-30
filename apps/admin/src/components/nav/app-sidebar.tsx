@@ -20,6 +20,7 @@ import {
   LogOut,
   Package,
   ShieldCheck,
+  ShoppingCart,
   Users,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -34,6 +35,7 @@ const NAV_ITEMS = [
   { href: '/midias', label: 'Mídias', icon: Images, exact: false },
   { href: '/academia', label: 'Academia', icon: BookOpen, exact: false },
   { href: '/distribuidores', label: 'Distribuidores', icon: Users, exact: false },
+  { href: '/pedidos', label: 'Pedidos', icon: ShoppingCart, exact: false },
   { href: '/compliance', label: 'Compliance', icon: ShieldCheck, exact: false },
   { href: '/assistente', label: 'Assistente IA', icon: Bot, exact: false },
   { href: '/auditoria', label: 'Auditoria', icon: ClipboardList, exact: false },

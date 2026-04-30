@@ -11,7 +11,8 @@
  * - Visibilidade no dashboard do Trigger.dev por evento
  *
  * Handlers implementados:
- * - pedido.criado        → dispara email de confirmação (Resend)
+ * - pedido.criado        → upsert em orders + order_items; dispara email de confirmação
+ * - pedido.atualizado    → atualiza status do pedido em orders
  * - cliente.cadastrado   → convida distribuidor via Supabase Auth Admin
  * - inventario.atualizado → upsert em product_stock
  * - produto.atualizado   → arquiva produto no PIM se Safra marcar inativo
@@ -40,31 +41,163 @@ export type SafraEventoPayload = z.infer<typeof safraEventoPayloadSchema>;
 // ─── Type aliases ──────────────────────────────────────────────────────────────
 
 type PedidoCriado = Extract<SafraEvent, { event: 'pedido.criado' }>;
+type PedidoAtualizado = Extract<SafraEvent, { event: 'pedido.atualizado' }>;
 type ClienteCadastrado = Extract<SafraEvent, { event: 'cliente.cadastrado' }>;
 type InventarioAtualizado = Extract<SafraEvent, { event: 'inventario.atualizado' }>;
 type ProdutoAtualizado = Extract<SafraEvent, { event: 'produto.atualizado' }>;
 
 // ─── Handlers ─────────────────────────────────────────────────────────────────
 
-async function handlePedidoCriado(event: PedidoCriado, _tenantId: string) {
-  // Importação dinâmica para evitar dependência circular
-  const { sendPedidoConfirmadoJob } = await import('./email-pedido.js');
+/**
+ * pedido.criado — persiste o pedido no banco e dispara email de confirmação.
+ *
+ * 1. Busca o usuário no portal pelo email do distribuidor (se disponível via
+ *    distribuidor_id do Safra — não confiável, não usamos; futuro: vincular por email).
+ * 2. Upserta em orders (idempotente por safra_pedido_id).
+ * 3. Apaga itens anteriores e insere os itens do evento (snapshot).
+ * 4. Dispara email de confirmação (fire-and-forget via Trigger.dev job).
+ */
+async function handlePedidoCriado(event: PedidoCriado, tenantId: string) {
+  const supabase = buildSupabaseAdmin();
+  const { data: orderData } = event;
 
+  // 1. Tenta vincular ao usuário do portal pelo safra distribuidor_id se presente
+  //    (melhor-esforço — null quando não mapeado)
+  let distribuidorId: string | null = null;
+  if (orderData.distribuidor_id) {
+    // distribuidor_id no evento é o UUID do user no portal (opcional)
+    const { data: userRow } = await supabase
+      .from('users')
+      .select('id')
+      .eq('tenant_id', tenantId)
+      .eq('id', orderData.distribuidor_id)
+      .maybeSingle();
+    distribuidorId = userRow?.id ?? null;
+  }
+
+  // 2. Upsert do cabeçalho do pedido
+  const { data: order, error: orderError } = await supabase
+    .from('orders')
+    .upsert(
+      {
+        tenant_id: tenantId,
+        distribuidor_id: distribuidorId,
+        safra_pedido_id: orderData.pedido_id,
+        numero: orderData.numero,
+        status: orderData.status,
+        distribuidor_nome: orderData.distribuidor_nome,
+        distribuidor_cpf_cnpj: orderData.distribuidor_cpf_cnpj ?? null,
+        total_bruto: orderData.total_bruto,
+        total_desconto: orderData.total_desconto,
+        total_liquido: orderData.total_liquido,
+        observacoes: orderData.observacoes ?? null,
+        emitido_em: orderData.emitido_em,
+        prazo_entrega: orderData.prazo_entrega ?? null,
+        synced_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        onConflict: 'tenant_id,safra_pedido_id',
+        ignoreDuplicates: false,
+      },
+    )
+    .select('id')
+    .single();
+
+  if (orderError || !order) {
+    throw new Error(
+      `[safra] Falha ao criar pedido ${orderData.pedido_id}: ${orderError?.message ?? 'sem retorno'}`,
+    );
+  }
+
+  // 3. Substitui os itens (delete + insert — snapshot imutável por pedido)
+  await supabase.from('order_items').delete().eq('order_id', order.id);
+
+  const items = orderData.itens.map((item) => ({
+    tenant_id: tenantId,
+    order_id: order.id,
+    produto_codigo: item.produto_codigo,
+    produto_nome: item.produto_nome,
+    quantidade: item.quantidade,
+    unidade: item.unidade,
+    preco_unitario: item.preco_unitario,
+    desconto_pct: item.desconto_pct,
+    total: item.total,
+  }));
+
+  const { error: itemsError } = await supabase.from('order_items').insert(items);
+  if (itemsError) {
+    throw new Error(
+      `[safra] Falha ao inserir itens do pedido ${orderData.pedido_id}: ${itemsError.message}`,
+    );
+  }
+
+  // 4. Email de confirmação (fire-and-forget via job separado)
   const notifyEmail = process.env.RESEND_NOTIFY_EMAIL;
-  if (!notifyEmail) return;
+  if (notifyEmail) {
+    // Importação dinâmica para evitar dependência circular
+    const { sendPedidoConfirmadoJob } = await import('./email-pedido.js');
+    await sendPedidoConfirmadoJob.trigger({
+      to: notifyEmail,
+      pedidoId: orderData.pedido_id,
+      clienteNome: orderData.distribuidor_nome,
+      tenantName: process.env.RESEND_TENANT_NAME ?? 'Argho Distribuidora',
+      itens: orderData.itens.map((item) => ({
+        produto: item.produto_nome,
+        quantidade: item.quantidade,
+        unidade: item.unidade,
+      })),
+      valorTotal: orderData.total_liquido,
+    });
+  }
+}
 
-  await sendPedidoConfirmadoJob.trigger({
-    to: notifyEmail,
-    pedidoId: event.data.pedido_id,
-    clienteNome: event.data.distribuidor_nome,
-    tenantName: process.env.RESEND_TENANT_NAME ?? 'Argho Distribuidora',
-    itens: event.data.itens.map((item) => ({
-      produto: item.produto_nome,
-      quantidade: item.quantidade,
-      unidade: item.unidade,
-    })),
-    valorTotal: event.data.total_liquido,
-  });
+/**
+ * pedido.atualizado — atualiza o status do pedido na tabela orders.
+ *
+ * Safra envia apenas o diff de status (status_anterior → status_novo).
+ * Atualizamos o status e guardamos o status_anterior + motivo para rastreabilidade.
+ * Se o pedido não existir no banco, ignoramos (pode ter chegado antes de pedido.criado
+ * ou ser de um pedido pré-integração).
+ */
+async function handlePedidoAtualizado(event: PedidoAtualizado, tenantId: string) {
+  const { pedido_id, status_novo, status_anterior, atualizado_em, motivo } = event.data;
+
+  const supabase = buildSupabaseAdmin();
+
+  // Busca pelo safra_pedido_id
+  const { data: order } = await supabase
+    .from('orders')
+    .select('id, status')
+    .eq('tenant_id', tenantId)
+    .eq('safra_pedido_id', pedido_id)
+    .maybeSingle();
+
+  if (!order) {
+    // Pedido não encontrado — pode ser pré-integração. Ignoramos.
+    return;
+  }
+
+  const validStatuses = ['rascunho', 'confirmado', 'faturado', 'entregue', 'cancelado'] as const;
+  if (!validStatuses.includes(status_novo as (typeof validStatuses)[number])) {
+    // Status desconhecido — ignoramos para não violar o check constraint
+    return;
+  }
+
+  const { error } = await supabase
+    .from('orders')
+    .update({
+      status: status_novo,
+      status_anterior: status_anterior,
+      motivo_ultima_atualizacao: motivo ?? null,
+      synced_at: atualizado_em,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', order.id);
+
+  if (error) {
+    throw new Error(`[safra] Falha ao atualizar pedido ${pedido_id}: ${error.message}`);
+  }
 }
 
 /**
@@ -241,7 +374,7 @@ export const safraEventoJob = task({
         await handlePedidoCriado(event, tenantId);
         break;
       case 'pedido.atualizado':
-        // Fase 4: atualizar status do pedido na tabela orders (quando implementada)
+        await handlePedidoAtualizado(event, tenantId);
         break;
       case 'cliente.cadastrado':
         await handleClienteCadastrado(event, tenantId);

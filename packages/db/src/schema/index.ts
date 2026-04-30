@@ -250,6 +250,89 @@ export type ProductStock = typeof productStock.$inferSelect;
 export type NewProductStock = typeof productStock.$inferInsert;
 
 // ============================================================================
+// ORDERS (Safra ERP sync — migration 0014)
+// ============================================================================
+
+export const orders = pgTable(
+  'orders',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    distribuidorId: uuid('distribuidor_id').references(() => users.id, { onDelete: 'set null' }),
+
+    // ERP keys
+    safraPedidoId: text('safra_pedido_id').notNull(),
+    numero: text('numero').notNull(),
+    status: text('status', {
+      enum: ['rascunho', 'confirmado', 'faturado', 'entregue', 'cancelado'],
+    }).notNull(),
+    statusAnterior: text('status_anterior'),
+
+    // Distribuidor snapshot
+    distribuidorNome: text('distribuidor_nome').notNull(),
+    distribuidorCpfCnpj: text('distribuidor_cpf_cnpj'),
+
+    // Financial
+    totalBruto: numeric('total_bruto', { precision: 14, scale: 2 }).notNull().default('0'),
+    totalDesconto: numeric('total_desconto', { precision: 14, scale: 2 }).notNull().default('0'),
+    totalLiquido: numeric('total_liquido', { precision: 14, scale: 2 }).notNull().default('0'),
+
+    observacoes: text('observacoes'),
+    motivoUltimaAtualizacao: text('motivo_ultima_atualizacao'),
+
+    emitidoEm: timestamp('emitido_em', { withTimezone: true }).notNull(),
+    prazoEntrega: timestamp('prazo_entrega', { withTimezone: true }),
+    syncedAt: timestamp('synced_at', { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    tenantStatusIdx: index('orders_tenant_status_idx').on(table.tenantId, table.status),
+    tenantDistribuidorIdx: index('orders_tenant_distribuidor_idx').on(
+      table.tenantId,
+      table.distribuidorId,
+    ),
+    tenantEmitidoIdx: index('orders_tenant_emitido_idx').on(table.tenantId, table.emitidoEm),
+    tenantSafraUnique: unique().on(table.tenantId, table.safraPedidoId),
+  }),
+);
+
+export type Order = typeof orders.$inferSelect;
+export type NewOrder = typeof orders.$inferInsert;
+
+export const orderItems = pgTable(
+  'order_items',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    orderId: uuid('order_id')
+      .notNull()
+      .references(() => orders.id, { onDelete: 'cascade' }),
+
+    produtoCodigo: text('produto_codigo').notNull(),
+    produtoNome: text('produto_nome').notNull(),
+    quantidade: numeric('quantidade', { precision: 12, scale: 3 }).notNull(),
+    unidade: text('unidade').notNull(),
+    precoUnitario: numeric('preco_unitario', { precision: 14, scale: 2 }).notNull(),
+    descontoPct: numeric('desconto_pct', { precision: 5, scale: 2 }).notNull().default('0'),
+    total: numeric('total', { precision: 14, scale: 2 }).notNull(),
+
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    orderIdx: index('order_items_order_idx').on(table.orderId),
+    tenantIdx: index('order_items_tenant_idx').on(table.tenantId),
+  }),
+);
+
+export type OrderItem = typeof orderItems.$inferSelect;
+export type NewOrderItem = typeof orderItems.$inferInsert;
+
+// ============================================================================
 // ASSETS (DAM)
 // ============================================================================
 
@@ -326,6 +409,17 @@ export const productsRelations = relations(products, ({ one, many }) => ({
 export const productStockRelations = relations(productStock, ({ one }) => ({
   tenant: one(tenants, { fields: [productStock.tenantId], references: [tenants.id] }),
   product: one(products, { fields: [productStock.productId], references: [products.id] }),
+}));
+
+export const ordersRelations = relations(orders, ({ one, many }) => ({
+  tenant: one(tenants, { fields: [orders.tenantId], references: [tenants.id] }),
+  distribuidor: one(users, { fields: [orders.distribuidorId], references: [users.id] }),
+  items: many(orderItems),
+}));
+
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  tenant: one(tenants, { fields: [orderItems.tenantId], references: [tenants.id] }),
+  order: one(orders, { fields: [orderItems.orderId], references: [orders.id] }),
 }));
 
 export * from './academia.js';
