@@ -44,7 +44,7 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
   const { data, error } = await supabase
     .from('products')
     .select(
-      'id, name, tagline, description, composition, technical_specs, packaging, applications, category:product_categories(name)',
+      'id, name, tagline, description, safra_codigo, composition, technical_specs, packaging, applications, category:product_categories(name)',
     )
     .eq('slug', slug)
     .eq('status', 'published')
@@ -54,6 +54,18 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
   if (error || !data) {
     notFound();
   }
+
+  // Disponibilidade de estoque (somente se produto mapeado ao Safra)
+  const { data: stockRows } = data.safra_codigo
+    ? await supabase
+        .from('product_stock')
+        .select('deposito, estoque, unidade')
+        .eq('safra_codigo', data.safra_codigo)
+    : { data: null };
+
+  const totalEstoque = stockRows?.reduce((acc, r) => acc + Number(r.estoque), 0) ?? null;
+  const hasStock = totalEstoque !== null && totalEstoque > 0;
+  const stockTracked = stockRows !== null;
 
   const category = Array.isArray(data.category)
     ? (data.category[0] ?? null)
@@ -420,6 +432,63 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
                   </span>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Disponibilidade de estoque */}
+          {stockTracked && (
+            <div
+              style={{
+                paddingTop: '16px',
+                borderTop: '1px solid var(--colheita-border-subtle)',
+              }}
+            >
+              <p
+                style={{
+                  fontSize: '0.6875rem',
+                  fontWeight: '600',
+                  color: 'var(--colheita-text-tertiary)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  marginBottom: '10px',
+                }}
+              >
+                Disponibilidade
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    backgroundColor: hasStock
+                      ? 'var(--colheita-success)'
+                      : 'var(--colheita-text-tertiary)',
+                    flexShrink: 0,
+                  }}
+                />
+                <span
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: hasStock ? 'var(--colheita-success)' : 'var(--colheita-text-tertiary)',
+                  }}
+                >
+                  {hasStock ? 'Disponível' : 'Esgotado'}
+                </span>
+              </div>
+              {stockRows && stockRows.length > 1 && (
+                <p
+                  style={{
+                    fontSize: '0.75rem',
+                    color: 'var(--colheita-text-tertiary)',
+                    marginTop: '6px',
+                  }}
+                >
+                  {stockRows.filter((r) => Number(r.estoque) > 0).length} de {stockRows.length}{' '}
+                  depósitos com estoque
+                </p>
+              )}
             </div>
           )}
 
