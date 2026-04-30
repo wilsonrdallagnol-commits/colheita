@@ -1,5 +1,6 @@
 // packages/auth/src/server.ts
 import { createServerClient as createSupabaseServerClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 import type { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 import { redirect } from 'next/navigation';
 
@@ -16,6 +17,24 @@ export function createServerClient(cookieStore: ReadonlyRequestCookies) {
           // Server Components não podem setar cookies.
           // O middleware (updateSession) é responsável por renovar a sessão.
         },
+      },
+    },
+  );
+}
+
+/**
+ * Cliente Supabase com service_role — bypassa RLS.
+ * Usar APENAS em Server Actions e Route Handlers do admin.
+ * NUNCA expor ao cliente. NUNCA usar em contextos de usuário final.
+ */
+export function createAdminClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    process.env.SUPABASE_SERVICE_ROLE_KEY as string,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
       },
     },
   );

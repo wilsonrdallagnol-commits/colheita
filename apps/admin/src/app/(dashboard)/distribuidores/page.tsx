@@ -8,6 +8,7 @@ import { createServerClient, requireAuth } from '@colheita/auth';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import { InviteDistribuidorForm } from './invite-form';
 
 export const metadata: Metadata = { title: 'Distribuidores | Argho Admin' };
 
@@ -132,22 +133,34 @@ export default async function DistribuidoresPage({ searchParams }: PageProps) {
   return (
     <div style={{ padding: '32px', maxWidth: '1100px' }}>
       {/* Header */}
-      <div style={{ marginBottom: '24px' }}>
-        <h1
-          style={{
-            fontSize: '1.375rem',
-            fontWeight: '600',
-            color: 'var(--colheita-text-primary)',
-            letterSpacing: '-0.02em',
-            marginBottom: '4px',
-          }}
-        >
-          Distribuidores
-        </h1>
-        <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-tertiary)', margin: 0 }}>
-          {total.toLocaleString('pt-BR')} distribuidor{total !== 1 ? 'es' : ''} cadastrado
-          {total !== 1 ? 's' : ''}
-        </p>
+      <div
+        style={{
+          marginBottom: '24px',
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: '16px',
+          flexWrap: 'wrap',
+        }}
+      >
+        <div>
+          <h1
+            style={{
+              fontSize: '1.375rem',
+              fontWeight: '600',
+              color: 'var(--colheita-text-primary)',
+              letterSpacing: '-0.02em',
+              marginBottom: '4px',
+            }}
+          >
+            Distribuidores
+          </h1>
+          <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-tertiary)', margin: 0 }}>
+            {total.toLocaleString('pt-BR')} distribuidor{total !== 1 ? 'es' : ''} cadastrado
+            {total !== 1 ? 's' : ''}
+          </p>
+        </div>
+        <InviteDistribuidorForm />
       </div>
 
       {/* Filtros */}

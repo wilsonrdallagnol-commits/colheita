@@ -15,6 +15,7 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { StatusActions } from './status-actions';
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -246,21 +247,23 @@ export default async function DistribuidorDetailPage({ params }: PageProps) {
             )}
           </div>
 
-          <span
-            style={{
-              display: 'inline-block',
-              padding: '4px 12px',
-              borderRadius: '999px',
-              backgroundColor: userStyle.bg,
-              color: userStyle.color,
-              border: `1px solid ${userStyle.border}`,
-              fontSize: '0.8125rem',
-              fontWeight: '500',
-              flexShrink: 0,
-            }}
-          >
-            {userStyle.label}
-          </span>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
+            <span
+              style={{
+                display: 'inline-block',
+                padding: '4px 12px',
+                borderRadius: '999px',
+                backgroundColor: userStyle.bg,
+                color: userStyle.color,
+                border: `1px solid ${userStyle.border}`,
+                fontSize: '0.8125rem',
+                fontWeight: '500',
+              }}
+            >
+              {userStyle.label}
+            </span>
+            <StatusActions id={user.id} status={user.status} />
+          </div>
         </div>
 
         <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', marginTop: '4px' }}>
