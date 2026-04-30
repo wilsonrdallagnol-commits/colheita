@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-30 (EmbeddingProviders Voyage/OpenAI/Mock + embed jobs + ADR 0009, 358 testes: ai/80 + ui/59 + email/20 + observability/13 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19 + api/13 + jobs/51)
-**Fase atual:** 2 — Knowledge Base + pgvector
-**Próximo milestone:** Wiring embed jobs → admin product/lesson save actions (auto re-indexação)
+**Última atualização:** 2026-04-30 (pgvector completo end-to-end: embed jobs wired, portal busca semântica, reindex script, 358 testes)
+**Fase atual:** 2 — Knowledge Base + pgvector (COMPLETA)
+**Próximo milestone:** Fase 3 — Rate limiting + observabilidade + hardening de produção
 
 ---
 
@@ -270,6 +270,12 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `packages/ai` — `VoyageEmbeddingProvider`, `OpenAIEmbeddingProvider`, `MockEmbeddingProvider`: dependency injection para `SupabaseVectorRetriever`; ordem de preferência Voyage → OpenAI → Mock(CI); **19 novos testes** — ai total: **80 testes**
 - [x] `packages/jobs` — `embedProdutoJob` (4 chunks: nome, descrição, composição, indicações) e `embedLicaoJob`; retry exponencial (maxAttempts=3, factor=2); dispatch via `.trigger()`; **13 novos testes** — jobs total: **51 testes**
 - [x] `docs/DECISIONS/0009-vector-retrieval.md` — ADR documentando pgvector HNSW vs Pinecone/Elasticsearch; custo < $0.01/mês estimado
+- [x] `apps/admin` — `createProduto`/`updateProduto`: `embedProdutoJob.trigger()` fire-and-forget após upsert
+- [x] `apps/admin` — `createLicao`/`updateLicao`: `embedLicaoJob.trigger()` fire-and-forget após upsert
+- [x] `apps/api` — `/api/v1/agent`: auto-seleciona `SupabaseVectorRetriever` (pgvector) quando env vars configuradas; fallback `BM25InMemoryRetriever` para dev/CI
+- [x] `apps/portal` — busca `?q=` usa `vectorSearchProductIds()` via pgvector; fallback gracioso para `ilike` quando keys não configuradas
+- [x] `packages/jobs/src/scripts/reindex-all.ts` + `pnpm embed:reindex` — bulk reindex de todos os produtos e lições (para primeiro deploy)
+- [x] `.env.example` atualizado com `VOYAGE_API_KEY`, `OPENAI_API_KEY`, `SUPABASE_URL` documentados
 
 ### Scripts operacionais
 - [x] `pnpm db:migrate` — aplica 10 migrations em ordem (0001–0010)
