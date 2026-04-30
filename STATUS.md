@@ -1,6 +1,6 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-30 (Fase 3 completa + /distribuidores admin page + migration 0012 auth sync; 400 testes passando + 25 skipped RLS)
+**Última atualização:** 2026-04-30 (Fase 3 CRM+Compliance+BI: distribuidores CRM, compliance regulatório, certificações BI; migration 0012 auth sync; 400+ testes)
 **Fase atual:** 3 — Hardening de produção (COMPLETA)
 **Próximo milestone:** Fase 3 (roadmap) — CRM agro + BI + Compliance regulatório; Fase 4 — Integrações (ERP, WhatsApp, AgroTools, Climate FieldView)
 
@@ -157,6 +157,12 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Admin — `/auditoria`: log de audit_events paginado (50/pág), filtros por ação + recurso, tabela com color-coding, skeleton loading, sidebar link (ClipboardList)
 - [x] Admin — `/distribuidores`: lista de usuários com busca (email/nome), filtro por status (active/invited/suspended), paginação 50/pág, link para detalhe
 - [x] Admin — `/distribuidores/[id]`: perfil do distribuidor com queries paralelas (user + certifications + audit_events últimas 20 ações), breadcrumb, badge de status, tabelas de certificações e atividade
+- [x] Admin — `/distribuidores`: botão "Convidar distribuidor" via `inviteDistribuidorAction` (Supabase Auth Admin)
+- [x] Admin — `/distribuidores/[id]`: `StatusActions` — botão Suspender/Reativar contextual
+- [x] Admin — `/compliance`: painel compliance regulatório (MAPA/ANVISA/IBAMA/Estadual), sumário cards, alertas de vencimento (30d/90d), filtros status + autoridade
+- [x] Admin — `/academia/certificados`: relatório BI de certificações emitidas, filtros por trilha e status, sumário cards (total, 30d, ativos 30d, trilhas)
+- [x] Admin — dashboard: stat card "Reg. vencem em 30d" com alerta laranja linkando para /compliance
+- [x] `@colheita/auth` — `createAdminClient()`: cliente service_role para ops admin (bypassa RLS)
 - [x] Portal + Academia — callback auth: atualiza `last_seen_at` em `public.users` (fire-and-forget) após login via magic link
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
@@ -322,7 +328,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [ADR 0009](./docs/DECISIONS/0009-vector-retrieval.md) — Vector Retrieval com pgvector HNSW (vs Pinecone/Elasticsearch)
 - [ADR 0010](./docs/DECISIONS/0010-rate-limiting-upstash.md) — Rate Limiting com Upstash Redis (sliding window, fail-open, replay defense)
 - [ADR 0011](./docs/DECISIONS/0011-security-headers.md) — Security Headers em Next.js (CSP, HSTS, X-Frame-Options, Permissions-Policy)
-- Migration 0012 — Auth user sync (trigger AFTER INSERT ON auth.users → public.users; resolve tenant via metadata ou fallback first-tenant)
+- [ADR 0012](./docs/DECISIONS/0012-auth-user-sync.md) — Auth user sync (trigger AFTER INSERT ON auth.users → public.users; SECURITY DEFINER, fallback first-tenant, falha silenciosa)
 
 ---
 
