@@ -28,6 +28,7 @@ import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 import { type NextRequest, NextResponse } from 'next/server';
 import { verifySignature } from '../../../../lib/safra-hmac.js';
+import { isEventFresh } from '../../../../lib/safra-timestamp.js';
 
 const WEBHOOK_SECRET = process.env.SAFRA_WEBHOOK_SECRET ?? '';
 
@@ -150,12 +151,11 @@ export async function POST(request: NextRequest) {
   const event = parsed.data;
 
   // 4. Freshness check — rejeita eventos muito antigos (proteção contra replay)
-  const eventAgeMs = Date.now() - new Date(event.timestamp).getTime();
-  if (eventAgeMs > TIMESTAMP_TOLERANCE_MS) {
+  if (!isEventFresh(event.timestamp, Date.now(), TIMESTAMP_TOLERANCE_MS)) {
     return NextResponse.json(
       {
-        error: 'Evento rejeitado: timestamp muito antigo.',
-        details: `Evento de ${Math.round(eventAgeMs / 60000)} minuto(s) atrás. Tolerância: ${TIMESTAMP_TOLERANCE_MS / 60000} minutos.`,
+        error: 'Evento rejeitado: timestamp muito antigo ou inválido.',
+        details: `Tolerância: ${TIMESTAMP_TOLERANCE_MS / 60000} minutos.`,
       },
       { status: 400 },
     );
