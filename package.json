@@ -25,6 +25,7 @@
     "db:seed": "pnpm --filter @colheita/db seed",
     "db:studio": "pnpm --filter @colheita/db studio",
     "tenant:create": "pnpm --filter @colheita/db tenant:create",
+    "embed:reindex": "pnpm --filter @colheita/jobs reindex-all",
     "tokens:build": "pnpm --filter @colheita/tokens build",
     "clean": "turbo run clean && rm -rf node_modules"
   },
