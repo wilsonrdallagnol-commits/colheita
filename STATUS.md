@@ -2,7 +2,7 @@
 
 **Última atualização:** 2026-04-30 (Fase 3 + testes: rate limiting Upstash, security headers CSP/HSTS, replay attack protection; 400 testes passando + 25 skipped RLS)
 **Fase atual:** 3 — Hardening de produção (COMPLETA)
-**Próximo milestone:** Fase 4 — Sub-projeto B: Admin Shell + Auth + PIM read-only (plan em docs/superpowers/plans/)
+**Próximo milestone:** Fase 3 (roadmap) — CRM agro + BI + Compliance regulatório; Fase 4 — Integrações (ERP, WhatsApp, AgroTools, Climate FieldView)
 
 ---
 
@@ -316,6 +316,8 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [ADR 0007](./docs/DECISIONS/0007-audit-partitioning.md) — Audit Events particionamento nativo Postgres 16 por mês
 - [ADR 0008](./docs/DECISIONS/0008-generator-pdf-engine.md) — Generator PDF engine (React → Playwright)
 - [ADR 0009](./docs/DECISIONS/0009-vector-retrieval.md) — Vector Retrieval com pgvector HNSW (vs Pinecone/Elasticsearch)
+- [ADR 0010](./docs/DECISIONS/0010-rate-limiting-upstash.md) — Rate Limiting com Upstash Redis (sliding window, fail-open, replay defense)
+- [ADR 0011](./docs/DECISIONS/0011-security-headers.md) — Security Headers em Next.js (CSP, HSTS, X-Frame-Options, Permissions-Policy)
 
 ---
 

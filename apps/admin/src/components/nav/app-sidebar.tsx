@@ -19,6 +19,7 @@ import {
   LayoutDashboard,
   LogOut,
   Package,
+  Users,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -31,6 +32,7 @@ const NAV_ITEMS = [
   { href: '/categorias', label: 'Categorias', icon: FolderOpen, exact: false },
   { href: '/midias', label: 'Mídias', icon: Images, exact: false },
   { href: '/academia', label: 'Academia', icon: BookOpen, exact: false },
+  { href: '/distribuidores', label: 'Distribuidores', icon: Users, exact: false },
   { href: '/assistente', label: 'Assistente IA', icon: Bot, exact: false },
   { href: '/auditoria', label: 'Auditoria', icon: ClipboardList, exact: false },
 ];
