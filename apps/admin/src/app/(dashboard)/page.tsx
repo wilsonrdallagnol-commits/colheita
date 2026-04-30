@@ -76,6 +76,7 @@ export default async function DashboardPage() {
     { count: trilhasPublicadas },
     { count: totalLicoes },
     { count: totalDistribuidores },
+    { data: expiringRegs },
   ] = await Promise.all([
     supabase.from('products').select('id', { count: 'exact', head: true }).is('deleted_at', null),
     supabase
@@ -101,6 +102,16 @@ export default async function DashboardPage() {
       .eq('status', 'published'),
     supabase.from('learning_lessons').select('id', { count: 'exact', head: true }),
     supabase.from('users').select('id', { count: 'exact', head: true }).eq('status', 'active'),
+    // Registros regulatórios ativos com vencimento nos próximos 30 dias
+    supabase
+      .from('regulatory_registrations')
+      .select('id, expires_at')
+      .eq('status', 'active')
+      .not('expires_at', 'is', null)
+      .lte(
+        'expires_at',
+        new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      ),
   ]);
 
   // Busca produtos recentes
@@ -205,6 +216,12 @@ export default async function DashboardPage() {
           value={totalDistribuidores ?? 0}
           href="/distribuidores"
           accent="var(--colheita-brand-teal)"
+        />
+        <StatCard
+          label="Reg. vencem em 30d"
+          value={expiringRegs?.length ?? 0}
+          href="/compliance"
+          accent={(expiringRegs?.length ?? 0) > 0 ? '#f97316' : 'var(--colheita-text-tertiary)'}
         />
       </div>
 
