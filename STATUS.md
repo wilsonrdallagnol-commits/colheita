@@ -1,6 +1,6 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-30 (Fase 3: rate limiting Upstash, security headers CSP/HSTS, replay attack protection)
+**Última atualização:** 2026-04-30 (Fase 3 + testes: rate limiting Upstash, security headers CSP/HSTS, replay attack protection; 400 testes passando + 25 skipped RLS)
 **Fase atual:** 3 — Hardening de produção (COMPLETA)
 **Próximo milestone:** Fase 4 — Sub-projeto B: Admin Shell + Auth + PIM read-only (plan em docs/superpowers/plans/)
 
@@ -255,6 +255,12 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] CSP: `unsafe-eval` apenas em dev (HMR), `unsafe-inline` pra hidratação RSC, connect-src inclui Supabase/Sentry/PostHog/Trigger.dev
 - [x] Applied via `next.config.ts headers()` em todos os 4 apps (admin, portal, academia, api)
 
+### Testes adicionados (Fase 3)
+- [x] `apps/api/src/lib/safra-timestamp.ts` — `isEventFresh()` extraída do handler (injectable `nowMs` + `toleranceMs`)
+- [x] `apps/api` — 18 novos testes: freshness window, expired replay, clock skew, invalid timestamps, custom tolerance
+- [x] `packages/observability` — 24 novos testes: prod vs dev CSP/HSTS, unsafe-eval dev-only, connect-src, overrides
+- [x] `docs/DECISIONS/0010-rate-limiting-upstash.md` — ADR documentando sliding window, fail-open, replay defense
+
 ---
 
 ## 🏗️ Próximo — Fase 1 continuação
@@ -276,9 +282,9 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `packages/ui` — `ChatMarkdown`: blocos + inline (bold/italic/code/links/tabelas), streaming cursor, **59 testes**
 - [x] `packages/safra-contracts` — **28 testes** para os 5 schemas Zod de eventos Safra (discriminatedUnion, defaults, edge cases)
 - [x] `packages/tokens` — **21 testes** para TenantThemeTokensSchema + parseTenantThemeTokens (OKLCH/hex/rgb, radius, fallback)
-- [x] `apps/api` — **13 testes** HMAC: `verifySignature` extraída para `src/lib/safra-hmac.ts` (body alterado, secret errado, headers malformados, timing-safe)
+- [x] `apps/api` — **31 testes**: 13 HMAC (`verifySignature`), 18 freshness (`isEventFresh` — replay protection, clock skew, timestamps inválidos, tolerância customizável)
 - [x] `packages/email` — Resend client + 2 templates React (CertificadoEmitido, PedidoConfirmado), integração em academia/actions.ts e api/webhooks/safra, **20 testes** (renderToStaticMarkup, sem deps externas)
-- [x] `packages/observability` — Sentry (captureError/Warning/setSentryUser + initClient/Server/Edge), Axiom logger (ColheitaLogger + createLogger), PostHog provider + usePageview, **13 testes**; Sentry config files em todas as 4 apps; PostHog provider em portal + academia layouts
+- [x] `packages/observability` — Sentry (captureError/Warning/setSentryUser + initClient/Server/Edge), Axiom logger (ColheitaLogger + createLogger), PostHog provider + usePageview, **37 testes** (13 Sentry/Logger + 24 securityHeaders); Sentry config files em todas as 4 apps; PostHog provider em portal + academia layouts; `securityHeaders()` helper com `nodeEnv` injectable para testes
 - [x] `packages/jobs` — Trigger.dev v3 background jobs: `sendCertificadoEmitidoJob`, `sendPedidoConfirmadoJob`, `gerarFichaTecnicaJob`, `safraEventoJob`; conditional dispatch (TRIGGER_SECRET_KEY); wired to apps/academia + apps/api; **38 testes** (schema validation Zod + task API)
 - [x] `packages/ai` — `SupabaseVectorRetriever`: pgvector HNSW retriever com `EmbeddingProvider` interface; `index()` upsert por chunk_type, `retrieve()` via `match_*` RPCs, `purge()` por tenant; **13 novos testes** (mocks, sem DB real) — ai total: **61 testes**
 - [x] `packages/ai` — `VoyageEmbeddingProvider`, `OpenAIEmbeddingProvider`, `MockEmbeddingProvider`: dependency injection para `SupabaseVectorRetriever`; ordem de preferência Voyage → OpenAI → Mock(CI); **19 novos testes** — ai total: **80 testes**
