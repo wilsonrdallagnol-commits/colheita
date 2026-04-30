@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-30 (pgvector completo end-to-end: embed jobs wired, portal busca semântica, reindex script, 358 testes)
-**Fase atual:** 2 — Knowledge Base + pgvector (COMPLETA)
-**Próximo milestone:** Fase 3 — Rate limiting + observabilidade + hardening de produção
+**Última atualização:** 2026-04-30 (Fase 3: rate limiting Upstash, security headers CSP/HSTS, replay attack protection)
+**Fase atual:** 3 — Hardening de produção (COMPLETA)
+**Próximo milestone:** Fase 4 — Sub-projeto B: Admin Shell + Auth + PIM read-only (plan em docs/superpowers/plans/)
 
 ---
 
@@ -240,6 +240,20 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] 12 testes unitários (renderToStaticMarkup, sem browser) — todos passando
 - [x] TypeScript strict 0 erros; biome limpo
 - [x] [ADR 0008](./docs/DECISIONS/0008-generator-pdf-engine.md) — decisão de engine PDF (React → renderToStaticMarkup → Playwright); nota sobre `@sparticuz/chromium` para Vercel serverless
+
+---
+
+## ✅ Fase 3 — Hardening de produção (2026-04-30)
+
+### Rate limiting
+- [x] `apps/api` — `/api/v1/agent`: Upstash sliding window 10 req/min por usuário (session.id); fail-open sem UPSTASH_REDIS_REST_*; 429 com `Retry-After` + `X-RateLimit-*` headers
+- [x] `apps/api` — `/api/webhooks/safra`: IP-based rate limit 60 req/min (Upstash, fail-open) + timestamp freshness check (rejeita eventos > 10 min antigos)
+- [x] `@upstash/ratelimit@^2.0.5` + `@upstash/redis@^1.34.3` adicionados em apps/api
+
+### Security headers
+- [x] `securityHeaders()` helper em `@colheita/observability/next-config` — CSP conservador, HSTS (prod-only), X-Content-Type-Options: nosniff, X-Frame-Options: SAMEORIGIN, Referrer-Policy, Permissions-Policy
+- [x] CSP: `unsafe-eval` apenas em dev (HMR), `unsafe-inline` pra hidratação RSC, connect-src inclui Supabase/Sentry/PostHog/Trigger.dev
+- [x] Applied via `next.config.ts headers()` em todos os 4 apps (admin, portal, academia, api)
 
 ---
 
