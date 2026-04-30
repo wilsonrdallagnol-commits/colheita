@@ -1,5 +1,9 @@
 // apps/admin/next.config.ts
-import { DEFAULT_SENTRY_OPTIONS, withSentryConfig } from '@colheita/observability/next-config';
+import {
+  DEFAULT_SENTRY_OPTIONS,
+  securityHeaders,
+  withSentryConfig,
+} from '@colheita/observability/next-config';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
@@ -11,6 +15,9 @@ const nextConfig: NextConfig = {
     '@colheita/db',
     '@colheita/generator',
   ],
+  async headers() {
+    return [{ source: '/(.*)', headers: securityHeaders() }];
+  },
   webpack(config) {
     // Resolve .js extensions in workspace packages (TypeScript ESM convention)
     // to their actual .ts/.tsx source files when bundling with transpilePackages.

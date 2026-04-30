@@ -1,5 +1,9 @@
 // apps/academia/next.config.ts
-import { DEFAULT_SENTRY_OPTIONS, withSentryConfig } from '@colheita/observability/next-config';
+import {
+  DEFAULT_SENTRY_OPTIONS,
+  securityHeaders,
+  withSentryConfig,
+} from '@colheita/observability/next-config';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
@@ -11,6 +15,9 @@ const nextConfig: NextConfig = {
     '@colheita/tokens',
     '@colheita/db',
   ],
+  async headers() {
+    return [{ source: '/(.*)', headers: securityHeaders() }];
+  },
   webpack(config) {
     config.resolve.extensionAlias = {
       '.js': ['.js', '.ts', '.tsx'],
