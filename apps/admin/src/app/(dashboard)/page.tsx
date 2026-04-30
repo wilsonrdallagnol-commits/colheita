@@ -75,6 +75,7 @@ export default async function DashboardPage() {
     { count: totalTrilhas },
     { count: trilhasPublicadas },
     { count: totalLicoes },
+    { count: totalDistribuidores },
   ] = await Promise.all([
     supabase.from('products').select('id', { count: 'exact', head: true }).is('deleted_at', null),
     supabase
@@ -99,6 +100,7 @@ export default async function DashboardPage() {
       .select('id', { count: 'exact', head: true })
       .eq('status', 'published'),
     supabase.from('learning_lessons').select('id', { count: 'exact', head: true }),
+    supabase.from('users').select('id', { count: 'exact', head: true }).eq('status', 'active'),
   ]);
 
   // Busca produtos recentes
@@ -197,6 +199,12 @@ export default async function DashboardPage() {
           value={totalLicoes ?? 0}
           href="/academia"
           accent="var(--colheita-text-primary)"
+        />
+        <StatCard
+          label="Distribuidores"
+          value={totalDistribuidores ?? 0}
+          href="/distribuidores"
+          accent="var(--colheita-brand-teal)"
         />
       </div>
 
