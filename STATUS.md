@@ -1,6 +1,6 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-30 (Fase 3 completa + /distribuidores admin page; 400 testes passando + 25 skipped RLS)
+**Última atualização:** 2026-04-30 (Fase 3 completa + /distribuidores admin page + migration 0012 auth sync; 400 testes passando + 25 skipped RLS)
 **Fase atual:** 3 — Hardening de produção (COMPLETA)
 **Próximo milestone:** Fase 3 (roadmap) — CRM agro + BI + Compliance regulatório; Fase 4 — Integrações (ERP, WhatsApp, AgroTools, Climate FieldView)
 
@@ -25,7 +25,7 @@
 - `infra/docker/.env.example` — template de secrets dev-only
 - Bind em loopback (segurança) + log rotation + healthchecks
 
-### Schema do banco — 11 migrations SQL
+### Schema do banco — 12 migrations SQL
 1. `0001_foundation.sql` — tenants, users, roles, audit_events + helpers RLS hardenizados
 2. `0002_pim.sql` — products, categories, regulatory_registrations
 3. `0003_dam.sql` — assets, collections, product_assets
@@ -37,6 +37,7 @@
 9. `0009_auth_hook.sql` (+ down) — `custom_access_token_hook` para tenant_id no JWT
 10. `0010_public_read_policies.sql` (+ down) — políticas de leitura pública (catálogo)
 11. `0011_vectors.sql` (+ down) — pgvector: `product_embeddings` + `lesson_embeddings` (HNSW), `match_*` SQL functions (SECURITY DEFINER)
+12. `0012_auth_user_sync.sql` (+ down) — trigger `on_auth_user_created` (AFTER INSERT ON auth.users) → cria `public.users` com tenant_id via metadata ou fallback; SECURITY DEFINER, falha silenciosa
 
 Toda tabela com `tenant_id`, RLS habilitado, índices corretos, soft-delete onde aplicável.
 
@@ -154,6 +155,9 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] Portal — loading.tsx para catálogo público (`(public)/loading.tsx`)
 - [x] ADRs 0002–0006: multi-tenancy RLS, Drizzle ORM, connection pooling, Anthropic LLM, Trigger.dev
 - [x] Admin — `/auditoria`: log de audit_events paginado (50/pág), filtros por ação + recurso, tabela com color-coding, skeleton loading, sidebar link (ClipboardList)
+- [x] Admin — `/distribuidores`: lista de usuários com busca (email/nome), filtro por status (active/invited/suspended), paginação 50/pág, link para detalhe
+- [x] Admin — `/distribuidores/[id]`: perfil do distribuidor com queries paralelas (user + certifications + audit_events últimas 20 ações), breadcrumb, badge de status, tabelas de certificações e atividade
+- [x] Portal + Academia — callback auth: atualiza `last_seen_at` em `public.users` (fire-and-forget) após login via magic link
 - [x] Biome 2.0 limpo + TypeScript strict 0 erros
 
 ---
@@ -318,6 +322,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [ADR 0009](./docs/DECISIONS/0009-vector-retrieval.md) — Vector Retrieval com pgvector HNSW (vs Pinecone/Elasticsearch)
 - [ADR 0010](./docs/DECISIONS/0010-rate-limiting-upstash.md) — Rate Limiting com Upstash Redis (sliding window, fail-open, replay defense)
 - [ADR 0011](./docs/DECISIONS/0011-security-headers.md) — Security Headers em Next.js (CSP, HSTS, X-Frame-Options, Permissions-Policy)
+- Migration 0012 — Auth user sync (trigger AFTER INSERT ON auth.users → public.users; resolve tenant via metadata ou fallback first-tenant)
 
 ---
 
