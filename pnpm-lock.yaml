@@ -221,6 +221,9 @@ importers:
 
   apps/portal:
     dependencies:
+      '@colheita/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
       '@colheita/auth':
         specifier: workspace:*
         version: link:../../packages/auth

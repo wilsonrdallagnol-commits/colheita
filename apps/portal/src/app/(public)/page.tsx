@@ -1,5 +1,12 @@
 // apps/portal/src/app/(public)/page.tsx
+import {
+  type MockEmbeddingProvider,
+  OpenAIEmbeddingProvider,
+  SupabaseVectorRetriever,
+  VoyageEmbeddingProvider,
+} from '@colheita/ai';
 import { createServerClient } from '@colheita/auth';
+import { createClient as createServiceClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 
@@ -11,10 +18,76 @@ interface PageProps {
   searchParams: Promise<{ q?: string; category?: string }>;
 }
 
+// ── Vector search helper ──────────────────────────────────────────────────────
+
+/**
+ * Retorna IDs de produtos relevantes para a query via pgvector.
+ * Retorna null se as env vars de embedding não estiverem configuradas (fallback para ilike).
+ */
+async function vectorSearchProductIds(query: string, tenantId: string): Promise<string[] | null> {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+
+  let embeddingProvider:
+    | InstanceType<typeof VoyageEmbeddingProvider>
+    | InstanceType<typeof OpenAIEmbeddingProvider>
+    | InstanceType<typeof MockEmbeddingProvider>
+    | null = null;
+
+  if (process.env.VOYAGE_API_KEY) {
+    embeddingProvider = new VoyageEmbeddingProvider();
+  } else if (process.env.OPENAI_API_KEY) {
+    embeddingProvider = new OpenAIEmbeddingProvider();
+  } else {
+    return null;
+  }
+
+  try {
+    const supabase = createServiceClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    const retriever = new SupabaseVectorRetriever(supabase, embeddingProvider);
+    const results = await retriever.retrieve({
+      query,
+      tenantId,
+      kinds: ['product'],
+      topK: 20,
+    });
+
+    // Deduplica por documentId (produto pode ter múltiplos chunks)
+    const seen = new Set<string>();
+    const ids: string[] = [];
+    for (const r of results) {
+      const docId = r.chunk.documentId;
+      if (!seen.has(docId)) {
+        seen.add(docId);
+        ids.push(docId);
+      }
+    }
+    return ids;
+  } catch {
+    // Falha silenciosa — fallback para ilike
+    return null;
+  }
+}
+
 export default async function CatalogPage({ searchParams }: PageProps) {
   const { q, category } = await searchParams;
   const cookieStore = await cookies();
   const supabase = createServerClient(cookieStore);
+
+  const qTrimmed = q?.trim() ?? '';
+
+  // Fetch tenant (needed for vector search scope)
+  const { data: tenantData } = await supabase.from('tenants').select('id').limit(1).single();
+  const tenantId = tenantData?.id as string | undefined;
+
+  // Vector search — tenta semântico, fallback para ilike
+  let vectorProductIds: string[] | null = null;
+  if (qTrimmed && tenantId) {
+    vectorProductIds = await vectorSearchProductIds(qTrimmed, tenantId);
+  }
 
   // Fetch categories and products in parallel
   const [{ data: categorias }, { data: produtos }] = await Promise.all([
@@ -30,8 +103,15 @@ export default async function CatalogPage({ searchParams }: PageProps) {
         .is('deleted_at', null)
         .order('name');
 
-      if (q?.trim()) {
-        query = query.or(`name.ilike.%${q.trim()}%,tagline.ilike.%${q.trim()}%`);
+      if (qTrimmed) {
+        if (vectorProductIds && vectorProductIds.length > 0) {
+          // Semântico: filtra por IDs retornados pelo pgvector
+          query = query.in('id', vectorProductIds);
+        } else if (!vectorProductIds) {
+          // Fallback léxico: ilike em nome e tagline
+          query = query.or(`name.ilike.%${qTrimmed}%,tagline.ilike.%${qTrimmed}%`);
+        }
+        // vectorProductIds === [] significa busca retornou vazio — não filtra (mostra nada)
       }
 
       return query;

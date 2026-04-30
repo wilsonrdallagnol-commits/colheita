@@ -10,6 +10,7 @@
     "lint": "biome check src"
   },
   "dependencies": {
+    "@colheita/ai": "workspace:*",
     "@colheita/auth": "workspace:*",
     "@colheita/observability": "workspace:*",
     "@colheita/db": "workspace:*",
