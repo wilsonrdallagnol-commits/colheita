@@ -10,6 +10,10 @@
  *   estiver configurado + SUPABASE_SERVICE_ROLE_KEY.
  * - Fallback: BM25InMemoryRetriever para dev/CI sem keys de embedding.
  *
+ * Rate limiting (sliding window):
+ * - 10 req/min por usuário quando UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN estão set.
+ * - Fail-open: sem Upstash configurado, nenhum limite é aplicado (dev/CI).
+ *
  * Requer autenticação (cookie de sessão ou Bearer token).
  * O tenant_id é extraído da sessão autenticada.
  *
@@ -21,6 +25,7 @@
  *
  * Errors:
  *   401 — não autenticado
+ *   429 — rate limit excedido
  *   400 — body inválido
  *   500 — erro interno
  */
@@ -44,6 +49,8 @@ import {
 } from '@colheita/ai';
 import { createServerClient, requireAuth } from '@colheita/auth';
 import { createClient as createSupabaseServiceClient } from '@supabase/supabase-js';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 import { cookies } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -55,6 +62,30 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 } as const;
+
+// ============================================================================
+// Rate limiter — sliding window 10 req/min por usuário (fail-open sem Upstash)
+// ============================================================================
+
+/**
+ * Retorna um `Ratelimit` configurado quando as env vars do Upstash estiverem
+ * presentes; caso contrário retorna `null` (sem rate limiting — dev/CI).
+ */
+function buildRateLimiter(): Ratelimit | null {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+
+  const redis = new Redis({ url, token });
+  return new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, '1 m'),
+    analytics: false,
+    prefix: '@colheita/agent',
+  });
+}
+
+const rateLimiter = buildRateLimiter();
 
 // ============================================================================
 // Retriever factory — auto-seleciona pgvector ou BM25 conforme env vars
@@ -252,7 +283,33 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 2. Parse do body
+  // 2. Rate limiting (fail-open: sem Upstash configurado, segue sem limitar)
+  if (rateLimiter) {
+    const userId = session.id;
+    try {
+      const { success, limit, remaining, reset } = await rateLimiter.limit(userId);
+      if (!success) {
+        const retryAfterSecs = Math.ceil((reset - Date.now()) / 1000);
+        return NextResponse.json(
+          { error: 'Muitas requisições. Aguarde um momento e tente novamente.' },
+          {
+            status: 429,
+            headers: {
+              ...CORS_HEADERS,
+              'Retry-After': String(retryAfterSecs > 0 ? retryAfterSecs : 60),
+              'X-RateLimit-Limit': String(limit),
+              'X-RateLimit-Remaining': String(remaining),
+              'X-RateLimit-Reset': String(reset),
+            },
+          },
+        );
+      }
+    } catch {
+      // Falha no Redis → fail-open (não bloqueia requisição)
+    }
+  }
+
+  // 3. Parse do body
   let body: unknown;
   try {
     body = await request.json();
@@ -273,11 +330,10 @@ export async function POST(request: NextRequest) {
 
   const { query, kinds, topK, conversationHistory, stream: wantsStream } = parsed.data;
 
-  // 3. Busca documentos do tenant
-  // 3. Setup retriever — preferência: pgvector; fallback: BM25 em memória
+  // 5. Setup retriever — preferência: pgvector; fallback: BM25 em memória
   const vectorRetriever = buildVectorRetriever();
 
-  // 4. Setup pipeline
+  // 6. Setup pipeline
   let pipeline: RagPipeline;
   try {
     let retriever: Retriever;
