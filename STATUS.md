@@ -1,6 +1,6 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-30 (Fase 4 Safra ERP handlers: cliente.cadastrado invite, inventario.atualizado → product_stock, produto.atualizado → archive; migration 0013; safra_codigo no PIM; 61+ testes jobs)
+**Última atualização:** 2026-04-30 (Portal: badge de disponibilidade de estoque por safra_codigo; ADR 0013 Safra ERP sync; Fase 4 handlers completos: 61 testes jobs)
 **Fase atual:** 3 — Hardening de produção (COMPLETA)
 **Próximo milestone:** Fase 3 (roadmap) — CRM agro + BI + Compliance regulatório; Fase 4 — Integrações (ERP, WhatsApp, AgroTools, Climate FieldView)
 
@@ -292,6 +292,19 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `updateProduto` action: persiste `safra_codigo`
 - [x] Produto detalhe: seção "Integração ERP Safra" com `safra_codigo` + tabela de estoque por depósito (verde/cinza por disponibilidade, synced_at); mensagem contextual quando sem mapeamento ou sem dados
 
+### Portal — disponibilidade de estoque
+- [x] Produto detalhe: badge "Disponível" (verde) / "Esgotado" (cinza) na sidebar do produto
+- [x] Query paralela `product_stock` por `safra_codigo` só quando produto tem código Safra mapeado
+- [x] Multi-depósito: exibe "N de M depósitos com estoque" quando mais de um deposito
+- [x] Seção oculta quando `safra_codigo` não configurado (sem ruído visual para produtos não sincronizados)
+
+### Drizzle schema + seed
+- [x] `packages/db/src/schema/index.ts`: `safraCodigo` em products, tabela `productStock` completa com relações
+- [x] `packages/db/src/scripts/seed.ts`: `safraCodigo` para 3 produtos Argho (ARG-XCENSIS, ARG-STRON, ARG-GROW-FILL)
+
+### ADR 0013
+- [x] `docs/DECISIONS/0013-safra-erp-sync.md` — decisões: safra_codigo, product_stock, 3 handlers, alternativas rejeitadas
+
 ---
 
 ## 🏗️ Próximo — Fase 1 continuação
@@ -350,6 +363,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [ADR 0010](./docs/DECISIONS/0010-rate-limiting-upstash.md) — Rate Limiting com Upstash Redis (sliding window, fail-open, replay defense)
 - [ADR 0011](./docs/DECISIONS/0011-security-headers.md) — Security Headers em Next.js (CSP, HSTS, X-Frame-Options, Permissions-Policy)
 - [ADR 0012](./docs/DECISIONS/0012-auth-user-sync.md) — Auth user sync (trigger AFTER INSERT ON auth.users → public.users; SECURITY DEFINER, fallback first-tenant, falha silenciosa)
+- [ADR 0013](./docs/DECISIONS/0013-safra-erp-sync.md) — Safra ERP sync: safra_codigo (PIM ↔ ERP mapping), product_stock (multi-depot), 3 handlers (cliente.cadastrado invite, inventario.atualizado upsert, produto.atualizado archive)
 
 ---
 
