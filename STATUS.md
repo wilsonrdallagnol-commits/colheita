@@ -1,6 +1,6 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-30 (Fase 3 CRM+Compliance+BI: distribuidores CRM, compliance regulatório, certificações BI; migration 0012 auth sync; 400+ testes)
+**Última atualização:** 2026-04-30 (Fase 4 Safra ERP handlers: cliente.cadastrado invite, inventario.atualizado → product_stock, produto.atualizado → archive; migration 0013; safra_codigo no PIM; 61+ testes jobs)
 **Fase atual:** 3 — Hardening de produção (COMPLETA)
 **Próximo milestone:** Fase 3 (roadmap) — CRM agro + BI + Compliance regulatório; Fase 4 — Integrações (ERP, WhatsApp, AgroTools, Climate FieldView)
 
@@ -270,6 +270,27 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `apps/api` — 18 novos testes: freshness window, expired replay, clock skew, invalid timestamps, custom tolerance
 - [x] `packages/observability` — 24 novos testes: prod vs dev CSP/HSTS, unsafe-eval dev-only, connect-src, overrides
 - [x] `docs/DECISIONS/0010-rate-limiting-upstash.md` — ADR documentando sliding window, fail-open, replay defense
+
+---
+
+## ✅ Fase 4 — Integrações ERP Safra (2026-04-30)
+
+### Safra webhook handlers (packages/jobs)
+- [x] `cliente.cadastrado` → `inviteUserByEmail` + `status='invited'`; skip if no email; graceful already-registered
+- [x] `inventario.atualizado` → upsert `product_stock` (tenant/safra_codigo/deposito); JOIN com `products.safra_codigo` para `product_id`
+- [x] `produto.atualizado` → arquiva produto no PIM se `ativo=false` e `status='published'`
+- [x] `packages/jobs/src/lib/supabase-admin.ts` — `buildSupabaseAdmin()` compartilhado entre todos os jobs com acesso a DB
+- [x] `embed-content.ts` refatorado para usar `buildSupabaseAdmin` compartilhado
+- [x] 10 novos testes (`supabase-admin.test.ts`: 4, `safra-sync.test.ts` schemas: 6) → jobs total: **61 testes**
+
+### Migration 0013
+- [x] `products.safra_codigo` — código ERP opcional, índice tenant-scoped
+- [x] `product_stock` — tabela de estoque sincronizado (tenant_id, safra_codigo, deposito, estoque, unidade, synced_at, RLS)
+
+### Admin — integração PIM ↔ Safra
+- [x] `ProdutoForm`: campo "Código Safra" na seção "Integração ERP" (monospace, hint de sincronização)
+- [x] `updateProduto` action: persiste `safra_codigo`
+- [x] Produto detalhe: seção "Integração ERP Safra" com `safra_codigo` + tabela de estoque por depósito (verde/cinza por disponibilidade, synced_at); mensagem contextual quando sem mapeamento ou sem dados
 
 ---
 
