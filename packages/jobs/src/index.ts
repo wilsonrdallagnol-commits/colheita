@@ -27,14 +27,21 @@ export {
   pedidoConfirmadoPayloadSchema,
   sendPedidoConfirmadoJob,
 } from './jobs/email-pedido.js';
-
+// Knowledge Base — embedding jobs
+export {
+  type EmbedLicaoPayload,
+  type EmbedProdutoPayload,
+  embedLicaoJob,
+  embedLicaoPayloadSchema,
+  embedProdutoJob,
+  embedProdutoPayloadSchema,
+} from './jobs/embed-content.js';
 // PDF jobs
 export {
   type GerarFichaTecnicaPayload,
   gerarFichaTecnicaJob,
   gerarFichaTecnicaPayloadSchema,
 } from './jobs/gerar-ficha-tecnica.js';
-
 // Safra sync
 export {
   type SafraEventoPayload,

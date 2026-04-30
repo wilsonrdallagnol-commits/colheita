@@ -27,6 +27,12 @@ export type { ChunkerConfig } from './chunker.js';
 
 // Chunker
 export { chunkDocument, chunkDocuments } from './chunker.js';
+// Embedding Providers concretos
+export {
+  MockEmbeddingProvider,
+  OpenAIEmbeddingProvider,
+  VoyageEmbeddingProvider,
+} from './embedding-providers.js';
 export type { GeneratorConfig } from './generator.js';
 // Generator
 export { AiGenerator } from './generator.js';

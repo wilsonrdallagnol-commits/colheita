@@ -440,6 +440,9 @@ importers:
 
   packages/jobs:
     dependencies:
+      '@colheita/ai':
+        specifier: workspace:*
+        version: link:../ai
       '@colheita/email':
         specifier: workspace:*
         version: link:../email
@@ -449,6 +452,9 @@ importers:
       '@colheita/safra-contracts':
         specifier: workspace:*
         version: link:../safra-contracts
+      '@supabase/supabase-js':
+        specifier: ^2.45.0
+        version: 2.104.1
       '@trigger.dev/sdk':
         specifier: ^3.0.0
         version: 3.3.17(zod@3.25.76)
