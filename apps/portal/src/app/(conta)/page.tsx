@@ -15,40 +15,76 @@ export default async function ContaPage() {
   } = await supabase.auth.getUser();
 
   // Busca dados do distribuidor em paralelo
-  const [{ data: progressData }, { data: certData }, { data: productsData }] = await Promise.all([
-    supabase
-      .from('learning_progress')
-      .select(
-        `status, updated_at,
+  const [{ data: progressData }, { data: certData }, { data: productsData }, { data: ordersData }] =
+    await Promise.all([
+      supabase
+        .from('learning_progress')
+        .select(
+          `status, updated_at,
          learning_lessons(title,
            learning_modules(title, learning_tracks(slug, title)))`,
-      )
-      .eq('user_id', user?.id ?? '')
-      .order('updated_at', { ascending: false })
-      .limit(5),
+        )
+        .eq('user_id', user?.id ?? '')
+        .order('updated_at', { ascending: false })
+        .limit(5),
 
-    supabase
-      .from('certifications')
-      .select(
-        `certificate_no, issued_at, status, final_score,
+      supabase
+        .from('certifications')
+        .select(
+          `certificate_no, issued_at, status, final_score,
          learning_tracks(slug, title)`,
-      )
-      .eq('user_id', user?.id ?? '')
-      .eq('status', 'active')
-      .order('issued_at', { ascending: false })
-      .limit(3),
+        )
+        .eq('user_id', user?.id ?? '')
+        .eq('status', 'active')
+        .order('issued_at', { ascending: false })
+        .limit(3),
 
-    supabase
-      .from('products')
-      .select('id, name, slug, status')
-      .eq('status', 'published')
-      .order('name')
-      .limit(6),
-  ]);
+      supabase
+        .from('products')
+        .select('id, name, slug, status')
+        .eq('status', 'published')
+        .order('name')
+        .limit(6),
+
+      // Pedidos do distribuidor (RLS garante isolamento; filtro adicional por segurança)
+      user?.id
+        ? supabase
+            .from('orders')
+            .select('id, numero, status, total_liquido, emitido_em')
+            .eq('distribuidor_id', user.id)
+            .order('emitido_em', { ascending: false })
+            .limit(5)
+        : Promise.resolve({ data: null }),
+    ]);
 
   const progressList = progressData ?? [];
   const certList = certData ?? [];
   const productsList = productsData ?? [];
+  const ordersList = ordersData ?? [];
+
+  type OrderStatus = 'rascunho' | 'confirmado' | 'faturado' | 'entregue' | 'cancelado';
+
+  function orderStatusLabel(s: string): string {
+    const map: Record<string, string> = {
+      rascunho: 'Rascunho',
+      confirmado: 'Confirmado',
+      faturado: 'Faturado',
+      entregue: 'Entregue',
+      cancelado: 'Cancelado',
+    };
+    return map[s] ?? s;
+  }
+
+  function orderStatusColor(s: string): string {
+    if (s === 'entregue') return 'var(--colheita-success)';
+    if (s === 'confirmado' || s === 'faturado') return 'var(--colheita-brand-primary)';
+    if (s === 'cancelado') return 'var(--colheita-warning)';
+    return 'var(--colheita-text-tertiary)';
+  }
+
+  function formatCurrency(v: string): string {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v));
+  }
 
   const completedCount = progressList.filter((p) => p.status === 'completed').length;
   const inProgressCount = progressList.filter((p) => p.status === 'in_progress').length;
@@ -350,6 +386,84 @@ export default async function ContaPage() {
             </div>
           </div>
         </div>
+
+        {/* Pedidos recentes */}
+        {ordersList.length > 0 && (
+          <div style={{ marginTop: '40px' }}>
+            <h2 style={{ ...sectionLabelStyle, marginBottom: '12px' }}>
+              Meus Pedidos ({ordersList.length})
+            </h2>
+            <div
+              style={{
+                border: '1px solid var(--colheita-border-subtle)',
+                borderRadius: 'var(--colheita-radius-lg)',
+                overflow: 'hidden',
+              }}
+            >
+              {ordersList.map((order, i) => (
+                <div
+                  key={order.id}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '12px 16px',
+                    borderBottom:
+                      i < ordersList.length - 1
+                        ? '1px solid var(--colheita-border-subtle)'
+                        : 'none',
+                    backgroundColor: 'var(--colheita-surface-elevated)',
+                    gap: '12px',
+                  }}
+                >
+                  <div>
+                    <p
+                      style={{
+                        fontSize: '0.875rem',
+                        fontWeight: '500',
+                        color: 'var(--colheita-text-primary)',
+                        fontFamily: 'var(--font-mono)',
+                        marginBottom: '2px',
+                      }}
+                    >
+                      {order.numero}
+                    </p>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--colheita-text-tertiary)' }}>
+                      {new Date(order.emitido_em).toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                      })}
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <span
+                      style={{
+                        fontSize: '0.875rem',
+                        fontWeight: '500',
+                        color: 'var(--colheita-text-primary)',
+                        fontFamily: 'var(--font-mono)',
+                      }}
+                    >
+                      {formatCurrency(order.total_liquido)}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '0.6875rem',
+                        fontWeight: '600',
+                        color: orderStatusColor(order.status as OrderStatus),
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.04em',
+                      }}
+                    >
+                      {orderStatusLabel(order.status)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Soluções disponíveis */}
         {productsList.length > 0 && (
