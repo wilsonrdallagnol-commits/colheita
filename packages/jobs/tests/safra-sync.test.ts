@@ -92,3 +92,146 @@ describe('safraEventoJob', () => {
     expect(typeof safraEventoJob.trigger).toBe('function');
   });
 });
+
+describe('safraEventoPayloadSchema — cliente.cadastrado', () => {
+  const TENANT = 'c3d4e5f6-a7b8-9012-cdef-012345678902';
+  const RECEIVED_AT = '2026-04-30T10:00:00.000Z';
+
+  it('aceita payload cliente.cadastrado com email', () => {
+    const result = safraEventoPayloadSchema.safeParse({
+      event: {
+        event: 'cliente.cadastrado',
+        version: '1',
+        timestamp: RECEIVED_AT,
+        tenant_id: TENANT,
+        data: {
+          cliente_id: 'CLI-001',
+          nome: 'Distribuidora Norte LTDA',
+          email: 'norte@example.com',
+          cadastrado_em: RECEIVED_AT,
+        },
+      },
+      tenantId: TENANT,
+      receivedAt: RECEIVED_AT,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('aceita payload cliente.cadastrado sem email (campo opcional)', () => {
+    const result = safraEventoPayloadSchema.safeParse({
+      event: {
+        event: 'cliente.cadastrado',
+        version: '1',
+        timestamp: RECEIVED_AT,
+        tenant_id: TENANT,
+        data: {
+          cliente_id: 'CLI-002',
+          nome: 'Produtor Anônimo',
+          cadastrado_em: RECEIVED_AT,
+        },
+      },
+      tenantId: TENANT,
+      receivedAt: RECEIVED_AT,
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe('safraEventoPayloadSchema — inventario.atualizado', () => {
+  const TENANT = 'c3d4e5f6-a7b8-9012-cdef-012345678902';
+  const TS = '2026-04-30T08:00:00.000Z';
+
+  it('aceita payload inventario.atualizado com deposito', () => {
+    const result = safraEventoPayloadSchema.safeParse({
+      event: {
+        event: 'inventario.atualizado',
+        version: '1',
+        timestamp: TS,
+        tenant_id: TENANT,
+        data: {
+          produto_codigo: 'ARG-FOLIAR-10',
+          produto_nome: 'Foliar Premium 10L',
+          deposito: 'cd-sp',
+          estoque_anterior: 100,
+          estoque_atual: 85,
+          unidade: 'L',
+          atualizado_em: TS,
+        },
+      },
+      tenantId: TENANT,
+      receivedAt: TS,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('aceita payload inventario.atualizado sem deposito (campo opcional)', () => {
+    const result = safraEventoPayloadSchema.safeParse({
+      event: {
+        event: 'inventario.atualizado',
+        version: '1',
+        timestamp: TS,
+        tenant_id: TENANT,
+        data: {
+          produto_codigo: 'ARG-FOLIAR-10',
+          produto_nome: 'Foliar Premium 10L',
+          estoque_anterior: 200,
+          estoque_atual: 180,
+          unidade: 'L',
+          atualizado_em: TS,
+        },
+      },
+      tenantId: TENANT,
+      receivedAt: TS,
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe('safraEventoPayloadSchema — produto.atualizado', () => {
+  const TENANT = 'c3d4e5f6-a7b8-9012-cdef-012345678902';
+  const TS = '2026-04-30T09:00:00.000Z';
+
+  it('aceita produto.atualizado com ativo=false', () => {
+    const result = safraEventoPayloadSchema.safeParse({
+      event: {
+        event: 'produto.atualizado',
+        version: '1',
+        timestamp: TS,
+        tenant_id: TENANT,
+        data: {
+          produto_codigo: 'ARG-FOLIAR-DESAT',
+          produto_nome: 'Foliar Descontinuado',
+          ativo: false,
+          atualizado_em: TS,
+        },
+      },
+      tenantId: TENANT,
+      receivedAt: TS,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('aceita produto.atualizado com ativo=true e campos opcionais', () => {
+    const result = safraEventoPayloadSchema.safeParse({
+      event: {
+        event: 'produto.atualizado',
+        version: '1',
+        timestamp: TS,
+        tenant_id: TENANT,
+        data: {
+          produto_codigo: 'ARG-FOLIAR-10',
+          produto_nome: 'Foliar Premium 10L',
+          registro_mapa: 'BR-12345',
+          fabricante: 'Argho Agrosciences',
+          preco_tabela: 89.9,
+          unidade_venda: 'L',
+          ativo: true,
+          atualizado_em: TS,
+        },
+      },
+      tenantId: TENANT,
+      receivedAt: TS,
+    });
+    expect(result.success).toBe(true);
+  });
+});
