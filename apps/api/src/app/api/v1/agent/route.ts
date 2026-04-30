@@ -3,7 +3,12 @@
  * POST /api/v1/agent
  *
  * Endpoint RAG: responde perguntas sobre o catálogo de produtos e trilhas de
- * aprendizado usando @colheita/ai (BM25 + Claude Haiku).
+ * aprendizado usando @colheita/ai.
+ *
+ * Retriever strategy (auto-seleção):
+ * - Produção: SupabaseVectorRetriever (pgvector HNSW) quando VOYAGE_API_KEY ou OPENAI_API_KEY
+ *   estiver configurado + SUPABASE_SERVICE_ROLE_KEY.
+ * - Fallback: BM25InMemoryRetriever para dev/CI sem keys de embedding.
  *
  * Requer autenticação (cookie de sessão ou Bearer token).
  * O tenant_id é extraído da sessão autenticada.
@@ -20,9 +25,25 @@
  *   500 — erro interno
  */
 
-import type { AiDocument, AiStreamEvent, ConversationTurn, DocumentKind } from '@colheita/ai';
-import { AiGenerator, BM25InMemoryRetriever, chunkDocuments, RagPipeline } from '@colheita/ai';
+import type {
+  AiDocument,
+  AiStreamEvent,
+  ConversationTurn,
+  DocumentKind,
+  Retriever,
+} from '@colheita/ai';
+import {
+  AiGenerator,
+  BM25InMemoryRetriever,
+  chunkDocuments,
+  MockEmbeddingProvider,
+  OpenAIEmbeddingProvider,
+  RagPipeline,
+  SupabaseVectorRetriever,
+  VoyageEmbeddingProvider,
+} from '@colheita/ai';
 import { createServerClient, requireAuth } from '@colheita/auth';
+import { createClient as createSupabaseServiceClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -34,6 +55,43 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 } as const;
+
+// ============================================================================
+// Retriever factory — auto-seleciona pgvector ou BM25 conforme env vars
+// ============================================================================
+
+/**
+ * Retorna `SupabaseVectorRetriever` (pgvector) quando as env vars de embedding
+ * e de service role estiverem configuradas; caso contrário, retorna `null`
+ * e o caller deve usar BM25 com documentos em memória.
+ */
+function buildVectorRetriever(): Retriever | null {
+  const url = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !serviceKey) return null;
+
+  let embeddingProvider:
+    | InstanceType<typeof VoyageEmbeddingProvider>
+    | InstanceType<typeof OpenAIEmbeddingProvider>
+    | InstanceType<typeof MockEmbeddingProvider>;
+
+  if (process.env.VOYAGE_API_KEY) {
+    embeddingProvider = new VoyageEmbeddingProvider();
+  } else if (process.env.OPENAI_API_KEY) {
+    embeddingProvider = new OpenAIEmbeddingProvider();
+  } else if (process.env.NODE_ENV === 'test' || process.env.CI) {
+    embeddingProvider = new MockEmbeddingProvider(1536);
+  } else {
+    return null;
+  }
+
+  const supabase = createSupabaseServiceClient(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  return new SupabaseVectorRetriever(supabase, embeddingProvider);
+}
 
 // ============================================================================
 // Request schema
@@ -216,26 +274,39 @@ export async function POST(request: NextRequest) {
   const { query, kinds, topK, conversationHistory, stream: wantsStream } = parsed.data;
 
   // 3. Busca documentos do tenant
-  const supabase = createServerClient(cookieStore);
-  const docs = await fetchTenantDocuments(supabase, tenantId, kinds);
+  // 3. Setup retriever — preferência: pgvector; fallback: BM25 em memória
+  const vectorRetriever = buildVectorRetriever();
 
-  if (docs.length === 0) {
-    return NextResponse.json(
-      {
-        answer: 'Não encontrei informações disponíveis para responder sua pergunta.',
-        sources: [],
-        usage: { inputTokens: 0, outputTokens: 0 },
-      },
-      { status: 200, headers: CORS_HEADERS },
-    );
-  }
-
-  // 4. Chunk + Index + setup pipeline
+  // 4. Setup pipeline
   let pipeline: RagPipeline;
   try {
-    const chunks = chunkDocuments(docs, { targetChunkChars: 600, overlapChars: 80 });
-    const retriever = new BM25InMemoryRetriever();
-    await retriever.index(chunks);
+    let retriever: Retriever;
+
+    if (vectorRetriever) {
+      // Produção: usa pgvector — não precisa buscar nem indexar documentos em memória
+      retriever = vectorRetriever;
+    } else {
+      // Dev/CI: busca catálogo, chunka e indexa em memória com BM25
+      const supabase = createServerClient(cookieStore);
+      const docs = await fetchTenantDocuments(supabase, tenantId, kinds);
+
+      if (docs.length === 0) {
+        return NextResponse.json(
+          {
+            answer: 'Não encontrei informações disponíveis para responder sua pergunta.',
+            sources: [],
+            usage: { inputTokens: 0, outputTokens: 0 },
+          },
+          { status: 200, headers: CORS_HEADERS },
+        );
+      }
+
+      const chunks = chunkDocuments(docs, { targetChunkChars: 600, overlapChars: 80 });
+      const bm25 = new BM25InMemoryRetriever();
+      await bm25.index(chunks);
+      retriever = bm25;
+    }
+
     const generator = new AiGenerator();
     pipeline = new RagPipeline(retriever, generator, { topK, minScore: 0.05 });
   } catch (err) {

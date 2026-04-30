@@ -2,6 +2,7 @@
 'use server';
 
 import { createServerClient, requireAuth } from '@colheita/auth';
+import { embedProdutoJob } from '@colheita/jobs';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -90,7 +91,7 @@ export async function createProduto(
       packaging: [],
       applications,
     })
-    .select('slug')
+    .select('id, slug, tenant_id')
     .single();
 
   if (error) {
@@ -98,6 +99,15 @@ export async function createProduto(
       return { fieldErrors: { name: 'Já existe um produto com esse nome. Escolha outro.' } };
     }
     return { error: 'Erro ao criar produto. Tente novamente.' };
+  }
+
+  // Dispara re-indexação do embedding em background (fire-and-forget)
+  if (process.env.TRIGGER_SECRET_KEY && data.id && data.tenant_id) {
+    embedProdutoJob
+      .trigger({ productId: data.id as string, tenantId: data.tenant_id as string })
+      .catch(() => {
+        // Falha silenciosa — embedding será reindexado na próxima atualização
+      });
   }
 
   revalidatePath('/produtos');
@@ -160,7 +170,7 @@ export async function updateProduto(
     return { fieldErrors: { applications: 'Erro ao processar indicações. Tente novamente.' } };
   }
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from('products')
     .update({
       name,
@@ -174,10 +184,21 @@ export async function updateProduto(
       updated_at: new Date().toISOString(),
     })
     .eq('slug', slug)
-    .is('deleted_at', null);
+    .is('deleted_at', null)
+    .select('id, tenant_id')
+    .single();
 
   if (error) {
     return { error: 'Erro ao salvar produto. Tente novamente.' };
+  }
+
+  // Dispara re-indexação do embedding em background (fire-and-forget)
+  if (process.env.TRIGGER_SECRET_KEY && updated?.id && updated?.tenant_id) {
+    embedProdutoJob
+      .trigger({ productId: updated.id as string, tenantId: updated.tenant_id as string })
+      .catch(() => {
+        // Falha silenciosa — embedding será reindexado na próxima chamada
+      });
   }
 
   revalidatePath('/produtos');

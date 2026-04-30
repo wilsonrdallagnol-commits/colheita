@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-29 (pgvector Knowledge Base + VectorRetriever + audit log, 326 testes: ai/61 + ui/59 + email/20 + observability/13 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19 + api/13 + jobs/38)
+**Última atualização:** 2026-04-30 (EmbeddingProviders Voyage/OpenAI/Mock + embed jobs + ADR 0009, 358 testes: ai/80 + ui/59 + email/20 + observability/13 + safra-contracts/28 + tokens/21 + layout-inference/26 + generator/28 + auth/19 + api/13 + jobs/51)
 **Fase atual:** 2 — Knowledge Base + pgvector
-**Próximo milestone:** EmbeddingProvider (Voyage AI) + job de re-indexação automática
+**Próximo milestone:** Wiring embed jobs → admin product/lesson save actions (auto re-indexação)
 
 ---
 
@@ -267,6 +267,9 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [x] `packages/observability` — Sentry (captureError/Warning/setSentryUser + initClient/Server/Edge), Axiom logger (ColheitaLogger + createLogger), PostHog provider + usePageview, **13 testes**; Sentry config files em todas as 4 apps; PostHog provider em portal + academia layouts
 - [x] `packages/jobs` — Trigger.dev v3 background jobs: `sendCertificadoEmitidoJob`, `sendPedidoConfirmadoJob`, `gerarFichaTecnicaJob`, `safraEventoJob`; conditional dispatch (TRIGGER_SECRET_KEY); wired to apps/academia + apps/api; **38 testes** (schema validation Zod + task API)
 - [x] `packages/ai` — `SupabaseVectorRetriever`: pgvector HNSW retriever com `EmbeddingProvider` interface; `index()` upsert por chunk_type, `retrieve()` via `match_*` RPCs, `purge()` por tenant; **13 novos testes** (mocks, sem DB real) — ai total: **61 testes**
+- [x] `packages/ai` — `VoyageEmbeddingProvider`, `OpenAIEmbeddingProvider`, `MockEmbeddingProvider`: dependency injection para `SupabaseVectorRetriever`; ordem de preferência Voyage → OpenAI → Mock(CI); **19 novos testes** — ai total: **80 testes**
+- [x] `packages/jobs` — `embedProdutoJob` (4 chunks: nome, descrição, composição, indicações) e `embedLicaoJob`; retry exponencial (maxAttempts=3, factor=2); dispatch via `.trigger()`; **13 novos testes** — jobs total: **51 testes**
+- [x] `docs/DECISIONS/0009-vector-retrieval.md` — ADR documentando pgvector HNSW vs Pinecone/Elasticsearch; custo < $0.01/mês estimado
 
 ### Scripts operacionais
 - [x] `pnpm db:migrate` — aplica 10 migrations em ordem (0001–0010)
@@ -286,6 +289,7 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 - [ADR 0002–0006](./docs/DECISIONS/) — Multi-tenancy RLS, Drizzle ORM, Connection Pooling, Anthropic LLM, Trigger.dev
 - [ADR 0007](./docs/DECISIONS/0007-audit-partitioning.md) — Audit Events particionamento nativo Postgres 16 por mês
 - [ADR 0008](./docs/DECISIONS/0008-generator-pdf-engine.md) — Generator PDF engine (React → Playwright)
+- [ADR 0009](./docs/DECISIONS/0009-vector-retrieval.md) — Vector Retrieval com pgvector HNSW (vs Pinecone/Elasticsearch)
 
 ---
 

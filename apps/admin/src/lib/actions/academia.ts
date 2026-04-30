@@ -2,6 +2,7 @@
 'use server';
 
 import { createServerClient, requireAuth } from '@colheita/auth';
+import { embedLicaoJob } from '@colheita/jobs';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -349,23 +350,34 @@ export async function createLicao(
   const tenantId = await getTenantId(supabase);
   if (!tenantId) return { error: 'Tenant não encontrado.' };
 
-  const { error } = await supabase.from('learning_lessons').insert({
-    slug,
-    title,
-    type,
-    content,
-    estimated_minutes: estimatedMinutes,
-    is_required: isRequired,
-    sort_order: sortOrder,
-    module_id: moduleId,
-    tenant_id: tenantId,
-  });
+  const { data: created, error } = await supabase
+    .from('learning_lessons')
+    .insert({
+      slug,
+      title,
+      type,
+      content,
+      estimated_minutes: estimatedMinutes,
+      is_required: isRequired,
+      sort_order: sortOrder,
+      module_id: moduleId,
+      tenant_id: tenantId,
+    })
+    .select('id')
+    .single();
 
   if (error) {
     if (error.code === '23505') {
       return { fieldErrors: { title: 'Já existe uma lição com esse título neste módulo.' } };
     }
     return { error: 'Erro ao criar lição.' };
+  }
+
+  // Dispara re-indexação do embedding em background (fire-and-forget)
+  if (process.env.TRIGGER_SECRET_KEY && created?.id) {
+    embedLicaoJob.trigger({ lessonId: created.id as string, tenantId }).catch(() => {
+      // Falha silenciosa — embedding será reindexado na próxima atualização
+    });
   }
 
   revalidatePath('/academia');
@@ -403,7 +415,7 @@ export async function updateLicao(
     content = { url };
   }
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from('learning_lessons')
     .update({
       title,
@@ -413,10 +425,19 @@ export async function updateLicao(
       is_required: isRequired,
       updated_at: new Date().toISOString(),
     })
-    .eq('id', id);
+    .eq('id', id)
+    .select('tenant_id')
+    .single();
 
   if (error) {
     return { error: 'Erro ao salvar lição.' };
+  }
+
+  // Dispara re-indexação do embedding em background (fire-and-forget)
+  if (process.env.TRIGGER_SECRET_KEY && updated?.tenant_id) {
+    embedLicaoJob.trigger({ lessonId: id, tenantId: updated.tenant_id as string }).catch(() => {
+      // Falha silenciosa — embedding será reindexado na próxima atualização
+    });
   }
 
   revalidatePath('/academia');
