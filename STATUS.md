@@ -1,6 +1,6 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-30 (Portal: badge de disponibilidade de estoque por safra_codigo; ADR 0013 Safra ERP sync; Fase 4 handlers completos: 61 testes jobs)
+**Última atualização:** 2026-04-30 (Orders: migration 0014 + pedido.criado upsert + pedido.atualizado handler + admin /pedidos list + /pedidos/[id] detail; Fase 4 handlers todos implementados)
 **Fase atual:** 3 — Hardening de produção (COMPLETA)
 **Próximo milestone:** Fase 3 (roadmap) — CRM agro + BI + Compliance regulatório; Fase 4 — Integrações (ERP, WhatsApp, AgroTools, Climate FieldView)
 
@@ -304,6 +304,21 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 
 ### ADR 0013
 - [x] `docs/DECISIONS/0013-safra-erp-sync.md` — decisões: safra_codigo, product_stock, 3 handlers, alternativas rejeitadas
+
+### Migration 0014 — Orders
+- [x] `orders`: safra_pedido_id (unique por tenant), status enum, totais, snapshot distribuidor, synced_at, RLS (distribuidor vê apenas seus pedidos)
+- [x] `order_items`: snapshot de itens (produto_codigo, quantidade, unidade, preco_unitario, desconto_pct, total), cascata com orders
+
+### Safra handlers completos — todos os 5 eventos implementados
+- [x] `pedido.criado` → upsert em `orders` + delete/insert de `order_items` + email fire-and-forget
+- [x] `pedido.atualizado` → update de status + status_anterior + motivo em `orders`
+- [x] 9 novos testes de schema (pedido.criado com/sem campos opcionais, pedido.atualizado com/sem motivo)
+
+### Admin — /pedidos
+- [x] `/pedidos`: lista paginada (50/pág), 5 cards de stats por status (clicáveis como filtro), busca por número/distribuidor, badges coloridos por status
+- [x] `/pedidos/[id]`: detalhe completo — dados do pedido, tabela de itens (código/produto/qtd/unidade/preço/desconto/total), resumo financeiro, card distribuidor (link para perfil), metadados de sync
+- [x] Sidebar: ícone ShoppingCart + link Pedidos
+- [x] `loading.tsx`: skeleton para lista de pedidos
 
 ---
 
