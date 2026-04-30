@@ -37,6 +37,7 @@ type SecurityHeader = { key: string; value: string };
  * Em produção apenas `unsafe-inline` (necessário para hidratação RSC).
  *
  * @param overrides - Headers extras ou que sobrescrevem os defaults (matching por key).
+ * @param nodeEnv - Ambiente Node (default: `process.env.NODE_ENV`). Injetável para testes.
  *
  * Uso em next.config.ts:
  * ```ts
@@ -49,8 +50,11 @@ type SecurityHeader = { key: string; value: string };
  * };
  * ```
  */
-export function securityHeaders(overrides: SecurityHeader[] = []): SecurityHeader[] {
-  const isDev = process.env.NODE_ENV !== 'production';
+export function securityHeaders(
+  overrides: SecurityHeader[] = [],
+  nodeEnv: string = process.env.NODE_ENV ?? 'development',
+): SecurityHeader[] {
+  const isDev = nodeEnv !== 'production';
 
   const scriptSrc = [
     "'self'",
