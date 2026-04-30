@@ -32,6 +32,7 @@ const PRODUCTS = [
   // ── FERTILIZANTES MINERAIS ────────────────────────────────────────────────
   {
     slug: 'xcensis',
+    safraCodigo: 'ARG-XCENSIS',
     name: 'Xcensis',
     category: 'fertilizantes-minerais',
     tagline: 'Multi-micronutriente foliar com EDTA e Lignossulfonatos',
@@ -108,6 +109,7 @@ const PRODUCTS = [
   },
   {
     slug: 'stron',
+    safraCodigo: 'ARG-STRON',
     name: 'Stron',
     category: 'fertilizantes-minerais',
     tagline: 'Fertilizante NPK foliar com aminoácidos e ácidos carboxílicos',
@@ -141,6 +143,7 @@ const PRODUCTS = [
   },
   {
     slug: 'grow-filling',
+    safraCodigo: 'ARG-GROW-FILL',
     name: 'Grow Filling',
     category: 'fertilizantes-minerais',
     tagline: 'Fertilizante potássico concentrado para enchimento de grãos',
@@ -1095,7 +1098,7 @@ async function run() {
         INSERT INTO public.products (
           tenant_id, category_id, slug, name, tagline, description,
           status, composition, technical_specs, packaging, applications,
-          published_at
+          safra_codigo, published_at
         )
         VALUES (
           ${tenantId},
@@ -1109,6 +1112,7 @@ async function run() {
           ${sql.json(JSON.parse(JSON.stringify(product.technicalSpecs)))},
           ${sql.json(JSON.parse(JSON.stringify(product.packaging)))},
           ${sql.json(JSON.parse(JSON.stringify('applications' in product ? product.applications : [])))},
+          ${'safraCodigo' in product ? product.safraCodigo : null},
           ${product.status === 'published' ? new Date().toISOString() : null}
         )
         ON CONFLICT (tenant_id, slug) DO UPDATE
@@ -1121,6 +1125,7 @@ async function run() {
             technical_specs = EXCLUDED.technical_specs,
             packaging       = EXCLUDED.packaging,
             applications    = EXCLUDED.applications,
+            safra_codigo    = EXCLUDED.safra_codigo,
             updated_at      = now()
       `;
       console.log(`  ✅  Produto: ${product.name}`);
