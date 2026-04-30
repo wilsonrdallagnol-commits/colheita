@@ -90,9 +90,27 @@ export default async function AcademiaPage() {
           </p>
         </div>
 
-        <Button asChild size="sm">
-          <Link href="/academia/nova">+ Nova trilha</Link>
-        </Button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <Link
+            href="/academia/certificados"
+            style={{
+              padding: '6px 14px',
+              borderRadius: 'var(--colheita-radius-md)',
+              border: '1px solid var(--colheita-border)',
+              backgroundColor: 'var(--colheita-surface-elevated)',
+              color: 'var(--colheita-text-secondary)',
+              fontSize: '0.8125rem',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+            }}
+          >
+            🎓 Certificações
+          </Link>
+          <Button asChild size="sm">
+            <Link href="/academia/nova">+ Nova trilha</Link>
+          </Button>
+        </div>
       </div>
 
       <div
