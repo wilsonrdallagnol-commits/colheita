@@ -323,15 +323,17 @@ export default async function DistribuidoresPage({ searchParams }: PageProps) {
                   >
                     {/* E-mail */}
                     <td style={{ padding: '12px 16px' }}>
-                      <span
+                      <Link
+                        href={`/distribuidores/${d.id}`}
                         style={{
-                          color: 'var(--colheita-text-primary)',
+                          color: 'var(--colheita-brand-teal)',
                           fontWeight: '500',
                           fontSize: '0.8125rem',
+                          textDecoration: 'none',
                         }}
                       >
                         {d.email}
-                      </span>
+                      </Link>
                     </td>
 
                     {/* Nome */}
