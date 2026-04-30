@@ -17,6 +17,7 @@ import {
   index,
   integer,
   jsonb,
+  numeric,
   pgTable,
   text,
   timestamp,
@@ -159,6 +160,7 @@ export const products = pgTable(
     packaging: jsonb('packaging').$type<ProductPackaging>().notNull().default([]),
     applications: jsonb('applications').$type<ProductApplication[]>().notNull().default([]),
     marketing: jsonb('marketing').$type<Record<string, unknown>>().notNull().default({}),
+    safraCodigo: text('safra_codigo'),
     heroAssetId: uuid('hero_asset_id'),
     packshotAssetId: uuid('packshot_asset_id'),
     metaTitle: text('meta_title'),
@@ -215,6 +217,37 @@ export const regulatoryRegistrations = pgTable(
 
 export type RegulatoryRegistration = typeof regulatoryRegistrations.$inferSelect;
 export type NewRegulatoryRegistration = typeof regulatoryRegistrations.$inferInsert;
+
+// ============================================================================
+// PRODUCT STOCK (Safra ERP sync — migration 0013)
+// ============================================================================
+
+export const productStock = pgTable(
+  'product_stock',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    tenantId: uuid('tenant_id')
+      .notNull()
+      .references(() => tenants.id, { onDelete: 'cascade' }),
+    productId: uuid('product_id').references(() => products.id, { onDelete: 'set null' }),
+    safraCodigo: text('safra_codigo').notNull(),
+    deposito: text('deposito').notNull().default('principal'),
+    estoque: numeric('estoque', { precision: 12, scale: 3 }).notNull().default('0'),
+    unidade: text('unidade').notNull().default('un'),
+    syncedAt: timestamp('synced_at', { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    tenantIdx: index('product_stock_tenant_idx').on(table.tenantId),
+    productIdx: index('product_stock_product_idx').on(table.productId),
+    safraCodigoIdx: index('product_stock_safra_codigo_idx').on(table.tenantId, table.safraCodigo),
+    tenantSafraDepositoUnique: unique().on(table.tenantId, table.safraCodigo, table.deposito),
+  }),
+);
+
+export type ProductStock = typeof productStock.$inferSelect;
+export type NewProductStock = typeof productStock.$inferInsert;
 
 // ============================================================================
 // ASSETS (DAM)
@@ -287,6 +320,12 @@ export const productsRelations = relations(products, ({ one, many }) => ({
   }),
   heroAsset: one(assets, { fields: [products.heroAssetId], references: [assets.id] }),
   registrations: many(regulatoryRegistrations),
+  stock: many(productStock),
+}));
+
+export const productStockRelations = relations(productStock, ({ one }) => ({
+  tenant: one(tenants, { fields: [productStock.tenantId], references: [tenants.id] }),
+  product: one(products, { fields: [productStock.productId], references: [products.id] }),
 }));
 
 export * from './academia.js';
