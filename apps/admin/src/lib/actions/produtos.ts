@@ -20,7 +20,8 @@ export type ProdutoFormState = {
       | 'composition'
       | 'technical_specs'
       | 'packaging'
-      | 'applications',
+      | 'applications'
+      | 'safra_codigo',
       string
     >
   >;
@@ -129,6 +130,7 @@ export async function updateProduto(
   const tagline = String(formData.get('tagline') ?? '').trim() || null;
   const description = String(formData.get('description') ?? '').trim() || null;
   const categoryId = String(formData.get('category_id') ?? '').trim() || null;
+  const safraCodigo = String(formData.get('safra_codigo') ?? '').trim() || null;
   const compositionRaw = String(formData.get('composition') ?? '{}').trim() || '{}';
   const technicalSpecsRaw = String(formData.get('technical_specs') ?? '{}').trim() || '{}';
   const packagingRaw = String(formData.get('packaging') ?? '[]').trim() || '[]';
@@ -177,6 +179,7 @@ export async function updateProduto(
       tagline,
       description,
       category_id: categoryId,
+      safra_codigo: safraCodigo,
       composition,
       technical_specs: technicalSpecs,
       packaging,

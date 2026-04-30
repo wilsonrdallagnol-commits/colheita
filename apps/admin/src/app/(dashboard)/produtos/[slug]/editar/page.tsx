@@ -48,7 +48,7 @@ export default async function EditarProdutoPage({ params, searchParams }: PagePr
     supabase
       .from('products')
       .select(
-        'id, name, tagline, description, status, category_id, composition, technical_specs, packaging, applications',
+        'id, name, tagline, description, status, category_id, safra_codigo, composition, technical_specs, packaging, applications',
       )
       .eq('slug', slug)
       .is('deleted_at', null)
@@ -132,6 +132,7 @@ export default async function EditarProdutoPage({ params, searchParams }: PagePr
           tagline: produto.tagline,
           description: produto.description,
           category_id: produto.category_id,
+          safra_codigo: produto.safra_codigo,
           composition: produto.composition as Record<string, unknown> | null,
           technical_specs: produto.technical_specs as Record<string, unknown> | null,
           packaging: produto.packaging as unknown[] | null,

@@ -26,6 +26,7 @@ interface ProdutoFormProps {
     tagline?: string | null;
     description?: string | null;
     category_id?: string | null;
+    safra_codigo?: string | null;
     composition?: Record<string, unknown> | null;
     technical_specs?: Record<string, unknown> | null;
     packaging?: unknown[] | null;
@@ -77,6 +78,7 @@ export function ProdutoForm({
   const technicalSpecsId = `${uid}-technical-specs`;
   const packagingId = `${uid}-packaging`;
   const applicationsId = `${uid}-applications`;
+  const safraCodigoId = `${uid}-safra-codigo`;
 
   return (
     <form action={formAction} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -287,6 +289,49 @@ export function ProdutoForm({
           disabled={pending}
           errorMessage={state?.fieldErrors?.applications}
         />
+      </div>
+
+      {/* Integração ERP Safra */}
+      <div
+        style={{
+          paddingTop: '16px',
+          borderTop: '1px solid var(--colheita-border-subtle)',
+        }}
+      >
+        <p
+          style={{
+            fontSize: '0.75rem',
+            fontWeight: '500',
+            color: 'var(--colheita-text-tertiary)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            marginBottom: '12px',
+          }}
+        >
+          Integração ERP
+        </p>
+        <div>
+          <label htmlFor={safraCodigoId} style={labelStyle}>
+            Código Safra
+          </label>
+          <Input
+            id={safraCodigoId}
+            name="safra_codigo"
+            type="text"
+            disabled={pending}
+            defaultValue={defaultValues.safra_codigo ?? ''}
+            placeholder="Ex: ARG-FOLIAR-10"
+            style={{ fontFamily: 'monospace' }}
+          />
+          {state?.fieldErrors?.safra_codigo ? (
+            <p style={errorStyle}>{state.fieldErrors.safra_codigo}</p>
+          ) : (
+            <p style={hintStyle}>
+              Código do produto no ERP Safra. Quando configurado, o estoque e status são
+              sincronizados automaticamente via webhook.
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Ações */}
