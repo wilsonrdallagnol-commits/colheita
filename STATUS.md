@@ -1,8 +1,8 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-30 (Orders: migration 0014 + pedido.criado upsert + pedido.atualizado handler + admin /pedidos list + /pedidos/[id] detail; Fase 4 handlers todos implementados)
-**Fase atual:** 3 — Hardening de produção (COMPLETA)
-**Próximo milestone:** Finalizar MVP (~1h30) → Site Institucional Argho → CRM agro + BI + WhatsApp (último passo, após site Argho no ar)
+**Última atualização:** 2026-04-30 — **MVP 100% FECHADO** ✅ (biome 2.0 limpo em 17 packages + 4 apps, typecheck strict, todos os hooks passando)
+**Fase atual:** MVP COMPLETO
+**Próximo passo:** Site Institucional Argho → CRM agro + BI + WhatsApp (último passo, após site Argho no ar)
 
 ---
 
@@ -322,7 +322,13 @@ Migration 0008: 4 índices FK ausentes adicionados (product_categories.parent_id
 
 ---
 
-## 🏗️ Próximo — Fase 1 continuação
+## ✅ MVP 100% COMPLETO (2026-04-30)
+
+Todos os 17 packages e 4 apps passam em typecheck strict + biome 2.0 + lefthook hooks. Roadmap original entregue.
+
+---
+
+## 🏗️ Entregues — Fase 1
 
 ### Apps Next.js
 - [x] `apps/admin` — ✅ MVP completo (PIM + auth + dashboard + Assistente IA `/assistente`) — porta 3000
