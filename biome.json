@@ -80,6 +80,16 @@
           }
         }
       }
+    },
+    {
+      "includes": ["**/chat-markdown.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noArrayIndexKey": "off"
+          }
+        }
+      }
     }
   ]
 }

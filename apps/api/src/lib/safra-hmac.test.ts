@@ -34,13 +34,13 @@ describe('verifySignature — assinatura válida', () => {
 
 describe('verifySignature — assinatura inválida', () => {
   it('retorna false para assinatura completamente diferente', () => {
-    const wrong = 'sha256=' + 'a'.repeat(64);
+    const wrong = `sha256=${'a'.repeat(64)}`;
     expect(verifySignature(BODY, wrong, SECRET)).toBe(false);
   });
 
   it('retorna false quando body foi alterado', () => {
     const sig = sign(BODY);
-    const tamperedBody = BODY + ' ';
+    const tamperedBody = `${BODY} `;
     expect(verifySignature(tamperedBody, sig, SECRET)).toBe(false);
   });
 
