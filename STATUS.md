@@ -2,7 +2,7 @@
 
 **Última atualização:** 2026-04-30 (Orders: migration 0014 + pedido.criado upsert + pedido.atualizado handler + admin /pedidos list + /pedidos/[id] detail; Fase 4 handlers todos implementados)
 **Fase atual:** 3 — Hardening de produção (COMPLETA)
-**Próximo milestone:** Fase 3 (roadmap) — CRM agro + BI + Compliance regulatório; Fase 4 — Integrações (ERP, WhatsApp, AgroTools, Climate FieldView)
+**Próximo milestone:** Finalizar MVP (~1h30) → Site Institucional Argho → CRM agro + BI + WhatsApp (último passo, após site Argho no ar)
 
 ---
 

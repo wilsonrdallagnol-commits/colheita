@@ -77,6 +77,8 @@ export default async function DashboardPage() {
     { count: totalLicoes },
     { count: totalDistribuidores },
     { data: expiringRegs },
+    { count: totalPedidos },
+    { count: pedidosPendentes },
   ] = await Promise.all([
     supabase.from('products').select('id', { count: 'exact', head: true }).is('deleted_at', null),
     supabase
@@ -112,6 +114,11 @@ export default async function DashboardPage() {
         'expires_at',
         new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       ),
+    supabase.from('orders').select('id', { count: 'exact', head: true }),
+    supabase
+      .from('orders')
+      .select('id', { count: 'exact', head: true })
+      .in('status', ['confirmado', 'faturado']),
   ]);
 
   // Busca produtos recentes
@@ -222,6 +229,18 @@ export default async function DashboardPage() {
           value={expiringRegs?.length ?? 0}
           href="/compliance"
           accent={(expiringRegs?.length ?? 0) > 0 ? '#f97316' : 'var(--colheita-text-tertiary)'}
+        />
+        <StatCard
+          label="Pedidos"
+          value={totalPedidos ?? 0}
+          href="/pedidos"
+          accent="var(--colheita-text-primary)"
+        />
+        <StatCard
+          label="Confirmados/Faturados"
+          value={pedidosPendentes ?? 0}
+          href="/pedidos?status=confirmado"
+          accent="var(--colheita-brand-primary)"
         />
       </div>
 
