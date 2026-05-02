@@ -1,0 +1,127 @@
+/* apps/website/src/app/globals.css
+   Design system — Argho Agrosciences
+   Dark-first. Verde floresta técnico. Ouro da colheita.
+*/
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Backgrounds */
+  --bg:              oklch(0.07 0.018 148);
+  --surface:         oklch(0.105 0.020 148);
+  --surface-raised:  oklch(0.135 0.022 148);
+
+  /* Borders */
+  --border:          oklch(0.22 0.025 148);
+  --border-subtle:   oklch(0.155 0.018 148);
+
+  /* Text */
+  --text-primary:    oklch(0.96 0.004 148);
+  --text-secondary:  oklch(0.72 0.025 148);
+  --text-muted:      oklch(0.52 0.018 148);
+  --text-faint:      oklch(0.38 0.012 148);
+
+  /* Brand */
+  --green:           oklch(0.58 0.165 148);
+  --green-dim:       oklch(0.48 0.130 148);
+  --green-subtle:    oklch(0.14 0.045 148);
+  --gold:            oklch(0.73 0.135 78);
+  --gold-subtle:     oklch(0.16 0.038 78);
+  --teal:            oklch(0.64 0.13 195);
+
+  /* Category accent colors */
+  --cat-mineral:     oklch(0.58 0.165 148);   /* verde brand */
+  --cat-organo:      oklch(0.64 0.13 195);    /* teal */
+  --cat-bio:         oklch(0.66 0.150 150);   /* verde vivo */
+  --cat-adj:         oklch(0.73 0.135 78);    /* ouro */
+
+  /* Typography */
+  --font-display: "Geist", "Inter", -apple-system, system-ui, sans-serif;
+  --font-body:    "Inter", -apple-system, system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
+}
+
+html {
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: var(--bg);
+  min-height: 100vh;
+  /* Subtle diagonal grid texture — the "diagnostic grid" motif */
+  background-image:
+    linear-gradient(oklch(0.22 0.025 148 / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.22 0.025 148 / 0.06) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Selection */
+::selection {
+  background-color: oklch(0.58 0.165 148 / 0.25);
+  color: var(--text-primary);
+}
+
+/* Typography scale */
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-display);
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+p {
+  font-family: var(--font-body);
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Utilities */
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  letter-spacing: 0.02em;
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--text-muted);
+}
+
+/* Category badge colors */
+.cat-fertilizantes-minerais { color: var(--cat-mineral); }
+.cat-organominerais          { color: var(--cat-organo); }
+.cat-biologicos              { color: var(--cat-bio); }
+.cat-adjuvantes              { color: var(--cat-adj); }
