@@ -277,7 +277,6 @@ export default function SobrePage() {
 
       {/* ── Values ── */}
       <div
-        id="valores"
         style={{
           borderTop: '1px solid var(--border-subtle)',
           backgroundColor: 'var(--surface)',
@@ -367,7 +366,7 @@ export default function SobrePage() {
       </div>
 
       {/* ── Expertise ── */}
-      <div id="expertise" style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 48px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 48px' }}>
         <p
           style={{
             fontFamily: 'var(--font-mono)',

@@ -125,3 +125,54 @@ a {
 .cat-organominerais          { color: var(--cat-organo); }
 .cat-biologicos              { color: var(--cat-bio); }
 .cat-adjuvantes              { color: var(--cat-adj); }
+
+/* ── Keyframe animations ───────────────────────────────────────── */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-5px) rotate(1deg); }
+  66%       { transform: translateY(-2px) rotate(-0.5deg); }
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.15; }
+  50%       { opacity: 0.35; }
+}
+
+@keyframes scanLine {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(100vh); }
+}
+
+@keyframes pulseRing {
+  0%   { box-shadow: 0 0 0 0 oklch(0.58 0.165 148 / 0.25); }
+  70%  { box-shadow: 0 0 0 8px oklch(0.58 0.165 148 / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(0.58 0.165 148 / 0); }
+}
+
+/* Animation utility classes */
+.anim-fade-in-up { animation: fadeInUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-float      { animation: float 6s ease-in-out infinite; }
+.anim-shimmer    { animation: shimmer 3s ease-in-out infinite; }
+.anim-pulse-ring { animation: pulseRing 2.5s ease-out infinite; }
+
+/* Stagger delays */
+.delay-1 { animation-delay: 0.08s; }
+.delay-2 { animation-delay: 0.16s; }
+.delay-3 { animation-delay: 0.24s; }
+.delay-4 { animation-delay: 0.32s; }
+.delay-5 { animation-delay: 0.40s; }
+.delay-6 { animation-delay: 0.50s; }
+
+/* Float delay variants */
+.float-1 { animation-delay: 0s;    animation-duration: 6.0s; }
+.float-2 { animation-delay: 1.2s;  animation-duration: 7.5s; }
+.float-3 { animation-delay: 2.4s;  animation-duration: 5.5s; }
+.float-4 { animation-delay: 0.8s;  animation-duration: 8.0s; }
+.float-5 { animation-delay: 3.0s;  animation-duration: 6.8s; }
+.float-6 { animation-delay: 1.8s;  animation-duration: 7.2s; }

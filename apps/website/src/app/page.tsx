@@ -4,8 +4,14 @@
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import {
+  ElementBadge,
+  ImpuchSoilViz,
+  OperateLineGrid,
+  StronNpkChart,
+} from '@/components/product-visuals';
 import type { ProductCategory } from '@/lib/products';
-import { CATEGORIES, getFeaturedProduct, PRODUCTS } from '@/lib/products';
+import { CATEGORIES, PRODUCTS } from '@/lib/products';
 
 export const metadata: Metadata = {
   title: 'Argho Agrosciences — Nutrição de precisão para o agro brasileiro',
@@ -28,7 +34,6 @@ const CAT_BG: Record<ProductCategory, string> = {
 };
 
 export default function HomePage() {
-  const featured = getFeaturedProduct();
   const categoryKeys = Object.keys(CATEGORIES) as ProductCategory[];
 
   // Group products by category
@@ -79,6 +84,14 @@ export default function HomePage() {
               'linear-gradient(to bottom, transparent, oklch(0.73 0.135 78 / 0.5) 30%, oklch(0.73 0.135 78 / 0.5) 70%, transparent)',
           }}
         />
+
+        {/* Floating element badges — periodic table decorations */}
+        <ElementBadge symbol="Fe" number="26" top="20%" right="27%" size="md" opacity={0.28} />
+        <ElementBadge symbol="Mn" number="25" top="38%" right="13%" size="sm" opacity={0.2} />
+        <ElementBadge symbol="Zn" number="30" top="58%" right="21%" size="md" opacity={0.24} />
+        <ElementBadge symbol="B" number="5" top="15%" right="9%" size="lg" opacity={0.16} />
+        <ElementBadge symbol="K" number="19" bottom="30%" right="32%" size="sm" opacity={0.22} />
+        <ElementBadge symbol="Mo" number="42" top="44%" right="6%" size="sm" opacity={0.15} />
 
         <div style={{ maxWidth: '1200px', position: 'relative' }}>
           {/* Eyebrow */}
@@ -327,7 +340,7 @@ export default function HomePage() {
         ))}
       </section>
 
-      {/* ──────────── DESTAQUE — XCENSIS ──────────────────────────────────── */}
+      {/* ──────────── PRODUTOS EM DESTAQUE ────────────────────────────────── */}
       <section
         style={{
           padding: '80px 48px',
@@ -338,95 +351,397 @@ export default function HomePage() {
         {/* Section label */}
         <p
           style={{
-            fontFamily: 'var(--font-body)',
+            fontFamily: 'var(--font-mono)',
             fontSize: '0.6875rem',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.10em',
+            fontWeight: 500,
+            letterSpacing: '0.12em',
             color: 'oklch(0.52 0.018 148)',
-            marginBottom: '40px',
+            textTransform: 'uppercase',
+            marginBottom: '48px',
           }}
         >
-          Produto em destaque
+          Produtos em destaque
         </p>
 
+        {/* 2-column: Stron + Impuch */}
         <div
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
-            gap: '80px',
-            alignItems: 'center',
+            gap: '20px',
+            marginBottom: '20px',
           }}
         >
-          {/* Left: identity */}
-          <div>
+          {/* ── Stron card ── */}
+          <Link
+            href="/produtos/stron"
+            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column' }}
+          >
             <div
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                marginBottom: '24px',
+                backgroundColor: 'oklch(0.10 0.020 148)',
+                border: '1px solid oklch(0.22 0.025 148)',
+                borderTop: '2px solid oklch(0.58 0.165 148)',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
               }}
             >
-              <span
+              {/* Visual header */}
+              <div
                 style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.6875rem',
-                  color: 'oklch(0.73 0.135 78)',
-                  backgroundColor: 'oklch(0.16 0.038 78)',
-                  padding: '3px 10px',
-                  borderRadius: '4px',
-                  letterSpacing: '0.04em',
+                  padding: '24px 24px 0',
+                  backgroundColor: 'oklch(0.085 0.018 148)',
+                  borderBottom: '1px solid oklch(0.155 0.018 148)',
                 }}
               >
-                {featured.registrationMapa}
-              </span>
+                <StronNpkChart />
+              </div>
+
+              {/* Info panel */}
+              <div
+                style={{
+                  padding: '28px',
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.5875rem',
+                      fontWeight: 600,
+                      letterSpacing: '0.10em',
+                      textTransform: 'uppercase',
+                      color: 'oklch(0.58 0.165 148)',
+                      backgroundColor: 'oklch(0.14 0.045 148)',
+                      padding: '3px 9px',
+                      borderRadius: '4px',
+                    }}
+                  >
+                    Fertilizante Mineral
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.5875rem',
+                      color: 'oklch(0.40 0.014 148)',
+                    }}
+                  >
+                    Via Foliar
+                  </span>
+                </div>
+
+                <h2
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: 'clamp(2rem, 3.5vw, 3.25rem)',
+                    fontWeight: 700,
+                    letterSpacing: '-0.045em',
+                    lineHeight: 0.92,
+                    color: 'oklch(0.96 0.004 148)',
+                  }}
+                >
+                  Stron
+                </h2>
+
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.9rem',
+                    color: 'oklch(0.62 0.022 148)',
+                    lineHeight: 1.6,
+                    flex: 1,
+                  }}
+                >
+                  NPK foliar de alta solubilidade com complexo de aminoácidos e ácidos carboxílicos
+                  — máxima absorção foliar em aplicação única.
+                </p>
+
+                {/* Key specs */}
+                <div style={{ display: 'flex', gap: '24px' }}>
+                  {[
+                    ['N', '4,5%'],
+                    ['P₂O₅', '2,0%'],
+                    ['K₂O', '7,2%'],
+                  ].map(([k, v]) => (
+                    <div key={k}>
+                      <p
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '0.5875rem',
+                          color: 'oklch(0.40 0.014 148)',
+                          letterSpacing: '0.08em',
+                          marginBottom: '3px',
+                        }}
+                      >
+                        {k}
+                      </p>
+                      <p
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '1.0625rem',
+                          fontWeight: 700,
+                          color: 'oklch(0.58 0.165 148)',
+                          letterSpacing: '-0.02em',
+                        }}
+                      >
+                        {v}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    marginTop: '4px',
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.8125rem',
+                    color: 'oklch(0.58 0.165 148)',
+                    fontWeight: 500,
+                  }}
+                >
+                  Ficha técnica completa →
+                </span>
+              </div>
             </div>
-            <h2
+          </Link>
+
+          {/* ── Impuch card ── */}
+          <Link
+            href="/produtos/impuch"
+            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column' }}
+          >
+            <div
               style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(3rem, 5vw, 5rem)',
-                fontWeight: 700,
-                letterSpacing: '-0.04em',
-                lineHeight: 0.95,
-                color: 'oklch(0.96 0.004 148)',
-                marginBottom: '16px',
+                backgroundColor: 'oklch(0.10 0.020 148)',
+                border: '1px solid oklch(0.22 0.025 148)',
+                borderTop: '2px solid oklch(0.64 0.13 195)',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
               }}
             >
-              {featured.name}
-            </h2>
-            <p
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '1rem',
-                color: 'oklch(0.58 0.165 148)',
-                fontWeight: 500,
-                letterSpacing: '-0.01em',
-                marginBottom: '20px',
-              }}
-            >
-              {featured.tagline}
-            </p>
-            <p
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.9375rem',
-                color: 'oklch(0.62 0.022 148)',
-                lineHeight: 1.7,
-                marginBottom: '36px',
-              }}
-            >
-              {featured.description}
-            </p>
+              <div
+                style={{
+                  padding: '24px 24px 0',
+                  backgroundColor: 'oklch(0.085 0.018 148)',
+                  borderBottom: '1px solid oklch(0.155 0.018 148)',
+                }}
+              >
+                <ImpuchSoilViz />
+              </div>
+
+              <div
+                style={{
+                  padding: '28px',
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.5875rem',
+                      fontWeight: 600,
+                      letterSpacing: '0.10em',
+                      textTransform: 'uppercase',
+                      color: 'oklch(0.64 0.13 195)',
+                      backgroundColor: 'oklch(0.14 0.040 195)',
+                      padding: '3px 9px',
+                      borderRadius: '4px',
+                    }}
+                  >
+                    Organomineral
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.5875rem',
+                      color: 'oklch(0.40 0.014 148)',
+                    }}
+                  >
+                    Fertirrigação · Solo
+                  </span>
+                </div>
+
+                <h2
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: 'clamp(2rem, 3.5vw, 3.25rem)',
+                    fontWeight: 700,
+                    letterSpacing: '-0.045em',
+                    lineHeight: 0.92,
+                    color: 'oklch(0.96 0.004 148)',
+                  }}
+                >
+                  Impuch
+                </h2>
+
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.9rem',
+                    color: 'oklch(0.62 0.022 148)',
+                    lineHeight: 1.6,
+                    flex: 1,
+                  }}
+                >
+                  Organomineral de solo com vinhaça concentrada, ácidos húmicos e fúlvicos —
+                  melhoria estrutural e estímulo biológico para o sistema radicular.
+                </p>
+
+                <div style={{ display: 'flex', gap: '24px' }}>
+                  {[
+                    ['M.O.', '8,0%'],
+                    ['Húm.', '2,0%'],
+                    ['K₂O', '2,5%'],
+                  ].map(([k, v]) => (
+                    <div key={k}>
+                      <p
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '0.5875rem',
+                          color: 'oklch(0.40 0.014 148)',
+                          letterSpacing: '0.08em',
+                          marginBottom: '3px',
+                        }}
+                      >
+                        {k}
+                      </p>
+                      <p
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '1.0625rem',
+                          fontWeight: 700,
+                          color: 'oklch(0.64 0.13 195)',
+                          letterSpacing: '-0.02em',
+                        }}
+                      >
+                        {v}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    marginTop: '4px',
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.8125rem',
+                    color: 'oklch(0.64 0.13 195)',
+                    fontWeight: 500,
+                  }}
+                >
+                  Ficha técnica completa →
+                </span>
+              </div>
+            </div>
+          </Link>
+        </div>
+
+        {/* ── Linha Operate — full width ── */}
+        <div
+          style={{
+            backgroundColor: 'oklch(0.10 0.020 148)',
+            border: '1px solid oklch(0.22 0.025 148)',
+            borderTop: '2px solid oklch(0.73 0.135 78)',
+            borderRadius: '12px',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Header row */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr auto',
+              alignItems: 'center',
+              gap: '24px',
+              padding: '28px 32px 24px',
+              borderBottom: '1px solid oklch(0.155 0.018 148)',
+            }}
+          >
+            <div>
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}
+              >
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.5875rem',
+                    fontWeight: 600,
+                    letterSpacing: '0.10em',
+                    textTransform: 'uppercase',
+                    color: 'oklch(0.73 0.135 78)',
+                    backgroundColor: 'oklch(0.16 0.038 78)',
+                    padding: '3px 9px',
+                    borderRadius: '4px',
+                  }}
+                >
+                  Adjuvantes
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.5875rem',
+                    color: 'oklch(0.40 0.014 148)',
+                  }}
+                >
+                  4 produtos · Linha completa
+                </span>
+              </div>
+              <h2
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
+                  fontWeight: 700,
+                  letterSpacing: '-0.04em',
+                  lineHeight: 1.0,
+                  color: 'oklch(0.96 0.004 148)',
+                  marginBottom: '8px',
+                }}
+              >
+                Linha Operate
+              </h2>
+              <p
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.9rem',
+                  color: 'oklch(0.62 0.022 148)',
+                  lineHeight: 1.55,
+                }}
+              >
+                Espalhantes adesivos premium com óleos essenciais, condicionamento de pH e ação
+                antideriva — para potencializar qualquer calda agrícola.
+              </p>
+            </div>
+
             <Link
-              href={`/produtos/${featured.slug}`}
+              href="/produtos?categoria=adjuvantes"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
                 padding: '10px 20px',
-                border: '1px solid oklch(0.58 0.165 148)',
-                color: 'oklch(0.58 0.165 148)',
+                whiteSpace: 'nowrap',
+                border: '1px solid oklch(0.73 0.135 78 / 0.45)',
+                color: 'oklch(0.73 0.135 78)',
                 fontFamily: 'var(--font-body)',
                 fontSize: '0.875rem',
                 fontWeight: 500,
@@ -434,158 +749,12 @@ export default function HomePage() {
                 textDecoration: 'none',
               }}
             >
-              Ficha técnica completa →
+              Ver linha completa →
             </Link>
           </div>
 
-          {/* Right: composition data */}
-          <div
-            style={{
-              backgroundColor: 'oklch(0.105 0.020 148)',
-              border: '1px solid oklch(0.22 0.025 148)',
-              borderRadius: '12px',
-              padding: '36px',
-            }}
-          >
-            <p
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.6875rem',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.10em',
-                color: 'oklch(0.52 0.018 148)',
-                marginBottom: '24px',
-              }}
-            >
-              Composição garantida
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {featured.composition.micros &&
-                Object.entries(featured.composition.micros).map(([element, value]) => (
-                  <div
-                    key={element}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      paddingBottom: '12px',
-                      borderBottom: '1px solid oklch(0.155 0.018 148)',
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '0.9375rem',
-                        fontWeight: 500,
-                        color: 'oklch(0.96 0.004 148)',
-                      }}
-                    >
-                      {element}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '0.9375rem',
-                        color: 'oklch(0.58 0.165 148)',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {value}%
-                    </span>
-                  </div>
-                ))}
-              {featured.composition.macros &&
-                Object.entries(featured.composition.macros).map(([element, value]) => (
-                  <div
-                    key={element}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      paddingBottom: '12px',
-                      borderBottom: '1px solid oklch(0.155 0.018 148)',
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '0.9375rem',
-                        fontWeight: 500,
-                        color: 'oklch(0.96 0.004 148)',
-                      }}
-                    >
-                      {element}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '0.9375rem',
-                        color: 'oklch(0.73 0.135 78)',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {value}%
-                    </span>
-                  </div>
-                ))}
-            </div>
-            <div
-              style={{
-                marginTop: '24px',
-                paddingTop: '20px',
-                borderTop: '1px solid oklch(0.22 0.025 148)',
-                display: 'flex',
-                gap: '16px',
-              }}
-            >
-              <div>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.6875rem',
-                    color: 'oklch(0.52 0.018 148)',
-                    marginBottom: '4px',
-                    letterSpacing: '0.04em',
-                  }}
-                >
-                  ESTADO
-                </p>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '0.875rem',
-                    color: 'oklch(0.78 0.020 148)',
-                    textTransform: 'capitalize',
-                  }}
-                >
-                  {featured.physicalState}
-                </p>
-              </div>
-              <div style={{ marginLeft: '32px' }}>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.6875rem',
-                    color: 'oklch(0.52 0.018 148)',
-                    marginBottom: '4px',
-                    letterSpacing: '0.04em',
-                  }}
-                >
-                  ORIGEM
-                </p>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '0.875rem',
-                    color: 'oklch(0.78 0.020 148)',
-                  }}
-                >
-                  {featured.originCountry}
-                </p>
-              </div>
-            </div>
-          </div>
+          {/* SVG grid */}
+          <OperateLineGrid />
         </div>
       </section>
 
