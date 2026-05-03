@@ -1,4 +1,5 @@
 // apps/website/src/components/footer.tsx
+import Image from 'next/image';
 import Link from 'next/link';
 
 export function Footer() {
@@ -22,18 +23,15 @@ export function Footer() {
       >
         {/* Brand */}
         <div>
-          <p
-            style={{
-              fontFamily: '"Geist", "Inter", system-ui, sans-serif',
-              fontSize: '0.875rem',
-              fontWeight: 700,
-              letterSpacing: '-0.02em',
-              color: 'oklch(0.96 0.004 148)',
-              marginBottom: '4px',
-            }}
-          >
-            ARGHO AGROSCIENCES
-          </p>
+          <Link href="/" style={{ display: 'inline-block', marginBottom: '4px' }}>
+            <Image
+              src="/argho-logo-white.png"
+              alt="Argho Agrosciences"
+              width={120}
+              height={32}
+              style={{ objectFit: 'contain', objectPosition: 'left center', opacity: 0.85 }}
+            />
+          </Link>
           <p
             style={{
               fontFamily: '"Inter", system-ui, sans-serif',
