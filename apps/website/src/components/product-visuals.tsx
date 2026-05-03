@@ -1,6 +1,6 @@
 // apps/website/src/components/product-visuals.tsx
 // Inline SVG illustration components — zero external image dependencies.
-// All coordinates pre-calculated; no runtime math.
+// All coordinates pre-calculated; no runtime math inside render.
 
 // ─── Stron NPK Chart ─────────────────────────────────────────────────────────
 // Horizontal bar chart: N 4.5%, P₂O₅ 2.0%, K₂O 7.2%
@@ -530,189 +530,156 @@ export function OperateLineGrid() {
 }
 
 // ─── Digital Heart Ecosystem ──────────────────────────────────────────────────
-// SVG central heart — circuits (AI/Tech, upper half) fused with root veins
-// (Agro/Biologia, lower half). 4 orbital nodes for product categories.
-// viewBox 800×490. Heart centered at (400, 238).
-// Heart path: scale 1.6 from canonical heart, translated (320, 162).
+// Massive anatomical particle heart — Argho's living technology core.
+// Standard heart parametric: x=16·sin³t, y=13·cost − 5·cos2t − 2·cos3t − cos4t
+// viewBox 1200×680. Heart center (600, 310), scale S=14.
+// 160 outline particles + 90 interior (Vogel spiral) + 32 binary bits.
+// 4-layer bloom: ultra halo (σ=55) → large (σ=20) → medium (σ=7) → tight (σ=2.5)
+
+// ── Module-level particle data (computed once at module load, never re-computed) ──
+
+const _HCX = 600;
+const _HCY = 310;
+const _HS = 14;
+
+const _HEART_DOTS: ReadonlyArray<{ id: string; x: number; y: number }> = Array.from(
+  { length: 160 },
+  (_, i) => {
+    const t = (i / 160) * 2 * Math.PI;
+    return {
+      id: `hd${i}`,
+      x: Math.round(_HCX + 16 * Math.sin(t) ** 3 * _HS),
+      y: Math.round(
+        _HCY -
+          (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * _HS,
+      ),
+    };
+  },
+);
+
+const _GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)); // ≈ 137.508°
+
+const _INNER_DOTS: ReadonlyArray<{ id: string; x: number; y: number; s: number; o: number }> =
+  Array.from({ length: 90 }, (_, i) => {
+    const r = 148 * Math.sqrt(i / 90);
+    const theta = i * _GOLDEN_ANGLE;
+    const x = Math.round(_HCX + r * Math.cos(theta) * 0.83);
+    const y = Math.round(_HCY - 20 + r * Math.sin(theta) * 0.65);
+    const d = r / 148;
+    return {
+      id: `id${i}`,
+      x,
+      y,
+      s: Math.round((2.1 - d * 0.9) * 10) / 10,
+      o: Math.round((0.88 - d * 0.38) * 100) / 100,
+    };
+  });
+
+const _BINARY_BITS: ReadonlyArray<{ id: string; x: number; y: number; v: string }> = Array.from(
+  { length: 32 },
+  (_, i) => {
+    const r = 92 * Math.sqrt(i / 32);
+    const theta = i * _GOLDEN_ANGLE * 1.27;
+    return {
+      id: `bb${i}`,
+      x: Math.round(_HCX + r * Math.cos(theta) * 0.7),
+      y: Math.round(_HCY - 36 + r * Math.sin(theta) * 0.52),
+      v: i % 2 === 0 ? '1' : '0',
+    };
+  },
+);
+
+// 16-point polygon approximation of the heart (for bloom fill layer).
+// Computed from exact parametric formula at t = k·π/8, k=0..15.
+const _H_POLY =
+  'M 600,240 L 613,202 L 679,148 L 777,165 L 824,264 L 777,356 L 679,445 L 613,517 L 600,548 L 587,517 L 521,445 L 423,356 L 376,254 L 423,165 L 521,148 L 587,202 Z';
 
 export function DigitalHeartEcosystem() {
-  const H =
-    'M 400,210 C 400,186 376,170 352,186 C 320,202 320,242 400,290 C 480,242 480,202 448,186 C 424,170 400,186 400,210 Z';
-
-  // ── Pre-calculated particle positions along the heart bezier outline ──────
-  // 30 points traced clockwise along all 4 bezier segments
-  const heartDots = [
-    { x: 400, y: 210 },
-    { x: 397, y: 200 },
-    { x: 390, y: 191 },
-    { x: 381, y: 184 },
-    { x: 370, y: 179 },
-    { x: 360, y: 181 },
-    { x: 352, y: 186 },
-    { x: 337, y: 196 },
-    { x: 327, y: 210 },
-    { x: 323, y: 224 },
-    { x: 328, y: 239 },
-    { x: 339, y: 252 },
-    { x: 354, y: 263 },
-    { x: 370, y: 273 },
-    { x: 385, y: 281 },
-    { x: 400, y: 290 },
-    { x: 415, y: 281 },
-    { x: 430, y: 273 },
-    { x: 446, y: 263 },
-    { x: 461, y: 252 },
-    { x: 472, y: 239 },
-    { x: 477, y: 224 },
-    { x: 473, y: 210 },
-    { x: 463, y: 196 },
-    { x: 448, y: 186 },
-    { x: 440, y: 181 },
-    { x: 430, y: 179 },
-    { x: 419, y: 184 },
-    { x: 410, y: 191 },
-    { x: 404, y: 200 },
-  ];
-
-  // ── Interior scatter particles ─────────────────────────────────────────────
-  const innerDots = [
-    { x: 375, y: 208, s: 1.4, o: 0.7 },
-    { x: 393, y: 194, s: 1.2, o: 0.62 },
-    { x: 407, y: 194, s: 1.2, o: 0.62 },
-    { x: 425, y: 208, s: 1.4, o: 0.7 },
-    { x: 366, y: 218, s: 1.2, o: 0.58 },
-    { x: 434, y: 218, s: 1.2, o: 0.58 },
-    { x: 360, y: 230, s: 1.0, o: 0.52 },
-    { x: 380, y: 224, s: 1.1, o: 0.6 },
-    { x: 400, y: 218, s: 1.8, o: 0.78 },
-    { x: 420, y: 224, s: 1.1, o: 0.6 },
-    { x: 440, y: 230, s: 1.0, o: 0.52 },
-    { x: 355, y: 243, s: 1.0, o: 0.48 },
-    { x: 380, y: 237, s: 1.0, o: 0.55 },
-    { x: 400, y: 236, s: 2.2, o: 0.88 },
-    { x: 420, y: 237, s: 1.0, o: 0.55 },
-    { x: 445, y: 243, s: 1.0, o: 0.48 },
-    { x: 362, y: 255, s: 1.0, o: 0.45 },
-    { x: 381, y: 249, s: 0.9, o: 0.48 },
-    { x: 400, y: 255, s: 1.4, o: 0.62 },
-    { x: 419, y: 249, s: 0.9, o: 0.48 },
-    { x: 438, y: 255, s: 1.0, o: 0.45 },
-    { x: 373, y: 265, s: 1.0, o: 0.4 },
-    { x: 400, y: 268, s: 1.2, o: 0.5 },
-    { x: 427, y: 265, s: 1.0, o: 0.4 },
-    { x: 385, y: 277, s: 0.9, o: 0.38 },
-    { x: 415, y: 277, s: 0.9, o: 0.38 },
-    { x: 388, y: 215, s: 0.8, o: 0.42 },
-    { x: 412, y: 215, s: 0.8, o: 0.42 },
-    { x: 392, y: 228, s: 0.8, o: 0.45 },
-    { x: 408, y: 228, s: 0.8, o: 0.45 },
-    { x: 375, y: 245, s: 0.7, o: 0.38 },
-    { x: 425, y: 245, s: 0.7, o: 0.38 },
-  ];
-
-  // ── Binary code dots scattered in upper heart half ─────────────────────────
-  const binaryBits = [
-    { x: 373, y: 207, v: '1' },
-    { x: 382, y: 200, v: '0' },
-    { x: 393, y: 205, v: '1' },
-    { x: 407, y: 205, v: '0' },
-    { x: 418, y: 200, v: '1' },
-    { x: 427, y: 207, v: '0' },
-    { x: 367, y: 218, v: '0' },
-    { x: 433, y: 218, v: '1' },
-    { x: 363, y: 230, v: '1' },
-    { x: 437, y: 230, v: '0' },
-    { x: 358, y: 242, v: '0' },
-    { x: 442, y: 242, v: '1' },
-  ];
-
-  // Orbital nodes
   const nodes = [
     {
-      cx: 182,
-      cy: 112,
+      cx: 92,
+      cy: 105,
       color: 'oklch(0.58 0.165 148)',
-      bg: 'oklch(0.11 0.035 148)',
+      bg: 'oklch(0.10 0.035 148)',
       cat: 'MINERAL',
       sub: 'Fert. Minerais',
       sym: 'Fe',
       count: '7',
-      lx1: 355,
-      ly1: 198,
-      lx2: 218,
-      ly2: 143,
+      lx1: 500,
+      ly1: 175,
+      lx2: 148,
+      ly2: 138,
       dashDelay: '0s',
     },
     {
-      cx: 618,
-      cy: 112,
+      cx: 1108,
+      cy: 105,
       color: 'oklch(0.64 0.13 195)',
-      bg: 'oklch(0.11 0.033 195)',
+      bg: 'oklch(0.10 0.033 195)',
       cat: 'ORGANO',
       sub: 'Organominerais',
       sym: 'Mo',
       count: '4',
-      lx1: 445,
-      ly1: 198,
-      lx2: 582,
-      ly2: 143,
+      lx1: 700,
+      ly1: 175,
+      lx2: 1052,
+      ly2: 138,
       dashDelay: '0.2s',
     },
     {
-      cx: 182,
-      cy: 368,
+      cx: 92,
+      cy: 575,
       color: 'oklch(0.66 0.150 150)',
-      bg: 'oklch(0.11 0.038 150)',
+      bg: 'oklch(0.10 0.038 150)',
       cat: 'BIOLÓGICO',
       sub: 'Bioestimulantes',
       sym: 'N',
       count: '4',
-      lx1: 348,
-      ly1: 272,
-      lx2: 218,
-      ly2: 335,
+      lx1: 476,
+      ly1: 470,
+      lx2: 148,
+      ly2: 542,
       dashDelay: '0.35s',
     },
     {
-      cx: 618,
-      cy: 368,
+      cx: 1108,
+      cy: 575,
       color: 'oklch(0.73 0.135 78)',
-      bg: 'oklch(0.13 0.038 78)',
+      bg: 'oklch(0.12 0.038 78)',
       cat: 'ADJUVANTE',
       sub: 'Linha Operate',
       sym: 'K',
       count: '4',
-      lx1: 452,
-      ly1: 272,
-      lx2: 582,
-      ly2: 335,
+      lx1: 724,
+      ly1: 470,
+      lx2: 1052,
+      ly2: 542,
       dashDelay: '0.15s',
     },
   ] as const;
 
   return (
     <svg
-      viewBox="0 0 800 490"
+      viewBox="0 0 1200 680"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
       style={{ width: '100%', height: 'auto', display: 'block' }}
     >
       <defs>
-        {/* Heart clip path */}
-        <clipPath id="eco-hclip">
-          <path d={H} />
-        </clipPath>
+        {/* ── Bloom / glow filters ── */}
 
-        {/* Heart background — vivid green at center */}
-        <radialGradient id="eco-hfill" cx="50%" cy="32%" r="62%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor="oklch(0.26 0.085 148)" />
-          <stop offset="55%" stopColor="oklch(0.14 0.048 148)" />
-          <stop offset="100%" stopColor="oklch(0.08 0.020 148)" />
-        </radialGradient>
+        {/* Ultra halo — massive atmospheric bloom */}
+        <filter id="h-ultra" x="-200%" y="-200%" width="500%" height="500%">
+          <feGaussianBlur stdDeviation="55" result="b" />
+          <feMerge>
+            <feMergeNode in="b" />
+            <feMergeNode in="b" />
+          </feMerge>
+        </filter>
 
-        {/* Bloom: large diffuse glow behind the whole heart */}
-        <filter id="eco-bloom" x="-80%" y="-80%" width="260%" height="260%">
+        {/* Large bloom — particle halo */}
+        <filter id="h-large" x="-120%" y="-120%" width="340%" height="340%">
           <feGaussianBlur stdDeviation="20" result="b" />
           <feMerge>
             <feMergeNode in="b" />
@@ -720,17 +687,17 @@ export function DigitalHeartEcosystem() {
           </feMerge>
         </filter>
 
-        {/* Medium glow for outline + core */}
-        <filter id="eco-glow" x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur stdDeviation="5" result="b" />
+        {/* Medium glow — with source visible */}
+        <filter id="h-med" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="7" result="b" />
           <feMerge>
             <feMergeNode in="b" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
 
-        {/* Soft glow for particle dots */}
-        <filter id="eco-dot-glow" x="-150%" y="-150%" width="400%" height="400%">
+        {/* Tight crisp glow — sharp particle edges */}
+        <filter id="h-tight" x="-40%" y="-40%" width="180%" height="180%">
           <feGaussianBlur stdDeviation="2.5" result="b" />
           <feMerge>
             <feMergeNode in="b" />
@@ -738,594 +705,270 @@ export function DigitalHeartEcosystem() {
           </feMerge>
         </filter>
 
-        {/* Node outer ring glow */}
-        <filter id="eco-nglow" x="-40%" y="-40%" width="180%" height="180%">
-          <feGaussianBlur stdDeviation="3.5" result="b" />
+        {/* Node glow */}
+        <filter id="h-nglow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="4" result="b" />
           <feMerge>
             <feMergeNode in="b" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
 
-        {/* Atmospheric background gradient */}
-        <radialGradient id="eco-atm" cx="50%" cy="49%" r="44%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor="oklch(0.24 0.078 148)" stopOpacity="0.95" />
-          <stop offset="40%" stopColor="oklch(0.15 0.046 148)" stopOpacity="0.65" />
-          <stop offset="100%" stopColor="oklch(0.065 0.016 148)" stopOpacity="0" />
+        {/* Line glow for connection traces */}
+        <filter id="h-line" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.8" result="b" />
+          <feMerge>
+            <feMergeNode in="b" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+
+        {/* ── Background gradient ── */}
+        <radialGradient id="h-bg" cx="50%" cy="46%" r="46%">
+          <stop offset="0%" stopColor="oklch(0.20 0.065 148)" stopOpacity="0.90" />
+          <stop offset="42%" stopColor="oklch(0.12 0.035 148)" stopOpacity="0.55" />
+          <stop offset="100%" stopColor="oklch(0.07 0.018 148)" stopOpacity="0" />
         </radialGradient>
-        <radialGradient
-          id="eco-gold-atm"
-          cx="50%"
-          cy="49%"
-          r="30%"
-          gradientUnits="objectBoundingBox"
-        >
-          <stop offset="0%" stopColor="oklch(0.73 0.135 78)" stopOpacity="0.18" />
-          <stop offset="100%" stopColor="oklch(0.73 0.135 78)" stopOpacity="0" />
+
+        {/* Teal secondary glow at lower half */}
+        <radialGradient id="h-bg2" cx="50%" cy="72%" r="38%">
+          <stop offset="0%" stopColor="oklch(0.64 0.13 195)" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="oklch(0.64 0.13 195)" stopOpacity="0" />
         </radialGradient>
       </defs>
 
-      {/* ── Atmospheric background glows ── */}
-      <rect width="800" height="490" fill="url(#eco-atm)" />
-      <rect width="800" height="490" fill="url(#eco-gold-atm)" />
+      {/* ── Atmospheric background ── */}
+      <rect width="1200" height="680" fill="url(#h-bg)" />
+      <rect width="1200" height="680" fill="url(#h-bg2)" />
 
-      {/* ── Diagnostic grid ── */}
-      {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390, 420, 450, 480].map((y) => (
+      {/* ── Diagnostic grid (very subtle — tech/precision aesthetic) ── */}
+      {Array.from({ length: 22 }, (_, i) => (i + 1) * 30).map((y) => (
         <line
           key={`hg-${y}`}
           x1="0"
           y1={y}
-          x2="800"
+          x2="1200"
           y2={y}
           stroke="oklch(0.22 0.025 148)"
-          strokeWidth="0.5"
-          opacity="0.20"
+          strokeWidth="0.4"
+          opacity="0.13"
         />
       ))}
-      {[
-        0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390, 420, 450, 480, 510, 540,
-        570, 600, 630, 660, 690, 720, 750, 780,
-      ].map((x) => (
+      {Array.from({ length: 39 }, (_, i) => (i + 1) * 30).map((x) => (
         <line
           key={`vg-${x}`}
           x1={x}
           y1="0"
           x2={x}
-          y2="490"
+          y2="680"
           stroke="oklch(0.22 0.025 148)"
-          strokeWidth="0.5"
-          opacity="0.20"
+          strokeWidth="0.4"
+          opacity="0.13"
         />
       ))}
 
-      {/* ── Connection lines (dashed, flow animation) ── */}
+      {/* ════════════════════════════════════════════════════════════════════
+          HEART RENDERING — 4 bloom layers, bottom to top
+          ════════════════════════════════════════════════════════════════════ */}
+
+      {/* Layer 1 — Ultra atmospheric halo (huge diffuse bloom behind heart) */}
+      <g filter="url(#h-ultra)" opacity="0.38">
+        <path d={_H_POLY} fill="oklch(0.58 0.165 148)" />
+      </g>
+
+      {/* Layer 2 — Large bloom on outline (creates glowing outline halo) */}
+      <g filter="url(#h-large)" opacity="0.58">
+        {_HEART_DOTS.map((d) => (
+          <circle key={`lb-${d.id}`} cx={d.x} cy={d.y} r="4" fill="oklch(0.58 0.165 148)" />
+        ))}
+      </g>
+
+      {/* ── Interior volumetric particles with medium glow ── */}
+      <g filter="url(#h-med)">
+        {_INNER_DOTS.map((d) => (
+          <circle
+            key={`in-${d.id}`}
+            cx={d.x}
+            cy={d.y}
+            r={d.s}
+            fill="oklch(0.64 0.13 175)"
+            opacity={d.o}
+          />
+        ))}
+      </g>
+
+      {/* ── Binary code overlay inside heart ── */}
+      {_BINARY_BITS.map((d) => (
+        <text
+          key={`bb-${d.id}`}
+          x={d.x}
+          y={d.y}
+          fontFamily="monospace"
+          fontSize="7"
+          fill="oklch(0.80 0.100 148)"
+          opacity="0.50"
+          textAnchor="middle"
+        >
+          {d.v}
+        </text>
+      ))}
+
+      {/* ── Animated heartbeat group ── */}
+      <g className="eco-heartbeat">
+        {/* Layer 3 — Medium glow on outline particles */}
+        <g filter="url(#h-med)" opacity="0.88">
+          {_HEART_DOTS.map((d) => (
+            <circle key={`mo-${d.id}`} cx={d.x} cy={d.y} r="2.4" fill="oklch(0.70 0.148 148)" />
+          ))}
+        </g>
+
+        {/* Layer 4 — Crisp sharp outline (gold accents every 6th particle) */}
+        <g filter="url(#h-tight)">
+          {_HEART_DOTS.map((d, i) => (
+            <circle
+              key={`sh-${d.id}`}
+              cx={d.x}
+              cy={d.y}
+              r="1.7"
+              fill={i % 6 === 0 ? 'oklch(0.93 0.08 78)' : 'oklch(0.96 0.022 148)'}
+              opacity={i % 6 === 0 ? 0.98 : 0.9}
+            />
+          ))}
+        </g>
+
+        {/* Expanding pulse rings (CSS animations from globals.css) */}
+        <circle
+          cx="600"
+          cy="310"
+          r="110"
+          stroke="oklch(0.58 0.165 148)"
+          strokeWidth="1.5"
+          fill="none"
+          className="eco-ring-1"
+        />
+        <circle
+          cx="600"
+          cy="310"
+          r="110"
+          stroke="oklch(0.64 0.13 195)"
+          strokeWidth="1"
+          fill="none"
+          className="eco-ring-2"
+        />
+      </g>
+
+      {/* ── Connection lines from heart to orbital nodes ── */}
       {nodes.map((n) => (
         <line
-          key={`conn-${n.cat}`}
+          key={`cl-${n.cat}`}
           x1={n.lx1}
           y1={n.ly1}
           x2={n.lx2}
           y2={n.ly2}
           stroke={n.color}
-          strokeWidth="2"
-          strokeDasharray="8 5"
-          strokeOpacity="0.82"
+          strokeWidth="1.5"
+          strokeDasharray="7 4"
+          strokeOpacity="0.70"
+          filter="url(#h-line)"
           className="eco-dash"
           style={{ animationDelay: n.dashDelay }}
         />
       ))}
 
-      {/* ── Expanding pulse rings ── */}
-      <circle
-        cx="400"
-        cy="238"
-        r="100"
-        stroke="oklch(0.58 0.165 148)"
-        strokeWidth="1.5"
-        fill="none"
-        className="eco-ring-1"
-      />
-      <circle
-        cx="400"
-        cy="238"
-        r="100"
-        stroke="oklch(0.64 0.13 195)"
-        strokeWidth="1"
-        fill="none"
-        className="eco-ring-2"
-      />
-
-      {/* ── HEART (heartbeat animation) ── */}
-      <g className="eco-heartbeat">
-        {/* ① Bloom: large soft halo behind the whole heart */}
-        <circle
-          cx="400"
-          cy="238"
-          r="72"
-          fill="oklch(0.50 0.145 148)"
-          opacity="0.22"
-          filter="url(#eco-bloom)"
-        />
-
-        {/* ② Heart body fill */}
-        <path d={H} fill="url(#eco-hfill)" />
-
-        {/* ③ Circuit grid inside — upper tech half (clipped) */}
-        <g clipPath="url(#eco-hclip)" opacity="0.92">
-          {/* Horizontal traces */}
-          <line
-            x1="326"
-            y1="198"
-            x2="474"
-            y2="198"
-            stroke="oklch(0.58 0.165 148)"
-            strokeWidth="0.9"
-            opacity="0.80"
-          />
-          <line
-            x1="326"
-            y1="210"
-            x2="474"
-            y2="210"
-            stroke="oklch(0.58 0.165 148)"
-            strokeWidth="0.8"
-            opacity="0.62"
-          />
-          <line
-            x1="330"
-            y1="222"
-            x2="470"
-            y2="222"
-            stroke="oklch(0.64 0.13 195)"
-            strokeWidth="0.7"
-            opacity="0.50"
-          />
-          <line
-            x1="336"
-            y1="234"
-            x2="464"
-            y2="234"
-            stroke="oklch(0.58 0.165 148)"
-            strokeWidth="0.7"
-            opacity="0.40"
-          />
-          {/* Vertical traces */}
-          <line
-            x1="362"
-            y1="184"
-            x2="362"
-            y2="262"
-            stroke="oklch(0.58 0.165 148)"
-            strokeWidth="0.9"
-            opacity="0.72"
-          />
-          <line
-            x1="381"
-            y1="181"
-            x2="381"
-            y2="262"
-            stroke="oklch(0.58 0.165 148)"
-            strokeWidth="0.8"
-            opacity="0.58"
-          />
-          <line
-            x1="400"
-            y1="174"
-            x2="400"
-            y2="268"
-            stroke="oklch(0.73 0.135 78)"
-            strokeWidth="1.1"
-            opacity="0.82"
-          />
-          <line
-            x1="419"
-            y1="181"
-            x2="419"
-            y2="262"
-            stroke="oklch(0.58 0.165 148)"
-            strokeWidth="0.8"
-            opacity="0.58"
-          />
-          <line
-            x1="438"
-            y1="184"
-            x2="438"
-            y2="262"
-            stroke="oklch(0.58 0.165 148)"
-            strokeWidth="0.9"
-            opacity="0.72"
-          />
-          {/* L-bends at lobe lips */}
-          <path
-            d="M 352,186 L 362,186 L 362,198"
-            stroke="oklch(0.58 0.165 148)"
-            strokeWidth="0.9"
-            opacity="0.55"
-            fill="none"
-            strokeLinecap="round"
-          />
-          <path
-            d="M 448,186 L 438,186 L 438,198"
-            stroke="oklch(0.58 0.165 148)"
-            strokeWidth="0.9"
-            opacity="0.55"
-            fill="none"
-            strokeLinecap="round"
-          />
-          {/* Intersection vias */}
-          <circle cx="362" cy="198" r="2.8" fill="oklch(0.58 0.165 148)" opacity="0.88" />
-          <circle cx="381" cy="210" r="2.2" fill="oklch(0.64 0.13 195)" opacity="0.80" />
-          <circle cx="400" cy="198" r="3.2" fill="oklch(0.73 0.135 78)" opacity="0.95" />
-          <circle cx="419" cy="210" r="2.2" fill="oklch(0.64 0.13 195)" opacity="0.80" />
-          <circle cx="438" cy="198" r="2.8" fill="oklch(0.58 0.165 148)" opacity="0.88" />
-          <circle cx="381" cy="198" r="1.8" fill="oklch(0.58 0.165 148)" opacity="0.62" />
-          <circle cx="419" cy="198" r="1.8" fill="oklch(0.58 0.165 148)" opacity="0.62" />
-          <circle cx="400" cy="210" r="2.0" fill="oklch(0.58 0.165 148)" opacity="0.58" />
-          <circle cx="362" cy="222" r="1.8" fill="oklch(0.64 0.13 195)" opacity="0.55" />
-          <circle cx="438" cy="222" r="1.8" fill="oklch(0.64 0.13 195)" opacity="0.55" />
-          <circle cx="381" cy="222" r="1.5" fill="oklch(0.58 0.165 148)" opacity="0.48" />
-          <circle cx="419" cy="222" r="1.5" fill="oklch(0.58 0.165 148)" opacity="0.48" />
-          {/* CPU chip */}
-          <rect
-            x="388"
-            y="205"
-            width="24"
-            height="14"
-            rx="2.5"
-            fill="none"
-            stroke="oklch(0.73 0.135 78)"
-            strokeWidth="1.4"
-            opacity="0.95"
-          />
-          <rect
-            x="392"
-            y="208"
-            width="16"
-            height="8"
-            rx="1.5"
-            fill="oklch(0.73 0.135 78 / 0.18)"
-            stroke="oklch(0.73 0.135 78)"
-            strokeWidth="0.8"
-            opacity="0.80"
-          />
-          <line
-            x1="394"
-            y1="205"
-            x2="394"
-            y2="200"
-            stroke="oklch(0.73 0.135 78)"
-            strokeWidth="0.9"
-            opacity="0.85"
-          />
-          <line
-            x1="400"
-            y1="205"
-            x2="400"
-            y2="200"
-            stroke="oklch(0.73 0.135 78)"
-            strokeWidth="0.9"
-            opacity="0.85"
-          />
-          <line
-            x1="406"
-            y1="205"
-            x2="406"
-            y2="200"
-            stroke="oklch(0.73 0.135 78)"
-            strokeWidth="0.9"
-            opacity="0.85"
-          />
-          <line
-            x1="388"
-            y1="210"
-            x2="383"
-            y2="210"
-            stroke="oklch(0.73 0.135 78)"
-            strokeWidth="0.9"
-            opacity="0.85"
-          />
-          <line
-            x1="388"
-            y1="215"
-            x2="383"
-            y2="215"
-            stroke="oklch(0.73 0.135 78)"
-            strokeWidth="0.9"
-            opacity="0.85"
-          />
-          <line
-            x1="412"
-            y1="210"
-            x2="417"
-            y2="210"
-            stroke="oklch(0.73 0.135 78)"
-            strokeWidth="0.9"
-            opacity="0.85"
-          />
-          <line
-            x1="412"
-            y1="215"
-            x2="417"
-            y2="215"
-            stroke="oklch(0.73 0.135 78)"
-            strokeWidth="0.9"
-            opacity="0.85"
-          />
-        </g>
-
-        {/* ④ Root veins — lower bio half (clipped) */}
-        <g clipPath="url(#eco-hclip)" opacity="0.88">
-          <path
-            d="M 400,287 C 400,271 400,257 400,243"
-            stroke="oklch(0.58 0.165 148)"
-            strokeWidth="2.2"
-            opacity="0.78"
-          />
-          <path
-            d="M 400,270 C 387,258 371,254 356,248"
-            stroke="oklch(0.66 0.150 150)"
-            strokeWidth="1.7"
-            opacity="0.75"
-          />
-          <path
-            d="M 400,270 C 413,258 429,254 444,248"
-            stroke="oklch(0.66 0.150 150)"
-            strokeWidth="1.7"
-            opacity="0.75"
-          />
-          <path
-            d="M 356,248 C 348,243 342,238 337,234"
-            stroke="oklch(0.66 0.150 150)"
-            strokeWidth="1.1"
-            opacity="0.62"
-          />
-          <path
-            d="M 356,248 C 351,242 348,237 345,231"
-            stroke="oklch(0.66 0.150 150)"
-            strokeWidth="1.1"
-            opacity="0.58"
-          />
-          <path
-            d="M 444,248 C 452,243 458,238 463,234"
-            stroke="oklch(0.66 0.150 150)"
-            strokeWidth="1.1"
-            opacity="0.62"
-          />
-          <path
-            d="M 444,248 C 449,242 452,237 455,231"
-            stroke="oklch(0.66 0.150 150)"
-            strokeWidth="1.1"
-            opacity="0.58"
-          />
-          {/* Micro root tendrils */}
-          <path
-            d="M 337,234 C 331,229 326,226 322,224"
-            stroke="oklch(0.66 0.150 150)"
-            strokeWidth="0.7"
-            opacity="0.42"
-          />
-          <path
-            d="M 463,234 C 469,229 474,226 478,224"
-            stroke="oklch(0.66 0.150 150)"
-            strokeWidth="0.7"
-            opacity="0.42"
-          />
-          {/* Branch-tip nodes */}
-          <circle cx="337" cy="234" r="3.0" fill="oklch(0.66 0.150 150)" opacity="0.80" />
-          <circle cx="345" cy="231" r="2.2" fill="oklch(0.66 0.150 150)" opacity="0.72" />
-          <circle cx="463" cy="234" r="3.0" fill="oklch(0.66 0.150 150)" opacity="0.80" />
-          <circle cx="455" cy="231" r="2.2" fill="oklch(0.66 0.150 150)" opacity="0.72" />
-          {/* Gold humic nutrient particles */}
-          <circle cx="367" cy="276" r="2.0" fill="oklch(0.73 0.135 78)" opacity="0.62" />
-          <circle cx="384" cy="281" r="1.6" fill="oklch(0.73 0.135 78)" opacity="0.55" />
-          <circle cx="416" cy="281" r="1.6" fill="oklch(0.73 0.135 78)" opacity="0.55" />
-          <circle cx="433" cy="276" r="2.0" fill="oklch(0.73 0.135 78)" opacity="0.62" />
-          <circle cx="400" cy="283" r="1.4" fill="oklch(0.73 0.135 78)" opacity="0.50" />
-        </g>
-
-        {/* ⑤ Heart outline — bright stroke with glow */}
-        <path
-          d={H}
-          stroke="oklch(0.58 0.165 148)"
-          strokeWidth="0.6"
-          fill="none"
-          opacity="0.30"
-          filter="url(#eco-glow)"
-        />
-        <path d={H} stroke="oklch(0.72 0.175 148)" strokeWidth="1.8" fill="none" opacity="0.92" />
-
-        {/* ⑥ Particle dots along heart outline */}
-        {heartDots.map((d) => (
-          <circle
-            key={`hd-${d.x}-${d.y}`}
-            cx={d.x}
-            cy={d.y}
-            r="2.2"
-            fill="white"
-            opacity="0.88"
-            filter="url(#eco-dot-glow)"
-            className="eco-node-glow"
-          />
-        ))}
-        {/* Accent particles — bigger at key positions */}
-        <circle
-          cx="400"
-          cy="210"
-          r="3.2"
-          fill="oklch(0.73 0.135 78)"
-          opacity="0.95"
-          filter="url(#eco-dot-glow)"
-        />
-        <circle
-          cx="400"
-          cy="290"
-          r="3.2"
-          fill="oklch(0.64 0.13 195)"
-          opacity="0.95"
-          filter="url(#eco-dot-glow)"
-        />
-        <circle
-          cx="352"
-          cy="186"
-          r="2.8"
-          fill="oklch(0.66 0.150 150)"
-          opacity="0.90"
-          filter="url(#eco-dot-glow)"
-        />
-        <circle
-          cx="448"
-          cy="186"
-          r="2.8"
-          fill="oklch(0.66 0.150 150)"
-          opacity="0.90"
-          filter="url(#eco-dot-glow)"
-        />
-
-        {/* ⑦ Inner scatter dots */}
-        {innerDots.map((d) => (
-          <circle
-            key={`id-${d.x}-${d.y}`}
-            cx={d.x}
-            cy={d.y}
-            r={d.s}
-            fill="oklch(0.78 0.160 148)"
-            opacity={d.o}
-          />
-        ))}
-
-        {/* ⑧ Binary code text in upper half */}
-        {binaryBits.map((b) => (
-          <text
-            key={`bb-${b.x}-${b.y}`}
-            x={b.x}
-            y={b.y}
-            textAnchor="middle"
-            fontSize="5.5"
-            fontFamily="'JetBrains Mono', monospace"
-            fontWeight="700"
-            fill="oklch(0.58 0.165 148)"
-            opacity="0.60"
-            letterSpacing="0"
-          >
-            {b.v}
-          </text>
-        ))}
-
-        {/* ⑨ Glow core — the AI↔Soil junction point */}
-        <circle
-          cx="400"
-          cy="234"
-          r="22"
-          fill="oklch(0.73 0.135 78)"
-          opacity="0.12"
-          filter="url(#eco-bloom)"
-        />
-        <circle
-          cx="400"
-          cy="234"
-          r="8"
-          fill="oklch(0.73 0.135 78)"
-          opacity="0.30"
-          filter="url(#eco-glow)"
-        />
-        <circle cx="400" cy="234" r="4" fill="oklch(0.73 0.135 78)" opacity="0.72" />
-        <circle cx="400" cy="234" r="1.8" fill="white" opacity="0.95" />
-      </g>
-
-      {/* ── 4 orbital ecosystem nodes ── */}
+      {/* ── Orbital category nodes ── */}
       {nodes.map((n) => (
-        <g key={n.cat} filter="url(#eco-nglow)">
+        <g key={`nd-${n.cat}`} className="eco-node-glow">
+          {/* Outer decorative rings */}
           <circle
             cx={n.cx}
             cy={n.cy}
-            r="42"
-            fill="none"
+            r="48"
             stroke={n.color}
-            strokeWidth="0.75"
+            strokeWidth="1"
+            fill="none"
             opacity="0.28"
-            className="eco-node-glow"
           />
           <circle
             cx={n.cx}
             cy={n.cy}
-            r="34"
+            r="38"
+            stroke={n.color}
+            strokeWidth="0.5"
+            fill="none"
+            opacity="0.18"
+          />
+          {/* Node body with glow */}
+          <circle
+            cx={n.cx}
+            cy={n.cy}
+            r="28"
             fill={n.bg}
             stroke={n.color}
-            strokeWidth="1.8"
+            strokeWidth="1.5"
             opacity="0.96"
+            filter="url(#h-nglow)"
           />
+          {/* Element symbol */}
           <text
             x={n.cx}
-            y={n.cy + 5}
+            y={n.cy - 3}
             textAnchor="middle"
-            fontSize="15"
-            fontFamily="'JetBrains Mono', 'Fira Code', monospace"
-            fontWeight="600"
+            fontFamily="monospace"
+            fontWeight="700"
+            fontSize="14"
             fill={n.color}
-            letterSpacing="0.04em"
           >
             {n.sym}
           </text>
           <text
             x={n.cx}
-            y={n.cy + 54}
+            y={n.cy + 10}
             textAnchor="middle"
-            fontSize="8.5"
-            fontFamily="'JetBrains Mono', monospace"
-            fontWeight="700"
+            fontFamily="monospace"
+            fontSize="7.5"
             fill={n.color}
-            letterSpacing="0.10em"
-            opacity="0.95"
+            opacity="0.68"
+          >
+            {n.count} prod
+          </text>
+          {/* Category label below node */}
+          <text
+            x={n.cx}
+            y={n.cy + 48}
+            textAnchor="middle"
+            fontFamily="monospace"
+            fontWeight="700"
+            fontSize="8"
+            fill={n.color}
+            letterSpacing="0.08em"
           >
             {n.cat}
           </text>
           <text
             x={n.cx}
-            y={n.cy + 66}
+            y={n.cy + 61}
             textAnchor="middle"
+            fontFamily="sans-serif"
             fontSize="7.5"
-            fontFamily="monospace"
-            fill="oklch(0.58 0.022 148)"
+            fill="oklch(0.52 0.018 148)"
           >
             {n.sub}
-          </text>
-          <text
-            x={n.cx}
-            y={n.cy + 78}
-            textAnchor="middle"
-            fontSize="7"
-            fontFamily="monospace"
-            fill="oklch(0.42 0.016 148)"
-          >
-            {n.count} produtos
           </text>
         </g>
       ))}
 
       {/* ── Center label ── */}
       <text
-        x="400"
-        y="318"
+        x="600"
+        y="620"
         textAnchor="middle"
-        fontSize="9"
-        fontFamily="'JetBrains Mono', monospace"
-        fontWeight="700"
-        fill="oklch(0.68 0.165 148)"
-        letterSpacing="0.14em"
-        opacity="0.88"
-      >
-        AGRICULTURA 7.0
-      </text>
-      <text
-        x="400"
-        y="330"
-        textAnchor="middle"
-        fontSize="7.5"
         fontFamily="monospace"
-        fill="oklch(0.48 0.018 148)"
-        letterSpacing="0.06em"
+        fontWeight="600"
+        fontSize="9"
+        fill="oklch(0.52 0.020 148)"
+        letterSpacing="0.14em"
       >
-        IA · FISIOLOGIA · SOLO
+        ECOSSISTEMA · ARGHO · AGROSCIENCES
       </text>
     </svg>
   );

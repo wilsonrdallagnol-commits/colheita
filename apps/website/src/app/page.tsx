@@ -1095,7 +1095,7 @@ export default function HomePage() {
         style={{
           borderTop: '1px solid oklch(0.155 0.018 148)',
           borderBottom: '1px solid oklch(0.155 0.018 148)',
-          padding: '80px 48px',
+          padding: '80px 0 0',
           background:
             'radial-gradient(ellipse 70% 60% at 50% 50%, oklch(0.11 0.035 148 / 0.55) 0%, transparent 70%), oklch(0.07 0.018 148)',
           position: 'relative',
@@ -1116,87 +1116,53 @@ export default function HomePage() {
           }}
         />
 
-        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-          {/* Section header */}
-          <div style={{ marginBottom: '52px', textAlign: 'center' }}>
-            <p
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.6875rem',
-                fontWeight: 600,
-                letterSpacing: '0.14em',
-                color: 'oklch(0.58 0.165 148)',
-                textTransform: 'uppercase',
-                marginBottom: '16px',
-              }}
-            >
-              Ecossistema Argho
-            </p>
-            <h2
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-                fontWeight: 700,
-                letterSpacing: '-0.04em',
-                lineHeight: 1.08,
-                color: 'oklch(0.96 0.004 148)',
-                marginBottom: '16px',
-              }}
-            >
-              Tecnologia que compreende
-              <br />
-              <span style={{ color: 'oklch(0.73 0.135 78)' }}>a vida do solo</span>
-            </h2>
-            <p
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.9375rem',
-                color: 'oklch(0.60 0.022 148)',
-                lineHeight: 1.65,
-                maxWidth: '540px',
-                margin: '0 auto',
-              }}
-            >
-              Inteligência artificial fundida com fisiologia vegetal, biologia do solo e química de
-              precisão — tudo interligado como um ecossistema vivo.
-            </p>
-          </div>
-
-          {/* The living heart SVG */}
-          <div
+        {/* Section header */}
+        <div style={{ marginBottom: '52px', textAlign: 'center', padding: '0 48px' }}>
+          <p
             style={{
-              position: 'relative',
-              borderRadius: '16px',
-              border: '1px solid oklch(0.18 0.030 148)',
-              backgroundColor: 'oklch(0.065 0.016 148)',
-              overflow: 'hidden',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.6875rem',
+              fontWeight: 600,
+              letterSpacing: '0.14em',
+              color: 'oklch(0.58 0.165 148)',
+              textTransform: 'uppercase',
+              marginBottom: '16px',
             }}
           >
-            {/* Corner tech-mark decorations */}
-            {(['tl', 'tr', 'bl', 'br'] as const).map((pos) => (
-              <span
-                key={pos}
-                aria-hidden
-                style={{
-                  position: 'absolute',
-                  width: '12px',
-                  height: '12px',
-                  borderColor: 'oklch(0.38 0.060 148)',
-                  borderStyle: 'solid',
-                  borderWidth: pos.includes('t') ? '1px 0 0 1px' : '0 1px 1px 0',
-                  top: pos.includes('t') ? '12px' : undefined,
-                  bottom: pos.includes('b') ? '12px' : undefined,
-                  left: pos.includes('l') ? '12px' : undefined,
-                  right: pos.includes('r') ? '12px' : undefined,
-                  borderTopRightRadius: pos === 'tr' ? '0' : undefined,
-                  borderBottomLeftRadius: pos === 'bl' ? '0' : undefined,
-                  opacity: 0.6,
-                }}
-              />
-            ))}
-            <DigitalHeartEcosystem />
-          </div>
+            Ecossistema Argho
+          </p>
+          <h2
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+              fontWeight: 700,
+              letterSpacing: '-0.04em',
+              lineHeight: 1.08,
+              color: 'oklch(0.96 0.004 148)',
+              marginBottom: '16px',
+            }}
+          >
+            Tecnologia que compreende
+            <br />
+            <span style={{ color: 'oklch(0.73 0.135 78)' }}>a vida do solo</span>
+          </h2>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '0.9375rem',
+              color: 'oklch(0.60 0.022 148)',
+              lineHeight: 1.65,
+              maxWidth: '540px',
+              margin: '0 auto',
+            }}
+          >
+            Inteligência artificial fundida com fisiologia vegetal, biologia do solo e química de
+            precisão — tudo interligado como um ecossistema vivo.
+          </p>
         </div>
+
+        {/* The living heart — full width, no constraining box */}
+        <DigitalHeartEcosystem />
       </section>
 
       {/* ──────────── PORTFÓLIO COMPLETO ──────────────────────────────────── */}

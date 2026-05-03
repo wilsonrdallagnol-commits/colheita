@@ -1,4 +1,5 @@
 // apps/website/src/components/nav.tsx
+import Image from 'next/image';
 import Link from 'next/link';
 
 export function Nav() {
@@ -27,33 +28,18 @@ export function Nav() {
         style={{
           textDecoration: 'none',
           display: 'flex',
-          alignItems: 'baseline',
-          gap: '8px',
+          alignItems: 'center',
+          height: '40px',
         }}
       >
-        <span
-          style={{
-            fontFamily: '"Geist", "Inter", system-ui, sans-serif',
-            fontSize: '1rem',
-            fontWeight: 700,
-            letterSpacing: '-0.03em',
-            color: 'oklch(0.96 0.004 148)',
-          }}
-        >
-          ARGHO
-        </span>
-        <span
-          style={{
-            fontFamily: '"Geist", "Inter", system-ui, sans-serif',
-            fontSize: '0.625rem',
-            fontWeight: 500,
-            letterSpacing: '0.14em',
-            color: 'oklch(0.52 0.018 148)',
-            textTransform: 'uppercase',
-          }}
-        >
-          AGROSCIENCES
-        </span>
+        <Image
+          src="/argho-logo-white.png"
+          alt="Argho Agrosciences"
+          width={148}
+          height={40}
+          style={{ objectFit: 'contain', objectPosition: 'left center' }}
+          priority
+        />
       </Link>
 
       {/* Links */}
