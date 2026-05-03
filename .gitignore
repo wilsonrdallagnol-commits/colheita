@@ -61,3 +61,5 @@ commit_msg.txt
 
 # Vestigial wrapper (to be removed on next session restart)
 colheita-fundacao/
+
+.vercel

@@ -1,6 +1,3 @@
 {
-  "framework": "nextjs",
-  "buildCommand": "cd ../.. && pnpm --filter @colheita/website build",
-  "installCommand": "cd ../.. && pnpm install",
-  "outputDirectory": ".next"
+  "framework": "nextjs"
 }

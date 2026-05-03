@@ -1,0 +1,6 @@
+{
+  "buildCommand": "pnpm --filter @colheita/website build",
+  "installCommand": "pnpm install",
+  "outputDirectory": "apps/website/.next",
+  "framework": "nextjs"
+}
