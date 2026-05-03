@@ -90,6 +90,16 @@
           }
         }
       }
+    },
+    {
+      "includes": ["**/product-visuals.tsx"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useUniqueElementIds": "off"
+          }
+        }
+      }
     }
   ]
 }
