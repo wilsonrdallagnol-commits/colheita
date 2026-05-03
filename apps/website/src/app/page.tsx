@@ -3,6 +3,7 @@
 // Design: Instrumento de Precisão. Dark green profundo. Editorial.
 
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import {
   DigitalHeartEcosystem,
@@ -406,15 +407,38 @@ export default function HomePage() {
                 flexDirection: 'column',
               }}
             >
-              {/* Visual header */}
+              {/* Visual header — NPK chart + bottle mockup side by side */}
               <div
                 style={{
                   padding: '24px 24px 0',
                   backgroundColor: 'oklch(0.085 0.018 148)',
                   borderBottom: '1px solid oklch(0.155 0.018 148)',
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                  gap: '0',
                 }}
               >
-                <StronNpkChart />
+                <div style={{ flex: 1 }}>
+                  <StronNpkChart />
+                </div>
+                <div
+                  style={{
+                    width: '88px',
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    justifyContent: 'center',
+                    paddingBottom: '0',
+                  }}
+                >
+                  <Image
+                    src="/products/stron.png"
+                    alt="Stron 1L"
+                    width={88}
+                    height={120}
+                    style={{ objectFit: 'contain', display: 'block' }}
+                  />
+                </div>
               </div>
 
               {/* Info panel */}

@@ -1,5 +1,6 @@
 // apps/website/src/app/produtos/page.tsx
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { CATEGORIES, PRODUCTS, type ProductCategory } from '@/lib/products';
 
@@ -30,6 +31,19 @@ const CAT_BG: Record<ProductCategory, string> = {
   organominerais: 'oklch(0.14 0.040 195 / 0.40)',
   biologicos: 'oklch(0.14 0.048 150 / 0.40)',
   adjuvantes: 'oklch(0.16 0.038 78 / 0.40)',
+};
+
+// Product mockup image mapping (slug → public image path)
+const PRODUCT_MOCKUP: Record<string, string> = {
+  stron: '/products/stron.png',
+  impuch: '/products/impuch.png',
+  'life-on': '/products/lifeon.png',
+  troian: '/products/troian.png',
+  biovas: '/products/biovas.png',
+  'operate-plus': '/products/operate.png',
+  'operate-citronela': '/products/operate.png',
+  'operate-4em1': '/products/operate.png',
+  'operate-orange': '/products/operate.png',
 };
 
 interface PageProps {
@@ -350,6 +364,7 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
             const nutrients = getNutrientLabels(product);
             const color = CAT_COLORS[product.category];
             const raw = CAT_RAW[product.category];
+            const mockupSrc: string | undefined = PRODUCT_MOCKUP[product.slug];
             return (
               <Link
                 key={product.slug}
@@ -359,16 +374,52 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
                 <div
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '220px 1fr auto',
-                    gap: '0 32px',
+                    gridTemplateColumns: '64px 200px 1fr auto',
+                    gap: '0 24px',
                     alignItems: 'center',
-                    padding: '22px 20px 22px 20px',
+                    padding: '16px 20px',
                     borderTop: i === 0 ? '1px solid oklch(0.14 0.022 148)' : 'none',
                     borderBottom: '1px solid oklch(0.14 0.022 148)',
                     borderLeft: `3px solid ${color}`,
                     transition: 'background-color 0.15s',
                   }}
                 >
+                  {/* Product mockup thumbnail */}
+                  <div
+                    style={{
+                      width: '64px',
+                      height: '64px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '8px',
+                      backgroundColor: mockupSrc ? 'transparent' : 'oklch(0.10 0.018 148)',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {mockupSrc ? (
+                      <Image
+                        src={mockupSrc}
+                        alt={product.name}
+                        width={64}
+                        height={64}
+                        style={{ objectFit: 'contain', objectPosition: 'center' }}
+                      />
+                    ) : (
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '1.25rem',
+                          fontWeight: 700,
+                          color: color,
+                          opacity: 0.35,
+                        }}
+                      >
+                        {product.name.charAt(0)}
+                      </span>
+                    )}
+                  </div>
+
                   {/* Name + category */}
                   <div>
                     <p
