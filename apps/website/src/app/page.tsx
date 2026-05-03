@@ -1,6 +1,6 @@
 // apps/website/src/app/page.tsx
 // Home — Argho Agrosciences
-// Design: Instrumento de Precisão. Dark green profundo. Editorial.
+// Design: Editorial de precisão. Embalagens reais como hero. Plataforma Colheita integrada.
 
 import type { Metadata } from 'next';
 import Image from 'next/image';
@@ -20,8 +20,6 @@ export const metadata: Metadata = {
   title: 'Argho Agrosciences — Nutrição de precisão para o agro brasileiro',
 };
 
-// ─── Category accent color lookup ─────────────────────────────────────────────
-
 const CAT_COLOR: Record<ProductCategory, string> = {
   'fertilizantes-minerais': 'oklch(0.58 0.165 148)',
   organominerais: 'oklch(0.64 0.13 195)',
@@ -38,8 +36,6 @@ const CAT_BG: Record<ProductCategory, string> = {
 
 export default function HomePage() {
   const categoryKeys = Object.keys(CATEGORIES) as ProductCategory[];
-
-  // Group products by category
   const byCategory = categoryKeys.map((cat) => ({
     key: cat,
     ...CATEGORIES[cat],
@@ -52,74 +48,44 @@ export default function HomePage() {
       <section
         style={{
           minHeight: 'calc(100vh - 64px)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          padding: '80px 48px 64px',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          alignItems: 'center',
+          padding: '80px 64px 64px',
           position: 'relative',
           overflow: 'hidden',
+          gap: '40px',
         }}
       >
-        {/* Decorative: diagonal stripe accent */}
+        {/* Background: bio-circuit SVG */}
         <div
           aria-hidden
           style={{
             position: 'absolute',
             top: 0,
             right: 0,
-            width: '40vw',
-            height: '100%',
-            background:
-              'linear-gradient(135deg, transparent 60%, oklch(0.14 0.045 148 / 0.45) 100%)',
-            pointerEvents: 'none',
-          }}
-        />
-        {/* Decorative: bio-circuit background SVG — right side of hero */}
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            width: '55vw',
+            width: '60vw',
             height: '100%',
             pointerEvents: 'none',
-            opacity: 0.35,
+            opacity: 0.22,
           }}
         >
           <HeroBioBackground />
         </div>
-        {/* Hero hand — robotic hand with green vines (Argho identity visual) */}
+
+        {/* Background: radial gradient atmosphere */}
         <div
           aria-hidden
           style={{
             position: 'absolute',
-            bottom: 0,
-            right: '-2vw',
-            width: '54vw',
-            maxWidth: '820px',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'flex-end',
+            inset: 0,
+            background:
+              'radial-gradient(ellipse 80% 80% at 75% 50%, oklch(0.58 0.165 148 / 0.08) 0%, transparent 60%)',
             pointerEvents: 'none',
           }}
-        >
-          <Image
-            src="/hero-hand.png"
-            alt=""
-            width={820}
-            height={820}
-            style={{
-              width: '100%',
-              height: 'auto',
-              objectFit: 'contain',
-              objectPosition: 'bottom right',
-              mixBlendMode: 'screen',
-            }}
-            priority
-          />
-        </div>
-        {/* Decorative: gold vertical rule */}
+        />
+
+        {/* Gold vertical rule */}
         <div
           aria-hidden
           style={{
@@ -129,90 +95,110 @@ export default function HomePage() {
             bottom: '64px',
             width: '2px',
             background:
-              'linear-gradient(to bottom, transparent, oklch(0.73 0.135 78 / 0.5) 30%, oklch(0.73 0.135 78 / 0.5) 70%, transparent)',
+              'linear-gradient(to bottom, transparent, oklch(0.73 0.135 78 / 0.45) 30%, oklch(0.73 0.135 78 / 0.45) 70%, transparent)',
           }}
         />
 
-        {/* Floating element badges — periodic table decorations */}
-        <ElementBadge symbol="Fe" number="26" top="20%" right="27%" size="md" opacity={0.62} />
-        <ElementBadge symbol="Mn" number="25" top="38%" right="13%" size="sm" opacity={0.52} />
-        <ElementBadge symbol="Zn" number="30" top="58%" right="21%" size="md" opacity={0.58} />
-        <ElementBadge symbol="B" number="5" top="15%" right="9%" size="lg" opacity={0.48} />
-        <ElementBadge symbol="K" number="19" bottom="30%" right="32%" size="sm" opacity={0.55} />
-        <ElementBadge symbol="Mo" number="42" top="44%" right="6%" size="sm" opacity={0.45} />
-
-        <div style={{ maxWidth: '1200px', position: 'relative' }}>
-          {/* Eyebrow */}
+        {/* ── Left: Editorial Text ── */}
+        <div style={{ position: 'relative', zIndex: 2 }}>
           <p
             style={{
               fontFamily: 'var(--font-mono)',
-              fontSize: '0.6875rem',
+              fontSize: '0.625rem',
               fontWeight: 500,
-              letterSpacing: '0.12em',
+              letterSpacing: '0.16em',
               color: 'oklch(0.73 0.135 78)',
               textTransform: 'uppercase',
-              marginBottom: '28px',
+              marginBottom: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
             }}
           >
+            <span
+              style={{
+                display: 'inline-block',
+                width: '24px',
+                height: '1px',
+                backgroundColor: 'oklch(0.73 0.135 78 / 0.6)',
+              }}
+            />
             Origem europeia · Registro MAPA · Ciência aplicada ao campo
           </p>
 
-          {/* Main headline */}
           <h1
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(3rem, 7vw, 6.5rem)',
-              fontWeight: 600,
-              letterSpacing: '-0.04em',
-              lineHeight: 1.0,
+              fontSize: 'clamp(3.5rem, 6.5vw, 7rem)',
+              fontWeight: 700,
+              letterSpacing: '-0.05em',
+              lineHeight: 0.92,
               color: 'oklch(0.96 0.004 148)',
-              marginBottom: '12px',
+              marginBottom: '8px',
             }}
           >
-            Nutrição de
+            Nutrição
           </h1>
           <h1
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(3rem, 7vw, 6.5rem)',
-              fontWeight: 600,
-              letterSpacing: '-0.04em',
-              lineHeight: 1.0,
-              color: 'oklch(0.58 0.165 148)',
-              marginBottom: '36px',
+              fontSize: 'clamp(3.5rem, 6.5vw, 7rem)',
+              fontWeight: 700,
+              letterSpacing: '-0.05em',
+              lineHeight: 0.92,
+              color: 'oklch(0.96 0.004 148)',
+              marginBottom: '8px',
             }}
           >
-            precisão.
+            de{' '}
+            <span
+              style={{
+                color: 'oklch(0.58 0.165 148)',
+                WebkitTextStroke: '0px',
+              }}
+            >
+              precisão
+            </span>
+          </h1>
+          <h1
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(3.5rem, 6.5vw, 7rem)',
+              fontWeight: 700,
+              letterSpacing: '-0.05em',
+              lineHeight: 0.92,
+              color: 'oklch(0.73 0.135 78)',
+              marginBottom: '48px',
+            }}
+          >
+            para o campo.
           </h1>
 
-          {/* Subheadline */}
           <p
             style={{
               fontFamily: 'var(--font-body)',
-              fontSize: 'clamp(1rem, 1.5vw, 1.25rem)',
+              fontSize: 'clamp(0.9375rem, 1.3vw, 1.125rem)',
               fontWeight: 400,
-              color: 'oklch(0.62 0.022 148)',
-              lineHeight: 1.6,
-              maxWidth: '520px',
+              color: 'oklch(0.60 0.022 148)',
+              lineHeight: 1.7,
+              maxWidth: '460px',
               marginBottom: '48px',
             }}
           >
             Fertilizantes minerais, organominerais, biológicos e adjuvantes de alta performance —
-            formulados na Europa, registrados pelo MAPA, pensados para o produtor e distribuidor
-            técnico brasileiro.
+            formulados na Europa, registrados pelo MAPA.
           </p>
 
-          {/* CTAs */}
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '72px' }}>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '64px' }}>
             <Link
               href="/produtos"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                padding: '12px 24px',
+                padding: '13px 28px',
                 backgroundColor: 'oklch(0.73 0.135 78)',
-                color: 'oklch(0.10 0 0)',
+                color: 'oklch(0.08 0 0)',
                 fontFamily: 'var(--font-body)',
                 fontSize: '0.9375rem',
                 fontWeight: 600,
@@ -228,15 +214,14 @@ export default function HomePage() {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px',
-                padding: '12px 24px',
+                padding: '13px 24px',
                 backgroundColor: 'transparent',
-                color: 'oklch(0.72 0.025 148)',
+                color: 'oklch(0.68 0.025 148)',
                 fontFamily: 'var(--font-body)',
                 fontSize: '0.9375rem',
                 fontWeight: 400,
                 letterSpacing: '-0.01em',
-                border: '1px solid oklch(0.22 0.025 148)',
+                border: '1px solid oklch(0.20 0.025 148)',
                 borderRadius: '8px',
                 textDecoration: 'none',
               }}
@@ -250,7 +235,7 @@ export default function HomePage() {
             style={{
               display: 'flex',
               gap: '0',
-              borderTop: '1px solid oklch(0.22 0.025 148)',
+              borderTop: '1px solid oklch(0.18 0.022 148)',
               paddingTop: '28px',
             }}
           >
@@ -264,19 +249,19 @@ export default function HomePage() {
                 key={stat.label}
                 style={{
                   flex: 1,
-                  paddingRight: '32px',
-                  borderRight: i < 3 ? '1px solid oklch(0.18 0.020 148)' : 'none',
-                  paddingLeft: i > 0 ? '32px' : '0',
+                  paddingRight: '24px',
+                  borderRight: i < 3 ? '1px solid oklch(0.16 0.018 148)' : 'none',
+                  paddingLeft: i > 0 ? '24px' : '0',
                 }}
               >
                 <p
                   style={{
                     fontFamily: 'var(--font-display)',
-                    fontSize: '1.75rem',
-                    fontWeight: 600,
-                    letterSpacing: '-0.04em',
+                    fontSize: '1.625rem',
+                    fontWeight: 700,
+                    letterSpacing: '-0.045em',
                     color: 'oklch(0.96 0.004 148)',
-                    marginBottom: '2px',
+                    marginBottom: '3px',
                   }}
                 >
                   {stat.value}
@@ -284,15 +269,228 @@ export default function HomePage() {
                 <p
                   style={{
                     fontFamily: 'var(--font-body)',
-                    fontSize: '0.75rem',
-                    color: 'oklch(0.52 0.018 148)',
-                    letterSpacing: '-0.01em',
+                    fontSize: '0.6875rem',
+                    color: 'oklch(0.48 0.016 148)',
+                    letterSpacing: '-0.005em',
                   }}
                 >
                   {stat.label}
                 </p>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* ── Right: Product Cluster ── */}
+        <div
+          style={{
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '520px',
+            zIndex: 2,
+          }}
+        >
+          {/* Atmospheric glow behind products */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '360px',
+              height: '360px',
+              background:
+                'radial-gradient(circle, oklch(0.58 0.165 148 / 0.18) 0%, oklch(0.64 0.13 195 / 0.10) 40%, transparent 70%)',
+              pointerEvents: 'none',
+            }}
+          />
+
+          {/* Element badges floating */}
+          <ElementBadge symbol="Fe" number="26" top="12%" right="8%" size="md" opacity={0.55} />
+          <ElementBadge symbol="Zn" number="30" top="65%" right="4%" size="sm" opacity={0.48} />
+          <ElementBadge symbol="B" number="5" top="22%" right="68%" size="lg" opacity={0.42} />
+          <ElementBadge symbol="K" number="19" bottom="20%" right="72%" size="sm" opacity={0.5} />
+
+          {/* Product cluster — 3 bottles arranged with depth */}
+
+          {/* Back-left: Impuch (teal/organomineral) */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '40px',
+              left: '30px',
+              transform: 'rotate(-8deg) translateY(10px)',
+              zIndex: 1,
+            }}
+          >
+            <div
+              style={{
+                filter:
+                  'drop-shadow(0 24px 60px oklch(0.64 0.13 195 / 0.50)) drop-shadow(0 4px 12px oklch(0.64 0.13 195 / 0.30))',
+                animation: 'float 7.5s ease-in-out infinite',
+                animationDelay: '1.2s',
+              }}
+            >
+              <Image
+                src="/products/impuch.png"
+                alt="Impuch — fertilizante organomineral"
+                width={130}
+                height={190}
+                style={{ objectFit: 'contain', display: 'block' }}
+              />
+            </div>
+            <div
+              style={{
+                textAlign: 'center',
+                marginTop: '8px',
+                padding: '4px 12px',
+                backgroundColor: 'oklch(0.64 0.13 195 / 0.12)',
+                border: '1px solid oklch(0.64 0.13 195 / 0.22)',
+                borderRadius: '4px',
+              }}
+            >
+              <p
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.5625rem',
+                  letterSpacing: '0.10em',
+                  color: 'oklch(0.64 0.13 195)',
+                  textTransform: 'uppercase',
+                }}
+              >
+                Organomineral
+              </p>
+            </div>
+          </div>
+
+          {/* Front-center: Stron (green/fertilizante mineral) — main product */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '20px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 3,
+            }}
+          >
+            <div
+              style={{
+                filter:
+                  'drop-shadow(0 32px 80px oklch(0.58 0.165 148 / 0.60)) drop-shadow(0 8px 20px oklch(0.58 0.165 148 / 0.35))',
+                animation: 'float 6.0s ease-in-out infinite',
+                animationDelay: '0s',
+              }}
+            >
+              <Image
+                src="/products/stron.png"
+                alt="Stron — fertilizante NPK foliar"
+                width={180}
+                height={260}
+                style={{ objectFit: 'contain', display: 'block' }}
+                priority
+              />
+            </div>
+            <div
+              style={{
+                textAlign: 'center',
+                marginTop: '12px',
+                padding: '5px 16px',
+                backgroundColor: 'oklch(0.58 0.165 148 / 0.12)',
+                border: '1px solid oklch(0.58 0.165 148 / 0.28)',
+                borderRadius: '4px',
+              }}
+            >
+              <p
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.5625rem',
+                  letterSpacing: '0.10em',
+                  color: 'oklch(0.58 0.165 148)',
+                  textTransform: 'uppercase',
+                }}
+              >
+                Fertilizante Mineral
+              </p>
+            </div>
+          </div>
+
+          {/* Back-right: Operate (gold/adjuvante) */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '36px',
+              right: '20px',
+              transform: 'rotate(7deg) translateY(8px)',
+              zIndex: 2,
+            }}
+          >
+            <div
+              style={{
+                filter:
+                  'drop-shadow(0 20px 50px oklch(0.73 0.135 78 / 0.45)) drop-shadow(0 4px 10px oklch(0.73 0.135 78 / 0.25))',
+                animation: 'float 5.5s ease-in-out infinite',
+                animationDelay: '2.4s',
+              }}
+            >
+              <Image
+                src="/products/operate.png"
+                alt="Operate — adjuvante espalhante"
+                width={120}
+                height={175}
+                style={{ objectFit: 'contain', display: 'block' }}
+              />
+            </div>
+            <div
+              style={{
+                textAlign: 'center',
+                marginTop: '8px',
+                padding: '4px 12px',
+                backgroundColor: 'oklch(0.73 0.135 78 / 0.10)',
+                border: '1px solid oklch(0.73 0.135 78 / 0.22)',
+                borderRadius: '4px',
+              }}
+            >
+              <p
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.5625rem',
+                  letterSpacing: '0.10em',
+                  color: 'oklch(0.73 0.135 78)',
+                  textTransform: 'uppercase',
+                }}
+              >
+                Adjuvante
+              </p>
+            </div>
+          </div>
+
+          {/* Top product: Lifeon (smaller, floating at top) */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '20px',
+              right: '120px',
+              zIndex: 2,
+            }}
+          >
+            <div
+              style={{
+                filter: 'drop-shadow(0 16px 40px oklch(0.66 0.150 150 / 0.40))',
+                animation: 'float 8.0s ease-in-out infinite',
+                animationDelay: '0.8s',
+              }}
+            >
+              <Image
+                src="/products/lifeon.png"
+                alt="Life On — bioestimulante organomineral"
+                width={90}
+                height={130}
+                style={{ objectFit: 'contain', display: 'block' }}
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -313,10 +511,9 @@ export default function HomePage() {
               gridTemplateColumns: '1fr 2fr auto',
               alignItems: 'center',
               gap: '48px',
-              padding: '28px 48px',
+              padding: '28px 64px',
               borderBottom: '1px solid oklch(0.12 0.016 148)',
               textDecoration: 'none',
-              transition: 'background-color 0.15s',
             }}
           >
             <div>
@@ -355,12 +552,7 @@ export default function HomePage() {
               {cat.description}
             </p>
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '16px',
-                whiteSpace: 'nowrap',
-              }}
+              style={{ display: 'flex', alignItems: 'center', gap: '16px', whiteSpace: 'nowrap' }}
             >
               <span
                 style={{
@@ -391,12 +583,11 @@ export default function HomePage() {
       {/* ──────────── PRODUTOS EM DESTAQUE ────────────────────────────────── */}
       <section
         style={{
-          padding: '80px 48px',
-          maxWidth: '1400px',
+          padding: '80px 64px',
+          maxWidth: '1440px',
           margin: '0 auto',
         }}
       >
-        {/* Section label */}
         <p
           style={{
             fontFamily: 'var(--font-mono)',
@@ -437,7 +628,6 @@ export default function HomePage() {
                 flexDirection: 'column',
               }}
             >
-              {/* Visual header — NPK chart + bottle mockup side by side */}
               <div
                 style={{
                   padding: '24px 24px 0',
@@ -453,25 +643,26 @@ export default function HomePage() {
                 </div>
                 <div
                   style={{
-                    width: '88px',
+                    width: '100px',
                     flexShrink: 0,
                     display: 'flex',
                     alignItems: 'flex-end',
                     justifyContent: 'center',
-                    paddingBottom: '0',
                   }}
                 >
                   <Image
                     src="/products/stron.png"
                     alt="Stron 1L"
-                    width={88}
-                    height={120}
-                    style={{ objectFit: 'contain', display: 'block' }}
+                    width={100}
+                    height={140}
+                    style={{
+                      objectFit: 'contain',
+                      display: 'block',
+                      filter: 'drop-shadow(0 8px 24px oklch(0.58 0.165 148 / 0.40))',
+                    }}
                   />
                 </div>
               </div>
-
-              {/* Info panel */}
               <div
                 style={{
                   padding: '28px',
@@ -507,7 +698,6 @@ export default function HomePage() {
                     Via Foliar
                   </span>
                 </div>
-
                 <h2
                   style={{
                     fontFamily: 'var(--font-display)',
@@ -520,7 +710,6 @@ export default function HomePage() {
                 >
                   Stron
                 </h2>
-
                 <p
                   style={{
                     fontFamily: 'var(--font-body)',
@@ -533,8 +722,6 @@ export default function HomePage() {
                   NPK foliar de alta solubilidade com complexo de aminoácidos e ácidos carboxílicos
                   — máxima absorção foliar em aplicação única.
                 </p>
-
-                {/* Key specs */}
                 <div style={{ display: 'flex', gap: '24px' }}>
                   {[
                     ['N', '4,5%'],
@@ -567,7 +754,6 @@ export default function HomePage() {
                     </div>
                   ))}
                 </div>
-
                 <span
                   style={{
                     display: 'inline-flex',
@@ -608,11 +794,28 @@ export default function HomePage() {
                   padding: '24px 24px 0',
                   backgroundColor: 'oklch(0.085 0.018 148)',
                   borderBottom: '1px solid oklch(0.155 0.018 148)',
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                  gap: '16px',
                 }}
               >
-                <ImpuchSoilViz />
+                <div style={{ flex: 1 }}>
+                  <ImpuchSoilViz />
+                </div>
+                <div style={{ flexShrink: 0, display: 'flex', alignItems: 'flex-end' }}>
+                  <Image
+                    src="/products/impuch.png"
+                    alt="Impuch 1L"
+                    width={100}
+                    height={140}
+                    style={{
+                      objectFit: 'contain',
+                      display: 'block',
+                      filter: 'drop-shadow(0 8px 24px oklch(0.64 0.13 195 / 0.40))',
+                    }}
+                  />
+                </div>
               </div>
-
               <div
                 style={{
                   padding: '28px',
@@ -648,7 +851,6 @@ export default function HomePage() {
                     Fertirrigação · Solo
                   </span>
                 </div>
-
                 <h2
                   style={{
                     fontFamily: 'var(--font-display)',
@@ -661,7 +863,6 @@ export default function HomePage() {
                 >
                   Impuch
                 </h2>
-
                 <p
                   style={{
                     fontFamily: 'var(--font-body)',
@@ -674,7 +875,6 @@ export default function HomePage() {
                   Organomineral de solo com vinhaça concentrada, ácidos húmicos e fúlvicos —
                   melhoria estrutural e estímulo biológico para o sistema radicular.
                 </p>
-
                 <div style={{ display: 'flex', gap: '24px' }}>
                   {[
                     ['M.O.', '8,0%'],
@@ -707,7 +907,6 @@ export default function HomePage() {
                     </div>
                   ))}
                 </div>
-
                 <span
                   style={{
                     display: 'inline-flex',
@@ -737,7 +936,6 @@ export default function HomePage() {
             overflow: 'hidden',
           }}
         >
-          {/* Header row */}
           <div
             style={{
               display: 'grid',
@@ -802,7 +1000,6 @@ export default function HomePage() {
                 antideriva — para potencializar qualquer calda agrícola.
               </p>
             </div>
-
             <Link
               href="/produtos?categoria=adjuvantes"
               style={{
@@ -823,24 +1020,21 @@ export default function HomePage() {
               Ver linha completa →
             </Link>
           </div>
-
-          {/* SVG grid */}
           <OperateLineGrid />
         </div>
       </section>
 
-      {/* ──────────── PRODUTO EM FOCO — IMPUCH (Mockup 3D) ─────────────── */}
+      {/* ──────────── PRODUTO EM FOCO — IMPUCH ─────────────────────────────── */}
       <section
         style={{
           borderTop: '1px solid oklch(0.155 0.018 148)',
-          padding: '80px 48px',
+          padding: '80px 64px',
           background:
             'linear-gradient(180deg, oklch(0.07 0.018 148) 0%, oklch(0.095 0.030 148 / 0.50) 50%, oklch(0.07 0.018 148) 100%)',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
-        {/* Atmospheric orb */}
         <div
           aria-hidden
           style={{
@@ -854,9 +1048,7 @@ export default function HomePage() {
             pointerEvents: 'none',
           }}
         />
-
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          {/* Header */}
           <div
             style={{
               display: 'flex',
@@ -923,7 +1115,6 @@ export default function HomePage() {
               alignItems: 'end',
             }}
           >
-            {/* Main hero mockup */}
             <div
               style={{
                 backgroundColor: 'oklch(0.10 0.025 195)',
@@ -937,7 +1128,6 @@ export default function HomePage() {
                 position: 'relative',
               }}
             >
-              {/* Glow behind product */}
               <div
                 aria-hidden
                 style={{
@@ -963,7 +1153,7 @@ export default function HomePage() {
                   objectFit: 'contain',
                   position: 'relative',
                   zIndex: 1,
-                  filter: 'drop-shadow(0 12px 40px oklch(0.64 0.13 195 / 0.40))',
+                  filter: 'drop-shadow(0 12px 40px oklch(0.64 0.13 195 / 0.45))',
                   animation: 'float 6s ease-in-out infinite',
                 }}
               />
@@ -991,7 +1181,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* 1L variant */}
             {[
               { src: '/products/impuch-1.png', label: 'Impuch 1L', sub: 'Fertirrigação' },
               { src: '/products/impuch-5l.png', label: 'Impuch 5L', sub: 'Granel técnico' },
@@ -1036,7 +1225,7 @@ export default function HomePage() {
                     objectFit: 'contain',
                     position: 'relative',
                     zIndex: 1,
-                    filter: 'drop-shadow(0 8px 24px oklch(0.64 0.13 195 / 0.32))',
+                    filter: 'drop-shadow(0 8px 24px oklch(0.64 0.13 195 / 0.35))',
                     animation: 'float 7s ease-in-out infinite',
                     animationDelay: '0.8s',
                   }}
@@ -1084,7 +1273,6 @@ export default function HomePage() {
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(5, 1fr)',
-              gap: '0',
               marginTop: '40px',
               border: '1px solid oklch(0.64 0.13 195 / 0.22)',
               borderRadius: '10px',
@@ -1159,7 +1347,6 @@ export default function HomePage() {
           overflow: 'hidden',
         }}
       >
-        {/* Scan-line decorative top */}
         <div
           aria-hidden
           style={{
@@ -1172,9 +1359,7 @@ export default function HomePage() {
               'linear-gradient(90deg, transparent 0%, oklch(0.58 0.165 148 / 0.4) 30%, oklch(0.73 0.135 78 / 0.6) 50%, oklch(0.58 0.165 148 / 0.4) 70%, transparent 100%)',
           }}
         />
-
-        {/* Section header */}
-        <div style={{ marginBottom: '52px', textAlign: 'center', padding: '0 48px' }}>
+        <div style={{ marginBottom: '52px', textAlign: 'center', padding: '0 64px' }}>
           <p
             style={{
               fontFamily: 'var(--font-mono)',
@@ -1217,8 +1402,6 @@ export default function HomePage() {
             precisão — tudo interligado como um ecossistema vivo.
           </p>
         </div>
-
-        {/* The living heart — full width, no constraining box */}
         <DigitalHeartEcosystem />
       </section>
 
@@ -1227,12 +1410,11 @@ export default function HomePage() {
         style={{
           backgroundColor: 'oklch(0.06 0.016 148)',
           borderTop: '1px solid oklch(0.155 0.018 148)',
-          padding: '80px 48px',
+          padding: '80px 64px',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
-        {/* Decorative: product line concept — faint atmospheric overlay */}
         <div
           aria-hidden
           style={{
@@ -1285,8 +1467,6 @@ export default function HomePage() {
               Ver todos com filtros →
             </Link>
           </div>
-
-          {/* Products: catalog strip list */}
           <div>
             {PRODUCTS.map((product, i) => (
               <Link
@@ -1304,7 +1484,6 @@ export default function HomePage() {
                   borderLeft: `3px solid ${CAT_COLOR[product.category]}`,
                   paddingLeft: '20px',
                   marginLeft: '-20px',
-                  transition: 'background-color 0.1s',
                 }}
               >
                 <div>
@@ -1380,7 +1559,7 @@ export default function HomePage() {
       {/* ──────────── FILOSOFIA ──────────────────────────────────────────── */}
       <section
         style={{
-          padding: '100px 48px',
+          padding: '100px 64px',
           maxWidth: '1200px',
           margin: '0 auto',
           display: 'grid',
@@ -1391,7 +1570,6 @@ export default function HomePage() {
           overflow: 'hidden',
         }}
       >
-        {/* Decorative leaf — organic life motif */}
         <div
           aria-hidden
           style={{
@@ -1486,10 +1664,306 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ──────────── PLATAFORMA COLHEITA ────────────────────────────────── */}
+      <section
+        style={{
+          padding: '0 64px 80px',
+          position: 'relative',
+        }}
+      >
+        <div
+          style={{
+            position: 'relative',
+            borderRadius: '20px',
+            overflow: 'hidden',
+            background: 'oklch(0.05 0.012 148)',
+            border: '1px solid oklch(0.73 0.135 78 / 0.25)',
+          }}
+        >
+          {/* Gold shimmer top border */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '2px',
+              background:
+                'linear-gradient(90deg, transparent 0%, oklch(0.73 0.135 78 / 0.6) 25%, oklch(0.73 0.135 78) 50%, oklch(0.73 0.135 78 / 0.6) 75%, transparent 100%)',
+            }}
+          />
+
+          {/* Atmospheric glow */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background:
+                'radial-gradient(ellipse 60% 80% at 80% 50%, oklch(0.73 0.135 78 / 0.06) 0%, transparent 60%)',
+              pointerEvents: 'none',
+            }}
+          />
+
+          {/* Circuit pattern overlay */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: '50%',
+              height: '100%',
+              opacity: 0.04,
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M10 30 H50 M30 10 V50 M10 10 L20 10 L20 20 M40 10 L50 10 L50 20 M10 50 L20 50 L20 40 M40 50 L50 50 L50 40' stroke='%23a8d5a2' stroke-width='0.5' fill='none'/%3E%3C/svg%3E")`,
+              pointerEvents: 'none',
+            }}
+          />
+
+          <div
+            style={{
+              position: 'relative',
+              display: 'grid',
+              gridTemplateColumns: '1fr auto',
+              alignItems: 'center',
+              gap: '48px',
+              padding: '64px 64px',
+            }}
+          >
+            {/* Left: Content */}
+            <div>
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}
+              >
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '4px 12px',
+                    border: '1px solid oklch(0.73 0.135 78 / 0.35)',
+                    borderRadius: '20px',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.5625rem',
+                    letterSpacing: '0.14em',
+                    color: 'oklch(0.73 0.135 78)',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      width: '6px',
+                      height: '6px',
+                      borderRadius: '50%',
+                      backgroundColor: 'oklch(0.73 0.135 78)',
+                      animation: 'pulseRing 2.5s ease-out infinite',
+                    }}
+                  />
+                  Área exclusiva · Distribuidores e parceiros
+                </span>
+              </div>
+
+              <h2
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(2rem, 3.5vw, 3rem)',
+                  fontWeight: 700,
+                  letterSpacing: '-0.045em',
+                  lineHeight: 1.0,
+                  color: 'oklch(0.96 0.004 148)',
+                  marginBottom: '8px',
+                }}
+              >
+                Plataforma <span style={{ color: 'oklch(0.73 0.135 78)' }}>Colheita</span>
+              </h2>
+
+              <p
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '1rem',
+                  color: 'oklch(0.60 0.022 148)',
+                  lineHeight: 1.7,
+                  maxWidth: '500px',
+                  marginBottom: '36px',
+                  marginTop: '16px',
+                }}
+              >
+                Gestão agronômica integrada com inteligência artificial — lavouras, recomendações
+                técnicas personalizadas, rastreabilidade e análise de solo em tempo real. O sistema
+                central da Argho para distribuidores técnicos e produtores parceiros.
+              </p>
+
+              {/* Feature bullets */}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '10px',
+                  marginBottom: '40px',
+                }}
+              >
+                {[
+                  'Recomendações de nutrição por IA com base em análise de solo',
+                  'Rastreabilidade completa de produtos e aplicações',
+                  'Dashboard de performance por talhão e safra',
+                  'Integração direta com o portfólio Argho',
+                ].map((feature) => (
+                  <div
+                    key={feature}
+                    style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}
+                  >
+                    <span
+                      style={{
+                        display: 'flex',
+                        width: '16px',
+                        height: '16px',
+                        borderRadius: '50%',
+                        backgroundColor: 'oklch(0.73 0.135 78 / 0.15)',
+                        border: '1px solid oklch(0.73 0.135 78 / 0.35)',
+                        flexShrink: 0,
+                        marginTop: '2px',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <span
+                        style={{
+                          display: 'block',
+                          width: '6px',
+                          height: '6px',
+                          borderRadius: '50%',
+                          backgroundColor: 'oklch(0.73 0.135 78)',
+                        }}
+                      />
+                    </span>
+                    <p
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '0.875rem',
+                        color: 'oklch(0.65 0.022 148)',
+                        lineHeight: 1.5,
+                        margin: 0,
+                      }}
+                    >
+                      {feature}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <Link
+                href="https://colheita.app.br"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '14px 32px',
+                  backgroundColor: 'oklch(0.73 0.135 78)',
+                  color: 'oklch(0.08 0 0)',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.9375rem',
+                  fontWeight: 700,
+                  letterSpacing: '-0.01em',
+                  borderRadius: '8px',
+                  textDecoration: 'none',
+                }}
+              >
+                Acessar Plataforma →
+              </Link>
+            </div>
+
+            {/* Right: Platform mockup visual */}
+            <div
+              style={{
+                flexShrink: 0,
+                width: '320px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+              }}
+            >
+              {/* Mini dashboard cards */}
+              {[
+                {
+                  label: 'Recomendação ativa',
+                  value: 'Stron + Xcensis',
+                  sub: 'Soja · R3 · 500 g/ha + 400 g/ha',
+                  color: 'oklch(0.58 0.165 148)',
+                  bg: 'oklch(0.14 0.045 148)',
+                },
+                {
+                  label: 'Análise de solo',
+                  value: 'pH 5.8 · CTC 12.4',
+                  sub: 'Talhão Sul · Atualizado hoje',
+                  color: 'oklch(0.64 0.13 195)',
+                  bg: 'oklch(0.12 0.040 195)',
+                },
+                {
+                  label: 'Rastreabilidade',
+                  value: '3 aplicações registradas',
+                  sub: 'Última: 2 dias atrás',
+                  color: 'oklch(0.73 0.135 78)',
+                  bg: 'oklch(0.14 0.038 78)',
+                },
+              ].map((card) => (
+                <div
+                  key={card.label}
+                  style={{
+                    padding: '16px 20px',
+                    backgroundColor: card.bg,
+                    border: `1px solid ${card.color}30`,
+                    borderLeft: `3px solid ${card.color}`,
+                    borderRadius: '10px',
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.5625rem',
+                      letterSpacing: '0.10em',
+                      color: card.color,
+                      textTransform: 'uppercase',
+                      marginBottom: '6px',
+                    }}
+                  >
+                    {card.label}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '0.9375rem',
+                      fontWeight: 600,
+                      letterSpacing: '-0.025em',
+                      color: 'oklch(0.96 0.004 148)',
+                      marginBottom: '3px',
+                    }}
+                  >
+                    {card.value}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.625rem',
+                      color: 'oklch(0.52 0.018 148)',
+                    }}
+                  >
+                    {card.sub}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ──────────── CTA FINAL ──────────────────────────────────────────── */}
       <section
         style={{
-          margin: '0 48px 80px',
+          margin: '0 64px 80px',
           backgroundColor: 'oklch(0.14 0.045 148)',
           border: '1px solid oklch(0.22 0.055 148)',
           borderRadius: '16px',
@@ -1502,7 +1976,6 @@ export default function HomePage() {
           overflow: 'hidden',
         }}
       >
-        {/* Decorative sphere — precision/science motif */}
         <div
           aria-hidden
           style={{
