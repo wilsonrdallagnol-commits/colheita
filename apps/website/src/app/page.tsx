@@ -7,6 +7,7 @@ import Link from 'next/link';
 import {
   DigitalHeartEcosystem,
   ElementBadge,
+  HeroBioBackground,
   ImpuchSoilViz,
   OperateLineGrid,
   StronNpkChart,
@@ -72,6 +73,21 @@ export default function HomePage() {
             pointerEvents: 'none',
           }}
         />
+        {/* Decorative: bio-circuit background SVG — right side of hero */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: '55vw',
+            height: '100%',
+            pointerEvents: 'none',
+            opacity: 0.72,
+          }}
+        >
+          <HeroBioBackground />
+        </div>
         {/* Decorative: gold vertical rule */}
         <div
           aria-hidden
@@ -87,12 +103,12 @@ export default function HomePage() {
         />
 
         {/* Floating element badges — periodic table decorations */}
-        <ElementBadge symbol="Fe" number="26" top="20%" right="27%" size="md" opacity={0.28} />
-        <ElementBadge symbol="Mn" number="25" top="38%" right="13%" size="sm" opacity={0.2} />
-        <ElementBadge symbol="Zn" number="30" top="58%" right="21%" size="md" opacity={0.24} />
-        <ElementBadge symbol="B" number="5" top="15%" right="9%" size="lg" opacity={0.16} />
-        <ElementBadge symbol="K" number="19" bottom="30%" right="32%" size="sm" opacity={0.22} />
-        <ElementBadge symbol="Mo" number="42" top="44%" right="6%" size="sm" opacity={0.15} />
+        <ElementBadge symbol="Fe" number="26" top="20%" right="27%" size="md" opacity={0.62} />
+        <ElementBadge symbol="Mn" number="25" top="38%" right="13%" size="sm" opacity={0.52} />
+        <ElementBadge symbol="Zn" number="30" top="58%" right="21%" size="md" opacity={0.58} />
+        <ElementBadge symbol="B" number="5" top="15%" right="9%" size="lg" opacity={0.48} />
+        <ElementBadge symbol="K" number="19" bottom="30%" right="32%" size="sm" opacity={0.55} />
+        <ElementBadge symbol="Mo" number="42" top="44%" right="6%" size="sm" opacity={0.45} />
 
         <div style={{ maxWidth: '1200px', position: 'relative' }}>
           {/* Eyebrow */}
@@ -756,6 +772,321 @@ export default function HomePage() {
 
           {/* SVG grid */}
           <OperateLineGrid />
+        </div>
+      </section>
+
+      {/* ──────────── PRODUTO EM FOCO — IMPUCH (Mockup 3D) ─────────────── */}
+      <section
+        style={{
+          borderTop: '1px solid oklch(0.155 0.018 148)',
+          padding: '80px 48px',
+          background:
+            'linear-gradient(180deg, oklch(0.07 0.018 148) 0%, oklch(0.095 0.030 148 / 0.50) 50%, oklch(0.07 0.018 148) 100%)',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Atmospheric orb */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: '10%',
+            right: '5%',
+            width: '45vw',
+            height: '80%',
+            background:
+              'radial-gradient(ellipse 70% 65% at 60% 40%, oklch(0.64 0.13 195 / 0.12) 0%, transparent 65%)',
+            pointerEvents: 'none',
+          }}
+        />
+
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          {/* Header */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'baseline',
+              marginBottom: '52px',
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.6875rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.14em',
+                  color: 'oklch(0.64 0.13 195)',
+                  textTransform: 'uppercase',
+                  marginBottom: '12px',
+                }}
+              >
+                Linha Organomineral
+              </p>
+              <h2
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(2rem, 4vw, 3rem)',
+                  fontWeight: 700,
+                  letterSpacing: '-0.04em',
+                  lineHeight: 1.05,
+                  color: 'oklch(0.96 0.004 148)',
+                }}
+              >
+                Impuch —{' '}
+                <span style={{ color: 'oklch(0.64 0.13 195)' }}>vinhaça + húmus + solo vivo</span>
+              </h2>
+            </div>
+            <a
+              href="/produtos/impuch"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 20px',
+                whiteSpace: 'nowrap',
+                border: '1px solid oklch(0.64 0.13 195 / 0.45)',
+                color: 'oklch(0.64 0.13 195)',
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                borderRadius: '6px',
+                textDecoration: 'none',
+              }}
+            >
+              Ficha técnica →
+            </a>
+          </div>
+
+          {/* Mockup showcase grid */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1.2fr 0.8fr 0.8fr 0.8fr',
+              gap: '20px',
+              alignItems: 'end',
+            }}
+          >
+            {/* Main hero mockup */}
+            <div
+              style={{
+                backgroundColor: 'oklch(0.10 0.025 195)',
+                border: '1px solid oklch(0.64 0.13 195 / 0.35)',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: '32px 24px 0',
+                position: 'relative',
+              }}
+            >
+              {/* Glow behind product */}
+              <div
+                aria-hidden
+                style={{
+                  position: 'absolute',
+                  top: '20%',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '200px',
+                  height: '200px',
+                  background:
+                    'radial-gradient(circle, oklch(0.64 0.13 195 / 0.25) 0%, transparent 70%)',
+                  pointerEvents: 'none',
+                }}
+              />
+              <img
+                src="/products/impuch.png"
+                alt="Impuch — fertilizante organomineral líquido 1L"
+                style={{
+                  width: '100%',
+                  maxWidth: '220px',
+                  objectFit: 'contain',
+                  position: 'relative',
+                  zIndex: 1,
+                  filter: 'drop-shadow(0 12px 40px oklch(0.64 0.13 195 / 0.40))',
+                  animation: 'float 6s ease-in-out infinite',
+                }}
+                className="float-1"
+              />
+              <div
+                style={{
+                  width: '100%',
+                  paddingTop: '20px',
+                  paddingBottom: '20px',
+                  borderTop: '1px solid oklch(0.64 0.13 195 / 0.20)',
+                  marginTop: '12px',
+                  textAlign: 'center',
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.625rem',
+                    letterSpacing: '0.10em',
+                    color: 'oklch(0.64 0.13 195)',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Linha base · 1L
+                </p>
+              </div>
+            </div>
+
+            {/* 1L variant */}
+            {[
+              { src: '/products/impuch-1.png', label: 'Impuch 1L', sub: 'Fertirrigação' },
+              { src: '/products/impuch-5l.png', label: 'Impuch 5L', sub: 'Granel técnico' },
+              { src: '/products/impuch-20l.png', label: 'Impuch 20L', sub: 'Aplicação ampla' },
+            ].map((item) => (
+              <div
+                key={item.src}
+                style={{
+                  backgroundColor: 'oklch(0.09 0.022 195)',
+                  border: '1px solid oklch(0.64 0.13 195 / 0.22)',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  padding: '24px 16px 0',
+                  position: 'relative',
+                }}
+              >
+                <div
+                  aria-hidden
+                  style={{
+                    position: 'absolute',
+                    top: '15%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '120px',
+                    height: '120px',
+                    background:
+                      'radial-gradient(circle, oklch(0.64 0.13 195 / 0.15) 0%, transparent 70%)',
+                    pointerEvents: 'none',
+                  }}
+                />
+                <img
+                  src={item.src}
+                  alt={item.label}
+                  style={{
+                    width: '100%',
+                    maxWidth: '150px',
+                    objectFit: 'contain',
+                    position: 'relative',
+                    zIndex: 1,
+                    filter: 'drop-shadow(0 8px 24px oklch(0.64 0.13 195 / 0.32))',
+                    animation: 'float 7s ease-in-out infinite',
+                    animationDelay: '0.8s',
+                  }}
+                />
+                <div
+                  style={{
+                    width: '100%',
+                    paddingTop: '16px',
+                    paddingBottom: '16px',
+                    borderTop: '1px solid oklch(0.64 0.13 195 / 0.15)',
+                    marginTop: '12px',
+                    textAlign: 'center',
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '0.8125rem',
+                      fontWeight: 600,
+                      letterSpacing: '-0.02em',
+                      color: 'oklch(0.86 0.012 148)',
+                      marginBottom: '2px',
+                    }}
+                  >
+                    {item.label}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.5875rem',
+                      color: 'oklch(0.64 0.13 195)',
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {item.sub}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Key specs strip */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(5, 1fr)',
+              gap: '0',
+              marginTop: '40px',
+              border: '1px solid oklch(0.64 0.13 195 / 0.22)',
+              borderRadius: '10px',
+              overflow: 'hidden',
+            }}
+          >
+            {[
+              { k: 'M.O.', v: '8,0%', label: 'Matéria Orgânica' },
+              { k: 'Húm.', v: '2,0%', label: 'Ác. Húmicos' },
+              { k: 'Fúlv.', v: '1,2%', label: 'Ác. Fúlvicos' },
+              { k: 'K₂O', v: '2,5%', label: 'Potássio' },
+              { k: 'pH', v: '7,8', label: 'Neutro' },
+            ].map((s, i) => (
+              <div
+                key={s.k}
+                style={{
+                  padding: '20px 24px',
+                  borderLeft: i > 0 ? '1px solid oklch(0.64 0.13 195 / 0.18)' : 'none',
+                  backgroundColor: 'oklch(0.09 0.022 195)',
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.5625rem',
+                    color: 'oklch(0.48 0.018 148)',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    marginBottom: '6px',
+                  }}
+                >
+                  {s.label}
+                </p>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '1.5rem',
+                    fontWeight: 700,
+                    letterSpacing: '-0.04em',
+                    color: 'oklch(0.64 0.13 195)',
+                    lineHeight: 1,
+                    marginBottom: '2px',
+                  }}
+                >
+                  {s.v}
+                </p>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.5875rem',
+                    color: 'oklch(0.40 0.014 148)',
+                    letterSpacing: '0.04em',
+                  }}
+                >
+                  {s.k}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
