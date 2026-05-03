@@ -198,6 +198,7 @@ export default function Home() {
               width={220}
               height={300}
               style={{ objectFit: 'contain', display: 'block' }}
+              priority
             />
           </div>
 
@@ -230,10 +231,10 @@ export default function Home() {
               position: 'absolute',
               bottom: 0,
               left: '50%',
-              transform: 'translateX(70px) scale(0.72) rotate(6deg)',
+              transform: 'translateX(60px) scale(0.72) rotate(6deg)',
               transformOrigin: 'bottom center',
               filter: 'drop-shadow(0 30px 50px oklch(0.64 0.13 195 / 0.3)) brightness(0.88)',
-              zIndex: 1,
+              zIndex: 2,
               opacity: 0.85,
             }}
           >
@@ -243,6 +244,7 @@ export default function Home() {
               width={220}
               height={300}
               style={{ objectFit: 'contain', display: 'block' }}
+              priority
             />
           </div>
         </div>
