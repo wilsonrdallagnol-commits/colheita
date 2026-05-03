@@ -1228,8 +1228,32 @@ export default function HomePage() {
           backgroundColor: 'oklch(0.06 0.016 148)',
           borderTop: '1px solid oklch(0.155 0.018 148)',
           padding: '80px 48px',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
+        {/* Decorative: product line concept — faint atmospheric overlay */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            right: '-80px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: '520px',
+            pointerEvents: 'none',
+            opacity: 0.06,
+            mixBlendMode: 'screen',
+          }}
+        >
+          <Image
+            src="/argho-line-concept.png"
+            alt=""
+            width={520}
+            height={400}
+            style={{ width: '100%', height: 'auto' }}
+          />
+        </div>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div
             style={{
