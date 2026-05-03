@@ -1,5 +1,6 @@
 // apps/website/src/app/produtos/[slug]/page.tsx
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CATEGORIES, getProductBySlug, PRODUCTS, type ProductCategory } from '@/lib/products';
@@ -35,6 +36,23 @@ const APP_MODE_LABELS: Record<string, string> = {
 // Max scale for composition bars per type
 const MAX_SCALE = { macro: 40, micro: 10, other: 10 };
 
+// Product mockup images mapping
+const PRODUCT_MOCKUP: Record<string, string> = {
+  stron: '/products/stron.png',
+  impuch: '/products/impuch.png',
+  'life-on': '/products/lifeon.png',
+  troian: '/products/troian.png',
+  biovas: '/products/biovas.png',
+  'operate-plus': '/products/operate.png',
+  'operate-citronela': '/products/operate.png',
+  'operate-4em1': '/products/operate.png',
+  'operate-orange': '/products/operate.png',
+  bovex: '/products/bovex.png',
+  nemax: '/products/nemax.png',
+  'n-import': '/products/n-import.png',
+  titan: '/products/titan.png',
+};
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
@@ -62,6 +80,7 @@ export default async function ProductPage({ params }: PageProps) {
   const catRaw = CAT_RAW[product.category];
   const catBg = CAT_BG[product.category];
   const catLabel = CATEGORIES[product.category].label;
+  const mockupSrc: string | undefined = PRODUCT_MOCKUP[product.slug];
 
   // Composition rows with bar gauge data
   const compRows: {
@@ -195,6 +214,36 @@ export default async function ProductPage({ params }: PageProps) {
             pointerEvents: 'none',
           }}
         />
+        {/* Product mockup — floating right-center */}
+        {mockupSrc && (
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              right: '440px',
+              bottom: 0,
+              width: '220px',
+              display: 'flex',
+              alignItems: 'flex-end',
+              pointerEvents: 'none',
+            }}
+          >
+            <Image
+              src={mockupSrc}
+              alt=""
+              width={220}
+              height={300}
+              style={{
+                width: '100%',
+                height: 'auto',
+                objectFit: 'contain',
+                objectPosition: 'bottom center',
+                filter: `drop-shadow(0 16px 48px ${catRaw.replace(')', ' / 0.45)')})`,
+              }}
+              priority
+            />
+          </div>
+        )}
 
         <div
           style={{

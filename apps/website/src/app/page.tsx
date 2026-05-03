@@ -84,10 +84,40 @@ export default function HomePage() {
             width: '55vw',
             height: '100%',
             pointerEvents: 'none',
-            opacity: 0.72,
+            opacity: 0.35,
           }}
         >
           <HeroBioBackground />
+        </div>
+        {/* Hero hand — robotic hand with green vines (Argho identity visual) */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            right: '-2vw',
+            width: '54vw',
+            maxWidth: '820px',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'flex-end',
+            pointerEvents: 'none',
+          }}
+        >
+          <Image
+            src="/hero-hand.png"
+            alt=""
+            width={820}
+            height={820}
+            style={{
+              width: '100%',
+              height: 'auto',
+              objectFit: 'contain',
+              objectPosition: 'bottom right',
+              mixBlendMode: 'screen',
+            }}
+            priority
+          />
         </div>
         {/* Decorative: gold vertical rule */}
         <div
@@ -922,9 +952,11 @@ export default function HomePage() {
                   pointerEvents: 'none',
                 }}
               />
-              <img
+              <Image
                 src="/products/impuch.png"
                 alt="Impuch — fertilizante organomineral líquido 1L"
+                width={220}
+                height={280}
                 style={{
                   width: '100%',
                   maxWidth: '220px',
@@ -934,7 +966,6 @@ export default function HomePage() {
                   filter: 'drop-shadow(0 12px 40px oklch(0.64 0.13 195 / 0.40))',
                   animation: 'float 6s ease-in-out infinite',
                 }}
-                className="float-1"
               />
               <div
                 style={{
@@ -994,9 +1025,11 @@ export default function HomePage() {
                     pointerEvents: 'none',
                   }}
                 />
-                <img
+                <Image
                   src={item.src}
                   alt={item.label}
+                  width={150}
+                  height={150}
                   style={{
                     width: '100%',
                     maxWidth: '150px',
@@ -1330,8 +1363,31 @@ export default function HomePage() {
           gridTemplateColumns: '1fr 1fr',
           gap: '80px',
           alignItems: 'center',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
+        {/* Decorative leaf — organic life motif */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            right: '-60px',
+            bottom: '-80px',
+            width: '320px',
+            pointerEvents: 'none',
+            opacity: 0.18,
+            mixBlendMode: 'screen',
+          }}
+        >
+          <Image
+            src="/argho-folha.png"
+            alt=""
+            width={320}
+            height={320}
+            style={{ width: '100%', height: 'auto' }}
+          />
+        </div>
         <div>
           <p
             style={{
@@ -1418,8 +1474,32 @@ export default function HomePage() {
           justifyContent: 'space-between',
           alignItems: 'center',
           gap: '40px',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
+        {/* Decorative sphere — precision/science motif */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            right: '120px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: '200px',
+            pointerEvents: 'none',
+            opacity: 0.12,
+            mixBlendMode: 'screen',
+          }}
+        >
+          <Image
+            src="/argho-ball.png"
+            alt=""
+            width={200}
+            height={200}
+            style={{ width: '100%', height: 'auto' }}
+          />
+        </div>
         <div>
           <h2
             style={{

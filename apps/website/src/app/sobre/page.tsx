@@ -1,5 +1,6 @@
 // apps/website/src/app/sobre/page.tsx
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -86,6 +87,28 @@ export default function SobrePage() {
             pointerEvents: 'none',
           }}
         />
+        {/* Decorative leaf — organic identity */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: '-40px',
+            right: '-60px',
+            width: '380px',
+            pointerEvents: 'none',
+            opacity: 0.13,
+            mixBlendMode: 'screen',
+            transform: 'rotate(-15deg)',
+          }}
+        >
+          <Image
+            src="/argho-folha.png"
+            alt=""
+            width={380}
+            height={380}
+            style={{ width: '100%', height: 'auto' }}
+          />
+        </div>
 
         <div
           style={{
