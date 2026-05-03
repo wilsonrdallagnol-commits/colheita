@@ -51,6 +51,10 @@ infra/supabase/.temp
 
 # Claude Code session storage
 .claude-handoff/
+.claude/
+
+# Temp files
+commit_msg.txt
 
 # Git worktrees
 .worktrees/
