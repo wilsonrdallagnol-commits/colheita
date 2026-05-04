@@ -17,6 +17,13 @@
   --bg-soft:         #f5f5f3;
   --bg-mist:         #f8f8f6;
 
+  /* Surface aliases (semânticos) */
+  --surface:           var(--bg-soft);
+  --surface-warm:      var(--bg-warm);
+  --surface-mist:      var(--bg-mist);
+  --surface-elevated:  var(--bg);
+  --surface-deep:      #f1f1ed;
+
   /* Borders */
   --border:          #e8e8e3;
   --border-subtle:   #f0f0eb;
@@ -58,10 +65,28 @@
   --teal-soft:       oklch(0.93 0.035 195);
 
   /* Category accent colors — alinhado com identidade */
-  --cat-mineral:     var(--argho-green);   /* fertilizantes minerais = verde */
-  --cat-organo:      var(--argho-blue);    /* organominerais = azul */
-  --cat-bio:         oklch(0.55 0.150 145);/* biológicos = verde alternativo */
-  --cat-adj:         oklch(0.62 0.130 78); /* adjuvantes = ouro (acento) */
+  --cat-mineral:       var(--argho-green);     /* fertilizantes minerais = verde */
+  --cat-organo:        var(--argho-blue);      /* organominerais = azul */
+  --cat-bio:           oklch(0.55 0.150 145);  /* biológicos = verde alternativo */
+  --cat-adj:           oklch(0.62 0.130 78);   /* adjuvantes = ouro (acento) */
+
+  /* Soft tints derivadas — backgrounds light por categoria */
+  --cat-mineral-soft:  oklch(0.96 0.030 138.8);
+  --cat-organo-soft:   oklch(0.96 0.025 266.7);
+  --cat-bio-soft:      oklch(0.96 0.028 145);
+  --cat-adj-soft:      oklch(0.96 0.030 78);
+
+  /* Borders categóricas (linha sutil) */
+  --cat-mineral-line:  oklch(0.86 0.075 138.8);
+  --cat-organo-line:   oklch(0.86 0.060 266.7);
+  --cat-bio-line:      oklch(0.86 0.070 145);
+  --cat-adj-line:      oklch(0.86 0.080 78);
+
+  /* Glows reutilizáveis */
+  --shadow-blue-glow:    0 8px 24px -8px oklch(0.362 0.160 266.7 / 0.35);
+  --shadow-blue-glow-lg: 0 16px 48px -12px oklch(0.362 0.160 266.7 / 0.30);
+  --shadow-green-glow:   0 8px 24px -8px oklch(0.586 0.150 138.8 / 0.30);
+  --shadow-card:         0 1px 2px oklch(0 0 0 / 0.04), 0 4px 16px -8px oklch(0 0 0 / 0.06);
 
   /* Typography — editorial display + clean sans */
   --font-display: "Geist", "Inter Display", -apple-system, system-ui, sans-serif;
