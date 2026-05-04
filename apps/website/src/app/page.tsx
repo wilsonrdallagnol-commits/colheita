@@ -710,7 +710,7 @@ export default function Home() {
               planta.
             </p>
 
-            {/* Grid 2x2 de scans */}
+            {/* Grid 2x2 de leituras (light-first, instrumentos científicos legíveis) */}
             <div
               style={{
                 display: 'grid',
@@ -722,84 +722,74 @@ export default function Home() {
               {[
                 {
                   label: 'Temperatura',
-                  unit: 'Δ baseline',
-                  metric: '+0.8°C',
+                  unit: 'Δ vs baseline',
+                  metric: '+0.8',
+                  metricUnit: '°C',
                   hint: 'Termografia infravermelha',
-                  hue: 30,
-                  color: 'oklch(0.62 0.200 30)',
-                  bg: 'oklch(0.16 0.110 30)',
-                  hot: 'oklch(0.72 0.230 30)',
-                  mid: 'oklch(0.55 0.190 30)',
-                  cold: 'oklch(0.30 0.140 30)',
+                  fill: 65, // % do bar
+                  accent: 'var(--argho-green)',
+                  accentRaw: 'oklch(0.586 0.150 138.8)',
                 },
                 {
                   label: 'Fotossíntese',
-                  unit: 'PSII · Φ',
+                  unit: 'PSII · rendimento',
                   metric: '0.78',
+                  metricUnit: 'Φ',
                   hint: 'Fluorescência de clorofila',
-                  hue: 60,
-                  color: 'oklch(0.70 0.180 60)',
-                  bg: 'oklch(0.16 0.110 60)',
-                  hot: 'oklch(0.78 0.220 60)',
-                  mid: 'oklch(0.60 0.190 60)',
-                  cold: 'oklch(0.32 0.140 60)',
+                  fill: 78,
+                  accent: 'var(--argho-blue)',
+                  accentRaw: 'oklch(0.362 0.160 266.7)',
                 },
                 {
                   label: 'NPQ',
-                  unit: 'Quenching',
+                  unit: 'Quenching não-fotoquímico',
                   metric: '2.4',
+                  metricUnit: '',
                   hint: 'Proteção fotossintética',
-                  hue: 220,
-                  color: 'oklch(0.65 0.150 220)',
-                  bg: 'oklch(0.16 0.110 220)',
-                  hot: 'oklch(0.74 0.190 220)',
-                  mid: 'oklch(0.55 0.170 220)',
-                  cold: 'oklch(0.30 0.130 220)',
+                  fill: 60,
+                  accent: 'var(--argho-blue)',
+                  accentRaw: 'oklch(0.362 0.160 266.7)',
                 },
                 {
                   label: 'Defesa',
-                  unit: 'RFU',
+                  unit: 'Fluorescência relativa',
                   metric: '240',
+                  metricUnit: 'RFU',
                   hint: 'Compostos defensivos',
-                  hue: 145,
-                  color: 'oklch(0.68 0.150 145)',
-                  bg: 'oklch(0.16 0.105 145)',
-                  hot: 'oklch(0.76 0.180 145)',
-                  mid: 'oklch(0.58 0.150 145)',
-                  cold: 'oklch(0.30 0.120 145)',
+                  fill: 80,
+                  accent: 'var(--argho-green)',
+                  accentRaw: 'oklch(0.586 0.150 138.8)',
                 },
               ].map((vec) => (
                 <div
                   key={vec.label}
                   style={{
                     position: 'relative',
-                    aspectRatio: '1 / 1',
+                    backgroundColor: 'var(--bg)',
+                    border: '1px solid var(--border-subtle)',
+                    borderTop: `2px solid ${vec.accent}`,
                     borderRadius: '8px',
-                    background: vec.bg,
-                    border: `1px solid ${vec.color.replace(')', ' / 0.30)')}`,
-                    overflow: 'hidden',
+                    padding: '14px 14px 12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
                   }}
                 >
-                  {/* Header de cada quadro */}
+                  {/* Header */}
                   <div
                     style={{
-                      position: 'absolute',
-                      top: '8px',
-                      left: '10px',
-                      right: '10px',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'baseline',
-                      zIndex: 3,
                     }}
                   >
                     <span
                       className="mono"
                       style={{
-                        fontSize: '0.5625rem',
+                        fontSize: '0.625rem',
                         letterSpacing: '0.14em',
                         textTransform: 'uppercase',
-                        color: 'rgba(255,255,255,0.85)',
+                        color: vec.accent,
                         fontWeight: 700,
                       }}
                     >
@@ -808,90 +798,122 @@ export default function Home() {
                     <span
                       className="mono"
                       style={{
-                        fontSize: '0.5rem',
-                        letterSpacing: '0.06em',
-                        color: 'rgba(255,255,255,0.45)',
+                        fontSize: '0.5625rem',
+                        letterSpacing: '0.04em',
+                        color: 'var(--text-tertiary)',
                       }}
                     >
                       {vec.unit}
                     </span>
                   </div>
 
-                  {/* Folha SVG com heatmap */}
-                  <svg
-                    aria-hidden="true"
-                    role="presentation"
-                    viewBox="0 0 100 100"
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      width: '100%',
-                      height: '100%',
-                    }}
-                  >
-                    <defs>
-                      <radialGradient id={`leafGrad-${vec.hue}`} cx="50%" cy="38%" r="55%">
-                        <stop offset="0%" stopColor={vec.hot} />
-                        <stop offset="40%" stopColor={vec.mid} />
-                        <stop offset="100%" stopColor={vec.cold} />
-                      </radialGradient>
-                    </defs>
-                    {/* Forma de folha (heart-shape inverted) */}
-                    <path
-                      d="M50 88 C 25 88, 12 65, 18 42 C 22 22, 38 12, 50 18 C 62 12, 78 22, 82 42 C 88 65, 75 88, 50 88 Z"
-                      fill={`url(#leafGrad-${vec.hue})`}
-                      opacity="0.95"
-                    />
-                    {/* Veias da folha */}
-                    <path
-                      d="M50 18 L50 88 M50 35 L30 50 M50 35 L70 50 M50 55 L33 68 M50 55 L67 68"
-                      stroke={vec.cold}
-                      strokeWidth="0.6"
-                      fill="none"
-                      opacity="0.55"
-                    />
-                  </svg>
-
-                  {/* Métrica grande inferior */}
+                  {/* Centro: folha SVG verde + métrica grande */}
                   <div
                     style={{
-                      position: 'absolute',
-                      bottom: '8px',
-                      left: '10px',
-                      right: '10px',
                       display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'baseline',
-                      zIndex: 3,
+                      alignItems: 'center',
+                      gap: '10px',
+                      paddingTop: '4px',
                     }}
                   >
+                    {/* Folha clara, literal (verde Argho com veias) */}
+                    <svg
+                      aria-hidden="true"
+                      role="presentation"
+                      viewBox="0 0 60 60"
+                      style={{ width: '40px', height: '40px', flexShrink: 0 }}
+                    >
+                      <path
+                        d="M30 55 C 12 55, 5 38, 8 22 C 11 8, 22 4, 30 8 C 38 4, 49 8, 52 22 C 55 38, 48 55, 30 55 Z"
+                        fill="var(--argho-green-soft)"
+                        stroke="var(--argho-green)"
+                        strokeWidth="1.2"
+                      />
+                      <path
+                        d="M30 8 L30 55 M30 22 L18 32 M30 22 L42 32 M30 36 L20 44 M30 36 L40 44"
+                        stroke="var(--argho-green)"
+                        strokeWidth="0.8"
+                        fill="none"
+                        opacity="0.6"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+
+                    {/* Métrica display grande */}
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'baseline',
+                        gap: '4px',
+                        marginLeft: 'auto',
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-display)',
+                          fontSize: '1.625rem',
+                          fontWeight: 700,
+                          color: 'var(--text-primary)',
+                          letterSpacing: '-0.045em',
+                          lineHeight: 1,
+                        }}
+                      >
+                        {vec.metric}
+                      </span>
+                      {vec.metricUnit && (
+                        <span
+                          className="mono"
+                          style={{
+                            fontSize: '0.6875rem',
+                            color: vec.accent,
+                            fontWeight: 700,
+                            letterSpacing: '0.04em',
+                          }}
+                        >
+                          {vec.metricUnit}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Bar gauge */}
+                  <div>
+                    <div
+                      style={{
+                        height: '4px',
+                        backgroundColor: 'var(--bg-soft)',
+                        borderRadius: '2px',
+                        overflow: 'hidden',
+                        marginBottom: '6px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          height: '100%',
+                          width: `${vec.fill}%`,
+                          backgroundColor: vec.accent,
+                          borderRadius: '2px',
+                          transition: 'width 0.6s var(--ease-out-expo)',
+                        }}
+                      />
+                    </div>
                     <span
                       className="mono"
                       style={{
-                        fontSize: '0.5rem',
-                        letterSpacing: '0.04em',
-                        color: 'rgba(255,255,255,0.4)',
+                        fontSize: '0.5625rem',
+                        color: 'var(--text-muted)',
+                        letterSpacing: '0.02em',
+                        lineHeight: 1.3,
                       }}
                     >
                       {vec.hint}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-display)',
-                        fontSize: '0.875rem',
-                        color: vec.color,
-                        fontWeight: 700,
-                        letterSpacing: '-0.02em',
-                      }}
-                    >
-                      {vec.metric}
                     </span>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Legenda + footer */}
+            {/* Footer */}
             <div
               style={{
                 paddingTop: '12px',
@@ -903,38 +925,17 @@ export default function Home() {
                 flexWrap: 'wrap',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span
-                  className="mono"
-                  style={{
-                    fontSize: '0.5625rem',
-                    letterSpacing: '0.06em',
-                    color: 'var(--text-tertiary)',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  Heatmap
-                </span>
-                <div
-                  style={{
-                    width: '120px',
-                    height: '6px',
-                    borderRadius: '3px',
-                    background:
-                      'linear-gradient(90deg, oklch(0.30 0.140 220), oklch(0.55 0.180 145), oklch(0.70 0.200 60), oklch(0.72 0.220 30))',
-                  }}
-                />
-                <span
-                  className="mono"
-                  style={{
-                    fontSize: '0.5625rem',
-                    letterSpacing: '0.06em',
-                    color: 'var(--text-tertiary)',
-                  }}
-                >
-                  baixo → alto
-                </span>
-              </div>
+              <span
+                className="mono"
+                style={{
+                  fontSize: '0.625rem',
+                  letterSpacing: '0.10em',
+                  color: 'var(--text-tertiary)',
+                  textTransform: 'uppercase',
+                }}
+              >
+                4 leituras simultâneas · 1 planta-modelo
+              </span>
               <span
                 className="mono"
                 style={{
@@ -942,9 +943,22 @@ export default function Home() {
                   color: 'var(--argho-green)',
                   fontWeight: 700,
                   letterSpacing: '0.06em',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
                 }}
               >
-                ✓ IA · aprendendo
+                <span
+                  className="anim-pulse-ring"
+                  style={{
+                    width: '5px',
+                    height: '5px',
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--argho-green)',
+                    boxShadow: '0 0 0 3px oklch(0.586 0.150 138.8 / 0.18)',
+                  }}
+                />
+                IA aprendendo
               </span>
             </div>
           </div>
@@ -2149,27 +2163,16 @@ function Spotlight({
             {description}
           </p>
 
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '36px' }}>
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.6875rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.10em',
-                  textTransform: 'uppercase',
-                  color: accent,
-                  backgroundColor: accentRaw.replace(')', ' / 0.06)'),
-                  border: `1px solid ${accentRaw.replace(')', ' / 0.22)')}`,
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                }}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+          {/* Linha decorativa azul→categoria */}
+          <div
+            aria-hidden
+            style={{
+              width: '60px',
+              height: '2px',
+              background: `linear-gradient(90deg, var(--argho-blue), ${accent})`,
+              marginBottom: '36px',
+            }}
+          />
 
           <Link
             href={href}
@@ -2195,129 +2198,205 @@ function Spotlight({
           </Link>
         </div>
 
-        {/* Imagem ancorada em card categórico */}
+        {/* Card categórico ÓBVIO ancorando o mockup */}
         <div
           style={{
             direction: 'ltr',
             position: 'relative',
             display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '560px',
+            flexDirection: 'column',
+            backgroundColor: 'var(--bg-soft)',
+            border: '1px solid var(--border-subtle)',
+            borderTop: `4px solid ${accent}`,
+            borderRadius: '16px',
+            overflow: 'hidden',
+            boxShadow: 'var(--shadow-card)',
+            minHeight: '600px',
           }}
         >
-          {/* Card de fundo categórico */}
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              inset: 0,
-              borderRadius: '20px',
-              background: `radial-gradient(ellipse 70% 80% at 50% 80%, ${accentRaw.replace(')', ' / 0.10)')} 0%, ${accentRaw.replace(')', ' / 0.02)')} 50%, transparent 75%)`,
-              border: `1px solid ${accentRaw.replace(')', ' / 0.15)')}`,
-              backgroundColor: 'var(--bg-soft)',
-            }}
-          />
-
-          {/* Grid técnico dentro do card */}
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              inset: '20px',
-              backgroundImage: `
-                linear-gradient(${accentRaw.replace(')', ' / 0.04)')} 1px, transparent 1px),
-                linear-gradient(90deg, ${accentRaw.replace(')', ' / 0.04)')} 1px, transparent 1px)
-              `,
-              backgroundSize: '32px 32px',
-              opacity: 0.7,
-              maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
-              WebkitMaskImage:
-                'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
-              borderRadius: '12px',
-            }}
-          />
-
-          {/* Sombra de chão */}
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              bottom: '60px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '60%',
-              height: '32px',
-              background: `radial-gradient(ellipse 50% 50%, ${accentRaw.replace(')', ' / 0.40)')} 0%, transparent 70%)`,
-              filter: 'blur(20px)',
-              pointerEvents: 'none',
-            }}
-          />
-
-          {/* Mockup wrapper — controla altura explícita e respeita aspect natural */}
+          {/* Header do card — eyebrow + selo categórico */}
           <div
             style={{
-              position: 'relative',
-              zIndex: 1,
-              height: '520px',
-              maxWidth: '85%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Image
-              src={image}
-              alt={imageAlt}
-              width={500}
-              height={750}
-              style={{
-                width: 'auto',
-                height: '100%',
-                maxWidth: '100%',
-                objectFit: 'contain',
-                objectPosition: 'center',
-                filter: `drop-shadow(0 32px 48px ${accentRaw.replace(')', ' / 0.30)')}) drop-shadow(0 12px 24px ${accentRaw.replace(')', ' / 0.18)')})`,
-              }}
-            />
-          </div>
-
-          {/* Mini caption no canto inferior */}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '24px',
-              left: '24px',
-              right: '24px',
+              padding: '20px 28px',
+              borderBottom: '1px solid var(--border-subtle)',
               display: 'flex',
               justifyContent: 'space-between',
-              alignItems: 'baseline',
-              zIndex: 2,
-              pointerEvents: 'none',
+              alignItems: 'center',
+              backgroundColor: 'var(--bg)',
             }}
           >
-            <span
-              className="mono"
-              style={{
-                fontSize: '0.625rem',
-                letterSpacing: '0.16em',
-                textTransform: 'uppercase',
-                color: 'var(--text-tertiary)',
-                fontWeight: 700,
-              }}
-            >
-              Embalagem · 1L
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span
+                aria-hidden
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  backgroundColor: accent,
+                  boxShadow: `0 0 0 3px ${accentRaw.replace(')', ' / 0.18)')}`,
+                }}
+              />
+              <span
+                className="mono"
+                style={{
+                  fontSize: '0.625rem',
+                  letterSpacing: '0.16em',
+                  textTransform: 'uppercase',
+                  color: accent,
+                  fontWeight: 700,
+                }}
+              >
+                Embalagem oficial · 1L
+              </span>
+            </div>
             <span
               className="mono"
               style={{
                 fontSize: '0.625rem',
                 letterSpacing: '0.10em',
                 color: 'var(--text-tertiary)',
+                textTransform: 'uppercase',
               }}
             >
               Origem · Espanha
             </span>
+          </div>
+
+          {/* Palco do mockup */}
+          <div
+            style={{
+              flex: 1,
+              position: 'relative',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'flex-end',
+              padding: '40px 32px 60px',
+              minHeight: '460px',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Halo radial categórico */}
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: `radial-gradient(ellipse 60% 65% at 50% 75%, ${accentRaw.replace(')', ' / 0.20)')} 0%, ${accentRaw.replace(')', ' / 0.05)')} 45%, transparent 75%)`,
+                pointerEvents: 'none',
+              }}
+            />
+
+            {/* Grid técnico mascarado */}
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute',
+                inset: 0,
+                backgroundImage: `
+                  linear-gradient(${accentRaw.replace(')', ' / 0.06)')} 1px, transparent 1px),
+                  linear-gradient(90deg, ${accentRaw.replace(')', ' / 0.06)')} 1px, transparent 1px)
+                `,
+                backgroundSize: '40px 40px',
+                opacity: 0.7,
+                maskImage:
+                  'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
+                WebkitMaskImage:
+                  'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
+                pointerEvents: 'none',
+              }}
+            />
+
+            {/* Sombra de chão sob o produto */}
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute',
+                bottom: '40px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '55%',
+                height: '28px',
+                background: `radial-gradient(ellipse 50% 50%, ${accentRaw.replace(')', ' / 0.55)')} 0%, transparent 70%)`,
+                filter: 'blur(18px)',
+                pointerEvents: 'none',
+                zIndex: 1,
+              }}
+            />
+
+            {/* Mockup */}
+            <div
+              style={{
+                position: 'relative',
+                zIndex: 2,
+                height: '400px',
+                display: 'flex',
+                alignItems: 'flex-end',
+                justifyContent: 'center',
+              }}
+            >
+              <Image
+                src={image}
+                alt={imageAlt}
+                width={500}
+                height={750}
+                style={{
+                  width: 'auto',
+                  height: '100%',
+                  maxWidth: '100%',
+                  objectFit: 'contain',
+                  objectPosition: 'bottom center',
+                  filter: `drop-shadow(0 28px 40px ${accentRaw.replace(')', ' / 0.35)')}) drop-shadow(0 8px 16px ${accentRaw.replace(')', ' / 0.20)')})`,
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Footer do card — métricas pequenas */}
+          <div
+            style={{
+              padding: '14px 28px',
+              borderTop: '1px solid var(--border-subtle)',
+              backgroundColor: 'var(--bg-mist)',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '16px',
+            }}
+          >
+            {tags.slice(0, 3).map((tag, idx) => (
+              <div
+                key={tag}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '2px',
+                  borderLeft: idx > 0 ? '1px solid var(--border-subtle)' : 'none',
+                  paddingLeft: idx > 0 ? '16px' : 0,
+                }}
+              >
+                <span
+                  className="mono"
+                  style={{
+                    fontSize: '0.5625rem',
+                    letterSpacing: '0.10em',
+                    color: 'var(--text-tertiary)',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {idx === 0 ? 'Composição' : idx === 1 ? 'Modo' : 'Dose'}
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.75rem',
+                    color: accent,
+                    fontWeight: 700,
+                    letterSpacing: '0.02em',
+                  }}
+                >
+                  {tag}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
