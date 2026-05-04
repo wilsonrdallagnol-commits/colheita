@@ -44,6 +44,7 @@ const CAT_LINE: Record<ProductCategory, string> = {
 };
 
 // Product mockup image mapping (slug → public image path)
+// PNGs com fundo transparente processados via rembg (scripts/process-mockups.py).
 // Apenas produtos com mockup oficial atual. Demais usam fallback (letra inicial colorida).
 const PRODUCT_MOCKUP: Record<string, string> = {
   stron: '/products/stron.png',
@@ -51,6 +52,12 @@ const PRODUCT_MOCKUP: Record<string, string> = {
   impuch: '/products/impuch.png',
   defon: '/products/defon.png',
   biovas: '/products/biovas.png',
+  troian: '/products/troian.png',
+  'grow-calcium': '/products/grow-calcium.png',
+  'operate-plus': '/products/operate-plus.png',
+  'operate-citronela': '/products/operate-citronela.png',
+  'operate-4em1': '/products/operate-4em1.png',
+  'operate-orange': '/products/operate-orange.png',
 };
 
 interface PageProps {
