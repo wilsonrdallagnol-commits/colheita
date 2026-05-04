@@ -7,6 +7,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { HeroHeart } from '@/components/hero-heart';
+import { RootDivider } from '@/components/root-divider';
 
 export const metadata: Metadata = {
   title: 'Argho Agrosciences — Tecnologia viva para o agro brasileiro',
@@ -45,7 +46,7 @@ export default function Home() {
       <section
         style={{
           position: 'relative',
-          minHeight: 'calc(100vh - 72px)',
+          minHeight: 'calc(100vh - 88px)',
           padding: '40px 48px 80px',
           overflow: 'hidden',
         }}
@@ -78,7 +79,7 @@ export default function Home() {
             gridTemplateColumns: 'minmax(0, 1.05fr) minmax(0, 1fr)',
             gap: '64px',
             alignItems: 'center',
-            minHeight: 'calc(100vh - 152px)',
+            minHeight: 'calc(100vh - 168px)',
           }}
           className="hero-grid"
         >
@@ -358,12 +359,15 @@ export default function Home() {
         `}</style>
       </section>
 
+      {/* Divisor de raízes — eco do coração propagando */}
+      <RootDivider variant="split" accent="oklch(0.58 0.125 195)" weight={1} />
+
       {/* ═══════════════════════════════════════════════════════════════════
           PORTFÓLIO — 4 linhas em cards leves
       ══════════════════════════════════════════════════════════════════════ */}
       <section
         style={{
-          padding: '120px 48px',
+          padding: '60px 48px 120px',
           maxWidth: '1320px',
           margin: '0 auto',
         }}
@@ -486,6 +490,9 @@ export default function Home() {
         href="/produtos/operate-plus"
         reverse={true}
       />
+
+      {/* Divisor — raiz vertical descendo (transição para plataforma) */}
+      <RootDivider variant="single" accent="oklch(0.52 0.155 148)" weight={2} />
 
       {/* ═══════════════════════════════════════════════════════════════════
           PLATAFORMA COLHEITA
@@ -802,17 +809,20 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Divisor leque — abre pro CTA final */}
+      <RootDivider variant="fan" accent="oklch(0.66 0.130 78)" weight={1} />
+
       {/* ═══════════════════════════════════════════════════════════════════
           CTA FINAL
       ══════════════════════════════════════════════════════════════════════ */}
       <section
         style={{
-          padding: '120px 48px',
+          padding: '60px 48px 120px',
           textAlign: 'center',
           position: 'relative',
           overflow: 'hidden',
           backgroundColor: 'var(--bg-soft)',
-          borderTop: '1px solid var(--border-subtle)',
+          borderTop: 'none',
         }}
       >
         {/* Glow ambient */}

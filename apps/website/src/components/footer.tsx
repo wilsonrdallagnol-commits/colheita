@@ -24,12 +24,12 @@ export function Footer() {
       >
         {/* Brand */}
         <div>
-          <Link href="/" style={{ display: 'inline-block', marginBottom: '20px' }}>
+          <Link href="/" style={{ display: 'inline-block', marginBottom: '24px' }}>
             <Image
               src="/argho-logo-color.png"
               alt="Argho Agrosciences"
-              width={132}
-              height={36}
+              width={180}
+              height={48}
               style={{ objectFit: 'contain', objectPosition: 'left center' }}
             />
           </Link>

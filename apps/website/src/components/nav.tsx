@@ -16,28 +16,29 @@ export function Nav() {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '0 48px',
-        height: '72px',
-        backgroundColor: 'rgba(255, 255, 255, 0.85)',
-        backdropFilter: 'saturate(180%) blur(16px)',
-        WebkitBackdropFilter: 'saturate(180%) blur(16px)',
+        height: '88px',
+        backgroundColor: 'rgba(255, 255, 255, 0.88)',
+        backdropFilter: 'saturate(180%) blur(20px)',
+        WebkitBackdropFilter: 'saturate(180%) blur(20px)',
         borderBottom: '1px solid var(--border-subtle)',
       }}
     >
-      {/* Logo */}
+      {/* Logo — proporção respeitosa, peso visual aumentado */}
       <Link
         href="/"
         style={{
           textDecoration: 'none',
           display: 'flex',
           alignItems: 'center',
-          height: '40px',
+          height: '52px',
+          gap: '14px',
         }}
       >
         <Image
           src="/argho-logo-color.png"
           alt="Argho Agrosciences"
-          width={144}
-          height={38}
+          width={196}
+          height={52}
           style={{ objectFit: 'contain', objectPosition: 'left center' }}
           priority
         />

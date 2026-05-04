@@ -4,6 +4,7 @@ import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import type { Metadata, Viewport } from 'next';
 import { Footer } from '@/components/footer';
+import { HeartIntro } from '@/components/heart-intro';
 import { Nav } from '@/components/nav';
 import './globals.css';
 
@@ -47,8 +48,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body>
+        <HeartIntro />
         <Nav />
-        <main style={{ paddingTop: '72px' }}>{children}</main>
+        <main style={{ paddingTop: '88px' }}>{children}</main>
         <Footer />
       </body>
     </html>
