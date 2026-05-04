@@ -1,4 +1,7 @@
 // apps/admin/src/app/(dashboard)/produtos/[slug]/ficha-tecnica/route.ts
+// Playwright + react-dom/server requerem o runtime Node.js (não Edge)
+export const runtime = 'nodejs';
+
 import { createServerClient, requireAuth } from '@colheita/auth';
 import type { ProductComposition, ProductPackaging } from '@colheita/db';
 import type { ProductApplication } from '@colheita/generator';

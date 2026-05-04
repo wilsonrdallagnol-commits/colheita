@@ -2,6 +2,10 @@
 //
 // Gera e retorna a Ficha Técnica em PDF para um produto publicado.
 // Requer sessão autenticada (distribuidor) via cookie ou Bearer token.
+
+// Playwright requer o runtime Node.js (não Edge)
+export const runtime = 'nodejs';
+
 //
 // GET /api/v1/catalog/:slug/ficha-tecnica
 //   → 200  application/pdf — PDF da ficha técnica

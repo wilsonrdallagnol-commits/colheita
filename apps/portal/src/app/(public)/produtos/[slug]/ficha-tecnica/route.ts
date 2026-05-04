@@ -9,6 +9,9 @@
 //   → 404  produto não encontrado ou não publicado
 //   → 503  Chromium não disponível (dev sem Docker)
 
+// Playwright + react-dom/server requerem o runtime Node.js (não Edge)
+export const runtime = 'nodejs';
+
 import { createServerClient, requireAuth } from '@colheita/auth';
 import type { FichaTecnicaData, PackagingUnit, ProductApplication } from '@colheita/generator';
 import { generateFichaTecnica } from '@colheita/generator';

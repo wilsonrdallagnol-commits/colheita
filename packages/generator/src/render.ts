@@ -1,7 +1,6 @@
 // packages/generator/src/render.ts
 
 import type { ReactElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import type { GenerateOptions, GenerateResult } from './types.js';
 
 /**
@@ -17,6 +16,9 @@ export async function renderToPdf(
   element: ReactElement,
   options: GenerateOptions = {},
 ): Promise<GenerateResult> {
+  // Dynamic import evita que o bundler RSC do Next.js rejeite react-dom/server
+  // na análise estática de imports (é um runtime-only call, não um RSC render).
+  const { renderToStaticMarkup } = await import('react-dom/server');
   const html = `<!DOCTYPE html>${renderToStaticMarkup(element)}`;
 
   // Dynamic import to avoid loading playwright at module parse time

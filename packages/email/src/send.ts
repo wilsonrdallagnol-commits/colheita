@@ -5,7 +5,6 @@
  * e o endereço do destinatário.
  */
 import { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 
 import { getResendClient } from './client.js';
 import {
@@ -32,6 +31,8 @@ export async function sendCertificadoEmitido({
   ...props
 }: SendCertificadoEmitidoParams): Promise<{ id: string }> {
   const resend = getResendClient();
+  // Dynamic import evita que o bundler RSC rejeite react-dom/server estaticamente
+  const { renderToStaticMarkup } = await import('react-dom/server');
   const html = renderToStaticMarkup(createElement(CertificadoEmitidoEmail, props));
   const subject = getCertificadoEmitidoSubject(props.trackTitle);
 
@@ -55,6 +56,7 @@ export async function sendPedidoConfirmado({
   ...props
 }: SendPedidoConfirmadoParams): Promise<{ id: string }> {
   const resend = getResendClient();
+  const { renderToStaticMarkup } = await import('react-dom/server');
   const html = renderToStaticMarkup(createElement(PedidoConfirmadoEmail, props));
   const subject = getPedidoConfirmadoSubject(props.pedidoId, props.clienteNome);
 
