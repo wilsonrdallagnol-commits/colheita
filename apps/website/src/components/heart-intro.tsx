@@ -311,20 +311,20 @@ export function HeartIntro() {
         aria-hidden
         style={{
           position: 'absolute',
-          bottom: '8vh',
+          bottom: '5vh',
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '14px',
+          gap: '12px',
           opacity: isExiting ? 0 : 1,
           transition: 'opacity 0.5s ease',
           pointerEvents: 'none',
           zIndex: 2,
         }}
       >
-        {/* Logo Argho oficial (branca para fundo escuro) */}
+        {/* Logo Argho oficial (branca para fundo escuro) — discreta */}
         <div
           className="anim-fade-in-up delay-2"
           style={{
@@ -336,13 +336,13 @@ export function HeartIntro() {
           <Image
             src="/argho-logo-white.png"
             alt="Argho Agrosciences"
-            width={320}
-            height={119}
+            width={140}
+            height={52}
             priority
             style={{
-              width: 'clamp(180px, 28vw, 320px)',
+              width: 'clamp(96px, 9vw, 140px)',
               height: 'auto',
-              opacity: 0.95,
+              opacity: 0.85,
             }}
           />
         </div>
