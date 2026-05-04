@@ -467,23 +467,25 @@ export default function Home() {
         eyebrow="02 / Destaque · Fertilizante Mineral"
         name="Stron"
         accent="var(--cat-mineral)"
-        description="Proteína específica com precursores vegetais. Melhora arquitetura e ativação fisiológica da planta, potencializando o enraizamento e a absorção de nutrientes."
-        tags={['Enraizamento', 'Ativação fisiológica', 'V5 → 100 mL/ha']}
-        image="/mockups/stron.png"
+        accentRaw="oklch(0.586 0.150 138.8)"
+        description="Fertilizante NPK foliar com aminoácidos e ácidos carboxílicos. Melhora arquitetura e ativação fisiológica da planta, potencializando enraizamento e absorção de nutrientes."
+        tags={['NPK 4,5-2-7,2', 'Foliar', '500 g/ha · V3–V5']}
+        image="/products/stron.png"
         imageAlt="Stron 1L — Argho Agrosciences"
         href="/produtos/stron"
         reverse={false}
       />
 
-      {/* Operate */}
+      {/* Operate Plus */}
       <Spotlight
         eyebrow="03 / Destaque · Adjuvante"
         name="Operate Plus"
         accent="var(--cat-adj)"
-        description="Adjuvante de alta performance para potencialização de caldas. Reduz a tensão superficial, aumenta a cobertura foliar e melhora a absorção dos ativos aplicados."
-        tags={['Cobertura foliar', 'Anti-deriva', '50–100 mL/100L']}
-        image="/mockups/operate.png"
-        imageAlt="Operate Plus 20L — Argho Agrosciences"
+        accentRaw="oklch(0.62 0.130 78)"
+        description="Adjuvante espalhante adesivo premium com surfactante não-iônico, condicionador de pH e antiespumante. Cobertura foliar uniforme e proteção contra hidrólise alcalina."
+        tags={['Espalhante adesivo', 'Buffer pH 4,5–5,5', '50–100 mL/100L']}
+        image="/products/operate-plus.png"
+        imageAlt="Operate Plus 1L — Argho Agrosciences"
         href="/produtos/operate-plus"
         reverse={true}
       />
@@ -633,15 +635,11 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Lado direito: visualização "fenotipagem" — 4 leaves grid */}
+          {/* Lado direito: visualização "fenotipagem" — 4 leaf scans */}
           <div
             aria-hidden
             style={{
               position: 'relative',
-              minHeight: '440px',
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '12px',
               padding: '32px',
               backgroundColor: 'var(--bg)',
               border: '1px solid var(--border-subtle)',
@@ -652,13 +650,12 @@ export default function Home() {
             {/* Header da viz */}
             <div
               style={{
-                gridColumn: '1 / -1',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                paddingBottom: '12px',
+                paddingBottom: '14px',
                 borderBottom: '1px solid var(--border-subtle)',
-                marginBottom: '4px',
+                marginBottom: '16px',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -682,7 +679,7 @@ export default function Home() {
                     fontWeight: 700,
                   }}
                 >
-                  Phenotyping · live capture
+                  Fenotipagem · captura ao vivo
                 </span>
               </div>
               <span
@@ -693,141 +690,251 @@ export default function Home() {
                   letterSpacing: '0.06em',
                 }}
               >
-                t = 18:24:07
+                Planta-modelo · ID 0247
               </span>
             </div>
 
-            {/* 4 quadros simulando heatmaps de leaves */}
-            {[
-              {
-                label: 'Temperatura',
-                metric: '+0.8°C',
-                color: 'oklch(0.55 0.180 30)', // pink/red
-                bg: 'oklch(0.18 0.140 30)',
-                ringStops: ['oklch(0.30 0.150 30)', 'oklch(0.50 0.180 30)', 'oklch(0.65 0.220 30)'],
-              },
-              {
-                label: 'Fotossíntese',
-                metric: 'Φ 0.78',
-                color: 'oklch(0.62 0.180 50)', // orange
-                bg: 'oklch(0.18 0.130 50)',
-                ringStops: ['oklch(0.32 0.130 50)', 'oklch(0.55 0.180 50)', 'oklch(0.72 0.220 50)'],
-              },
-              {
-                label: 'NPQ',
-                metric: '2.4',
-                color: 'oklch(0.62 0.150 220)', // teal/blue
-                bg: 'oklch(0.18 0.120 220)',
-                ringStops: [
-                  'oklch(0.32 0.130 220)',
-                  'oklch(0.55 0.180 220)',
-                  'oklch(0.70 0.200 220)',
-                ],
-              },
-              {
-                label: 'Defesa',
-                metric: 'RFU 240',
-                color: 'oklch(0.65 0.140 145)', // green
-                bg: 'oklch(0.18 0.110 145)',
-                ringStops: [
-                  'oklch(0.30 0.130 145)',
-                  'oklch(0.55 0.150 145)',
-                  'oklch(0.70 0.180 145)',
-                ],
-              },
-            ].map((vec) => (
-              <div
-                key={vec.label}
-                style={{
-                  position: 'relative',
-                  aspectRatio: '1 / 1',
-                  borderRadius: '8px',
-                  background: vec.bg,
-                  border: `1px solid ${vec.color.replace(')', ' / 0.30)')}`,
-                  overflow: 'hidden',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                {/* Folha estilizada via radial gradients (heatmap) */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    inset: '20%',
-                    background: `
-                      radial-gradient(ellipse 60% 50% at 50% 35%, ${vec.ringStops[2]} 0%, ${vec.ringStops[1]} 30%, ${vec.ringStops[0]} 60%, transparent 80%),
-                      radial-gradient(ellipse 50% 70% at 30% 70%, ${vec.ringStops[1]} 0%, transparent 60%),
-                      radial-gradient(ellipse 50% 70% at 70% 70%, ${vec.ringStops[1]} 0%, transparent 60%)
-                    `,
-                    clipPath:
-                      'path("M 50 5 C 75 5, 95 25, 95 50 C 95 75, 75 95, 50 95 C 25 95, 5 75, 5 50 C 5 25, 25 5, 50 5 Z")',
-                    transform: 'scale(1)',
-                    filter: 'blur(2px)',
-                  }}
-                />
-                {/* Label inferior */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: '8px',
-                    left: '10px',
-                    right: '10px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'baseline',
-                    zIndex: 2,
-                  }}
-                >
-                  <span
-                    className="mono"
-                    style={{
-                      fontSize: '0.5625rem',
-                      letterSpacing: '0.12em',
-                      textTransform: 'uppercase',
-                      color: 'rgba(255,255,255,0.7)',
-                      fontWeight: 700,
-                    }}
-                  >
-                    {vec.label}
-                  </span>
-                  <span
-                    className="mono"
-                    style={{
-                      fontSize: '0.6875rem',
-                      color: vec.color,
-                      fontWeight: 700,
-                    }}
-                  >
-                    {vec.metric}
-                  </span>
-                </div>
-              </div>
-            ))}
+            {/* Subtítulo explicativo */}
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.8125rem',
+                color: 'var(--text-secondary)',
+                lineHeight: 1.5,
+                marginBottom: '16px',
+              }}
+            >
+              Cada folha-modelo é escaneada simultaneamente em{' '}
+              <strong style={{ color: 'var(--text-primary)' }}>4 dimensões fisiológicas</strong>. A
+              IA correlaciona as leituras pra inferir como cada combinação de moléculas afeta a
+              planta.
+            </p>
 
-            {/* Footer da viz */}
+            {/* Grid 2x2 de scans */}
             <div
               style={{
-                gridColumn: '1 / -1',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '10px',
+                marginBottom: '16px',
+              }}
+            >
+              {[
+                {
+                  label: 'Temperatura',
+                  unit: 'Δ baseline',
+                  metric: '+0.8°C',
+                  hint: 'Termografia infravermelha',
+                  hue: 30,
+                  color: 'oklch(0.62 0.200 30)',
+                  bg: 'oklch(0.16 0.110 30)',
+                  hot: 'oklch(0.72 0.230 30)',
+                  mid: 'oklch(0.55 0.190 30)',
+                  cold: 'oklch(0.30 0.140 30)',
+                },
+                {
+                  label: 'Fotossíntese',
+                  unit: 'PSII · Φ',
+                  metric: '0.78',
+                  hint: 'Fluorescência de clorofila',
+                  hue: 60,
+                  color: 'oklch(0.70 0.180 60)',
+                  bg: 'oklch(0.16 0.110 60)',
+                  hot: 'oklch(0.78 0.220 60)',
+                  mid: 'oklch(0.60 0.190 60)',
+                  cold: 'oklch(0.32 0.140 60)',
+                },
+                {
+                  label: 'NPQ',
+                  unit: 'Quenching',
+                  metric: '2.4',
+                  hint: 'Proteção fotossintética',
+                  hue: 220,
+                  color: 'oklch(0.65 0.150 220)',
+                  bg: 'oklch(0.16 0.110 220)',
+                  hot: 'oklch(0.74 0.190 220)',
+                  mid: 'oklch(0.55 0.170 220)',
+                  cold: 'oklch(0.30 0.130 220)',
+                },
+                {
+                  label: 'Defesa',
+                  unit: 'RFU',
+                  metric: '240',
+                  hint: 'Compostos defensivos',
+                  hue: 145,
+                  color: 'oklch(0.68 0.150 145)',
+                  bg: 'oklch(0.16 0.105 145)',
+                  hot: 'oklch(0.76 0.180 145)',
+                  mid: 'oklch(0.58 0.150 145)',
+                  cold: 'oklch(0.30 0.120 145)',
+                },
+              ].map((vec) => (
+                <div
+                  key={vec.label}
+                  style={{
+                    position: 'relative',
+                    aspectRatio: '1 / 1',
+                    borderRadius: '8px',
+                    background: vec.bg,
+                    border: `1px solid ${vec.color.replace(')', ' / 0.30)')}`,
+                    overflow: 'hidden',
+                  }}
+                >
+                  {/* Header de cada quadro */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '8px',
+                      left: '10px',
+                      right: '10px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'baseline',
+                      zIndex: 3,
+                    }}
+                  >
+                    <span
+                      className="mono"
+                      style={{
+                        fontSize: '0.5625rem',
+                        letterSpacing: '0.14em',
+                        textTransform: 'uppercase',
+                        color: 'rgba(255,255,255,0.85)',
+                        fontWeight: 700,
+                      }}
+                    >
+                      {vec.label}
+                    </span>
+                    <span
+                      className="mono"
+                      style={{
+                        fontSize: '0.5rem',
+                        letterSpacing: '0.06em',
+                        color: 'rgba(255,255,255,0.45)',
+                      }}
+                    >
+                      {vec.unit}
+                    </span>
+                  </div>
+
+                  {/* Folha SVG com heatmap */}
+                  <svg
+                    aria-hidden="true"
+                    role="presentation"
+                    viewBox="0 0 100 100"
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      width: '100%',
+                      height: '100%',
+                    }}
+                  >
+                    <defs>
+                      <radialGradient id={`leafGrad-${vec.hue}`} cx="50%" cy="38%" r="55%">
+                        <stop offset="0%" stopColor={vec.hot} />
+                        <stop offset="40%" stopColor={vec.mid} />
+                        <stop offset="100%" stopColor={vec.cold} />
+                      </radialGradient>
+                    </defs>
+                    {/* Forma de folha (heart-shape inverted) */}
+                    <path
+                      d="M50 88 C 25 88, 12 65, 18 42 C 22 22, 38 12, 50 18 C 62 12, 78 22, 82 42 C 88 65, 75 88, 50 88 Z"
+                      fill={`url(#leafGrad-${vec.hue})`}
+                      opacity="0.95"
+                    />
+                    {/* Veias da folha */}
+                    <path
+                      d="M50 18 L50 88 M50 35 L30 50 M50 35 L70 50 M50 55 L33 68 M50 55 L67 68"
+                      stroke={vec.cold}
+                      strokeWidth="0.6"
+                      fill="none"
+                      opacity="0.55"
+                    />
+                  </svg>
+
+                  {/* Métrica grande inferior */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      bottom: '8px',
+                      left: '10px',
+                      right: '10px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'baseline',
+                      zIndex: 3,
+                    }}
+                  >
+                    <span
+                      className="mono"
+                      style={{
+                        fontSize: '0.5rem',
+                        letterSpacing: '0.04em',
+                        color: 'rgba(255,255,255,0.4)',
+                      }}
+                    >
+                      {vec.hint}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-display)',
+                        fontSize: '0.875rem',
+                        color: vec.color,
+                        fontWeight: 700,
+                        letterSpacing: '-0.02em',
+                      }}
+                    >
+                      {vec.metric}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Legenda + footer */}
+            <div
+              style={{
                 paddingTop: '12px',
                 borderTop: '1px solid var(--border-subtle)',
-                marginTop: '4px',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
+                gap: '12px',
+                flexWrap: 'wrap',
               }}
             >
-              <span
-                className="mono"
-                style={{
-                  fontSize: '0.625rem',
-                  letterSpacing: '0.10em',
-                  color: 'var(--text-tertiary)',
-                  textTransform: 'uppercase',
-                }}
-              >
-                4 vetores · análise simultânea
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span
+                  className="mono"
+                  style={{
+                    fontSize: '0.5625rem',
+                    letterSpacing: '0.06em',
+                    color: 'var(--text-tertiary)',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Heatmap
+                </span>
+                <div
+                  style={{
+                    width: '120px',
+                    height: '6px',
+                    borderRadius: '3px',
+                    background:
+                      'linear-gradient(90deg, oklch(0.30 0.140 220), oklch(0.55 0.180 145), oklch(0.70 0.200 60), oklch(0.72 0.220 30))',
+                  }}
+                />
+                <span
+                  className="mono"
+                  style={{
+                    fontSize: '0.5625rem',
+                    letterSpacing: '0.06em',
+                    color: 'var(--text-tertiary)',
+                  }}
+                >
+                  baixo → alto
+                </span>
+              </div>
               <span
                 className="mono"
                 style={{
@@ -837,7 +944,7 @@ export default function Home() {
                   letterSpacing: '0.06em',
                 }}
               >
-                ✓ AI · learning
+                ✓ IA · aprendendo
               </span>
             </div>
           </div>
@@ -1931,6 +2038,7 @@ function Spotlight({
   eyebrow,
   name,
   accent,
+  accentRaw,
   description,
   tags,
   image,
@@ -1941,6 +2049,7 @@ function Spotlight({
   eyebrow: string;
   name: string;
   accent: string;
+  accentRaw: string;
   description: string;
   tags: string[];
   image: string;
@@ -1959,125 +2068,257 @@ function Spotlight({
         style={{
           maxWidth: '1320px',
           margin: '0 auto',
-          padding: '0 48px',
+          padding: '96px 48px',
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
-          alignItems: 'center',
-          gap: '80px',
-          minHeight: '560px',
+          alignItems: 'stretch',
+          gap: '64px',
           direction: reverse ? 'rtl' : 'ltr',
         }}
         className="spotlight-grid"
       >
         {/* Texto */}
-        <div style={{ direction: 'ltr', padding: '80px 0' }}>
-          <span className="label" style={{ display: 'block', marginBottom: '20px' }}>
-            {eyebrow}
-          </span>
+        <div
+          style={{
+            direction: 'ltr',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            paddingTop: '24px',
+            paddingBottom: '24px',
+          }}
+        >
+          {/* Eyebrow with accent dot */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              marginBottom: '24px',
+            }}
+          >
+            <span
+              aria-hidden
+              style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                backgroundColor: accent,
+                boxShadow: `0 0 0 3px ${accentRaw.replace(')', ' / 0.18)')}`,
+              }}
+            />
+            <span
+              className="mono"
+              style={{
+                fontSize: '0.6875rem',
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+                color: 'var(--argho-blue)',
+                fontWeight: 600,
+              }}
+            >
+              {eyebrow}
+            </span>
+          </div>
+
           <h2
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2rem, 4vw, 3.25rem)',
+              fontSize: 'clamp(2.75rem, 5.5vw, 4.5rem)',
               fontWeight: 700,
               color: 'var(--argho-blue)',
               letterSpacing: '-0.055em',
-              lineHeight: 1.0,
+              lineHeight: 0.95,
               margin: '0 0 24px',
             }}
           >
             {name}
           </h2>
+
           <p
             style={{
               fontFamily: 'var(--font-body)',
               fontSize: '1.0625rem',
               color: 'var(--text-secondary)',
-              lineHeight: 1.6,
+              lineHeight: 1.65,
               margin: '0 0 32px',
-              maxWidth: '440px',
+              maxWidth: '480px',
               letterSpacing: '-0.005em',
             }}
           >
             {description}
           </p>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '40px' }}>
+
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '36px' }}>
             {tags.map((tag) => (
               <span
                 key={tag}
                 style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '0.75rem',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.6875rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.10em',
+                  textTransform: 'uppercase',
                   color: accent,
-                  border: '1px solid currentColor',
-                  borderRadius: '4px',
-                  padding: '5px 12px',
-                  letterSpacing: '-0.005em',
-                  opacity: 0.85,
+                  backgroundColor: accentRaw.replace(')', ' / 0.06)'),
+                  border: `1px solid ${accentRaw.replace(')', ' / 0.22)')}`,
+                  padding: '6px 12px',
+                  borderRadius: '6px',
                 }}
               >
                 {tag}
               </span>
             ))}
           </div>
+
           <Link
             href={href}
             style={{
               fontFamily: 'var(--font-body)',
               fontSize: '0.9375rem',
               fontWeight: 600,
-              color: 'var(--text-primary)',
+              color: '#ffffff',
+              backgroundColor: 'var(--argho-blue)',
               textDecoration: 'none',
+              padding: '14px 28px',
+              borderRadius: '8px',
+              letterSpacing: '-0.005em',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '10px',
-              borderBottom: '1px solid var(--text-primary)',
-              paddingBottom: '4px',
-              letterSpacing: '-0.005em',
+              alignSelf: 'flex-start',
+              boxShadow: 'var(--shadow-blue-glow)',
             }}
           >
             Ver ficha técnica
-            <span style={{ color: accent }}>→</span>
+            <span style={{ fontSize: '1.05em', lineHeight: 1 }}>→</span>
           </Link>
         </div>
 
-        {/* Imagem */}
+        {/* Imagem ancorada em card categórico */}
         <div
           style={{
             direction: 'ltr',
+            position: 'relative',
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'flex-end',
-            position: 'relative',
-            padding: '60px 0 0',
+            alignItems: 'center',
+            minHeight: '560px',
           }}
         >
-          {/* Glow accent */}
+          {/* Card de fundo categórico */}
           <div
             aria-hidden
             style={{
               position: 'absolute',
-              width: '380px',
-              height: '380px',
-              borderRadius: '50%',
-              background: `radial-gradient(ellipse, ${accent.replace('var(--', 'oklch(').replace(')', '')} / 0.15) 0%, transparent 70%)`,
-              bottom: '40px',
+              inset: 0,
+              borderRadius: '20px',
+              background: `radial-gradient(ellipse 70% 80% at 50% 80%, ${accentRaw.replace(')', ' / 0.10)')} 0%, ${accentRaw.replace(')', ' / 0.02)')} 50%, transparent 75%)`,
+              border: `1px solid ${accentRaw.replace(')', ' / 0.15)')}`,
+              backgroundColor: 'var(--bg-soft)',
+            }}
+          />
+
+          {/* Grid técnico dentro do card */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: '20px',
+              backgroundImage: `
+                linear-gradient(${accentRaw.replace(')', ' / 0.04)')} 1px, transparent 1px),
+                linear-gradient(90deg, ${accentRaw.replace(')', ' / 0.04)')} 1px, transparent 1px)
+              `,
+              backgroundSize: '32px 32px',
+              opacity: 0.7,
+              maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
+              WebkitMaskImage:
+                'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
+              borderRadius: '12px',
+            }}
+          />
+
+          {/* Sombra de chão */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              bottom: '60px',
               left: '50%',
               transform: 'translateX(-50%)',
-              filter: 'blur(40px)',
+              width: '60%',
+              height: '32px',
+              background: `radial-gradient(ellipse 50% 50%, ${accentRaw.replace(')', ' / 0.40)')} 0%, transparent 70%)`,
+              filter: 'blur(20px)',
+              pointerEvents: 'none',
             }}
           />
-          <Image
-            src={image}
-            alt={imageAlt}
-            width={340}
-            height={420}
+
+          {/* Mockup wrapper — controla altura explícita e respeita aspect natural */}
+          <div
             style={{
-              objectFit: 'contain',
               position: 'relative',
               zIndex: 1,
-              filter: 'drop-shadow(0 30px 50px rgba(0,0,0,0.10))',
+              height: '520px',
+              maxWidth: '85%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
-          />
+          >
+            <Image
+              src={image}
+              alt={imageAlt}
+              width={500}
+              height={750}
+              style={{
+                width: 'auto',
+                height: '100%',
+                maxWidth: '100%',
+                objectFit: 'contain',
+                objectPosition: 'center',
+                filter: `drop-shadow(0 32px 48px ${accentRaw.replace(')', ' / 0.30)')}) drop-shadow(0 12px 24px ${accentRaw.replace(')', ' / 0.18)')})`,
+              }}
+            />
+          </div>
+
+          {/* Mini caption no canto inferior */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '24px',
+              left: '24px',
+              right: '24px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'baseline',
+              zIndex: 2,
+              pointerEvents: 'none',
+            }}
+          >
+            <span
+              className="mono"
+              style={{
+                fontSize: '0.625rem',
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase',
+                color: 'var(--text-tertiary)',
+                fontWeight: 700,
+              }}
+            >
+              Embalagem · 1L
+            </span>
+            <span
+              className="mono"
+              style={{
+                fontSize: '0.625rem',
+                letterSpacing: '0.10em',
+                color: 'var(--text-tertiary)',
+              }}
+            >
+              Origem · Espanha
+            </span>
+          </div>
         </div>
       </div>
 
@@ -2086,13 +2327,11 @@ function Spotlight({
           .spotlight-grid {
             grid-template-columns: 1fr !important;
             direction: ltr !important;
-            min-height: auto !important;
-            gap: 32px !important;
-            padding-top: 64px !important;
-            padding-bottom: 64px !important;
+            gap: 48px !important;
+            padding: 64px 48px !important;
           }
-          .spotlight-grid > div {
-            padding: 0 !important;
+          .spotlight-grid > div:nth-child(2) {
+            min-height: 480px !important;
           }
         }
       `}</style>
