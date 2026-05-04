@@ -627,8 +627,9 @@ export default function Home() {
               }}
             >
               A IA recebe milhares de combinações de estímulos químicos aplicados em plantas-modelo
-              e mede simultaneamente a resposta de quatro vetores fisiológicos. Cada novo produto
-              Argho começa aqui — antes de ganhar registro MAPA e chegar ao campo brasileiro.
+              e mede simultaneamente a resposta de quatro vetores fisiológicos. Botânica,
+              microbiologia, microalgas e química verde trabalham na mesma cadeia — substituindo
+              química sintética por alternativas biotecnológicas sem comprometer produtividade.
             </p>
           </div>
 
@@ -1101,6 +1102,182 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Pipeline de descoberta — Da hipótese ao campo */}
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            maxWidth: '1320px',
+            margin: '64px auto 0',
+            padding: '40px 32px',
+            backgroundColor: 'var(--bg)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: '12px',
+            boxShadow: 'var(--shadow-card)',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'baseline',
+              justifyContent: 'space-between',
+              gap: '24px',
+              marginBottom: '32px',
+              flexWrap: 'wrap',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+              }}
+            >
+              <span
+                aria-hidden
+                style={{ width: '24px', height: '1px', background: 'var(--argho-green)' }}
+              />
+              <span
+                className="mono"
+                style={{
+                  fontSize: '0.6875rem',
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  color: 'var(--argho-blue)',
+                  fontWeight: 600,
+                }}
+              >
+                Pipeline · Da hipótese ao campo
+              </span>
+            </div>
+            <Link
+              href="/sobre"
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.6875rem',
+                fontWeight: 600,
+                color: 'var(--argho-blue)',
+                textDecoration: 'none',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              Pipeline completo
+              <span style={{ fontSize: '1.05em', lineHeight: 1 }}>→</span>
+            </Link>
+          </div>
+
+          <div
+            className="lab-pipeline-mini"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(6, minmax(0, 1fr))',
+              gap: '12px',
+              position: 'relative',
+            }}
+          >
+            {/* Linha conectiva entre os 6 círculos */}
+            <div
+              aria-hidden
+              className="lab-pipeline-line"
+              style={{
+                position: 'absolute',
+                top: '24px',
+                left: '12%',
+                right: '12%',
+                height: '2px',
+                background:
+                  'linear-gradient(90deg, var(--argho-green) 0%, var(--argho-blue) 60%, var(--gold) 100%)',
+                opacity: 0.35,
+                zIndex: 0,
+              }}
+            />
+
+            {[
+              { step: '01', title: 'Isolamento', body: 'Seleção de cepas e princípios ativos.' },
+              {
+                step: '02',
+                title: 'Caracterização',
+                body: 'HPLC-MS e cromatografia gasosa.',
+              },
+              { step: '03', title: 'Bioensaios', body: 'Letalidade, repelência e antifúngico.' },
+              { step: '04', title: 'Validação', body: 'Fitotrons e estufas controladas.' },
+              {
+                step: '05',
+                title: 'Escala piloto',
+                body: 'Fermentadores e fotobiorreatores.',
+              },
+              {
+                step: '06',
+                title: 'Campo brasileiro',
+                body: 'Registro MAPA + agronomia tropical.',
+              },
+            ].map((p) => (
+              <div
+                key={p.step}
+                style={{
+                  position: 'relative',
+                  zIndex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  gap: '12px',
+                }}
+              >
+                {/* Circle */}
+                <div
+                  style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '50%',
+                    border: '1px solid var(--border)',
+                    backgroundColor: 'var(--bg)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '0.9375rem',
+                    fontWeight: 700,
+                    color: 'var(--argho-blue)',
+                    letterSpacing: '-0.04em',
+                    boxShadow: '0 2px 6px oklch(0 0 0 / 0.04)',
+                  }}
+                >
+                  {p.step}
+                </div>
+                <h4
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '0.875rem',
+                    fontWeight: 700,
+                    letterSpacing: '-0.025em',
+                    color: 'var(--text-primary)',
+                    lineHeight: 1.1,
+                  }}
+                >
+                  {p.title}
+                </h4>
+                <p
+                  className="mono"
+                  style={{
+                    fontSize: '0.625rem',
+                    color: 'var(--text-tertiary)',
+                    letterSpacing: '0.04em',
+                    lineHeight: 1.45,
+                    margin: 0,
+                  }}
+                >
+                  {p.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Closing — síntese */}
         <div
           style={{
@@ -1176,6 +1353,11 @@ export default function Home() {
             .lab-disciplines-grid {
               grid-template-columns: repeat(2, 1fr) !important;
             }
+            .lab-pipeline-mini {
+              grid-template-columns: repeat(3, 1fr) !important;
+              gap: 32px 16px !important;
+            }
+            .lab-pipeline-line { display: none !important; }
             .lab-closing-card {
               grid-template-columns: 1fr !important;
               gap: 24px !important;
@@ -1187,6 +1369,9 @@ export default function Home() {
             }
             .lab-disciplines-grid {
               grid-template-columns: 1fr !important;
+            }
+            .lab-pipeline-mini {
+              grid-template-columns: repeat(2, 1fr) !important;
             }
           }
         `}</style>
