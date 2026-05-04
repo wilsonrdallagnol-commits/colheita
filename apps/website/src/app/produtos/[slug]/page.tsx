@@ -52,6 +52,7 @@ const PRODUCT_MOCKUP: Record<string, string> = {
   'life-on': '/products/lifeon.png',
   impuch: '/products/impuch.png',
   defon: '/products/defon.png',
+  biovas: '/products/biovas.png',
 };
 
 interface PageProps {
