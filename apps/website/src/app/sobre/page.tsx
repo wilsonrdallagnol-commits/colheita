@@ -308,44 +308,25 @@ export default function SobrePage() {
               EST. 2024 · BRASIL × ESPANHA
             </div>
 
+            {/* Logo Argho oficial (color para fundo branco) */}
             <div
               className="anim-fade-in-up delay-3"
               style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(4.5rem, 11vw, 9rem)',
-                fontWeight: 700,
-                color: 'var(--argho-blue)',
-                letterSpacing: '-0.08em',
-                lineHeight: 0.85,
-                textAlign: 'right',
                 width: '100%',
-              }}
-            >
-              ARGHO
-            </div>
-
-            <div
-              className="anim-fade-in-up delay-4"
-              style={{
-                marginTop: '12px',
                 display: 'flex',
+                justifyContent: 'flex-end',
                 alignItems: 'center',
-                gap: '12px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.6875rem',
-                letterSpacing: '0.16em',
-                textTransform: 'uppercase',
-                color: 'var(--argho-green)',
-                fontWeight: 600,
               }}
             >
-              <span>AGROSCIENCES</span>
-              <span
-                aria-hidden
+              <Image
+                src="/argho-logo-color.png"
+                alt="Argho Agrosciences"
+                width={520}
+                height={193}
+                priority
                 style={{
-                  width: '24px',
-                  height: '1px',
-                  background: 'var(--argho-green)',
+                  width: 'clamp(280px, 38vw, 520px)',
+                  height: 'auto',
                 }}
               />
             </div>

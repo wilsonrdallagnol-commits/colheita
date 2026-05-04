@@ -14,6 +14,7 @@
 // Hot-swap: quando .glb existir, este componente troca o <video> por <Canvas><HeartGLB />
 // sem mexer na lógica de transição.
 
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
 const SESSION_KEY = 'argho-intro-seen';
@@ -323,20 +324,27 @@ export function HeartIntro() {
           zIndex: 2,
         }}
       >
-        {/* "ARGHO" wordmark grande */}
+        {/* Logo Argho oficial (branca para fundo escuro) */}
         <div
           className="anim-fade-in-up delay-2"
           style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(1.5rem, 3vw, 2.25rem)',
-            fontWeight: 500,
-            color: 'rgba(255,255,255,0.95)',
-            letterSpacing: '0.4em',
-            textTransform: 'uppercase',
-            paddingLeft: '0.4em', // compensa letter-spacing à direita
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
-          ARGHO
+          <Image
+            src="/argho-logo-white.png"
+            alt="Argho Agrosciences"
+            width={320}
+            height={119}
+            priority
+            style={{
+              width: 'clamp(180px, 28vw, 320px)',
+              height: 'auto',
+              opacity: 0.95,
+            }}
+          />
         </div>
 
         {/* Click hint */}
