@@ -10,6 +10,7 @@ import path from 'node:path';
 import { createAdminClient, createServerClient, requireAuth } from '@colheita/auth';
 import { cookies } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
+import sharp from 'sharp';
 
 export const runtime = 'nodejs';
 
@@ -119,6 +120,19 @@ export async function POST(request: NextRequest) {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
+  // 5a. Extrai dimensões para imagens raster (exclui SVG — sharp não processa)
+  let imageWidth: number | null = null;
+  let imageHeight: number | null = null;
+  if (assetType === 'image' && mimeType !== 'image/svg+xml') {
+    try {
+      const meta = await sharp(buffer).metadata();
+      imageWidth = meta.width ?? null;
+      imageHeight = meta.height ?? null;
+    } catch {
+      // Não bloqueia o upload se a extração falhar
+    }
+  }
+
   const { error: storageError } = await adminClient.storage
     .from('assets')
     .upload(storagePath, buffer, {
@@ -158,6 +172,8 @@ export async function POST(request: NextRequest) {
       file_size: file.size,
       storage_path: storagePath,
       type: assetType,
+      ...(imageWidth !== null && { width: imageWidth }),
+      ...(imageHeight !== null && { height: imageHeight }),
     })
     .select('id, filename, original_name, mime_type, file_size, storage_path, type, created_at')
     .single();

@@ -11,6 +11,7 @@ import {
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { AssetGrid } from '@/components/midias/asset-grid';
+import { SearchInput } from '@/components/midias/search-input';
 import { UploadButton } from '@/components/midias/upload-button';
 
 export const metadata = { title: 'Mídias' };
@@ -179,30 +180,45 @@ export default async function MidiasPage({
       </div>
 
       {/* Search */}
-      {q && (
-        <div
-          style={{
-            marginBottom: '16px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontSize: '0.8125rem',
-            color: 'var(--colheita-text-secondary)',
-          }}
-        >
-          <span>Resultados para &ldquo;{q}&rdquo;</span>
-          <Link
-            href={activeType ? `/midias?tipo=${activeType}` : '/midias'}
+      <div
+        style={{
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          flexWrap: 'wrap',
+        }}
+      >
+        <SearchInput
+          defaultValue={q ?? ''}
+          baseHref={activeType ? `/midias?tipo=${activeType}` : '/midias'}
+        />
+        {q && (
+          <div
             style={{
-              color: 'var(--colheita-text-tertiary)',
-              textDecoration: 'none',
-              fontSize: '0.75rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '0.8125rem',
+              color: 'var(--colheita-text-secondary)',
             }}
           >
-            ✕ limpar
-          </Link>
-        </div>
-      )}
+            <span>
+              {assets.length} resultado{assets.length !== 1 ? 's' : ''} para &ldquo;{q}&rdquo;
+            </span>
+            <Link
+              href={activeType ? `/midias?tipo=${activeType}` : '/midias'}
+              style={{
+                color: 'var(--colheita-text-tertiary)',
+                textDecoration: 'none',
+                fontSize: '0.75rem',
+              }}
+            >
+              ✕
+            </Link>
+          </div>
+        )}
+      </div>
 
       {/* Grid */}
       <AssetGrid assets={assets} />
