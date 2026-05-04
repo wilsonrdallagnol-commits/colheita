@@ -1,4 +1,5 @@
 // apps/website/src/components/footer.tsx
+// Footer claro — alinhado com aesthetic wis.digital + identidade Argho
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -6,52 +7,54 @@ export function Footer() {
   return (
     <footer
       style={{
-        borderTop: '1px solid rgba(255,255,255,0.06)',
-        padding: '48px 48px 40px',
-        backgroundColor: 'oklch(0.06 0.016 148)',
+        borderTop: '1px solid var(--border-subtle)',
+        padding: '64px 48px 36px',
+        backgroundColor: 'var(--bg-soft)',
       }}
     >
       <div
         style={{
-          maxWidth: '1200px',
+          maxWidth: '1280px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
-          gap: '48px',
-          marginBottom: '40px',
+          gridTemplateColumns: '1.4fr 1fr 1fr',
+          gap: '64px',
+          marginBottom: '56px',
         }}
       >
         {/* Brand */}
         <div>
-          <Link href="/" style={{ display: 'inline-block', marginBottom: '4px' }}>
+          <Link href="/" style={{ display: 'inline-block', marginBottom: '20px' }}>
             <Image
-              src="/argho-logo-white.png"
+              src="/argho-logo-color.png"
               alt="Argho Agrosciences"
-              width={120}
-              height={32}
-              style={{ objectFit: 'contain', objectPosition: 'left center', opacity: 0.85 }}
+              width={132}
+              height={36}
+              style={{ objectFit: 'contain', objectPosition: 'left center' }}
             />
           </Link>
           <p
             style={{
-              fontFamily: '"Inter", system-ui, sans-serif',
-              fontSize: '0.8125rem',
-              color: 'oklch(0.52 0.018 148)',
-              lineHeight: 1.6,
-              marginTop: '12px',
+              fontFamily: 'var(--font-display)',
+              fontSize: '1.0625rem',
+              color: 'var(--text-primary)',
+              lineHeight: 1.45,
+              letterSpacing: '-0.02em',
+              marginTop: '4px',
+              maxWidth: '320px',
             }}
           >
-            Nutrição de precisão para a
+            Tecnologia viva
             <br />
-            agricultura brasileira.
+            para o agro brasileiro.
           </p>
           <p
+            className="mono"
             style={{
-              fontFamily: '"JetBrains Mono", "Fira Code", ui-monospace, monospace',
+              color: 'var(--text-tertiary)',
+              marginTop: '24px',
               fontSize: '0.6875rem',
-              color: 'oklch(0.40 0.015 148)',
-              marginTop: '16px',
-              letterSpacing: '0.02em',
+              letterSpacing: '0.04em',
             }}
           >
             CNPJ 00.000.000/0001-00
@@ -60,20 +63,10 @@ export function Footer() {
 
         {/* Portfólio */}
         <div>
-          <p
-            style={{
-              fontFamily: '"Inter", system-ui, sans-serif',
-              fontSize: '0.6875rem',
-              fontWeight: 600,
-              color: 'oklch(0.52 0.018 148)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              marginBottom: '16px',
-            }}
-          >
+          <p className="label" style={{ marginBottom: '18px' }}>
             Portfólio
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {[
               {
                 href: '/produtos?categoria=fertilizantes-minerais',
@@ -87,10 +80,11 @@ export function Footer() {
                 key={href}
                 href={href}
                 style={{
-                  fontFamily: '"Inter", system-ui, sans-serif',
+                  fontFamily: 'var(--font-body)',
                   fontSize: '0.875rem',
-                  color: 'oklch(0.62 0.022 148)',
+                  color: 'var(--text-secondary)',
                   textDecoration: 'none',
+                  letterSpacing: '-0.005em',
                 }}
               >
                 {label}
@@ -101,33 +95,27 @@ export function Footer() {
 
         {/* Empresa */}
         <div>
-          <p
-            style={{
-              fontFamily: '"Inter", system-ui, sans-serif',
-              fontSize: '0.6875rem',
-              fontWeight: 600,
-              color: 'oklch(0.52 0.018 148)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              marginBottom: '16px',
-            }}
-          >
+          <p className="label" style={{ marginBottom: '18px' }}>
             Empresa
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {[
               { href: '/sobre', label: 'Sobre a Argho' },
               { href: '/sobre#valores', label: 'Valores' },
               { href: '/sobre#expertise', label: 'Nossa expertise' },
-            ].map(({ href, label }) => (
+              { href: 'https://colheita.app.br', label: 'Plataforma Colheita ↗', external: true },
+            ].map(({ href, label, external }) => (
               <Link
                 key={href}
                 href={href}
+                target={external ? '_blank' : undefined}
+                rel={external ? 'noopener noreferrer' : undefined}
                 style={{
-                  fontFamily: '"Inter", system-ui, sans-serif',
+                  fontFamily: 'var(--font-body)',
                   fontSize: '0.875rem',
-                  color: 'oklch(0.62 0.022 148)',
+                  color: external ? 'var(--gold-deep)' : 'var(--text-secondary)',
                   textDecoration: 'none',
+                  letterSpacing: '-0.005em',
                 }}
               >
                 {label}
@@ -135,25 +123,15 @@ export function Footer() {
             ))}
           </div>
 
-          <div style={{ marginTop: '24px' }}>
-            <p
-              style={{
-                fontFamily: '"Inter", system-ui, sans-serif',
-                fontSize: '0.6875rem',
-                fontWeight: 600,
-                color: 'oklch(0.52 0.018 148)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                marginBottom: '8px',
-              }}
-            >
+          <div style={{ marginTop: '28px' }}>
+            <p className="label" style={{ marginBottom: '8px' }}>
               Regulatório
             </p>
             <p
+              className="mono"
               style={{
-                fontFamily: '"JetBrains Mono", "Fira Code", ui-monospace, monospace',
+                color: 'var(--text-tertiary)',
                 fontSize: '0.75rem',
-                color: 'oklch(0.45 0.014 148)',
                 lineHeight: 1.6,
               }}
             >
@@ -168,30 +146,32 @@ export function Footer() {
       {/* Bottom bar */}
       <div
         style={{
-          maxWidth: '1200px',
+          maxWidth: '1280px',
           margin: '0 auto',
-          borderTop: '1px solid rgba(255,255,255,0.05)',
-          paddingTop: '20px',
+          borderTop: '1px solid var(--border-subtle)',
+          paddingTop: '24px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '12px',
         }}
       >
         <p
           style={{
-            fontFamily: '"Inter", system-ui, sans-serif',
+            fontFamily: 'var(--font-body)',
             fontSize: '0.75rem',
-            color: 'oklch(0.40 0.012 148)',
+            color: 'var(--text-tertiary)',
           }}
         >
           © 2026 Argho Agrosciences. Todos os direitos reservados.
         </p>
         <p
+          className="mono"
           style={{
-            fontFamily: '"JetBrains Mono", "Fira Code", ui-monospace, monospace',
+            color: 'var(--text-tertiary)',
             fontSize: '0.6875rem',
-            color: 'oklch(0.35 0.010 148)',
-            letterSpacing: '0.04em',
+            letterSpacing: '0.08em',
           }}
         >
           ORIGEM EUROPEIA · REGISTRO MAPA

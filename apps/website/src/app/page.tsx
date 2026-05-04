@@ -1,440 +1,403 @@
 // apps/website/src/app/page.tsx
-// Home — Argho Agrosciences
-// Design: Ciência viva no campo. Hero cinematográfico com embalagens reais.
+// Home — Argho Agrosciences (Redesign 2026)
+// Coração digital como ponto focal escultural. Editorial. Branco.
+// Aesthetic base: wis.digital. Mood: resn.co.nz. Identidade: Argho.
 
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { HeroHeart } from '@/components/hero-heart';
 
 export const metadata: Metadata = {
-  title: 'Argho Agrosciences — Nutrição de precisão para o agro brasileiro',
+  title: 'Argho Agrosciences — Tecnologia viva para o agro brasileiro',
   description:
-    'Fertilizantes minerais, organominerais, biológicos e adjuvantes desenvolvidos com ciência de ponta para alta produtividade agrícola.',
+    'Fertilizantes minerais, organominerais, biológicos e adjuvantes desenvolvidos com ciência de ponta. Origem europeia. Registro MAPA.',
 };
 
-// ─── Paleta ────────────────────────────────────────────────────────────────────
-const C = {
-  bg: 'oklch(0.07 0.018 148)',
-  bgMid: 'oklch(0.10 0.020 148)',
-  bgLight: 'oklch(0.13 0.022 148)',
-  green: 'oklch(0.58 0.165 148)',
-  greenMid: 'oklch(0.42 0.12 148)',
-  gold: 'oklch(0.73 0.135 78)',
-  teal: 'oklch(0.64 0.13 195)',
-  muted: 'oklch(0.52 0.025 148)',
-  faint: 'oklch(0.30 0.018 148)',
-  border: 'oklch(0.18 0.020 148)',
-  white: '#ffffff',
-};
+// Marquee de produtos para tira inferior do hero
+const MARQUEE_PRODUCTS = [
+  'Xcensis',
+  'Stron',
+  'Operate Plus',
+  'Grow Filling',
+  'Troian',
+  'Defon',
+  'Algen',
+  'Grow MoB',
+  'Grow Calcium',
+  'Grow Sulfur',
+  'Impuch',
+  'Life On',
+  'Grow Nitro P',
+  'Up Soil',
+  'Biovas',
+  'Operate Citronela',
+  'Operate 4 em 1',
+  'Operate Orange',
+];
 
 export default function Home() {
   return (
-    <main style={{ backgroundColor: C.bg, overflowX: 'hidden' }}>
-      {/* ═══════════════════════════════════════════════════════════════════════
-          HERO — Produto como protagonista. Fundo escuro, glow dourado/verde.
-      ══════════════════════════════════════════════════════════════════════════ */}
+    <main style={{ backgroundColor: 'var(--bg)', overflowX: 'hidden' }}>
+      {/* ═══════════════════════════════════════════════════════════════════
+          HERO — Coração digital. Layout assimétrico. White editorial.
+      ══════════════════════════════════════════════════════════════════════ */}
       <section
         style={{
           position: 'relative',
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          paddingTop: '64px',
-          paddingBottom: '80px',
+          minHeight: 'calc(100vh - 72px)',
+          padding: '40px 48px 80px',
           overflow: 'hidden',
-          backgroundColor: C.bg,
         }}
       >
-        {/* Glow de fundo — aurora verde/dourada */}
+        {/* Grid técnico de fundo (sutilíssimo) */}
         <div
           aria-hidden
           style={{
             position: 'absolute',
             inset: 0,
-            background:
-              'radial-gradient(ellipse 70% 55% at 50% 42%, oklch(0.22 0.10 148 / 0.55) 0%, oklch(0.14 0.06 148 / 0.25) 45%, transparent 72%)',
+            backgroundImage: `
+              linear-gradient(var(--border-subtle) 1px, transparent 1px),
+              linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px)
+            `,
+            backgroundSize: '88px 88px',
+            opacity: 0.6,
+            maskImage: 'radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 80%)',
+            WebkitMaskImage:
+              'radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 80%)',
             pointerEvents: 'none',
           }}
         />
 
-        {/* Glow dourado acento */}
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            width: '520px',
-            height: '200px',
-            borderRadius: '50%',
-            background: 'radial-gradient(ellipse, oklch(0.73 0.135 78 / 0.22) 0%, transparent 70%)',
-            top: '38%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            pointerEvents: 'none',
-            filter: 'blur(40px)',
-          }}
-        />
-
-        {/* Anéis orbitais — SVG decorativo */}
-        <svg
-          aria-hidden="true"
-          role="presentation"
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            pointerEvents: 'none',
-          }}
-          viewBox="0 0 1440 900"
-          preserveAspectRatio="xMidYMid slice"
-        >
-          <ellipse
-            cx="720"
-            cy="400"
-            rx="310"
-            ry="200"
-            fill="none"
-            stroke="oklch(0.58 0.165 148 / 0.07)"
-            strokeWidth="1"
-          />
-          <ellipse
-            cx="720"
-            cy="400"
-            rx="490"
-            ry="310"
-            fill="none"
-            stroke="oklch(0.58 0.165 148 / 0.04)"
-            strokeWidth="1"
-          />
-          <ellipse
-            cx="720"
-            cy="400"
-            rx="670"
-            ry="420"
-            fill="none"
-            stroke="oklch(0.73 0.135 78 / 0.025)"
-            strokeWidth="1"
-          />
-          {/* Pontos nas órbitas */}
-          <circle cx="1030" cy="400" r="3" fill="oklch(0.73 0.135 78 / 0.4)" />
-          <circle cx="410" cy="400" r="3" fill="oklch(0.58 0.165 148 / 0.4)" />
-          <circle cx="720" cy="90" r="2" fill="oklch(0.64 0.13 195 / 0.35)" />
-        </svg>
-
-        {/* ── Label topo ── */}
         <div
           style={{
-            position: 'absolute',
-            top: '84px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            display: 'flex',
+            position: 'relative',
+            maxWidth: '1320px',
+            margin: '0 auto',
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1.05fr) minmax(0, 1fr)',
+            gap: '64px',
             alignItems: 'center',
-            gap: '8px',
+            minHeight: 'calc(100vh - 152px)',
           }}
+          className="hero-grid"
         >
-          <span
-            style={{
-              display: 'inline-block',
-              width: '24px',
-              height: '1px',
-              background: C.gold,
-              opacity: 0.6,
-            }}
-          />
-          <span
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '0.6875rem',
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              color: C.gold,
-              opacity: 0.8,
-            }}
-          >
-            Argho Agrosciences — Linha Completa 2024
-          </span>
-          <span
-            style={{
-              display: 'inline-block',
-              width: '24px',
-              height: '1px',
-              background: C.gold,
-              opacity: 0.6,
-            }}
-          />
-        </div>
-
-        {/* ── Embalagens hero — 3 produtos em cluster ── */}
-        <div
-          style={{
-            position: 'relative',
-            width: '100%',
-            maxWidth: '820px',
-            height: '440px',
-            display: 'flex',
-            alignItems: 'flex-end',
-            justifyContent: 'center',
-          }}
-        >
-          {/* Grow Filling — esquerda, atrás */}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: '50%',
-              transform: 'translateX(-280px) scale(0.72) rotate(-6deg)',
-              transformOrigin: 'bottom center',
-              filter: 'drop-shadow(0 30px 50px oklch(0.58 0.165 148 / 0.3)) brightness(0.88)',
-              zIndex: 1,
-              opacity: 0.85,
-            }}
-          >
-            <Image
-              src="/mockups/grow-filling.png"
-              alt="Grow Filling"
-              width={220}
-              height={300}
-              style={{ objectFit: 'contain', display: 'block' }}
-              priority
-            />
-          </div>
-
-          {/* Xcensis — centro, frente */}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: '50%',
-              transform: 'translateX(-50%) scale(1.08)',
-              transformOrigin: 'bottom center',
-              filter:
-                'drop-shadow(0 0 60px oklch(0.73 0.135 78 / 0.45)) drop-shadow(0 30px 60px oklch(0.58 0.165 148 / 0.5))',
-              zIndex: 3,
-            }}
-          >
-            <Image
-              src="/mockups/xcensis.png"
-              alt="Xcensis"
-              width={280}
-              height={380}
-              style={{ objectFit: 'contain', display: 'block' }}
-              priority
-            />
-          </div>
-
-          {/* Grow MoB — direita, atrás */}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: '50%',
-              transform: 'translateX(60px) scale(0.72) rotate(6deg)',
-              transformOrigin: 'bottom center',
-              filter: 'drop-shadow(0 30px 50px oklch(0.64 0.13 195 / 0.3)) brightness(0.88)',
-              zIndex: 2,
-              opacity: 0.85,
-            }}
-          >
-            <Image
-              src="/mockups/grow-mob.png"
-              alt="Grow MoB+"
-              width={220}
-              height={300}
-              style={{ objectFit: 'contain', display: 'block' }}
-              priority
-            />
-          </div>
-        </div>
-
-        {/* ── Headline + CTA ── */}
-        <div
-          style={{
-            position: 'relative',
-            zIndex: 10,
-            textAlign: 'center',
-            padding: '0 24px',
-            marginTop: '8px',
-          }}
-        >
-          <h1
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2.2rem, 5.5vw, 4rem)',
-              fontWeight: 600,
-              color: C.white,
-              letterSpacing: '-0.04em',
-              lineHeight: 1.05,
-              margin: '0 0 20px',
-            }}
-          >
-            Nutrição que transforma
-            <br />
-            <span style={{ color: C.gold }}>lavouras em resultados</span>
-          </h1>
-          <p
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '1rem',
-              color: C.muted,
-              maxWidth: '440px',
-              margin: '0 auto 36px',
-              lineHeight: 1.65,
-            }}
-          >
-            18 produtos. 4 linhas. Uma ciência desenvolvida para a alta produtividade do campo
-            brasileiro.
-          </p>
-
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link
-              href="/produtos"
+          {/* ── Lado esquerdo: copy editorial ── */}
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            {/* Eyebrow */}
+            <div
+              className="anim-fade-in-up"
               style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                color: 'oklch(0.08 0 0)',
-                backgroundColor: C.gold,
-                textDecoration: 'none',
-                padding: '13px 32px',
-                borderRadius: '6px',
-                letterSpacing: '-0.01em',
-                display: 'inline-block',
-              }}
-            >
-              Ver catálogo completo
-            </Link>
-            <Link
-              href="https://colheita.app.br"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.875rem',
-                fontWeight: 500,
-                color: C.gold,
-                backgroundColor: 'transparent',
-                textDecoration: 'none',
-                padding: '13px 32px',
-                borderRadius: '6px',
-                border: `1px solid oklch(0.73 0.135 78 / 0.30)`,
-                letterSpacing: '-0.01em',
-                display: 'inline-flex',
+                display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: '12px',
+                marginBottom: '32px',
               }}
             >
               <span
                 style={{
                   display: 'inline-block',
-                  width: '6px',
-                  height: '6px',
-                  borderRadius: '50%',
-                  backgroundColor: C.gold,
+                  width: '28px',
+                  height: '1px',
+                  background: 'var(--green)',
                 }}
               />
-              Plataforma Colheita
-            </Link>
-          </div>
-        </div>
-      </section>
+              <span
+                className="mono"
+                style={{
+                  fontSize: '0.6875rem',
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  color: 'var(--text-tertiary)',
+                  fontWeight: 500,
+                }}
+              >
+                Argho Agrosciences · Linha completa 2026
+              </span>
+            </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════════
-          NÚMEROS — strip de credibilidade
-      ══════════════════════════════════════════════════════════════════════════ */}
-      <div
-        style={{
-          borderTop: `1px solid ${C.border}`,
-          borderBottom: `1px solid ${C.border}`,
-          backgroundColor: C.bgMid,
-          display: 'flex',
-          alignItems: 'stretch',
-          overflowX: 'auto',
-        }}
-      >
-        {[
-          { value: '18', label: 'Produtos ativos' },
-          { value: '4', label: 'Linhas especializadas' },
-          { value: '100%', label: 'Tecnologia nacional' },
-          { value: '+5', label: 'Anos de pesquisa' },
-        ].map((stat, i) => (
-          <div
-            key={stat.value}
-            style={{
-              flex: '1 1 0',
-              minWidth: '160px',
-              padding: '32px 24px',
-              textAlign: 'center',
-              borderRight: i < 3 ? `1px solid ${C.border}` : 'none',
-            }}
-          >
-            <div
+            {/* Headline editorial */}
+            <h1
+              className="anim-fade-in-up delay-1"
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: '2.25rem',
-                fontWeight: 600,
-                color: C.gold,
-                letterSpacing: '-0.04em',
-                lineHeight: 1,
-                marginBottom: '6px',
+                fontSize: 'clamp(2.5rem, 6vw, 5.25rem)',
+                fontWeight: 500,
+                color: 'var(--text-primary)',
+                letterSpacing: '-0.045em',
+                lineHeight: 0.98,
+                margin: '0 0 28px',
               }}
             >
-              {stat.value}
-            </div>
-            <div
+              Tecnologia viva
+              <br />
+              para o{' '}
+              <span
+                style={{
+                  background: 'linear-gradient(110deg, var(--green) 0%, var(--teal) 100%)',
+                  WebkitBackgroundClip: 'text',
+                  backgroundClip: 'text',
+                  color: 'transparent',
+                }}
+              >
+                agro brasileiro
+              </span>
+              .
+            </h1>
+
+            {/* Sub-copy */}
+            <p
+              className="anim-fade-in-up delay-2"
               style={{
                 fontFamily: 'var(--font-body)',
-                fontSize: '0.8125rem',
-                color: C.muted,
-                letterSpacing: '-0.01em',
+                fontSize: '1.0625rem',
+                color: 'var(--text-secondary)',
+                lineHeight: 1.6,
+                margin: '0 0 44px',
+                maxWidth: '480px',
+                letterSpacing: '-0.005em',
               }}
             >
-              {stat.label}
+              18 produtos. 4 linhas. Uma ciência cultivada na fronteira entre microbiologia, química
+              mineral e a realidade do campo brasileiro.
+            </p>
+
+            {/* CTA cluster */}
+            <div
+              className="anim-fade-in-up delay-3"
+              style={{
+                display: 'flex',
+                gap: '14px',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                marginBottom: '64px',
+              }}
+            >
+              <Link
+                href="/produtos"
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.9375rem',
+                  fontWeight: 600,
+                  color: '#ffffff',
+                  backgroundColor: 'var(--text-primary)',
+                  textDecoration: 'none',
+                  padding: '15px 32px',
+                  borderRadius: '8px',
+                  letterSpacing: '-0.01em',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                }}
+              >
+                Ver portfólio completo
+                <span style={{ fontSize: '1.1em', lineHeight: 1 }}>→</span>
+              </Link>
+              <Link
+                href="https://colheita.app.br"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.9375rem',
+                  fontWeight: 500,
+                  color: 'var(--text-primary)',
+                  textDecoration: 'none',
+                  padding: '15px 24px',
+                  letterSpacing: '-0.005em',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  borderBottom: '1px solid var(--text-primary)',
+                  paddingLeft: 0,
+                  paddingRight: 0,
+                  marginLeft: '12px',
+                }}
+              >
+                <span
+                  style={{
+                    display: 'inline-block',
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--gold)',
+                    boxShadow: '0 0 8px oklch(0.66 0.130 78 / 0.6)',
+                  }}
+                />
+                Plataforma Colheita
+              </Link>
+            </div>
+
+            {/* Métricas inline */}
+            <div
+              className="anim-fade-in-up delay-4"
+              style={{
+                display: 'flex',
+                gap: '48px',
+                paddingTop: '32px',
+                borderTop: '1px solid var(--border-subtle)',
+              }}
+            >
+              {[
+                { value: '18', label: 'Produtos ativos' },
+                { value: '4', label: 'Linhas especializadas' },
+                { value: '100%', label: 'Tech nacional' },
+              ].map((m) => (
+                <div key={m.label}>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '2rem',
+                      fontWeight: 500,
+                      color: 'var(--text-primary)',
+                      letterSpacing: '-0.04em',
+                      lineHeight: 1,
+                      marginBottom: '4px',
+                    }}
+                  >
+                    {m.value}
+                  </div>
+                  <div
+                    className="mono"
+                    style={{
+                      fontSize: '0.6875rem',
+                      color: 'var(--text-tertiary)',
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {m.label}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════════
-          LINHAS — 4 categorias com design editorial
-      ══════════════════════════════════════════════════════════════════════════ */}
+          {/* ── Lado direito: coração digital ── */}
+          <div
+            style={{
+              position: 'relative',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minHeight: '600px',
+            }}
+            className="hero-heart-wrap"
+          >
+            <HeroHeart />
+          </div>
+        </div>
+
+        {/* Marquee inferior — produtos */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            overflow: 'hidden',
+            borderTop: '1px solid var(--border-subtle)',
+            borderBottom: '1px solid var(--border-subtle)',
+            backgroundColor: 'var(--bg-warm)',
+            padding: '20px 0',
+            zIndex: 1,
+          }}
+        >
+          <div
+            className="anim-marquee"
+            style={{
+              display: 'flex',
+              gap: '64px',
+              whiteSpace: 'nowrap',
+              width: 'max-content',
+            }}
+          >
+            {[...MARQUEE_PRODUCTS, ...MARQUEE_PRODUCTS].map((name, i) => (
+              <span
+                // biome-ignore lint/suspicious/noArrayIndexKey: marquee duplicates intentionally
+                key={`${name}-${i}`}
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '1rem',
+                  color: 'var(--text-tertiary)',
+                  letterSpacing: '-0.01em',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '64px',
+                }}
+              >
+                {name}
+                <span
+                  aria-hidden
+                  style={{
+                    width: '4px',
+                    height: '4px',
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--green)',
+                    opacity: 0.5,
+                    flexShrink: 0,
+                  }}
+                />
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <style>{`
+          @media (max-width: 968px) {
+            .hero-grid {
+              grid-template-columns: 1fr !important;
+              gap: 32px !important;
+              min-height: auto !important;
+            }
+            .hero-heart-wrap {
+              order: -1;
+              min-height: 420px !important;
+            }
+          }
+        `}</style>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          PORTFÓLIO — 4 linhas em cards leves
+      ══════════════════════════════════════════════════════════════════════ */}
       <section
         style={{
-          padding: '100px 64px',
-          maxWidth: '1280px',
+          padding: '120px 48px',
+          maxWidth: '1320px',
           margin: '0 auto',
         }}
       >
         {/* Cabeçalho da seção */}
-        <div style={{ marginBottom: '64px' }}>
-          <p
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '0.6875rem',
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              color: C.green,
-              marginBottom: '12px',
-            }}
-          >
-            Portfólio
-          </p>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.6fr)',
+            gap: '64px',
+            alignItems: 'end',
+            marginBottom: '72px',
+          }}
+          className="section-head"
+        >
+          <span className="label" style={{ alignSelf: 'flex-start' }}>
+            01 / Portfólio
+          </span>
           <h2
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(1.8rem, 3.5vw, 3rem)',
-              fontWeight: 600,
-              color: C.white,
-              letterSpacing: '-0.04em',
-              lineHeight: 1.1,
+              fontSize: 'clamp(2rem, 4.5vw, 3.75rem)',
+              fontWeight: 500,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.045em',
+              lineHeight: 1.0,
               margin: 0,
-              maxWidth: '520px',
+              maxWidth: '720px',
             }}
           >
             Quatro linhas.{' '}
-            <span style={{ color: C.muted }}>Cada uma com um propósito no campo.</span>
+            <span style={{ color: 'var(--text-tertiary)' }}>
+              Cada uma com um propósito claro no campo.
+            </span>
           </h2>
         </div>
 
@@ -443,14 +406,17 @@ export default function Home() {
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '2px',
+            gap: '0',
+            border: '1px solid var(--border)',
+            borderRadius: '16px',
+            overflow: 'hidden',
+            backgroundColor: 'var(--bg)',
           }}
         >
-          {/* Fertilizantes Minerais */}
           <LineCard
             number="01"
             name="Fertilizantes Minerais"
-            accent={C.green}
+            accent="var(--cat-mineral)"
             description="Macronutrientes e micronutrientes em formulações de alta eficiência para suprimento direto da planta."
             products={[
               'Xcensis',
@@ -464,32 +430,26 @@ export default function Home() {
             ]}
             href="/produtos?categoria=fertilizantes-minerais"
           />
-
-          {/* Organominerais */}
           <LineCard
             number="02"
             name="Organominerais"
-            accent={C.teal}
+            accent="var(--cat-organo)"
             description="Minerais associados a fontes orgânicas para melhora do solo e eficiência de absorção radicular."
             products={['Impuch', 'Life On', 'Grow Nitro P', 'Up Soil']}
             href="/produtos?categoria=organominerais"
           />
-
-          {/* Biológicos */}
           <LineCard
             number="03"
             name="Biológicos"
-            accent="oklch(0.66 0.150 150)"
+            accent="var(--cat-bio)"
             description="Inoculantes e compostos bioativos que estimulam a microbiologia do solo e a resistência da planta."
             products={['Troian', 'Biovas']}
             href="/produtos?categoria=biologicos"
           />
-
-          {/* Adjuvantes */}
           <LineCard
             number="04"
             name="Adjuvantes"
-            accent={C.gold}
+            accent="var(--cat-adj)"
             description="Potencializadores de caldas e pulverização para maximizar a absorção e cobertura foliar."
             products={['Operate Plus', 'Operate Citronela', 'Operate 4 em 1', 'Operate Orange']}
             href="/produtos?categoria=adjuvantes"
@@ -497,358 +457,108 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════════════
-          DESTAQUE — Stron + Operate em spotlight completo
-      ══════════════════════════════════════════════════════════════════════════ */}
+      {/* ═══════════════════════════════════════════════════════════════════
+          DESTAQUE — Stron + Operate
+      ══════════════════════════════════════════════════════════════════════ */}
 
       {/* Stron */}
-      <section
-        style={{
-          borderTop: `1px solid ${C.border}`,
-          backgroundColor: C.bgMid,
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '1280px',
-            margin: '0 auto',
-            padding: '0 64px',
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            alignItems: 'center',
-            gap: '80px',
-            minHeight: '520px',
-          }}
-        >
-          {/* Texto */}
-          <div style={{ padding: '80px 0' }}>
-            <span
-              style={{
-                display: 'inline-block',
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.6875rem',
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                color: C.green,
-                marginBottom: '20px',
-              }}
-            >
-              Fertilizante Mineral — Destaque
-            </span>
-            <h2
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(2rem, 4vw, 3.25rem)',
-                fontWeight: 600,
-                color: C.white,
-                letterSpacing: '-0.04em',
-                lineHeight: 1.05,
-                margin: '0 0 20px',
-              }}
-            >
-              Stron
-            </h2>
-            <p
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '1rem',
-                color: C.muted,
-                lineHeight: 1.7,
-                margin: '0 0 32px',
-                maxWidth: '420px',
-              }}
-            >
-              Proteína específica com precursores vegetais. Melhora arquitetura e ativação
-              fisiológica da planta, potencializando o enraizamento e a absorção de nutrientes.
-            </p>
-            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '40px' }}>
-              {['Enraizamento', 'Ativação fisiológica', 'V5 → 100 mL/ha'].map((tag) => (
-                <span
-                  key={tag}
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '0.75rem',
-                    color: C.green,
-                    border: `1px solid oklch(0.58 0.165 148 / 0.3)`,
-                    borderRadius: '4px',
-                    padding: '4px 12px',
-                    letterSpacing: '-0.01em',
-                  }}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <Link
-              href="/produtos/stron"
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                color: C.white,
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                letterSpacing: '-0.01em',
-              }}
-            >
-              Ver ficha técnica
-              <span style={{ color: C.green }}>→</span>
-            </Link>
-          </div>
-
-          {/* Imagem Stron — num card iluminado */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'flex-end',
-              padding: '48px 0 0',
-              position: 'relative',
-            }}
-          >
-            {/* Glow verde atrás da embalagem */}
-            <div
-              aria-hidden
-              style={{
-                position: 'absolute',
-                width: '340px',
-                height: '340px',
-                borderRadius: '50%',
-                background:
-                  'radial-gradient(ellipse, oklch(0.58 0.165 148 / 0.2) 0%, transparent 70%)',
-                bottom: '60px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                filter: 'blur(30px)',
-              }}
-            />
-            <Image
-              src="/mockups/stron.png"
-              alt="Stron 1L — Argho Agrosciences"
-              width={320}
-              height={420}
-              style={{
-                objectFit: 'contain',
-                position: 'relative',
-                zIndex: 1,
-                filter: 'drop-shadow(0 20px 60px oklch(0.58 0.165 148 / 0.35))',
-              }}
-            />
-          </div>
-        </div>
-      </section>
+      <Spotlight
+        eyebrow="02 / Destaque · Fertilizante Mineral"
+        name="Stron"
+        accent="var(--cat-mineral)"
+        description="Proteína específica com precursores vegetais. Melhora arquitetura e ativação fisiológica da planta, potencializando o enraizamento e a absorção de nutrientes."
+        tags={['Enraizamento', 'Ativação fisiológica', 'V5 → 100 mL/ha']}
+        image="/mockups/stron.png"
+        imageAlt="Stron 1L — Argho Agrosciences"
+        href="/produtos/stron"
+        reverse={false}
+      />
 
       {/* Operate */}
+      <Spotlight
+        eyebrow="03 / Destaque · Adjuvante"
+        name="Operate Plus"
+        accent="var(--cat-adj)"
+        description="Adjuvante de alta performance para potencialização de caldas. Reduz a tensão superficial, aumenta a cobertura foliar e melhora a absorção dos ativos aplicados."
+        tags={['Cobertura foliar', 'Anti-deriva', '50–100 mL/100L']}
+        image="/mockups/operate.png"
+        imageAlt="Operate Plus 20L — Argho Agrosciences"
+        href="/produtos/operate-plus"
+        reverse={true}
+      />
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          PLATAFORMA COLHEITA
+      ══════════════════════════════════════════════════════════════════════ */}
       <section
         style={{
-          borderTop: `1px solid ${C.border}`,
-          backgroundColor: C.bg,
+          borderTop: '1px solid var(--border-subtle)',
+          padding: '120px 48px',
+          backgroundColor: 'var(--bg-soft)',
         }}
       >
         <div
           style={{
-            maxWidth: '1280px',
-            margin: '0 auto',
-            padding: '0 64px',
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            alignItems: 'center',
-            gap: '80px',
-            minHeight: '520px',
-          }}
-        >
-          {/* Imagem Operate — esquerda desta vez */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'flex-end',
-              padding: '48px 0 0',
-              position: 'relative',
-            }}
-          >
-            <div
-              aria-hidden
-              style={{
-                position: 'absolute',
-                width: '380px',
-                height: '300px',
-                borderRadius: '50%',
-                background:
-                  'radial-gradient(ellipse, oklch(0.73 0.135 78 / 0.18) 0%, transparent 70%)',
-                bottom: '40px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                filter: 'blur(30px)',
-              }}
-            />
-            <Image
-              src="/mockups/operate.png"
-              alt="Operate Plus 20L — Argho Agrosciences"
-              width={340}
-              height={380}
-              style={{
-                objectFit: 'contain',
-                position: 'relative',
-                zIndex: 1,
-                filter: 'drop-shadow(0 20px 60px oklch(0.73 0.135 78 / 0.25))',
-              }}
-            />
-          </div>
-
-          {/* Texto */}
-          <div style={{ padding: '80px 0' }}>
-            <span
-              style={{
-                display: 'inline-block',
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.6875rem',
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                color: C.gold,
-                marginBottom: '20px',
-              }}
-            >
-              Adjuvante — Destaque
-            </span>
-            <h2
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(2rem, 4vw, 3.25rem)',
-                fontWeight: 600,
-                color: C.white,
-                letterSpacing: '-0.04em',
-                lineHeight: 1.05,
-                margin: '0 0 20px',
-              }}
-            >
-              Operate Plus
-            </h2>
-            <p
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '1rem',
-                color: C.muted,
-                lineHeight: 1.7,
-                margin: '0 0 32px',
-                maxWidth: '420px',
-              }}
-            >
-              Adjuvante de alta performance para potencialização de caldas. Reduz a tensão
-              superficial, aumenta a cobertura foliar e melhora a absorção dos ativos aplicados.
-            </p>
-            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '40px' }}>
-              {['Cobertura foliar', 'Anti-deriva', '50–100 mL/100L'].map((tag) => (
-                <span
-                  key={tag}
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '0.75rem',
-                    color: C.gold,
-                    border: `1px solid oklch(0.73 0.135 78 / 0.3)`,
-                    borderRadius: '4px',
-                    padding: '4px 12px',
-                    letterSpacing: '-0.01em',
-                  }}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <Link
-              href="/produtos/operate-plus"
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                color: C.white,
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                letterSpacing: '-0.01em',
-              }}
-            >
-              Ver ficha técnica
-              <span style={{ color: C.gold }}>→</span>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════
-          PLATAFORMA COLHEITA — Acesso restrito
-      ══════════════════════════════════════════════════════════════════════════ */}
-      <section
-        style={{
-          borderTop: `1px solid ${C.border}`,
-          padding: '100px 64px',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '1280px',
+            maxWidth: '1320px',
             margin: '0 auto',
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
+            gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
             gap: '80px',
             alignItems: 'center',
           }}
+          className="platform-grid"
         >
           {/* Copy */}
           <div>
-            <div
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}
+            <span
+              className="label"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginBottom: '24px',
+              }}
             >
               <span
                 style={{
-                  display: 'inline-block',
-                  width: '6px',
-                  height: '6px',
+                  width: '8px',
+                  height: '8px',
                   borderRadius: '50%',
-                  backgroundColor: C.gold,
-                  animation: 'pulseRing 2s ease-out infinite',
+                  backgroundColor: 'var(--gold)',
+                  boxShadow: '0 0 0 4px oklch(0.66 0.130 78 / 0.15)',
                 }}
+                className="anim-pulse-ring"
               />
-              <span
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '0.6875rem',
-                  letterSpacing: '0.18em',
-                  textTransform: 'uppercase',
-                  color: C.gold,
-                }}
-              >
-                Acesso restrito
-              </span>
-            </div>
+              04 / Plataforma · Acesso restrito
+            </span>
             <h2
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(1.8rem, 3.5vw, 2.75rem)',
-                fontWeight: 600,
-                color: C.white,
+                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+                fontWeight: 500,
+                color: 'var(--text-primary)',
                 letterSpacing: '-0.04em',
-                lineHeight: 1.1,
-                margin: '0 0 20px',
+                lineHeight: 1.05,
+                margin: '0 0 24px',
               }}
             >
-              Plataforma Colheita
+              Colheita: a inteligência
+              <br />
+              da Argho no campo.
             </h2>
             <p
               style={{
                 fontFamily: 'var(--font-body)',
                 fontSize: '1rem',
-                color: C.muted,
-                lineHeight: 1.7,
+                color: 'var(--text-secondary)',
+                lineHeight: 1.65,
                 margin: '0 0 36px',
-                maxWidth: '400px',
+                maxWidth: '460px',
+                letterSpacing: '-0.005em',
               }}
             >
-              A plataforma de gestão agronômica da Argho. Dados em tempo real, recomendações de
-              produto e acompanhamento de lavoura em um único ambiente.
+              Plataforma de gestão agronômica para distribuidores e equipes técnicas Argho.
+              Catálogo, recomendação por cultura, certificação e assistente IA em um único ambiente.
             </p>
             <Link
               href="https://colheita.app.br"
@@ -856,92 +566,95 @@ export default function Home() {
               rel="noopener noreferrer"
               style={{
                 fontFamily: 'var(--font-body)',
-                fontSize: '0.875rem',
+                fontSize: '0.9375rem',
                 fontWeight: 600,
-                color: 'oklch(0.08 0 0)',
-                backgroundColor: C.gold,
+                color: '#ffffff',
+                backgroundColor: 'var(--gold-deep)',
                 textDecoration: 'none',
-                padding: '13px 28px',
-                borderRadius: '6px',
-                letterSpacing: '-0.01em',
-                display: 'inline-block',
+                padding: '14px 28px',
+                borderRadius: '8px',
+                letterSpacing: '-0.005em',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
               }}
             >
-              Acessar plataforma →
+              Acessar plataforma
+              <span style={{ fontSize: '1.1em', lineHeight: 1 }}>→</span>
             </Link>
           </div>
 
-          {/* Glass card — dashboard mockup */}
+          {/* Mock card preview */}
           <div
             style={{
-              background:
-                'linear-gradient(135deg, oklch(0.14 0.025 148 / 0.8) 0%, oklch(0.10 0.018 148 / 0.9) 100%)',
-              border: `1px solid oklch(0.73 0.135 78 / 0.15)`,
+              backgroundColor: 'var(--bg)',
+              border: '1px solid var(--border)',
               borderRadius: '16px',
-              padding: '36px',
-              backdropFilter: 'blur(20px)',
+              padding: '32px',
+              boxShadow:
+                '0 24px 60px -20px oklch(0.66 0.130 78 / 0.18), 0 4px 16px -4px rgba(0,0,0,0.04)',
               position: 'relative',
               overflow: 'hidden',
             }}
           >
-            {/* Glow ouro */}
+            {/* Glow gold */}
             <div
               aria-hidden
               style={{
                 position: 'absolute',
-                top: '-80px',
-                right: '-60px',
-                width: '300px',
-                height: '300px',
+                top: '-100px',
+                right: '-80px',
+                width: '320px',
+                height: '320px',
                 borderRadius: '50%',
                 background:
-                  'radial-gradient(ellipse, oklch(0.73 0.135 78 / 0.10) 0%, transparent 70%)',
+                  'radial-gradient(ellipse, oklch(0.66 0.130 78 / 0.16) 0%, transparent 70%)',
                 pointerEvents: 'none',
               }}
             />
 
-            {/* Header do card */}
+            {/* Header card */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
+                gap: '12px',
                 marginBottom: '28px',
                 paddingBottom: '20px',
-                borderBottom: `1px solid ${C.border}`,
+                borderBottom: '1px solid var(--border-subtle)',
               }}
             >
               <div
                 style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '8px',
-                  backgroundColor: 'oklch(0.73 0.135 78 / 0.15)',
-                  border: `1px solid oklch(0.73 0.135 78 / 0.2)`,
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  backgroundColor: 'var(--gold-soft)',
+                  border: '1px solid oklch(0.66 0.130 78 / 0.2)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                <span style={{ fontSize: '14px' }}>🌾</span>
+                <span style={{ fontSize: '15px' }}>🌾</span>
               </div>
               <div>
                 <div
                   style={{
                     fontFamily: 'var(--font-body)',
-                    fontSize: '0.875rem',
+                    fontSize: '0.9375rem',
                     fontWeight: 600,
-                    color: C.white,
+                    color: 'var(--text-primary)',
                     letterSpacing: '-0.01em',
                   }}
                 >
                   Colheita Dashboard
                 </div>
                 <div
+                  className="mono"
                   style={{
-                    fontFamily: 'var(--font-body)',
                     fontSize: '0.6875rem',
-                    color: C.muted,
+                    color: 'var(--text-tertiary)',
                   }}
                 >
                   colheita.app.br
@@ -951,10 +664,10 @@ export default function Home() {
 
             {/* Métricas mock */}
             {[
-              { label: 'Safra Soja 24/25', value: 'Em andamento', color: C.green },
-              { label: 'Último relatório', value: '2 dias atrás', color: C.muted },
-              { label: 'Produtos aplicados', value: '4 recomendações', color: C.gold },
-            ].map((item) => (
+              { label: 'Safra Soja 24/25', value: 'Em andamento', color: 'var(--green)' },
+              { label: 'Último relatório', value: '2 dias atrás', color: 'var(--text-secondary)' },
+              { label: 'Produtos aplicados', value: '4 recomendações', color: 'var(--gold-deep)' },
+            ].map((item, i, arr) => (
               <div
                 key={item.label}
                 style={{
@@ -962,15 +675,15 @@ export default function Home() {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   padding: '14px 0',
-                  borderBottom: `1px solid oklch(0.18 0.020 148 / 0.5)`,
+                  borderBottom: i < arr.length - 1 ? '1px solid var(--border-subtle)' : 'none',
                 }}
               >
                 <span
                   style={{
                     fontFamily: 'var(--font-body)',
-                    fontSize: '0.8125rem',
-                    color: C.muted,
-                    letterSpacing: '-0.01em',
+                    fontSize: '0.875rem',
+                    color: 'var(--text-tertiary)',
+                    letterSpacing: '-0.005em',
                   }}
                 >
                   {item.label}
@@ -978,10 +691,10 @@ export default function Home() {
                 <span
                   style={{
                     fontFamily: 'var(--font-body)',
-                    fontSize: '0.8125rem',
+                    fontSize: '0.875rem',
                     fontWeight: 500,
                     color: item.color,
-                    letterSpacing: '-0.01em',
+                    letterSpacing: '-0.005em',
                   }}
                 >
                   {item.value}
@@ -991,132 +704,166 @@ export default function Home() {
 
             <div
               style={{
-                marginTop: '24px',
+                marginTop: '20px',
                 padding: '12px 16px',
-                backgroundColor: 'oklch(0.73 0.135 78 / 0.08)',
+                backgroundColor: 'var(--gold-soft)',
                 borderRadius: '8px',
-                border: `1px solid oklch(0.73 0.135 78 / 0.15)`,
+                border: '1px solid oklch(0.66 0.130 78 / 0.18)',
               }}
             >
               <p
                 style={{
                   fontFamily: 'var(--font-body)',
                   fontSize: '0.75rem',
-                  color: 'oklch(0.73 0.135 78 / 0.8)',
+                  color: 'var(--gold-deep)',
                   margin: 0,
                   lineHeight: 1.5,
+                  letterSpacing: '-0.005em',
                 }}
               >
-                🔒 Acesso exclusivo para clientes Argho credenciados.
+                🔒 Acesso exclusivo para distribuidores Argho credenciados.
               </p>
             </div>
           </div>
         </div>
+
+        <style>{`
+          @media (max-width: 968px) {
+            .platform-grid {
+              grid-template-columns: 1fr !important;
+              gap: 40px !important;
+            }
+          }
+        `}</style>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════════════
-          FILOSOFIA — Strip final antes do CTA
-      ══════════════════════════════════════════════════════════════════════════ */}
+      {/* ═══════════════════════════════════════════════════════════════════
+          MANIFESTO — quote editorial
+      ══════════════════════════════════════════════════════════════════════ */}
       <section
         style={{
-          borderTop: `1px solid ${C.border}`,
-          padding: '80px 64px',
+          padding: '120px 48px',
           textAlign: 'center',
-          backgroundColor: C.bgMid,
+          backgroundColor: 'var(--bg)',
+          borderTop: '1px solid var(--border-subtle)',
         }}
       >
-        <p
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(1.1rem, 2.5vw, 1.6rem)',
-            fontWeight: 400,
-            color: C.muted,
-            letterSpacing: '-0.03em',
-            lineHeight: 1.5,
-            maxWidth: '680px',
-            margin: '0 auto 32px',
-          }}
-        >
-          "Ciência agrícola desenvolvida no Brasil, para o Brasil. Cada fórmula nasce de pesquisa
-          aplicada com{' '}
-          <em style={{ color: C.white, fontStyle: 'normal' }}>foco em resultado real no campo.</em>"
-        </p>
-        <Link
-          href="/sobre"
-          style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: '0.875rem',
-            fontWeight: 500,
-            color: C.muted,
-            textDecoration: 'none',
-            letterSpacing: '-0.01em',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-          }}
-        >
-          Sobre a Argho <span style={{ color: C.green }}>→</span>
-        </Link>
+        <div style={{ maxWidth: '820px', margin: '0 auto' }}>
+          <span className="label" style={{ display: 'block', marginBottom: '32px' }}>
+            05 / Manifesto
+          </span>
+          <p
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(1.4rem, 3vw, 2.25rem)',
+              fontWeight: 400,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.035em',
+              lineHeight: 1.25,
+              margin: '0 0 40px',
+            }}
+          >
+            Ciência agrícola desenvolvida no Brasil, para o Brasil.
+            <br />
+            <span style={{ color: 'var(--text-tertiary)' }}>
+              Cada fórmula nasce de pesquisa aplicada com{' '}
+            </span>
+            <em
+              style={{
+                fontStyle: 'normal',
+                background: 'linear-gradient(110deg, var(--green) 0%, var(--teal) 100%)',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                color: 'transparent',
+              }}
+            >
+              foco em resultado real no campo.
+            </em>
+          </p>
+          <Link
+            href="/sobre"
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '0.9375rem',
+              fontWeight: 500,
+              color: 'var(--text-primary)',
+              textDecoration: 'none',
+              letterSpacing: '-0.005em',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              borderBottom: '1px solid var(--text-primary)',
+              paddingBottom: '4px',
+            }}
+          >
+            Sobre a Argho
+            <span style={{ color: 'var(--green)' }}>→</span>
+          </Link>
+        </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════════════
+      {/* ═══════════════════════════════════════════════════════════════════
           CTA FINAL
-      ══════════════════════════════════════════════════════════════════════════ */}
+      ══════════════════════════════════════════════════════════════════════ */}
       <section
         style={{
-          borderTop: `1px solid ${C.border}`,
-          padding: '100px 64px',
+          padding: '120px 48px',
           textAlign: 'center',
           position: 'relative',
           overflow: 'hidden',
+          backgroundColor: 'var(--bg-soft)',
+          borderTop: '1px solid var(--border-subtle)',
         }}
       >
-        {/* Glow de fundo */}
+        {/* Glow ambient */}
         <div
           aria-hidden
           style={{
             position: 'absolute',
             inset: 0,
             background:
-              'radial-gradient(ellipse 50% 80% at 50% 100%, oklch(0.58 0.165 148 / 0.10) 0%, transparent 70%)',
+              'radial-gradient(ellipse 50% 70% at 50% 100%, oklch(0.52 0.155 148 / 0.08) 0%, transparent 70%)',
             pointerEvents: 'none',
           }}
         />
 
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <p
-            style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '0.6875rem',
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              color: C.green,
-              marginBottom: '16px',
-            }}
-          >
-            Catálogo completo
-          </p>
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: '720px', margin: '0 auto' }}>
+          <span className="label" style={{ display: 'block', marginBottom: '24px' }}>
+            06 / Catálogo completo
+          </span>
           <h2
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2rem, 4vw, 3.25rem)',
-              fontWeight: 600,
-              color: C.white,
-              letterSpacing: '-0.04em',
-              lineHeight: 1.05,
-              margin: '0 0 20px',
+              fontSize: 'clamp(2rem, 4vw, 3.5rem)',
+              fontWeight: 500,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.045em',
+              lineHeight: 1.0,
+              margin: '0 0 24px',
             }}
           >
-            Conheça todos os <span style={{ color: C.green }}>18 produtos</span>
+            Conheça os{' '}
+            <span
+              style={{
+                background: 'linear-gradient(110deg, var(--green) 0%, var(--teal) 100%)',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                color: 'transparent',
+              }}
+            >
+              18 produtos
+            </span>
+            .
           </h2>
           <p
             style={{
               fontFamily: 'var(--font-body)',
-              fontSize: '1rem',
-              color: C.muted,
-              margin: '0 auto 40px',
-              maxWidth: '420px',
+              fontSize: '1.0625rem',
+              color: 'var(--text-secondary)',
+              margin: '0 auto 44px',
+              maxWidth: '480px',
               lineHeight: 1.65,
+              letterSpacing: '-0.005em',
             }}
           >
             Da nutrição mineral aos biológicos. Encontre a solução certa para cada estágio da sua
@@ -1126,26 +873,38 @@ export default function Home() {
             href="/produtos"
             style={{
               fontFamily: 'var(--font-body)',
-              fontSize: '0.9375rem',
+              fontSize: '1rem',
               fontWeight: 600,
-              color: 'oklch(0.08 0 0)',
-              backgroundColor: C.gold,
+              color: '#ffffff',
+              backgroundColor: 'var(--text-primary)',
               textDecoration: 'none',
-              padding: '15px 40px',
-              borderRadius: '6px',
+              padding: '17px 40px',
+              borderRadius: '8px',
               letterSpacing: '-0.01em',
-              display: 'inline-block',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
             }}
           >
             Ver portfólio completo
+            <span style={{ fontSize: '1.1em', lineHeight: 1 }}>→</span>
           </Link>
         </div>
       </section>
+
+      <style>{`
+        @media (max-width: 968px) {
+          .section-head {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+        }
+      `}</style>
     </main>
   );
 }
 
-// ─── Componente: card de linha de produto ──────────────────────────────────────
+// ─── Componente: card de linha de produto ────────────────────────────────────
 function LineCard({
   number,
   name,
@@ -1166,24 +925,27 @@ function LineCard({
       href={href}
       style={{
         display: 'block',
-        backgroundColor: C.bgMid,
-        border: `1px solid ${C.border}`,
-        padding: '40px',
+        backgroundColor: 'var(--bg)',
+        padding: '40px 36px',
         textDecoration: 'none',
         position: 'relative',
         overflow: 'hidden',
-        transition: 'border-color 0.2s',
+        borderRight: '1px solid var(--border)',
+        borderBottom: '1px solid var(--border)',
+        transition: 'background-color 0.25s var(--ease-out-expo)',
       }}
     >
-      {/* Número */}
+      {/* Número decorativo */}
       <span
+        aria-hidden
         style={{
           fontFamily: 'var(--font-display)',
-          fontSize: '5rem',
-          fontWeight: 700,
-          color: `${accent}12`,
+          fontSize: '4.5rem',
+          fontWeight: 600,
+          color: accent,
+          opacity: 0.08,
           position: 'absolute',
-          top: '16px',
+          top: '12px',
           right: '20px',
           lineHeight: 1,
           letterSpacing: '-0.06em',
@@ -1209,9 +971,9 @@ function LineCard({
         style={{
           fontFamily: 'var(--font-display)',
           fontSize: '1.25rem',
-          fontWeight: 600,
-          color: C.white,
-          letterSpacing: '-0.03em',
+          fontWeight: 500,
+          color: 'var(--text-primary)',
+          letterSpacing: '-0.025em',
           margin: '0 0 12px',
         }}
       >
@@ -1221,9 +983,10 @@ function LineCard({
         style={{
           fontFamily: 'var(--font-body)',
           fontSize: '0.875rem',
-          color: C.muted,
+          color: 'var(--text-tertiary)',
           lineHeight: 1.6,
           margin: '0 0 28px',
+          letterSpacing: '-0.005em',
         }}
       >
         {description}
@@ -1238,11 +1001,12 @@ function LineCard({
               fontFamily: 'var(--font-body)',
               fontSize: '0.6875rem',
               color: accent,
-              backgroundColor: `${accent}10`,
-              border: `1px solid ${accent}28`,
-              borderRadius: '3px',
-              padding: '3px 8px',
-              letterSpacing: '-0.01em',
+              backgroundColor: 'transparent',
+              border: '1px solid currentColor',
+              borderRadius: '4px',
+              padding: '3px 9px',
+              letterSpacing: '-0.005em',
+              opacity: 0.85,
             }}
           >
             {p}
@@ -1250,21 +1014,196 @@ function LineCard({
         ))}
       </div>
 
-      {/* CTA do card */}
+      {/* CTA */}
       <span
         style={{
           fontFamily: 'var(--font-body)',
           fontSize: '0.8125rem',
           fontWeight: 500,
           color: accent,
-          letterSpacing: '-0.01em',
+          letterSpacing: '-0.005em',
           display: 'inline-flex',
           alignItems: 'center',
-          gap: '6px',
+          gap: '8px',
         }}
       >
-        Ver linha →
+        Ver linha
+        <span aria-hidden>→</span>
       </span>
     </Link>
+  );
+}
+
+// ─── Componente: spotlight de produto ────────────────────────────────────────
+function Spotlight({
+  eyebrow,
+  name,
+  accent,
+  description,
+  tags,
+  image,
+  imageAlt,
+  href,
+  reverse,
+}: {
+  eyebrow: string;
+  name: string;
+  accent: string;
+  description: string;
+  tags: string[];
+  image: string;
+  imageAlt: string;
+  href: string;
+  reverse: boolean;
+}) {
+  return (
+    <section
+      style={{
+        borderTop: '1px solid var(--border-subtle)',
+        backgroundColor: 'var(--bg)',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: '1320px',
+          margin: '0 auto',
+          padding: '0 48px',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          alignItems: 'center',
+          gap: '80px',
+          minHeight: '560px',
+          direction: reverse ? 'rtl' : 'ltr',
+        }}
+        className="spotlight-grid"
+      >
+        {/* Texto */}
+        <div style={{ direction: 'ltr', padding: '80px 0' }}>
+          <span className="label" style={{ display: 'block', marginBottom: '20px' }}>
+            {eyebrow}
+          </span>
+          <h2
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(2rem, 4vw, 3.25rem)',
+              fontWeight: 500,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.045em',
+              lineHeight: 1.0,
+              margin: '0 0 24px',
+            }}
+          >
+            {name}
+          </h2>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '1.0625rem',
+              color: 'var(--text-secondary)',
+              lineHeight: 1.6,
+              margin: '0 0 32px',
+              maxWidth: '440px',
+              letterSpacing: '-0.005em',
+            }}
+          >
+            {description}
+          </p>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '40px' }}>
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.75rem',
+                  color: accent,
+                  border: '1px solid currentColor',
+                  borderRadius: '4px',
+                  padding: '5px 12px',
+                  letterSpacing: '-0.005em',
+                  opacity: 0.85,
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+          <Link
+            href={href}
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '0.9375rem',
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              borderBottom: '1px solid var(--text-primary)',
+              paddingBottom: '4px',
+              letterSpacing: '-0.005em',
+            }}
+          >
+            Ver ficha técnica
+            <span style={{ color: accent }}>→</span>
+          </Link>
+        </div>
+
+        {/* Imagem */}
+        <div
+          style={{
+            direction: 'ltr',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-end',
+            position: 'relative',
+            padding: '60px 0 0',
+          }}
+        >
+          {/* Glow accent */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              width: '380px',
+              height: '380px',
+              borderRadius: '50%',
+              background: `radial-gradient(ellipse, ${accent.replace('var(--', 'oklch(').replace(')', '')} / 0.15) 0%, transparent 70%)`,
+              bottom: '40px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              filter: 'blur(40px)',
+            }}
+          />
+          <Image
+            src={image}
+            alt={imageAlt}
+            width={340}
+            height={420}
+            style={{
+              objectFit: 'contain',
+              position: 'relative',
+              zIndex: 1,
+              filter: 'drop-shadow(0 30px 50px rgba(0,0,0,0.10))',
+            }}
+          />
+        </div>
+      </div>
+
+      <style>{`
+        @media (max-width: 968px) {
+          .spotlight-grid {
+            grid-template-columns: 1fr !important;
+            direction: ltr !important;
+            min-height: auto !important;
+            gap: 32px !important;
+            padding-top: 64px !important;
+            padding-bottom: 64px !important;
+          }
+          .spotlight-grid > div {
+            padding: 0 !important;
+          }
+        }
+      `}</style>
+    </section>
   );
 }
