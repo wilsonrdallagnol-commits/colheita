@@ -23,6 +23,7 @@ MAPPING = {
     "CONTROX - 1L.png": "controx",
     "DEFON - 1L.png": "defon",
     "GROW CALCIUM - 1L.png": "grow-calcium",
+    "GROW MOB+ - 1KG.png": "grow-mob",
     "Impuch - 1L.png": "impuch",
     "LIFEON - 1L.png": "lifeon",  # slug do produto é 'life-on' mas arquivo fica 'lifeon.png' por convenção da app
     "NEMAX - 1L.png": "nemax",
@@ -32,6 +33,7 @@ MAPPING = {
     "OPERATE PLUS - 1L.png": "operate-plus",
     "STRON - 1L.png": "stron",
     "TROIAN - 1L.png": "troian",
+    "XCENSIS - 1KG.png": "xcensis",
 }
 
 def process(session, src: Path, dst: Path) -> tuple[int, int]:

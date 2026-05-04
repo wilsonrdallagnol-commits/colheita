@@ -15,23 +15,21 @@ export const metadata: Metadata = {
     'Fertilizantes minerais, organominerais, biológicos e adjuvantes desenvolvidos com ciência de ponta. Origem europeia. Registro MAPA.',
 };
 
-// Marquee de produtos para tira inferior do hero
+// Marquee de produtos para tira inferior do hero — portfólio vigente
 const MARQUEE_PRODUCTS = [
   'Xcensis',
   'Stron',
-  'Operate Plus',
-  'Grow Filling',
-  'Troian',
-  'Defon',
-  'Algen',
-  'Grow MoB',
   'Grow Calcium',
-  'Grow Sulfur',
+  'Defon',
+  'Grow MoB',
   'Impuch',
   'Life On',
-  'Grow Nitro P',
-  'Up Soil',
+  'Troian',
   'Biovas',
+  'Bovex',
+  'Controx',
+  'Nemax',
+  'Operate Plus',
   'Operate Citronela',
   'Operate 4 em 1',
   'Operate Orange',
@@ -492,6 +490,527 @@ export default function Home() {
 
       {/* Divisor — raiz vertical descendo (verde Argho) */}
       <RootDivider variant="single" accent="var(--argho-green)" weight={2} />
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          P&D — Laboratório IA no sul da Espanha
+          Diferenciação técnica: fenotipagem computacional + IA para
+          desenvolver novas formulações. Onde a magia acontece.
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section
+        style={{
+          position: 'relative',
+          padding: '120px 48px',
+          borderTop: '1px solid var(--border-subtle)',
+          borderBottom: '1px solid var(--border-subtle)',
+          backgroundColor: 'var(--bg)',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Halo radial sutil ao fundo */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background:
+              'radial-gradient(ellipse 50% 60% at 80% 30%, var(--argho-blue-soft) 0%, transparent 60%), radial-gradient(ellipse 40% 50% at 15% 75%, var(--argho-green-soft) 0%, transparent 60%)',
+            opacity: 0.7,
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Grid técnico mascarado */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: `
+              linear-gradient(var(--border-subtle) 1px, transparent 1px),
+              linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px)
+            `,
+            backgroundSize: '64px 64px',
+            opacity: 0.4,
+            maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
+            WebkitMaskImage:
+              'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
+            pointerEvents: 'none',
+          }}
+        />
+
+        <div
+          className="lab-section-grid"
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            maxWidth: '1320px',
+            margin: '0 auto',
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1.05fr) minmax(0, 1fr)',
+            gap: '80px',
+            alignItems: 'center',
+            marginBottom: '80px',
+          }}
+        >
+          {/* Lado esquerdo: copy editorial */}
+          <div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                marginBottom: '28px',
+              }}
+            >
+              <span
+                aria-hidden
+                style={{ width: '28px', height: '1px', background: 'var(--argho-green)' }}
+              />
+              <span
+                className="mono"
+                style={{
+                  fontSize: '0.6875rem',
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  color: 'var(--argho-blue)',
+                  fontWeight: 600,
+                }}
+              >
+                Pesquisa & Desenvolvimento · Sul da Espanha
+              </span>
+            </div>
+
+            <h2
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(2.5rem, 5.5vw, 4.5rem)',
+                fontWeight: 700,
+                color: 'var(--argho-blue)',
+                letterSpacing: '-0.055em',
+                lineHeight: 0.95,
+                marginBottom: '32px',
+              }}
+            >
+              Onde a <span style={{ color: 'var(--argho-green)' }}>ciência</span>
+              <br />
+              encontra o campo.
+            </h2>
+
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '1.0625rem',
+                color: 'var(--text-secondary)',
+                lineHeight: 1.7,
+                marginBottom: '24px',
+                maxWidth: '560px',
+              }}
+            >
+              Nosso laboratório no sul da Espanha combina{' '}
+              <strong style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+                fenotipagem computacional
+              </strong>{' '}
+              e{' '}
+              <strong style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+                inteligência artificial
+              </strong>{' '}
+              para identificar quais moléculas — e em quais combinações — ativam as rotas
+              metabólicas que o agro brasileiro precisa.
+            </p>
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '1rem',
+                color: 'var(--text-muted)',
+                lineHeight: 1.7,
+                maxWidth: '560px',
+              }}
+            >
+              A IA recebe milhares de combinações de estímulos químicos aplicados em plantas-modelo
+              e mede simultaneamente a resposta de quatro vetores fisiológicos. Cada novo produto
+              Argho começa aqui — antes de ganhar registro MAPA e chegar ao campo brasileiro.
+            </p>
+          </div>
+
+          {/* Lado direito: visualização "fenotipagem" — 4 leaves grid */}
+          <div
+            aria-hidden
+            style={{
+              position: 'relative',
+              minHeight: '440px',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '12px',
+              padding: '32px',
+              backgroundColor: 'var(--bg)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: '16px',
+              boxShadow: 'var(--shadow-card)',
+            }}
+          >
+            {/* Header da viz */}
+            <div
+              style={{
+                gridColumn: '1 / -1',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingBottom: '12px',
+                borderBottom: '1px solid var(--border-subtle)',
+                marginBottom: '4px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span
+                  className="anim-pulse-ring"
+                  style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--argho-green)',
+                    boxShadow: '0 0 0 3px oklch(0.586 0.150 138.8 / 0.18)',
+                  }}
+                />
+                <span
+                  className="mono"
+                  style={{
+                    fontSize: '0.625rem',
+                    letterSpacing: '0.16em',
+                    textTransform: 'uppercase',
+                    color: 'var(--text-secondary)',
+                    fontWeight: 700,
+                  }}
+                >
+                  Phenotyping · live capture
+                </span>
+              </div>
+              <span
+                className="mono"
+                style={{
+                  fontSize: '0.625rem',
+                  color: 'var(--text-tertiary)',
+                  letterSpacing: '0.06em',
+                }}
+              >
+                t = 18:24:07
+              </span>
+            </div>
+
+            {/* 4 quadros simulando heatmaps de leaves */}
+            {[
+              {
+                label: 'Temperatura',
+                metric: '+0.8°C',
+                color: 'oklch(0.55 0.180 30)', // pink/red
+                bg: 'oklch(0.18 0.140 30)',
+                ringStops: ['oklch(0.30 0.150 30)', 'oklch(0.50 0.180 30)', 'oklch(0.65 0.220 30)'],
+              },
+              {
+                label: 'Fotossíntese',
+                metric: 'Φ 0.78',
+                color: 'oklch(0.62 0.180 50)', // orange
+                bg: 'oklch(0.18 0.130 50)',
+                ringStops: ['oklch(0.32 0.130 50)', 'oklch(0.55 0.180 50)', 'oklch(0.72 0.220 50)'],
+              },
+              {
+                label: 'NPQ',
+                metric: '2.4',
+                color: 'oklch(0.62 0.150 220)', // teal/blue
+                bg: 'oklch(0.18 0.120 220)',
+                ringStops: [
+                  'oklch(0.32 0.130 220)',
+                  'oklch(0.55 0.180 220)',
+                  'oklch(0.70 0.200 220)',
+                ],
+              },
+              {
+                label: 'Defesa',
+                metric: 'RFU 240',
+                color: 'oklch(0.65 0.140 145)', // green
+                bg: 'oklch(0.18 0.110 145)',
+                ringStops: [
+                  'oklch(0.30 0.130 145)',
+                  'oklch(0.55 0.150 145)',
+                  'oklch(0.70 0.180 145)',
+                ],
+              },
+            ].map((vec) => (
+              <div
+                key={vec.label}
+                style={{
+                  position: 'relative',
+                  aspectRatio: '1 / 1',
+                  borderRadius: '8px',
+                  background: vec.bg,
+                  border: `1px solid ${vec.color.replace(')', ' / 0.30)')}`,
+                  overflow: 'hidden',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {/* Folha estilizada via radial gradients (heatmap) */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: '20%',
+                    background: `
+                      radial-gradient(ellipse 60% 50% at 50% 35%, ${vec.ringStops[2]} 0%, ${vec.ringStops[1]} 30%, ${vec.ringStops[0]} 60%, transparent 80%),
+                      radial-gradient(ellipse 50% 70% at 30% 70%, ${vec.ringStops[1]} 0%, transparent 60%),
+                      radial-gradient(ellipse 50% 70% at 70% 70%, ${vec.ringStops[1]} 0%, transparent 60%)
+                    `,
+                    clipPath:
+                      'path("M 50 5 C 75 5, 95 25, 95 50 C 95 75, 75 95, 50 95 C 25 95, 5 75, 5 50 C 5 25, 25 5, 50 5 Z")',
+                    transform: 'scale(1)',
+                    filter: 'blur(2px)',
+                  }}
+                />
+                {/* Label inferior */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: '8px',
+                    left: '10px',
+                    right: '10px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'baseline',
+                    zIndex: 2,
+                  }}
+                >
+                  <span
+                    className="mono"
+                    style={{
+                      fontSize: '0.5625rem',
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      color: 'rgba(255,255,255,0.7)',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {vec.label}
+                  </span>
+                  <span
+                    className="mono"
+                    style={{
+                      fontSize: '0.6875rem',
+                      color: vec.color,
+                      fontWeight: 700,
+                    }}
+                  >
+                    {vec.metric}
+                  </span>
+                </div>
+              </div>
+            ))}
+
+            {/* Footer da viz */}
+            <div
+              style={{
+                gridColumn: '1 / -1',
+                paddingTop: '12px',
+                borderTop: '1px solid var(--border-subtle)',
+                marginTop: '4px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <span
+                className="mono"
+                style={{
+                  fontSize: '0.625rem',
+                  letterSpacing: '0.10em',
+                  color: 'var(--text-tertiary)',
+                  textTransform: 'uppercase',
+                }}
+              >
+                4 vetores · análise simultânea
+              </span>
+              <span
+                className="mono"
+                style={{
+                  fontSize: '0.625rem',
+                  color: 'var(--argho-green)',
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                }}
+              >
+                ✓ AI · learning
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* 4 cards de "o que a IA mede" */}
+        <div
+          className="lab-vectors-grid"
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            maxWidth: '1320px',
+            margin: '0 auto',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+            gap: '1px',
+            backgroundColor: 'var(--border-subtle)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: '12px',
+            overflow: 'hidden',
+          }}
+        >
+          {[
+            {
+              num: '01',
+              title: 'Alteração metabólica',
+              body: 'Quais rotas bioquímicas a planta ativa em resposta a cada combinação de moléculas.',
+            },
+            {
+              num: '02',
+              title: 'Resposta fotossintética',
+              body: 'Eficiência do fotossistema II e capacidade fotossintética sob estresse aplicado.',
+            },
+            {
+              num: '03',
+              title: 'Ativação de defesas',
+              body: 'Acúmulo de compostos de defesa e indução de resistência sistêmica adquirida.',
+            },
+            {
+              num: '04',
+              title: 'Mudanças fisiológicas',
+              body: 'NPQ (proteção contra dano fotossintético), temperatura e fluorescência foliar.',
+            },
+          ].map((v) => (
+            <div
+              key={v.num}
+              style={{
+                backgroundColor: 'var(--bg)',
+                padding: '40px 32px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '14px',
+              }}
+            >
+              <span
+                className="mono"
+                style={{
+                  fontSize: '0.6875rem',
+                  letterSpacing: '0.16em',
+                  color: 'var(--argho-blue)',
+                  fontWeight: 700,
+                }}
+              >
+                {v.num}
+              </span>
+              <h3
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '1.125rem',
+                  fontWeight: 700,
+                  letterSpacing: '-0.035em',
+                  color: 'var(--text-primary)',
+                  lineHeight: 1.1,
+                }}
+              >
+                {v.title}
+              </h3>
+              <p
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.875rem',
+                  color: 'var(--text-secondary)',
+                  lineHeight: 1.6,
+                }}
+              >
+                {v.body}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Closing — síntese */}
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            maxWidth: '1320px',
+            margin: '64px auto 0',
+            padding: '40px 48px',
+            backgroundColor: 'var(--argho-blue)',
+            borderRadius: '12px',
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1fr) auto',
+            gap: '40px',
+            alignItems: 'center',
+            boxShadow: 'var(--shadow-blue-glow-lg)',
+          }}
+          className="lab-closing-card"
+        >
+          <p
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(1.25rem, 2.4vw, 1.75rem)',
+              fontWeight: 600,
+              color: '#ffffff',
+              letterSpacing: '-0.035em',
+              lineHeight: 1.25,
+              margin: 0,
+            }}
+          >
+            A IA aprende{' '}
+            <span style={{ color: 'oklch(0.94 0.040 138)' }}>
+              quais moléculas ativam quais rotas metabólicas
+            </span>{' '}
+            — antes de o produto chegar ao campo brasileiro com registro MAPA.
+          </p>
+          <Link
+            href="/sobre"
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '0.9375rem',
+              fontWeight: 600,
+              color: 'var(--argho-blue)',
+              backgroundColor: '#ffffff',
+              textDecoration: 'none',
+              padding: '14px 28px',
+              borderRadius: '8px',
+              letterSpacing: '-0.01em',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}
+          >
+            Sobre a Argho
+            <span style={{ fontSize: '1.1em', lineHeight: 1 }}>→</span>
+          </Link>
+        </div>
+
+        <style>{`
+          @media (max-width: 968px) {
+            .lab-section-grid {
+              grid-template-columns: 1fr !important;
+              gap: 48px !important;
+            }
+            .lab-vectors-grid {
+              grid-template-columns: repeat(2, 1fr) !important;
+            }
+            .lab-closing-card {
+              grid-template-columns: 1fr !important;
+              gap: 24px !important;
+            }
+          }
+          @media (max-width: 640px) {
+            .lab-vectors-grid {
+              grid-template-columns: 1fr !important;
+            }
+          }
+        `}</style>
+      </section>
+
+      {/* Divisor — fan azul (eco da nova seção IA) */}
+      <RootDivider variant="fan" accent="var(--argho-blue-soft)" weight={2} />
 
       {/* ═══════════════════════════════════════════════════════════════════
           PLATAFORMA COLHEITA

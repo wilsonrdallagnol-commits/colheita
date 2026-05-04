@@ -155,47 +155,6 @@ export const PRODUCTS: Product[] = [
     ],
   },
   {
-    slug: 'grow-filling',
-    name: 'Grow Filling',
-    category: 'fertilizantes-minerais',
-    tagline: 'Fertilizante potássico concentrado para enchimento de grãos',
-    description:
-      'Fertilizante mineral misto sólido de alta concentração em potássio (K₂O 35%) com sacarídeos e aminoácidos. Formulado para atender a demanda intensiva de K na fase de enchimento de grãos em soja, milho, trigo e outras culturas.',
-    physicalState: 'sólido',
-    originCountry: 'Espanha',
-    productType: 'Fertilizante Mineral Misto',
-    registrationMapa: 'PR 002049-4.000003',
-    applicationModes: ['Via Foliar', 'Via Fertirrigação'],
-    composition: { macros: { N: 2.0, K2O: 35.0 } },
-    packaging: [
-      { type: 'bag', weightKg: 1, sku: 'GROW-FILLING-1KG' },
-      { type: 'bag', weightKg: 5, sku: 'GROW-FILLING-5KG' },
-    ],
-    applications: [
-      {
-        crop: 'Soja',
-        stage: 'R3–R5 (enchimento de grãos)',
-        dosePerHa: 500,
-        unit: 'g',
-        notes: 'Combinar com Xcensis ("dupla final") para máxima eficiência.',
-      },
-      {
-        crop: 'Milho',
-        stage: 'R2–R4',
-        dosePerHa: 600,
-        unit: 'g',
-        notes: 'Aplicar antes das 9h ou após as 17h.',
-      },
-      {
-        crop: 'Trigo',
-        stage: 'Espigamento',
-        dosePerHa: 400,
-        unit: 'g',
-        notes: 'Dissolver em 200 L de água por hectare.',
-      },
-    ],
-  },
-  {
     slug: 'grow-calcium',
     name: 'Grow Calcium',
     category: 'fertilizantes-minerais',
@@ -232,24 +191,6 @@ export const PRODUCTS: Product[] = [
     ],
   },
   {
-    slug: 'algen',
-    name: 'Algen',
-    category: 'fertilizantes-minerais',
-    tagline: 'Extrato de algas com fósforo e potássio para enraizamento e florescimento',
-    description:
-      'Fertilizante mineral misto fluido com extrato de algas marinhas, fósforo e potássio. Os polissacarídeos e betaínas do extrato de algas estimulam o desenvolvimento radicular e o florescimento, especialmente em condições de estresse hídrico ou térmico.',
-    physicalState: 'fluido',
-    originCountry: 'Espanha',
-    productType: 'Fertilizante Mineral Misto',
-    registrationMapa: 'PR 002049-4.000002',
-    applicationModes: ['Via Foliar', 'Via Fertirrigação'],
-    composition: { macros: { P2O5: 3.0, K2O: 3.0 } },
-    packaging: [
-      { type: 'bottle', volumeL: 1, sku: 'ALGEN-1L' },
-      { type: 'drum', volumeL: 20, sku: 'ALGEN-20L' },
-    ],
-  },
-  {
     slug: 'grow-mob',
     name: 'Grow Mob',
     category: 'fertilizantes-minerais',
@@ -265,24 +206,6 @@ export const PRODUCTS: Product[] = [
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'GROW-MOB-1L' },
       { type: 'drum', volumeL: 20, sku: 'GROW-MOB-20L' },
-    ],
-  },
-  {
-    slug: 'grow-sulfur',
-    name: 'Grow Sulfur',
-    category: 'fertilizantes-minerais',
-    tagline: 'Enxofre e nitrogênio em solução para manutenção nutricional',
-    description:
-      'Fertilizante mineral misto fluido com enxofre e nitrogênio. O enxofre é constituinte de aminoácidos (cisteína, metionina) e vitaminas, essencial para formação de proteínas e atividade enzimática. Indicado para culturas com alta demanda em S como canola, brássicas e cana-de-açúcar.',
-    physicalState: 'fluido',
-    originCountry: 'Espanha',
-    productType: 'Fertilizante Mineral Misto',
-    registrationMapa: 'PR 002049-4.000008',
-    applicationModes: ['Via Foliar', 'Via Fertirrigação'],
-    composition: { macros: { N: 5.0 }, others: { S: 8.0 } },
-    packaging: [
-      { type: 'bottle', volumeL: 1, sku: 'GROW-SULFUR-1L' },
-      { type: 'drum', volumeL: 20, sku: 'GROW-SULFUR-20L' },
     ],
   },
 
@@ -315,34 +238,6 @@ export const PRODUCTS: Product[] = [
     composition: { macros: { N: 2.0, K2O: 1.5 }, others: { 'M.O.': 12.0 } },
     packaging: [{ type: 'drum', volumeL: 20, sku: 'LIFE-ON-20L' }],
   },
-  {
-    slug: 'grow-nitro-p',
-    name: 'Grow Nitro P',
-    category: 'organominerais',
-    tagline: 'Organomineral nitrogenado concentrado com vinhaça e substâncias húmicas',
-    description:
-      'Fertilizante organomineral fluido com alto teor de nitrogênio (8%), vinhaça concentrada e ácidos húmicos e fúlvicos. Fornece N de liberação controlada pela matéria orgânica, reduzindo perdas por lixiviação e volatilização em solos tropicais.',
-    physicalState: 'fluido',
-    originCountry: 'Brasil',
-    productType: 'Fertilizante Organomineral Simples',
-    applicationModes: ['Via Fertirrigação', 'Via Solo'],
-    composition: { macros: { N: 8.0 }, others: { 'M.O.': 10.0, 'Ác. Fúlvicos': 1.5 } },
-    packaging: [{ type: 'drum', volumeL: 20, sku: 'GROW-NITRO-P-20L' }],
-  },
-  {
-    slug: 'up-soil',
-    name: 'Up Soil',
-    category: 'organominerais',
-    tagline: 'Condicionador de solo organomineral via fertirrigação',
-    description:
-      'Condicionador de solo organomineral com substâncias húmicas de leonardita, ácidos fúlvicos e silício. Melhora a estrutura do solo, aumenta a retenção hídrica e a CTC, e estimula a atividade biológica — especialmente em solos compactados ou degradados por uso intensivo.',
-    physicalState: 'fluido',
-    originCountry: 'Brasil',
-    productType: 'Condicionador de Solo',
-    applicationModes: ['Via Fertirrigação', 'Via Solo'],
-    composition: { others: { 'Ác. Húmicos': 6.0, 'Ác. Fúlvicos': 3.0, Si: 1.0 } },
-    packaging: [{ type: 'drum', volumeL: 20, sku: 'UP-SOIL-20L' }],
-  },
 
   // BIOLÓGICOS
   {
@@ -369,14 +264,134 @@ export const PRODUCTS: Product[] = [
     tagline: 'Consórcio de 5 espécies de Bacillus para máxima atividade biológica',
     description:
       'Bioinsumo com consórcio de 5 espécies de Bacillus (B. subtilis, B. licheniformis, B. amyloliquefaciens, B. pumilus, B. megaterium) selecionadas para ação sinérgica. Produz antibióticos naturais, enzimas quitinolíticas e lipopeptídeos que controlam patógenos e estimulam o crescimento radicular.',
-    physicalState: 'pó',
-    originCountry: 'Brasil',
-    productType: 'Bioinsumo',
+    physicalState: 'fluido',
+    originCountry: 'Espanha',
+    productType: 'Aditivo de Compostagem (isento MAPA)',
     applicationModes: ['Via Solo', 'Via Fertirrigação'],
     composition: { others: { 'Consórcio Bacillus spp.': 2e8 } },
-    packaging: [
-      { type: 'bag', weightKg: 0.5, sku: 'BIOVAS-500G' },
-      { type: 'bag', weightKg: 1, sku: 'BIOVAS-1KG' },
+    packaging: [{ type: 'bottle', volumeL: 1, sku: 'BIOVAS-1L' }],
+  },
+  {
+    slug: 'bovex',
+    name: 'Bovex',
+    category: 'biologicos',
+    tagline: 'Entomopatogênico com Beauveria, Metarhizium e Cordyceps',
+    description:
+      'Bioinsumo entomopatogênico com consórcio de Beauveria bassiana, Metarhizium spp. e Cordyceps spp. (2,5 × 10¹⁰ UFC/mL). Penetra a cutícula dos insetos e os coloniza internamente (micose), produzindo enzimas quitinases e proteases que degradam estruturas do hospedeiro. Indicado para larvas de solo, percevejos, tripes, moscas e demais insetos em fase juvenil — alternativa sustentável a químicos de amplo espectro.',
+    physicalState: 'fluido',
+    originCountry: 'Espanha',
+    productType: 'Aditivo de Compostagem (isento MAPA)',
+    applicationModes: ['Via Solo', 'Via Foliar', 'Via Fertirrigação'],
+    composition: {
+      others: { 'Beauveria bassiana': 8e9, 'Metarhizium spp.': 8e9, 'Cordyceps spp.': 9e9 },
+    },
+    packaging: [{ type: 'bottle', volumeL: 1, sku: 'BOVEX-1L' }],
+    applications: [
+      {
+        crop: 'Cereais e grãos',
+        stage: 'Início do ciclo / monitoramento de pragas',
+        dosePerHa: 250,
+        unit: 'mL',
+        notes: 'Volume de calda 150–200 L/ha. Compatível com bioestimulantes.',
+      },
+      {
+        crop: 'Frutíferas',
+        stage: 'Pressão de pragas / preventivo',
+        dosePerHa: 900,
+        unit: 'mL',
+        notes: 'Aplicar via solo, sulco ou fertirrigação em condições de boa umidade.',
+      },
+      {
+        crop: 'Hortaliças',
+        stage: 'Pressão de pragas / preventivo',
+        dosePerHa: 900,
+        unit: 'mL',
+        notes: 'Rotacionar com outros biológicos para evitar resistência.',
+      },
+    ],
+  },
+  {
+    slug: 'controx',
+    name: 'Controx',
+    category: 'biologicos',
+    tagline: 'Bacillus thuringiensis (BTk + BTi) para supressão de larvas',
+    description:
+      'Bioinsumo à base de Bacillus thuringiensis var. kurstaki e var. israelensis (concentração total 2,5 × 10⁹ UFC/mL). Produz δ-endotoxinas (cristais proteicos) que, ingeridas pelas larvas, causam paralisia do intestino e morte. Efeito altamente seletivo sobre lepidópteros e dípteros (Spodoptera, Helicoverpa, Aedes, Culex), com baixa toxicidade para humanos, animais e organismos benéficos. Ideal para programas de Manejo Integrado de Pragas (MIP).',
+    physicalState: 'fluido',
+    originCountry: 'Espanha',
+    productType: 'Aditivo de Compostagem (isento MAPA)',
+    applicationModes: ['Via Solo', 'Via Foliar', 'Via Fertirrigação'],
+    composition: {
+      others: {
+        'Bacillus thuringiensis kurstaki': 1.25e9,
+        'Bacillus thuringiensis israelensis': 1.25e9,
+      },
+    },
+    packaging: [{ type: 'bottle', volumeL: 1, sku: 'CONTROX-1L' }],
+    applications: [
+      {
+        crop: 'Cereais e grãos',
+        stage: 'Fases iniciais / monitoramento de larvas',
+        dosePerHa: 250,
+        unit: 'mL',
+        notes: 'Aplicar pulverização dirigida ou fertirrigação. Volume de calda 150–200 L/ha.',
+      },
+      {
+        crop: 'Frutíferas',
+        stage: 'Fases vulneráveis ao ataque larval',
+        dosePerHa: 900,
+        unit: 'mL',
+        notes: 'Seletivo — preserva inimigos naturais e organismos não-alvo.',
+      },
+      {
+        crop: 'Hortaliças',
+        stage: 'Conforme diagnóstico técnico',
+        dosePerHa: 900,
+        unit: 'mL',
+      },
+    ],
+  },
+  {
+    slug: 'nemax',
+    name: 'Nemax',
+    category: 'biologicos',
+    tagline: 'Trichoderma + Purpureocillium para manejo de nematoides e enraizamento',
+    description:
+      'Bioinsumo com consórcio de Trichoderma harzianum, Trichoderma asperellum e Purpureocillium lilacinum (2,5 × 10¹⁰ UFC/mL). Atua na supressão de nematoides (Meloidogyne, Pratylenchus, Ditylenchus) por parasitismo de ovos e juvenis, colonização competitiva da rizosfera, indução de resistência sistêmica (ISR) e ativação de enzimas líticas. Promove enraizamento, regeneração radicular e redução de doenças de solo (Fusarium, Rhizoctonia, Sclerotinia).',
+    physicalState: 'fluido',
+    originCountry: 'Espanha',
+    productType: 'Aditivo de Compostagem (isento MAPA — IN 11/2022 MMA/IBAMA)',
+    applicationModes: ['Via Solo', 'Via Fertirrigação'],
+    composition: {
+      others: {
+        'Trichoderma harzianum': 8e9,
+        'Trichoderma asperellum': 8e9,
+        'Purpureocillium lilacinum': 9e9,
+      },
+    },
+    packaging: [{ type: 'bottle', volumeL: 1, sku: 'NEMAX-1L' }],
+    applications: [
+      {
+        crop: 'Cereais',
+        stage: 'Sulco / via solo com umidade',
+        dosePerHa: 400,
+        unit: 'mL',
+        notes: 'Volume de calda 150–200 L/ha. Reentrada após secagem da área.',
+      },
+      {
+        crop: 'Frutíferas',
+        stage: 'Início do ciclo / reaplicações',
+        dosePerHa: 900,
+        unit: 'mL',
+        notes: 'Aplicar em sulco ou fertirrigação. Reduz estresse biótico e melhora absorção.',
+      },
+      {
+        crop: 'Hortaliças',
+        stage: 'Início do ciclo',
+        dosePerHa: 900,
+        unit: 'mL',
+        notes: 'Compatível com bioestimulantes; favorece microbiota equilibrada.',
+      },
     ],
   },
 
