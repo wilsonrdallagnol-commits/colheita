@@ -1,5 +1,5 @@
 // apps/admin/src/app/(dashboard)/midias/page.tsx
-import { createServerClient, requireAuth } from '@colheita/auth';
+import { createAdminClient, createServerClient, requireAuth } from '@colheita/auth';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -62,20 +62,29 @@ export default async function MidiasPage({
 
   const { data: rawAssets } = await query;
 
-  const assets = (rawAssets ?? []).map((a) => ({
-    id: a.id as string,
-    filename: a.filename as string,
-    originalName: a.original_name as string,
-    mimeType: a.mime_type as string,
-    fileSize: a.file_size as number,
-    storagePath: a.storage_path as string,
-    type: a.type as AssetType,
-    title: a.title as string | null,
-    altText: a.alt_text as string | null,
-    width: a.width as number | null,
-    height: a.height as number | null,
-    createdAt: a.created_at as string,
-  }));
+  // Gera URL pública para cada asset via Storage admin (service role)
+  // Se o bucket "assets" não for público, publicUrl ainda é retornada mas a URL
+  // retornará 400 — nesse caso, o componente exibe placeholder automaticamente.
+  const adminClient = createAdminClient();
+  const assets = (rawAssets ?? []).map((a) => {
+    const storagePath = a.storage_path as string;
+    const { data: urlData } = adminClient.storage.from('assets').getPublicUrl(storagePath);
+    return {
+      id: a.id as string,
+      filename: a.filename as string,
+      originalName: a.original_name as string,
+      mimeType: a.mime_type as string,
+      fileSize: a.file_size as number,
+      storagePath,
+      publicUrl: urlData?.publicUrl ?? null,
+      type: a.type as AssetType,
+      title: a.title as string | null,
+      altText: a.alt_text as string | null,
+      width: a.width as number | null,
+      height: a.height as number | null,
+      createdAt: a.created_at as string,
+    };
+  });
 
   const activeTab = activeType ?? 'all';
 

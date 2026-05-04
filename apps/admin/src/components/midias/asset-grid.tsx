@@ -11,6 +11,7 @@ export interface AssetSummary {
   mimeType: string;
   fileSize: number;
   storagePath: string;
+  publicUrl: string | null; // URL pública do Supabase Storage (null se bucket privado)
   type: AssetType;
   title: string | null;
   altText: string | null;
@@ -25,7 +26,6 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-// Placeholder thumbnail for non-image types
 function AssetThumbnail({ asset }: { asset: AssetSummary }) {
   const iconMap: Record<AssetType, string> = {
     image: '🖼',
@@ -35,9 +35,37 @@ function AssetThumbnail({ asset }: { asset: AssetSummary }) {
     other: '📦',
   };
 
+  if (asset.type === 'image' && asset.publicUrl) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          aspectRatio: '4/3',
+          backgroundColor: 'var(--colheita-surface-elevated)',
+          borderRadius: 'var(--colheita-radius-md) var(--colheita-radius-md) 0 0',
+          overflow: 'hidden',
+          position: 'relative',
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={asset.publicUrl}
+          alt={asset.altText ?? asset.originalName}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+          }}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    );
+  }
+
   if (asset.type === 'image') {
-    // In production, we'd use a Supabase Storage signed URL here.
-    // For now, show a placeholder with dimensions.
+    // Bucket não é público — exibe placeholder com dimensões
     return (
       <div
         style={{
@@ -51,7 +79,6 @@ function AssetThumbnail({ asset }: { asset: AssetSummary }) {
           gap: '6px',
           borderRadius: 'var(--colheita-radius-md) var(--colheita-radius-md) 0 0',
           overflow: 'hidden',
-          position: 'relative',
         }}
       >
         <span style={{ fontSize: '2rem' }}>{iconMap[asset.type]}</span>
