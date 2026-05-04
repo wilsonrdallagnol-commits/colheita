@@ -82,8 +82,8 @@ export function HeroHeart() {
           position: 'absolute',
           inset: '-15%',
           background: `
-            radial-gradient(ellipse 50% 55% at 50% 45%, oklch(0.58 0.125 195 / 0.22) 0%, transparent 60%),
-            radial-gradient(ellipse 35% 40% at 50% 60%, oklch(0.52 0.155 148 / 0.18) 0%, transparent 65%)
+            radial-gradient(ellipse 50% 55% at 50% 45%, oklch(0.45 0.220 266.7 / 0.28) 0%, transparent 60%),
+            radial-gradient(ellipse 35% 40% at 50% 60%, oklch(0.586 0.150 138.8 / 0.20) 0%, transparent 65%)
           `,
           filter: 'blur(40px)',
           pointerEvents: 'none',
@@ -112,8 +112,8 @@ export function HeroHeart() {
         <title>Anéis decorativos do coração digital Argho</title>
         <defs>
           <radialGradient id={ringGradId} cx="50%" cy="50%" r="50%">
-            <stop offset="60%" stopColor="oklch(0.52 0.155 148 / 0)" />
-            <stop offset="100%" stopColor="oklch(0.52 0.155 148 / 0.15)" />
+            <stop offset="60%" stopColor="oklch(0.362 0.160 266.7 / 0)" />
+            <stop offset="100%" stopColor="oklch(0.362 0.160 266.7 / 0.18)" />
           </radialGradient>
         </defs>
         <circle
@@ -129,7 +129,7 @@ export function HeroHeart() {
           cy="50"
           r="42"
           fill="none"
-          stroke="oklch(0.58 0.125 195 / 0.10)"
+          stroke="oklch(0.586 0.150 138.8 / 0.12)"
           strokeWidth="0.1"
           strokeDasharray="0.8 1.2"
         />
@@ -178,8 +178,8 @@ export function HeroHeart() {
           width: '6px',
           height: '6px',
           borderRadius: '50%',
-          backgroundColor: 'var(--teal)',
-          boxShadow: '0 0 12px var(--teal)',
+          backgroundColor: 'var(--argho-blue)',
+          boxShadow: '0 0 12px var(--argho-blue)',
           zIndex: 3,
         }}
       />
@@ -193,8 +193,8 @@ export function HeroHeart() {
           width: '4px',
           height: '4px',
           borderRadius: '50%',
-          backgroundColor: 'var(--green)',
-          boxShadow: '0 0 10px var(--green)',
+          backgroundColor: 'var(--argho-green)',
+          boxShadow: '0 0 10px var(--argho-green)',
           zIndex: 3,
           animationDelay: '1.5s',
         }}

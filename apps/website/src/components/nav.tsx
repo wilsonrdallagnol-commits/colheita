@@ -113,7 +113,7 @@ export function Nav() {
           Plataforma
         </Link>
 
-        {/* CTA primary */}
+        {/* CTA primary — azul Argho */}
         <Link
           href="/produtos"
           style={{
@@ -121,13 +121,14 @@ export function Nav() {
             fontSize: '0.8125rem',
             fontWeight: 600,
             color: '#ffffff',
-            backgroundColor: 'var(--text-primary)',
+            backgroundColor: 'var(--argho-blue)',
             textDecoration: 'none',
             padding: '9px 20px',
             borderRadius: '6px',
             letterSpacing: '-0.005em',
             marginLeft: '6px',
             transition: 'transform 0.2s',
+            boxShadow: '0 4px 12px -4px oklch(0.362 0.160 266.7 / 0.4)',
           }}
         >
           Ver catálogo

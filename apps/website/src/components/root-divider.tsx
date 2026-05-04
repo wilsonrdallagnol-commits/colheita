@@ -16,7 +16,7 @@ interface RootDividerProps {
 }
 
 export function RootDivider({
-  accent = 'oklch(0.58 0.125 195)',
+  accent = 'oklch(0.362 0.160 266.7)',
   variant = 'split',
   weight = 1,
 }: RootDividerProps) {

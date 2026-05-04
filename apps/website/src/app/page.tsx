@@ -100,7 +100,7 @@ export default function Home() {
                   display: 'inline-block',
                   width: '28px',
                   height: '1px',
-                  background: 'var(--green)',
+                  background: 'var(--argho-green)',
                 }}
               />
               <span
@@ -109,24 +109,24 @@ export default function Home() {
                   fontSize: '0.6875rem',
                   letterSpacing: '0.18em',
                   textTransform: 'uppercase',
-                  color: 'var(--text-tertiary)',
-                  fontWeight: 500,
+                  color: 'var(--argho-blue)',
+                  fontWeight: 600,
                 }}
               >
                 Argho Agrosciences · Linha completa 2026
               </span>
             </div>
 
-            {/* Headline editorial */}
+            {/* Headline editorial — bold + paleta Argho oficial */}
             <h1
               className="anim-fade-in-up delay-1"
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(2.5rem, 6vw, 5.25rem)',
-                fontWeight: 500,
-                color: 'var(--text-primary)',
-                letterSpacing: '-0.045em',
-                lineHeight: 0.98,
+                fontSize: 'clamp(2.75rem, 6.5vw, 5.75rem)',
+                fontWeight: 700,
+                color: 'var(--argho-blue)',
+                letterSpacing: '-0.055em',
+                lineHeight: 0.95,
                 margin: '0 0 28px',
               }}
             >
@@ -135,10 +135,8 @@ export default function Home() {
               para o{' '}
               <span
                 style={{
-                  background: 'linear-gradient(110deg, var(--green) 0%, var(--teal) 100%)',
-                  WebkitBackgroundClip: 'text',
-                  backgroundClip: 'text',
-                  color: 'transparent',
+                  color: 'var(--argho-green)',
+                  fontStyle: 'normal',
                 }}
               >
                 agro brasileiro
@@ -181,7 +179,7 @@ export default function Home() {
                   fontSize: '0.9375rem',
                   fontWeight: 600,
                   color: '#ffffff',
-                  backgroundColor: 'var(--text-primary)',
+                  backgroundColor: 'var(--argho-blue)',
                   textDecoration: 'none',
                   padding: '15px 32px',
                   borderRadius: '8px',
@@ -189,6 +187,7 @@ export default function Home() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '10px',
+                  boxShadow: '0 8px 24px -8px oklch(0.362 0.160 266.7 / 0.45)',
                 }}
               >
                 Ver portfólio completo
@@ -248,12 +247,12 @@ export default function Home() {
                   <div
                     style={{
                       fontFamily: 'var(--font-display)',
-                      fontSize: '2rem',
-                      fontWeight: 500,
-                      color: 'var(--text-primary)',
-                      letterSpacing: '-0.04em',
+                      fontSize: '2.25rem',
+                      fontWeight: 700,
+                      color: 'var(--argho-blue)',
+                      letterSpacing: '-0.05em',
                       lineHeight: 1,
-                      marginBottom: '4px',
+                      marginBottom: '6px',
                     }}
                   >
                     {m.value}
@@ -359,8 +358,8 @@ export default function Home() {
         `}</style>
       </section>
 
-      {/* Divisor de raízes — eco do coração propagando */}
-      <RootDivider variant="split" accent="oklch(0.58 0.125 195)" weight={1} />
+      {/* Divisor de raízes — eco do coração propagando (azul Argho) */}
+      <RootDivider variant="split" accent="var(--argho-blue)" weight={2} />
 
       {/* ═══════════════════════════════════════════════════════════════════
           PORTFÓLIO — 4 linhas em cards leves
@@ -390,9 +389,9 @@ export default function Home() {
             style={{
               fontFamily: 'var(--font-display)',
               fontSize: 'clamp(2rem, 4.5vw, 3.75rem)',
-              fontWeight: 500,
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.045em',
+              fontWeight: 700,
+              color: 'var(--argho-blue)',
+              letterSpacing: '-0.055em',
               lineHeight: 1.0,
               margin: 0,
               maxWidth: '720px',
@@ -491,8 +490,8 @@ export default function Home() {
         reverse={true}
       />
 
-      {/* Divisor — raiz vertical descendo (transição para plataforma) */}
-      <RootDivider variant="single" accent="oklch(0.52 0.155 148)" weight={2} />
+      {/* Divisor — raiz vertical descendo (verde Argho) */}
+      <RootDivider variant="single" accent="var(--argho-green)" weight={2} />
 
       {/* ═══════════════════════════════════════════════════════════════════
           PLATAFORMA COLHEITA
@@ -541,11 +540,11 @@ export default function Home() {
             <h2
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
-                fontWeight: 500,
-                color: 'var(--text-primary)',
-                letterSpacing: '-0.04em',
-                lineHeight: 1.05,
+                fontSize: 'clamp(1.85rem, 3.6vw, 3rem)',
+                fontWeight: 700,
+                color: 'var(--argho-blue)',
+                letterSpacing: '-0.05em',
+                lineHeight: 1.0,
                 margin: '0 0 24px',
               }}
             >
@@ -762,26 +761,24 @@ export default function Home() {
           <p
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(1.4rem, 3vw, 2.25rem)',
-              fontWeight: 400,
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.035em',
-              lineHeight: 1.25,
+              fontSize: 'clamp(1.5rem, 3.2vw, 2.5rem)',
+              fontWeight: 600,
+              color: 'var(--argho-blue)',
+              letterSpacing: '-0.04em',
+              lineHeight: 1.2,
               margin: '0 0 40px',
             }}
           >
             Ciência agrícola desenvolvida no Brasil, para o Brasil.
             <br />
-            <span style={{ color: 'var(--text-tertiary)' }}>
+            <span style={{ color: 'var(--text-tertiary)', fontWeight: 500 }}>
               Cada fórmula nasce de pesquisa aplicada com{' '}
             </span>
             <em
               style={{
                 fontStyle: 'normal',
-                background: 'linear-gradient(110deg, var(--green) 0%, var(--teal) 100%)',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                color: 'transparent',
+                color: 'var(--argho-green)',
+                fontWeight: 700,
               }}
             >
               foco em resultado real no campo.
@@ -792,25 +789,25 @@ export default function Home() {
             style={{
               fontFamily: 'var(--font-body)',
               fontSize: '0.9375rem',
-              fontWeight: 500,
-              color: 'var(--text-primary)',
+              fontWeight: 600,
+              color: 'var(--argho-blue)',
               textDecoration: 'none',
               letterSpacing: '-0.005em',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
-              borderBottom: '1px solid var(--text-primary)',
+              borderBottom: '1px solid var(--argho-blue)',
               paddingBottom: '4px',
             }}
           >
             Sobre a Argho
-            <span style={{ color: 'var(--green)' }}>→</span>
+            <span style={{ color: 'var(--argho-green)' }}>→</span>
           </Link>
         </div>
       </section>
 
-      {/* Divisor leque — abre pro CTA final */}
-      <RootDivider variant="fan" accent="oklch(0.66 0.130 78)" weight={1} />
+      {/* Divisor leque — abre pro CTA final (azul Argho) */}
+      <RootDivider variant="fan" accent="var(--argho-blue)" weight={2} />
 
       {/* ═══════════════════════════════════════════════════════════════════
           CTA FINAL
@@ -832,7 +829,7 @@ export default function Home() {
             position: 'absolute',
             inset: 0,
             background:
-              'radial-gradient(ellipse 50% 70% at 50% 100%, oklch(0.52 0.155 148 / 0.08) 0%, transparent 70%)',
+              'radial-gradient(ellipse 50% 70% at 50% 100%, oklch(0.362 0.160 266.7 / 0.10) 0%, transparent 70%)',
             pointerEvents: 'none',
           }}
         />
@@ -845,9 +842,9 @@ export default function Home() {
             style={{
               fontFamily: 'var(--font-display)',
               fontSize: 'clamp(2rem, 4vw, 3.5rem)',
-              fontWeight: 500,
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.045em',
+              fontWeight: 700,
+              color: 'var(--argho-blue)',
+              letterSpacing: '-0.055em',
               lineHeight: 1.0,
               margin: '0 0 24px',
             }}
@@ -855,10 +852,7 @@ export default function Home() {
             Conheça os{' '}
             <span
               style={{
-                background: 'linear-gradient(110deg, var(--green) 0%, var(--teal) 100%)',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                color: 'transparent',
+                color: 'var(--argho-green)',
               }}
             >
               18 produtos
@@ -886,7 +880,7 @@ export default function Home() {
               fontSize: '1rem',
               fontWeight: 600,
               color: '#ffffff',
-              backgroundColor: 'var(--text-primary)',
+              backgroundColor: 'var(--argho-blue)',
               textDecoration: 'none',
               padding: '17px 40px',
               borderRadius: '8px',
@@ -894,6 +888,7 @@ export default function Home() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '10px',
+              boxShadow: '0 12px 32px -10px oklch(0.362 0.160 266.7 / 0.5)',
             }}
           >
             Ver portfólio completo
@@ -1096,9 +1091,9 @@ function Spotlight({
             style={{
               fontFamily: 'var(--font-display)',
               fontSize: 'clamp(2rem, 4vw, 3.25rem)',
-              fontWeight: 500,
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.045em',
+              fontWeight: 700,
+              color: 'var(--argho-blue)',
+              letterSpacing: '-0.055em',
               lineHeight: 1.0,
               margin: '0 0 24px',
             }}

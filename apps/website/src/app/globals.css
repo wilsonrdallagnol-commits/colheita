@@ -29,21 +29,39 @@
   --text-tertiary:   #8a8e8c;
   --text-faint:      #b8b8b3;
 
-  /* Brand — agro identity preserved as accents */
-  --green:           oklch(0.52 0.155 148);
-  --green-deep:      oklch(0.36 0.115 148);
-  --green-soft:      oklch(0.92 0.045 148);
+  /* Brand — paleta oficial Argho */
+  /* Azul profundo (cor primária — palavra "argho" no logo) #183090 */
+  --argho-blue:        oklch(0.362 0.160 266.7);
+  --argho-blue-deep:   oklch(0.280 0.155 266.7);
+  --argho-blue-soft:   oklch(0.93 0.045 266);
+  --argho-blue-hover:  oklch(0.42 0.180 266.7);
+
+  /* Verde Argho (cor secundária — símbolo da folha) #489030 */
+  --argho-green:       oklch(0.586 0.150 138.8);
+  --argho-green-deep:  oklch(0.470 0.140 138.8);
+  --argho-green-soft:  oklch(0.94 0.040 138);
+  --argho-green-hover: oklch(0.640 0.160 138.8);
+
+  /* Aliases para legibilidade */
+  --green:           var(--argho-green);
+  --green-deep:      var(--argho-green-deep);
+  --green-soft:      var(--argho-green-soft);
+  --blue:            var(--argho-blue);
+  --blue-deep:       var(--argho-blue-deep);
+  --blue-soft:       var(--argho-blue-soft);
+
+  /* Acentos secundários (uso restrito) */
   --gold:            oklch(0.66 0.130 78);
   --gold-deep:       oklch(0.52 0.115 78);
   --gold-soft:       oklch(0.94 0.040 78);
   --teal:            oklch(0.58 0.125 195);
   --teal-soft:       oklch(0.93 0.035 195);
 
-  /* Category accent colors */
-  --cat-mineral:     oklch(0.52 0.155 148);
-  --cat-organo:      oklch(0.58 0.125 195);
-  --cat-bio:         oklch(0.55 0.150 150);
-  --cat-adj:         oklch(0.62 0.130 78);
+  /* Category accent colors — alinhado com identidade */
+  --cat-mineral:     var(--argho-green);   /* fertilizantes minerais = verde */
+  --cat-organo:      var(--argho-blue);    /* organominerais = azul */
+  --cat-bio:         oklch(0.55 0.150 145);/* biológicos = verde alternativo */
+  --cat-adj:         oklch(0.62 0.130 78); /* adjuvantes = ouro (acento) */
 
   /* Typography — editorial display + clean sans */
   --font-display: "Geist", "Inter Display", -apple-system, system-ui, sans-serif;
@@ -89,19 +107,20 @@ body {
   border-radius: 4px;
 }
 
-/* Selection — green tint */
+/* Selection — Argho blue tint */
 ::selection {
-  background-color: oklch(0.52 0.155 148 / 0.18);
+  background-color: oklch(0.362 0.160 266.7 / 0.20);
   color: var(--text-primary);
 }
 
-/* Typography scale — editorial */
+/* Typography scale — editorial bold */
 h1, h2, h3, h4, h5 {
   font-family: var(--font-display);
-  letter-spacing: -0.04em;
-  line-height: 1.05;
+  letter-spacing: -0.05em;
+  line-height: 1.0;
   color: var(--text-primary);
-  font-weight: 500;
+  font-weight: 700;
+  font-feature-settings: "ss01", "cv11";
 }
 
 p {
@@ -160,9 +179,9 @@ a {
 }
 
 @keyframes pulseRing {
-  0%   { box-shadow: 0 0 0 0 oklch(0.52 0.155 148 / 0.30); }
-  70%  { box-shadow: 0 0 0 12px oklch(0.52 0.155 148 / 0); }
-  100% { box-shadow: 0 0 0 0 oklch(0.52 0.155 148 / 0); }
+  0%   { box-shadow: 0 0 0 0 oklch(0.362 0.160 266.7 / 0.35); }
+  70%  { box-shadow: 0 0 0 12px oklch(0.362 0.160 266.7 / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(0.362 0.160 266.7 / 0); }
 }
 
 @keyframes heartbeat {

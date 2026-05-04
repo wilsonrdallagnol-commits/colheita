@@ -66,11 +66,11 @@ export function HeartIntro() {
         position: 'fixed',
         inset: 0,
         zIndex: 9999,
-        backgroundColor: '#0a0e0c',
+        backgroundColor: '#0a0d18',
         backgroundImage: `
-          radial-gradient(ellipse 50% 60% at 50% 50%, oklch(0.18 0.060 195 / 0.35) 0%, transparent 65%),
-          radial-gradient(ellipse 70% 50% at 50% 100%, oklch(0.16 0.075 148 / 0.30) 0%, transparent 70%),
-          radial-gradient(ellipse 40% 30% at 50% 0%, oklch(0.14 0.040 78 / 0.20) 0%, transparent 70%)
+          radial-gradient(ellipse 55% 65% at 50% 50%, oklch(0.20 0.090 266.7 / 0.45) 0%, transparent 65%),
+          radial-gradient(ellipse 70% 55% at 50% 100%, oklch(0.18 0.075 138.8 / 0.32) 0%, transparent 70%),
+          radial-gradient(ellipse 40% 30% at 50% 0%, oklch(0.14 0.060 266.7 / 0.25) 0%, transparent 70%)
         `,
         display: 'flex',
         flexDirection: 'column',
@@ -136,7 +136,7 @@ export function HeartIntro() {
           cy="500"
           r="280"
           fill="none"
-          stroke="oklch(0.58 0.125 195 / 0.20)"
+          stroke="oklch(0.58 0.180 266.7 / 0.30)"
           strokeWidth="0.6"
         />
         <circle
@@ -144,7 +144,7 @@ export function HeartIntro() {
           cy="500"
           r="380"
           fill="none"
-          stroke="oklch(0.52 0.155 148 / 0.15)"
+          stroke="oklch(0.586 0.150 138.8 / 0.20)"
           strokeWidth="0.5"
           strokeDasharray="2 4"
         />
@@ -153,7 +153,7 @@ export function HeartIntro() {
           cy="500"
           r="460"
           fill="none"
-          stroke="oklch(0.66 0.130 78 / 0.10)"
+          stroke="oklch(0.58 0.180 266.7 / 0.12)"
           strokeWidth="0.4"
         />
       </svg>
@@ -180,7 +180,7 @@ export function HeartIntro() {
             display: 'inline-block',
             width: '40px',
             height: '1px',
-            background: 'oklch(0.58 0.125 195 / 0.6)',
+            background: 'oklch(0.58 0.180 266.7 / 0.7)',
           }}
         />
         <span
@@ -200,7 +200,7 @@ export function HeartIntro() {
             display: 'inline-block',
             width: '40px',
             height: '1px',
-            background: 'oklch(0.58 0.125 195 / 0.6)',
+            background: 'oklch(0.58 0.180 266.7 / 0.7)',
           }}
         />
       </div>
@@ -228,8 +228,8 @@ export function HeartIntro() {
             position: 'absolute',
             inset: '-20%',
             background: `
-              radial-gradient(ellipse 50% 55% at 50% 45%, oklch(0.58 0.125 195 / 0.45) 0%, transparent 60%),
-              radial-gradient(ellipse 35% 40% at 50% 60%, oklch(0.52 0.155 148 / 0.30) 0%, transparent 65%)
+              radial-gradient(ellipse 50% 55% at 50% 45%, oklch(0.45 0.220 266.7 / 0.50) 0%, transparent 60%),
+              radial-gradient(ellipse 35% 40% at 50% 60%, oklch(0.586 0.150 138.8 / 0.32) 0%, transparent 65%)
             `,
             filter: 'blur(50px)',
             pointerEvents: 'none',
@@ -266,8 +266,8 @@ export function HeartIntro() {
             width: '8px',
             height: '8px',
             borderRadius: '50%',
-            backgroundColor: 'oklch(0.58 0.125 195)',
-            boxShadow: '0 0 18px oklch(0.58 0.125 195)',
+            backgroundColor: 'oklch(0.58 0.180 266.7)',
+            boxShadow: '0 0 18px oklch(0.58 0.180 266.7)',
             zIndex: 3,
           }}
         />
@@ -281,8 +281,8 @@ export function HeartIntro() {
             width: '6px',
             height: '6px',
             borderRadius: '50%',
-            backgroundColor: 'oklch(0.52 0.155 148)',
-            boxShadow: '0 0 16px oklch(0.52 0.155 148)',
+            backgroundColor: 'oklch(0.586 0.150 138.8)',
+            boxShadow: '0 0 16px oklch(0.586 0.150 138.8)',
             zIndex: 3,
             animationDelay: '1.2s',
           }}
@@ -358,7 +358,7 @@ export function HeartIntro() {
               width: '6px',
               height: '6px',
               borderRadius: '50%',
-              backgroundColor: 'oklch(0.58 0.125 195)',
+              backgroundColor: 'oklch(0.586 0.150 138.8)',
             }}
           />
           <span>Clique para entrar no ecossistema Argho</span>
