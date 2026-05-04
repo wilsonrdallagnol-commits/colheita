@@ -11,6 +11,7 @@ import {
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { AssetGrid } from '@/components/midias/asset-grid';
+import { UploadButton } from '@/components/midias/upload-button';
 
 export const metadata = { title: 'Mídias' };
 
@@ -127,10 +128,7 @@ export default async function MidiasPage({
           <Button asChild variant="outline" size="sm">
             <Link href="/midias/colecoes">Coleções</Link>
           </Button>
-          {/* Upload disabled until Supabase Storage is configured */}
-          <Button size="sm" disabled title="Requer Supabase Storage configurado">
-            + Enviar arquivo
-          </Button>
+          <UploadButton />
         </div>
       </div>
 
