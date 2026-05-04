@@ -73,7 +73,7 @@ const EXPERTISE_ITEMS = [
 ];
 
 const HERO_METRICS = [
-  { value: '18', label: 'Produtos no portfólio' },
+  { value: '16', label: 'Produtos no portfólio' },
   { value: '4', label: 'Linhas de atuação' },
   { value: 'ES', label: 'Origem Espanha' },
   { value: 'MAPA', label: 'Registro brasileiro' },
@@ -698,6 +698,589 @@ export default function SobrePage() {
       <RootDivider variant="fan" accent="var(--argho-green-soft)" />
 
       {/* ═══════════════════════════════════════════════════════════════════
+          CIÊNCIA APLICADA — laboratório IA no sul da Espanha
+          Detalha o pipeline de descoberta e as 4 disciplinas integradas.
+          Sem mencionar o nome do laboratório parceiro.
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section
+        style={{
+          padding: '120px 48px',
+          backgroundColor: 'var(--bg)',
+          position: 'relative',
+          overflow: 'hidden',
+          borderTop: '1px solid var(--border-subtle)',
+          borderBottom: '1px solid var(--border-subtle)',
+        }}
+      >
+        {/* Halo radial sutil */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background:
+              'radial-gradient(ellipse 50% 50% at 80% 20%, var(--argho-blue-soft) 0%, transparent 65%), radial-gradient(ellipse 40% 50% at 10% 80%, var(--argho-green-soft) 0%, transparent 65%)',
+            opacity: 0.6,
+            pointerEvents: 'none',
+          }}
+        />
+
+        <div style={{ position: 'relative', zIndex: 2, maxWidth: '1200px', margin: '0 auto' }}>
+          {/* Header */}
+          <div style={{ marginBottom: '64px', maxWidth: '800px' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                marginBottom: '24px',
+              }}
+            >
+              <span
+                aria-hidden
+                style={{ width: '24px', height: '1px', background: 'var(--argho-green)' }}
+              />
+              <span
+                className="mono"
+                style={{
+                  fontSize: '0.6875rem',
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  color: 'var(--argho-blue)',
+                  fontWeight: 600,
+                }}
+              >
+                Ciência aplicada · Centro de P&D
+              </span>
+            </div>
+            <h2
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(2.25rem, 5vw, 4rem)',
+                fontWeight: 700,
+                letterSpacing: '-0.055em',
+                color: 'var(--argho-blue)',
+                lineHeight: 0.95,
+                marginBottom: '32px',
+              }}
+            >
+              A próxima era da
+              <br />
+              <span style={{ color: 'var(--argho-green)' }}>biotecnologia agrícola</span>.
+            </h2>
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '1.0625rem',
+                color: 'var(--text-secondary)',
+                lineHeight: 1.7,
+                marginBottom: '20px',
+              }}
+            >
+              Cada formulação Argho nasce em um centro de pesquisa com mais de{' '}
+              <strong style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+                5.000m² de laboratórios
+              </strong>{' '}
+              no sul da Espanha, dedicado a substituir química sintética por alternativas
+              biotecnológicas — sem comprometer produtividade.
+            </p>
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '1rem',
+                color: 'var(--text-muted)',
+                lineHeight: 1.7,
+              }}
+            >
+              Mais de 60 pesquisadores combinam botânica, microbiologia, microalgas e química verde
+              em uma cadeia única de descoberta — da identificação de cepas até a planta piloto de
+              produção microbiana com capacidade de 500 mil litros por ano.
+            </p>
+          </div>
+
+          {/* Métricas */}
+          <div
+            className="ciencia-metrics-grid"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+              gap: '0',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              backgroundColor: 'var(--bg-soft)',
+              marginBottom: '80px',
+            }}
+          >
+            {[
+              { value: '60+', label: 'Pesquisadores em cadeia única' },
+              { value: '5.000m²', label: 'Laboratórios + 2.000m² estufas' },
+              { value: '500k L', label: 'Probióticos / ano em planta piloto' },
+              { value: '4', label: 'Disciplinas em sinergia' },
+            ].map((m, i) => (
+              <div
+                key={m.label}
+                style={{
+                  padding: '40px 32px',
+                  borderRight: i < 3 ? '1px solid var(--border-subtle)' : 'none',
+                  backgroundColor: 'var(--bg)',
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: 'clamp(2rem, 3.5vw, 3rem)',
+                    fontWeight: 700,
+                    color: 'var(--argho-blue)',
+                    letterSpacing: '-0.05em',
+                    lineHeight: 1,
+                    marginBottom: '12px',
+                  }}
+                >
+                  {m.value}
+                </div>
+                <div
+                  className="mono"
+                  style={{
+                    fontSize: '0.6875rem',
+                    color: 'var(--text-tertiary)',
+                    letterSpacing: '0.10em',
+                    textTransform: 'uppercase',
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {m.label}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* 4 disciplinas em detalhe */}
+          <div style={{ marginBottom: '80px' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                justifyContent: 'space-between',
+                gap: '24px',
+                marginBottom: '40px',
+                flexWrap: 'wrap',
+              }}
+            >
+              <h3
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(1.5rem, 2.5vw, 2rem)',
+                  fontWeight: 700,
+                  letterSpacing: '-0.045em',
+                  color: 'var(--text-primary)',
+                  lineHeight: 1.05,
+                  maxWidth: '640px',
+                }}
+              >
+                Quatro disciplinas naturais. <br />
+                <span style={{ color: 'var(--argho-blue)' }}>Uma única cadeia de descoberta.</span>
+              </h3>
+              <p
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.9375rem',
+                  color: 'var(--text-muted)',
+                  lineHeight: 1.65,
+                  maxWidth: '420px',
+                }}
+              >
+                A sinergia entre os quatro laboratórios é o que torna possível identificar
+                combinações que isoladamente não emergiriam.
+              </p>
+            </div>
+
+            <div
+              className="ciencia-disciplines-grid"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                gap: '1px',
+                backgroundColor: 'var(--border-subtle)',
+                border: '1px solid var(--border-subtle)',
+                borderRadius: '12px',
+                overflow: 'hidden',
+              }}
+            >
+              {[
+                {
+                  num: '01',
+                  title: 'Botânica',
+                  body: 'Triagem de extratos de plantas medicinais e agrícolas para identificar princípios ativos com função biopesticida e bioestimulante. Cromatografia flash, destilação Soxhlet, rotavapor e extração em cascata.',
+                  techniques: [
+                    'HPLC semipreparativa',
+                    'Cromatografia gasosa-MS',
+                    'Extração Soxhlet',
+                  ],
+                  accent: 'var(--argho-green)',
+                },
+                {
+                  num: '02',
+                  title: 'Microbiologia',
+                  body: 'Isolamento, seleção e caracterização de cepas bacterianas e fúngicas com propriedades antifúngicas, antibacterianas e probióticas para o solo. Foco em consórcios sinérgicos de Trichoderma, Bacillus e similares.',
+                  techniques: [
+                    'Fermentação líquida e sólida',
+                    'Bioensaios de letalidade',
+                    'Probióticos de solo',
+                  ],
+                  accent: 'var(--argho-blue)',
+                },
+                {
+                  num: '03',
+                  title: 'Microalgas',
+                  body: 'Produção de metabólitos secundários e bioestimulantes em fotobiorreatores tubulares de 140L. Cepas selecionadas para alto rendimento de polissacarídeos, betaínas e aminoácidos vegetais.',
+                  techniques: [
+                    'Fotobiorreatores tubulares',
+                    'Cultivo controlado',
+                    'Bioestimulantes naturais',
+                  ],
+                  accent: 'var(--cat-bio)',
+                },
+                {
+                  num: '04',
+                  title: 'Química verde',
+                  body: 'Caracterização molecular via HPLC acoplada a espectrometria de massas, formulação de ativos estáveis e otimização do processo de extração para escala piloto. Onde a hipótese vira produto.',
+                  techniques: ['HPLC-MS', 'Espectrometria de massas', 'Formulação estável'],
+                  accent: 'var(--gold)',
+                },
+              ].map((d) => (
+                <article
+                  key={d.num}
+                  style={{
+                    backgroundColor: 'var(--bg)',
+                    padding: '40px 36px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '20px',
+                    position: 'relative',
+                  }}
+                >
+                  <span
+                    aria-hidden
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '3px',
+                      height: '64px',
+                      backgroundColor: d.accent,
+                    }}
+                  />
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px' }}>
+                    <span
+                      className="mono"
+                      style={{
+                        fontSize: '0.75rem',
+                        letterSpacing: '0.16em',
+                        color: d.accent,
+                        fontWeight: 700,
+                      }}
+                    >
+                      {d.num}
+                    </span>
+                    <h4
+                      style={{
+                        fontFamily: 'var(--font-display)',
+                        fontSize: '1.5rem',
+                        fontWeight: 700,
+                        letterSpacing: '-0.04em',
+                        color: 'var(--text-primary)',
+                        lineHeight: 1.05,
+                      }}
+                    >
+                      {d.title}
+                    </h4>
+                  </div>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.9375rem',
+                      color: 'var(--text-secondary)',
+                      lineHeight: 1.65,
+                    }}
+                  >
+                    {d.body}
+                  </p>
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: '6px',
+                      flexWrap: 'wrap',
+                      marginTop: 'auto',
+                      paddingTop: '12px',
+                    }}
+                  >
+                    {d.techniques.map((t) => (
+                      <span
+                        key={t}
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '0.625rem',
+                          fontWeight: 600,
+                          letterSpacing: '0.08em',
+                          textTransform: 'uppercase',
+                          color: d.accent,
+                          backgroundColor: 'var(--bg-soft)',
+                          border: '1px solid var(--border-subtle)',
+                          padding: '4px 10px',
+                          borderRadius: '4px',
+                        }}
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          {/* Pipeline de descoberta */}
+          <div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                marginBottom: '20px',
+              }}
+            >
+              <span
+                aria-hidden
+                style={{ width: '24px', height: '1px', background: 'var(--argho-green)' }}
+              />
+              <span
+                className="mono"
+                style={{
+                  fontSize: '0.6875rem',
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  color: 'var(--argho-blue)',
+                  fontWeight: 600,
+                }}
+              >
+                Da hipótese ao campo
+              </span>
+            </div>
+            <h3
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(1.5rem, 2.5vw, 2rem)',
+                fontWeight: 700,
+                letterSpacing: '-0.045em',
+                color: 'var(--text-primary)',
+                lineHeight: 1.05,
+                marginBottom: '40px',
+                maxWidth: '720px',
+              }}
+            >
+              Pipeline de descoberta em{' '}
+              <span style={{ color: 'var(--argho-green)' }}>seis etapas</span>.
+            </h3>
+
+            <div
+              className="ciencia-pipeline"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(6, minmax(0, 1fr))',
+                gap: '1px',
+                position: 'relative',
+              }}
+            >
+              {/* Linha conectiva */}
+              <div
+                aria-hidden
+                style={{
+                  position: 'absolute',
+                  top: '32px',
+                  left: '40px',
+                  right: '40px',
+                  height: '2px',
+                  background:
+                    'linear-gradient(90deg, var(--argho-green), var(--argho-blue) 60%, var(--gold))',
+                  opacity: 0.35,
+                  zIndex: 0,
+                }}
+                className="ciencia-pipeline-line"
+              />
+              {[
+                {
+                  step: '01',
+                  title: 'Isolamento',
+                  body: 'Seleção de cepas e extração de princípios ativos a partir de fontes naturais.',
+                },
+                {
+                  step: '02',
+                  title: 'Caracterização',
+                  body: 'Análise molecular por HPLC-MS e cromatografia gasosa para mapear estrutura química.',
+                },
+                {
+                  step: '03',
+                  title: 'Bioensaios',
+                  body: 'Testes de letalidade, repelência e atividade antifúngica contra pragas e patógenos-alvo.',
+                },
+                {
+                  step: '04',
+                  title: 'Validação',
+                  body: 'Cultivo em fitotrons (-5 a 35°C, 0–100% umidade) e estufas controladas com 2.000m².',
+                },
+                {
+                  step: '05',
+                  title: 'Escala piloto',
+                  body: 'Fermentadores e fotobiorreatores produzindo lotes pré-industriais para estabilização.',
+                },
+                {
+                  step: '06',
+                  title: 'Campo brasileiro',
+                  body: 'Registro MAPA, validação agronômica em culturas tropicais e entrega ao distribuidor.',
+                },
+              ].map((p) => (
+                <div
+                  key={p.step}
+                  style={{
+                    position: 'relative',
+                    zIndex: 1,
+                    padding: '0 12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '14px',
+                    backgroundColor: 'transparent',
+                  }}
+                >
+                  {/* Circle indicator */}
+                  <div
+                    style={{
+                      width: '64px',
+                      height: '64px',
+                      borderRadius: '50%',
+                      border: '1px solid var(--border)',
+                      backgroundColor: 'var(--bg)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '1.25rem',
+                      fontWeight: 700,
+                      color: 'var(--argho-blue)',
+                      letterSpacing: '-0.04em',
+                      boxShadow: 'var(--shadow-card)',
+                    }}
+                  >
+                    {p.step}
+                  </div>
+                  <h4
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      letterSpacing: '-0.03em',
+                      color: 'var(--text-primary)',
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    {p.title}
+                  </h4>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.8125rem',
+                      color: 'var(--text-muted)',
+                      lineHeight: 1.55,
+                    }}
+                  >
+                    {p.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Closing card — manifesto */}
+          <div
+            style={{
+              marginTop: '80px',
+              padding: '48px',
+              backgroundColor: 'var(--argho-blue)',
+              borderRadius: '12px',
+              boxShadow: 'var(--shadow-blue-glow-lg)',
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              aria-hidden
+              style={{
+                position: 'absolute',
+                top: '-40%',
+                right: '-10%',
+                width: '60%',
+                height: '180%',
+                background:
+                  'radial-gradient(circle, oklch(0.586 0.150 138.8 / 0.25), transparent 70%)',
+                pointerEvents: 'none',
+              }}
+            />
+            <p
+              style={{
+                position: 'relative',
+                fontFamily: 'var(--font-display)',
+                fontSize: 'clamp(1.25rem, 2.4vw, 1.875rem)',
+                fontWeight: 600,
+                color: '#ffffff',
+                letterSpacing: '-0.035em',
+                lineHeight: 1.3,
+                margin: 0,
+                maxWidth: '900px',
+              }}
+            >
+              <span style={{ color: 'oklch(0.94 0.040 138)' }}>Substituir química sintética</span>{' '}
+              por alternativas biotecnológicas, sem comprometer produtividade. É essa convicção que
+              conecta cada lote em planta piloto ao agrônomo brasileiro que recomenda o produto na
+              fazenda.
+            </p>
+          </div>
+        </div>
+
+        {/* Responsive overrides */}
+        <style>{`
+          @media (max-width: 968px) {
+            .ciencia-metrics-grid {
+              grid-template-columns: repeat(2, 1fr) !important;
+            }
+            .ciencia-metrics-grid > div:nth-child(2) { border-right: none !important; }
+            .ciencia-metrics-grid > div:nth-child(1),
+            .ciencia-metrics-grid > div:nth-child(2) {
+              border-bottom: 1px solid var(--border-subtle) !important;
+            }
+            .ciencia-disciplines-grid {
+              grid-template-columns: 1fr !important;
+            }
+            .ciencia-pipeline {
+              grid-template-columns: repeat(3, 1fr) !important;
+              gap: 32px 16px !important;
+            }
+            .ciencia-pipeline-line { display: none !important; }
+          }
+          @media (max-width: 640px) {
+            .ciencia-metrics-grid {
+              grid-template-columns: 1fr !important;
+            }
+            .ciencia-metrics-grid > div { border-right: none !important; }
+            .ciencia-pipeline {
+              grid-template-columns: repeat(2, 1fr) !important;
+            }
+          }
+        `}</style>
+      </section>
+
+      <RootDivider variant="single" accent="var(--argho-blue-soft)" />
+
+      {/* ═══════════════════════════════════════════════════════════════════
           REGULATÓRIO — duas colunas, card destacado à direita
       ══════════════════════════════════════════════════════════════════════ */}
       <section
@@ -913,7 +1496,7 @@ export default function SobrePage() {
               maxWidth: '900px',
             }}
           >
-            Conheça o portfólio. <span style={{ color: 'var(--argho-green)' }}>18 produtos</span>{' '}
+            Conheça o portfólio. <span style={{ color: 'var(--argho-green)' }}>16 produtos</span>{' '}
             com ficha técnica completa.
           </h2>
 

@@ -155,7 +155,7 @@ export default function Home() {
                 letterSpacing: '-0.005em',
               }}
             >
-              18 produtos. 4 linhas. Uma ciência cultivada na fronteira entre microbiologia, química
+              16 produtos. 4 linhas. Uma ciência cultivada na fronteira entre microbiologia, química
               mineral e a realidade do campo brasileiro.
             </p>
 
@@ -237,7 +237,7 @@ export default function Home() {
               }}
             >
               {[
-                { value: '18', label: 'Produtos ativos' },
+                { value: '16', label: 'Produtos ativos' },
                 { value: '4', label: 'Linhas especializadas' },
                 { value: '100%', label: 'Tech nacional' },
               ].map((m) => (
@@ -928,6 +928,179 @@ export default function Home() {
           ))}
         </div>
 
+        {/* Métricas do laboratório + 4 disciplinas */}
+        <div
+          className="lab-metrics-row"
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            maxWidth: '1320px',
+            margin: '48px auto 0',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+            gap: '32px',
+            paddingTop: '40px',
+            paddingBottom: '40px',
+            borderTop: '1px solid var(--border-subtle)',
+            borderBottom: '1px solid var(--border-subtle)',
+          }}
+        >
+          {[
+            { value: '60+', label: 'Pesquisadores' },
+            { value: '5.000m²', label: 'Laboratório' },
+            { value: '4', label: 'Disciplinas integradas' },
+            { value: '500k L/ano', label: 'Produção microbiana' },
+          ].map((m) => (
+            <div key={m.label}>
+              <div
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
+                  fontWeight: 700,
+                  color: 'var(--argho-blue)',
+                  letterSpacing: '-0.05em',
+                  lineHeight: 1,
+                  marginBottom: '8px',
+                }}
+              >
+                {m.value}
+              </div>
+              <div
+                className="mono"
+                style={{
+                  fontSize: '0.6875rem',
+                  color: 'var(--text-tertiary)',
+                  letterSpacing: '0.10em',
+                  textTransform: 'uppercase',
+                  lineHeight: 1.3,
+                }}
+              >
+                {m.label}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 4 disciplinas integradas */}
+        <div
+          className="lab-disciplines-row"
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            maxWidth: '1320px',
+            margin: '48px auto 0',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              marginBottom: '24px',
+            }}
+          >
+            <span
+              aria-hidden
+              style={{ width: '24px', height: '1px', background: 'var(--argho-green)' }}
+            />
+            <span
+              className="mono"
+              style={{
+                fontSize: '0.6875rem',
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+                color: 'var(--argho-blue)',
+                fontWeight: 600,
+              }}
+            >
+              4 disciplinas em sinergia
+            </span>
+          </div>
+          <div
+            className="lab-disciplines-grid"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+              gap: '16px',
+            }}
+          >
+            {[
+              {
+                num: '01',
+                title: 'Botânica',
+                body: 'Triagem de extratos vegetais para identificação de princípios ativos com função biopesticida e bioestimulante.',
+                accent: 'var(--argho-green)',
+              },
+              {
+                num: '02',
+                title: 'Microbiologia',
+                body: 'Isolamento e seleção de cepas com potencial antifúngico, antibacteriano e probiótico para o solo.',
+                accent: 'var(--argho-blue)',
+              },
+              {
+                num: '03',
+                title: 'Microalgas',
+                body: 'Produção em fotorreatores de metabólitos secundários e bioestimulantes a partir de cepas selecionadas.',
+                accent: 'var(--cat-bio)',
+              },
+              {
+                num: '04',
+                title: 'Química verde',
+                body: 'Caracterização molecular via HPLC-MS, formulação estável e otimização de extração em escala piloto.',
+                accent: 'var(--gold)',
+              },
+            ].map((d) => (
+              <div
+                key={d.num}
+                style={{
+                  border: '1px solid var(--border-subtle)',
+                  borderTop: `2px solid ${d.accent}`,
+                  borderRadius: '8px',
+                  padding: '24px 20px',
+                  backgroundColor: 'var(--bg)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                <span
+                  className="mono"
+                  style={{
+                    fontSize: '0.6875rem',
+                    letterSpacing: '0.16em',
+                    color: d.accent,
+                    fontWeight: 700,
+                  }}
+                >
+                  {d.num}
+                </span>
+                <h4
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '1.125rem',
+                    fontWeight: 700,
+                    letterSpacing: '-0.035em',
+                    color: 'var(--text-primary)',
+                    lineHeight: 1.05,
+                  }}
+                >
+                  {d.title}
+                </h4>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.8125rem',
+                    color: 'var(--text-secondary)',
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {d.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Closing — síntese */}
         <div
           style={{
@@ -996,6 +1169,13 @@ export default function Home() {
             .lab-vectors-grid {
               grid-template-columns: repeat(2, 1fr) !important;
             }
+            .lab-metrics-row {
+              grid-template-columns: repeat(2, 1fr) !important;
+              gap: 24px !important;
+            }
+            .lab-disciplines-grid {
+              grid-template-columns: repeat(2, 1fr) !important;
+            }
             .lab-closing-card {
               grid-template-columns: 1fr !important;
               gap: 24px !important;
@@ -1003,6 +1183,9 @@ export default function Home() {
           }
           @media (max-width: 640px) {
             .lab-vectors-grid {
+              grid-template-columns: 1fr !important;
+            }
+            .lab-disciplines-grid {
               grid-template-columns: 1fr !important;
             }
           }
@@ -1374,7 +1557,7 @@ export default function Home() {
                 color: 'var(--argho-green)',
               }}
             >
-              18 produtos
+              16 produtos
             </span>
             .
           </h2>
