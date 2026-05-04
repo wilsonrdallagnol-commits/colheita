@@ -46,21 +46,12 @@ const APP_MODE_LABELS: Record<string, string> = {
 // Max scale for composition bars per type
 const MAX_SCALE = { macro: 40, micro: 10, other: 10 };
 
-// Product mockup images mapping — mockups serão substituídos pelo usuário
+// Apenas produtos com mockup oficial atual. Demais usam fallback (letra inicial categórica).
 const PRODUCT_MOCKUP: Record<string, string> = {
   stron: '/products/stron.png',
-  impuch: '/products/impuch.png',
   'life-on': '/products/lifeon.png',
-  troian: '/products/troian.png',
-  biovas: '/products/biovas.png',
-  'operate-plus': '/products/operate.png',
-  'operate-citronela': '/products/operate.png',
-  'operate-4em1': '/products/operate.png',
-  'operate-orange': '/products/operate.png',
-  bovex: '/products/bovex.png',
-  nemax: '/products/nemax.png',
-  'n-import': '/products/n-import.png',
-  titan: '/products/titan.png',
+  impuch: '/products/impuch.png',
+  defon: '/products/defon.png',
 };
 
 interface PageProps {
@@ -435,54 +426,60 @@ export default async function ProductPage({ params }: PageProps) {
               {product.description}
             </p>
 
-            {/* Mockup (placeholder enquanto usuário re-fabrica) */}
-            {mockupSrc && (
-              <div
-                aria-hidden
-                style={{
-                  marginTop: '40px',
-                  display: 'flex',
-                  alignItems: 'flex-end',
-                  gap: '24px',
-                }}
-              >
+            {/* Stat strip — origem, lote, MAPA */}
+            <div
+              className="anim-fade-in-up delay-4"
+              style={{
+                marginTop: '40px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                gap: '0',
+                borderTop: '1px solid var(--border-subtle)',
+                borderBottom: '1px solid var(--border-subtle)',
+                maxWidth: '560px',
+              }}
+            >
+              {[
+                { label: 'Origem', value: product.originCountry },
+                { label: 'Estado', value: product.physicalState },
+                {
+                  label: 'Reg. MAPA',
+                  value: product.registrationMapa ? '✓ Ativo' : 'N/A',
+                },
+              ].map((s) => (
                 <div
+                  key={s.label}
                   style={{
-                    width: '180px',
-                    height: '240px',
-                    position: 'relative',
-                    flexShrink: 0,
+                    padding: '20px 4px 20px 0',
                   }}
                 >
-                  <Image
-                    src={mockupSrc}
-                    alt=""
-                    fill
-                    sizes="180px"
+                  <p
+                    className="mono"
                     style={{
-                      objectFit: 'contain',
-                      objectPosition: 'bottom center',
-                      filter: `drop-shadow(0 16px 32px ${catRaw.replace(')', ' / 0.20)')})`,
+                      fontSize: '0.625rem',
+                      letterSpacing: '0.14em',
+                      textTransform: 'uppercase',
+                      color: 'var(--text-tertiary)',
+                      marginBottom: '6px',
                     }}
-                  />
+                  >
+                    {s.label}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      letterSpacing: '-0.025em',
+                      color: 'var(--argho-blue)',
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    {s.value}
+                  </p>
                 </div>
-                <div
-                  style={{
-                    paddingBottom: '12px',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '0.6875rem',
-                    color: 'var(--text-tertiary)',
-                    letterSpacing: '0.10em',
-                    textTransform: 'uppercase',
-                    lineHeight: 1.6,
-                  }}
-                >
-                  Embalagem
-                  <br />
-                  ilustrativa
-                </div>
-              </div>
-            )}
+              ))}
+            </div>
           </div>
 
           {/* ── Lado direito: ficha técnica como instrumento de precisão (light) ── */}
@@ -778,6 +775,216 @@ export default async function ProductPage({ params }: PageProps) {
           </aside>
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          SHOWCASE — mockup dramático centralizado (apenas se tiver mockup)
+      ══════════════════════════════════════════════════════════════════════ */}
+      {mockupSrc && (
+        <section
+          style={{
+            position: 'relative',
+            borderTop: '1px solid var(--border-subtle)',
+            borderBottom: '1px solid var(--border-subtle)',
+            backgroundColor: 'var(--bg-soft)',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Halo radial gigante atrás do produto */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: `radial-gradient(ellipse 50% 65% at 50% 70%, ${catRaw.replace(')', ' / 0.18)')} 0%, transparent 65%)`,
+              pointerEvents: 'none',
+            }}
+          />
+
+          {/* Grid técnico sutil */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: `
+                linear-gradient(var(--border-subtle) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px)
+              `,
+              backgroundSize: '64px 64px',
+              opacity: 0.4,
+              maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
+              WebkitMaskImage:
+                'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
+              pointerEvents: 'none',
+            }}
+          />
+
+          <div
+            className="slug-showcase-grid"
+            style={{
+              position: 'relative',
+              zIndex: 2,
+              maxWidth: '1320px',
+              margin: '0 auto',
+              padding: '88px 48px',
+              display: 'grid',
+              gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+              gap: '64px',
+              alignItems: 'center',
+            }}
+          >
+            {/* Mockup gigante */}
+            <div
+              style={{
+                position: 'relative',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '560px',
+              }}
+            >
+              {/* Sombra de chão */}
+              <div
+                aria-hidden
+                style={{
+                  position: 'absolute',
+                  bottom: '40px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '60%',
+                  height: '40px',
+                  background: `radial-gradient(ellipse 50% 50%, ${catRaw.replace(')', ' / 0.35)')} 0%, transparent 70%)`,
+                  filter: 'blur(20px)',
+                  pointerEvents: 'none',
+                }}
+              />
+              <Image
+                src={mockupSrc}
+                alt={product.name}
+                width={500}
+                height={680}
+                priority
+                style={{
+                  width: 'auto',
+                  height: 'auto',
+                  maxWidth: '100%',
+                  maxHeight: '640px',
+                  objectFit: 'contain',
+                  objectPosition: 'center bottom',
+                  filter: `drop-shadow(0 32px 64px ${catRaw.replace(')', ' / 0.30)')}) drop-shadow(0 8px 20px ${catRaw.replace(')', ' / 0.15)')})`,
+                  position: 'relative',
+                  zIndex: 1,
+                }}
+              />
+            </div>
+
+            {/* Copy ao lado */}
+            <div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  marginBottom: '24px',
+                }}
+              >
+                <span
+                  aria-hidden
+                  style={{
+                    width: '24px',
+                    height: '1px',
+                    background: catColor,
+                  }}
+                />
+                <span
+                  className="mono"
+                  style={{
+                    fontSize: '0.6875rem',
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    color: catColor,
+                    fontWeight: 700,
+                  }}
+                >
+                  Embalagem oficial · {product.physicalState}
+                </span>
+              </div>
+
+              <h2
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
+                  fontWeight: 700,
+                  letterSpacing: '-0.05em',
+                  color: 'var(--argho-blue)',
+                  lineHeight: 0.95,
+                  marginBottom: '24px',
+                }}
+              >
+                {product.name}.
+                <br />
+                <span style={{ color: catColor }}>Pronto para o campo.</span>
+              </h2>
+
+              <p
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '1.0625rem',
+                  color: 'var(--text-secondary)',
+                  lineHeight: 1.65,
+                  marginBottom: '32px',
+                  maxWidth: '480px',
+                }}
+              >
+                {product.tagline}
+              </p>
+
+              {/* Embalagens disponíveis */}
+              <div>
+                <p
+                  className="mono"
+                  style={{
+                    fontSize: '0.625rem',
+                    letterSpacing: '0.16em',
+                    textTransform: 'uppercase',
+                    color: 'var(--text-tertiary)',
+                    fontWeight: 700,
+                    marginBottom: '12px',
+                  }}
+                >
+                  Disponível em
+                </p>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {product.packaging.map((pkg) => {
+                    const desc = pkg.weightKg ? `${pkg.weightKg} kg` : `${pkg.volumeL} L`;
+                    return (
+                      <span
+                        key={pkg.sku}
+                        style={{
+                          fontFamily: 'var(--font-display)',
+                          fontSize: '1.125rem',
+                          fontWeight: 700,
+                          letterSpacing: '-0.025em',
+                          color: 'var(--text-primary)',
+                          backgroundColor: 'var(--bg)',
+                          border: `1px solid ${catLine}`,
+                          borderTop: `2px solid ${catColor}`,
+                          padding: '12px 20px',
+                          borderRadius: '6px',
+                          minWidth: '72px',
+                          textAlign: 'center',
+                        }}
+                      >
+                        {desc}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════════
           APPLICATIONS — protocolo de aplicação por cultura
@@ -1144,6 +1351,10 @@ export default async function ProductPage({ params }: PageProps) {
         }
         @media (max-width: 968px) {
           .slug-hero-grid {
+            grid-template-columns: 1fr !important;
+            gap: 48px !important;
+          }
+          .slug-showcase-grid {
             grid-template-columns: 1fr !important;
             gap: 48px !important;
           }

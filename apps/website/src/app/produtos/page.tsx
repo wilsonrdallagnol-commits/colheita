@@ -44,17 +44,12 @@ const CAT_LINE: Record<ProductCategory, string> = {
 };
 
 // Product mockup image mapping (slug → public image path)
-// Mockups serão substituídos pelo usuário; estrutura mantida.
+// Apenas produtos com mockup oficial atual. Demais usam fallback (letra inicial colorida).
 const PRODUCT_MOCKUP: Record<string, string> = {
   stron: '/products/stron.png',
-  impuch: '/products/impuch.png',
   'life-on': '/products/lifeon.png',
-  troian: '/products/troian.png',
-  biovas: '/products/biovas.png',
-  'operate-plus': '/products/operate.png',
-  'operate-citronela': '/products/operate.png',
-  'operate-4em1': '/products/operate.png',
-  'operate-orange': '/products/operate.png',
+  impuch: '/products/impuch.png',
+  defon: '/products/defon.png',
 };
 
 interface PageProps {
@@ -418,6 +413,7 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
           {displayed.map((product, i) => {
             const nutrients = getNutrientLabels(product);
             const color = CAT_COLORS[product.category];
+            const raw = CAT_RAW[product.category];
             const bgSoft = CAT_BG_SOFT[product.category];
             const line = CAT_LINE[product.category];
             const mockupSrc: string | undefined = PRODUCT_MOCKUP[product.slug];
@@ -432,44 +428,55 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
                   className="produto-row-grid"
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '72px minmax(0, 220px) minmax(0, 1fr) auto',
-                    gap: '0 24px',
+                    gridTemplateColumns: mockupSrc
+                      ? '160px minmax(0, 220px) minmax(0, 1fr) auto'
+                      : '80px minmax(0, 220px) minmax(0, 1fr) auto',
+                    gap: '0 28px',
                     alignItems: 'center',
-                    padding: '20px 24px',
+                    padding: mockupSrc ? '24px 28px' : '20px 24px',
                     borderTop: i === 0 ? 'none' : '1px solid var(--border-subtle)',
                     borderLeft: `3px solid ${color}`,
                     transition: 'background-color 0.18s ease, transform 0.18s ease',
                     backgroundColor: 'var(--bg)',
                   }}
                 >
-                  {/* Product mockup thumbnail */}
+                  {/* Product mockup thumbnail — destaque maior pros produtos com mockup real */}
                   <div
                     style={{
-                      width: '72px',
-                      height: '72px',
+                      width: mockupSrc ? '160px' : '80px',
+                      height: mockupSrc ? '160px' : '80px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      borderRadius: '8px',
-                      backgroundColor: bgSoft,
-                      border: `1px solid ${line}`,
+                      borderRadius: '10px',
+                      background: mockupSrc
+                        ? `radial-gradient(ellipse 70% 80% at 50% 80%, ${bgSoft} 0%, transparent 70%)`
+                        : bgSoft,
+                      border: mockupSrc ? 'none' : `1px solid ${line}`,
                       flexShrink: 0,
-                      overflow: 'hidden',
+                      overflow: 'visible',
+                      position: 'relative',
                     }}
                   >
                     {mockupSrc ? (
                       <Image
                         src={mockupSrc}
                         alt={product.name}
-                        width={72}
-                        height={72}
-                        style={{ objectFit: 'contain', objectPosition: 'center' }}
+                        width={160}
+                        height={160}
+                        style={{
+                          objectFit: 'contain',
+                          objectPosition: 'center',
+                          filter: `drop-shadow(0 12px 24px ${raw.replace(')', ' / 0.18)')})`,
+                          maxWidth: '100%',
+                          maxHeight: '100%',
+                        }}
                       />
                     ) : (
                       <span
                         style={{
                           fontFamily: 'var(--font-display)',
-                          fontSize: '1.625rem',
+                          fontSize: '1.875rem',
                           fontWeight: 700,
                           letterSpacing: '-0.04em',
                           color: color,
