@@ -418,6 +418,9 @@ importers:
       '@colheita/config':
         specifier: workspace:*
         version: link:../config
+      '@supabase/supabase-js':
+        specifier: ^2.45.0
+        version: 2.104.1
       '@types/node':
         specifier: 22.7.0
         version: 22.7.0
