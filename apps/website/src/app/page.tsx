@@ -191,18 +191,22 @@ export default function Home() {
                 Ver portfólio completo
                 <span style={{ fontSize: '1.1em', lineHeight: 1 }}>→</span>
               </Link>
-              <span
-                title="Plataforma Colheita — em desenvolvimento"
+              <Link
+                href="https://colheita.arghoagrosciences.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 style={{
                   fontFamily: 'var(--font-body)',
                   fontSize: '0.9375rem',
                   fontWeight: 500,
-                  color: 'var(--text-muted)',
+                  color: 'var(--text-primary)',
+                  textDecoration: 'none',
                   padding: '15px 24px',
                   letterSpacing: '-0.005em',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '10px',
+                  borderBottom: '1px solid var(--text-primary)',
                   paddingLeft: 0,
                   paddingRight: 0,
                   marginLeft: '12px',
@@ -219,8 +223,8 @@ export default function Home() {
                     boxShadow: '0 0 8px oklch(0.66 0.130 78 / 0.6)',
                   }}
                 />
-                Plataforma Colheita · em breve
-              </span>
+                Plataforma Colheita
+              </Link>
             </div>
 
             {/* Métricas inline */}
@@ -1573,36 +1577,28 @@ export default function Home() {
               Plataforma de gestão agronômica para distribuidores e equipes técnicas Argho.
               Catálogo, recomendação por cultura, certificação e assistente IA em um único ambiente.
             </p>
-            <span
-              title="Plataforma Colheita — em desenvolvimento"
+            <Link
+              href="https://colheita.arghoagrosciences.com"
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
                 fontFamily: 'var(--font-body)',
                 fontSize: '0.9375rem',
                 fontWeight: 600,
-                color: 'var(--gold-deep)',
-                backgroundColor: 'var(--gold-soft)',
+                color: '#ffffff',
+                backgroundColor: 'var(--gold-deep)',
+                textDecoration: 'none',
                 padding: '14px 28px',
                 borderRadius: '8px',
                 letterSpacing: '-0.005em',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                border: '1px solid oklch(0.66 0.130 78 / 0.30)',
               }}
             >
-              <span
-                aria-hidden
-                style={{
-                  display: 'inline-block',
-                  width: '6px',
-                  height: '6px',
-                  borderRadius: '50%',
-                  backgroundColor: 'var(--gold)',
-                  boxShadow: '0 0 8px oklch(0.66 0.130 78 / 0.6)',
-                }}
-              />
-              Plataforma em desenvolvimento
-            </span>
+              Acessar plataforma
+              <span style={{ fontSize: '1.1em', lineHeight: 1 }}>→</span>
+            </Link>
           </div>
 
           {/* Mock card preview */}
@@ -1676,11 +1672,9 @@ export default function Home() {
                   style={{
                     fontSize: '0.6875rem',
                     color: 'var(--text-tertiary)',
-                    letterSpacing: '0.06em',
-                    textTransform: 'uppercase',
                   }}
                 >
-                  Em desenvolvimento
+                  colheita.arghoagrosciences.com
                 </div>
               </div>
             </div>

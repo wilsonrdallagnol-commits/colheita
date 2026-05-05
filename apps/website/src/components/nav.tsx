@@ -80,14 +80,17 @@ export function Nav() {
           }}
         />
 
-        {/* Plataforma — gold ghost (em desenvolvimento, sem URL pública ainda) */}
-        <span
-          title="Plataforma Colheita — em desenvolvimento"
+        {/* Plataforma Colheita — gold ghost, subdomínio dedicado */}
+        <Link
+          href="https://colheita.arghoagrosciences.com"
+          target="_blank"
+          rel="noopener noreferrer"
           style={{
             fontFamily: 'var(--font-body)',
             fontSize: '0.8125rem',
             fontWeight: 500,
             color: 'var(--gold-deep)',
+            textDecoration: 'none',
             padding: '8px 16px',
             borderRadius: '6px',
             border: '1px solid oklch(0.66 0.130 78 / 0.30)',
@@ -95,8 +98,6 @@ export function Nav() {
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            opacity: 0.85,
-            cursor: 'default',
           }}
         >
           <span
@@ -109,8 +110,8 @@ export function Nav() {
               boxShadow: '0 0 8px oklch(0.66 0.130 78 / 0.6)',
             }}
           />
-          Plataforma · em breve
-        </span>
+          Plataforma
+        </Link>
 
         {/* CTA primary — azul Argho */}
         <Link
