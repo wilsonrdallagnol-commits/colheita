@@ -197,8 +197,10 @@ export default async function ProductPage({ params }: PageProps) {
         </span>
         <span
           style={{
-            color: 'var(--text-secondary)',
-            letterSpacing: '0.04em',
+            color: 'var(--text-primary)',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            fontWeight: 600,
           }}
         >
           {product.name}
@@ -341,9 +343,10 @@ export default async function ProductPage({ params }: PageProps) {
                 fontFamily: 'var(--font-display)',
                 fontSize: 'clamp(2.75rem, 6.5vw, 5.25rem)',
                 fontWeight: 700,
-                letterSpacing: '-0.055em',
+                letterSpacing: '0.005em',
+                textTransform: 'uppercase',
                 lineHeight: 0.95,
-                color: 'var(--argho-blue)',
+                color: 'var(--text-primary)',
                 marginBottom: '24px',
               }}
             >
@@ -928,15 +931,29 @@ export default async function ProductPage({ params }: PageProps) {
                   fontFamily: 'var(--font-display)',
                   fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
                   fontWeight: 700,
-                  letterSpacing: '-0.05em',
-                  color: 'var(--argho-blue)',
                   lineHeight: 0.95,
                   marginBottom: '24px',
                 }}
               >
-                {product.name}.
+                <span
+                  style={{
+                    color: 'var(--text-primary)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.01em',
+                    display: 'inline-block',
+                  }}
+                >
+                  {product.name}.
+                </span>
                 <br />
-                <span style={{ color: catColor }}>Pronto para o campo.</span>
+                <span
+                  style={{
+                    color: catColor,
+                    letterSpacing: '-0.05em',
+                  }}
+                >
+                  Pronto para o campo.
+                </span>
               </h2>
 
               <p
@@ -1292,11 +1309,12 @@ export default async function ProductPage({ params }: PageProps) {
                   <h3
                     style={{
                       fontFamily: 'var(--font-display)',
-                      fontSize: '1.125rem',
+                      fontSize: '1rem',
                       fontWeight: 700,
-                      letterSpacing: '-0.04em',
+                      letterSpacing: '0.02em',
+                      textTransform: 'uppercase',
                       color: 'var(--text-primary)',
-                      lineHeight: 1.0,
+                      lineHeight: 1.05,
                     }}
                   >
                     {p.name}

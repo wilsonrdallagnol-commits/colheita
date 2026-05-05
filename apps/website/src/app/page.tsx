@@ -316,9 +316,11 @@ export default function Home() {
                 key={`${name}-${i}`}
                 style={{
                   fontFamily: 'var(--font-display)',
-                  fontSize: '1rem',
-                  color: 'var(--text-tertiary)',
-                  letterSpacing: '-0.01em',
+                  fontSize: '0.9375rem',
+                  fontWeight: 700,
+                  color: 'var(--text-primary)',
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '64px',
@@ -1984,9 +1986,10 @@ function LineCard({
         style={{
           fontFamily: 'var(--font-display)',
           fontSize: '1.25rem',
-          fontWeight: 500,
+          fontWeight: 700,
           color: 'var(--text-primary)',
-          letterSpacing: '-0.025em',
+          letterSpacing: '0.02em',
+          textTransform: 'uppercase',
           margin: '0 0 12px',
         }}
       >
@@ -2138,11 +2141,12 @@ function Spotlight({
           <h2
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2.75rem, 5.5vw, 4.5rem)',
+              fontSize: 'clamp(2.5rem, 5vw, 4rem)',
               fontWeight: 700,
-              color: 'var(--argho-blue)',
-              letterSpacing: '-0.055em',
-              lineHeight: 0.95,
+              color: 'var(--text-primary)',
+              letterSpacing: '0.01em',
+              textTransform: 'uppercase',
+              lineHeight: 1.0,
               margin: '0 0 24px',
             }}
           >

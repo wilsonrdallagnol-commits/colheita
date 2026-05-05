@@ -506,12 +506,13 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
                     <h3
                       style={{
                         fontFamily: 'var(--font-display)',
-                        fontSize: '1.25rem',
+                        fontSize: '1.125rem',
                         fontWeight: 700,
-                        letterSpacing: '-0.045em',
+                        letterSpacing: '0.02em',
+                        textTransform: 'uppercase',
                         color: 'var(--text-primary)',
-                        marginBottom: '4px',
-                        lineHeight: 1.0,
+                        marginBottom: '6px',
+                        lineHeight: 1.05,
                       }}
                     >
                       {product.name}
