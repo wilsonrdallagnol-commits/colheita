@@ -9,7 +9,7 @@ import { Nav } from '@/components/nav';
 import './globals.css';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://argho.com.br'),
+  metadataBase: new URL('https://arghoagrosciences.com'),
   title: {
     default: 'Argho Agrosciences — Nutrição de precisão para o agro brasileiro',
     template: '%s | Argho Agrosciences',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     description: 'Nutrição de precisão para a agricultura brasileira.',
     locale: 'pt_BR',
     type: 'website',
-    url: 'https://argho.com.br',
+    url: 'https://arghoagrosciences.com',
     siteName: 'Argho Agrosciences',
   },
   twitter: {

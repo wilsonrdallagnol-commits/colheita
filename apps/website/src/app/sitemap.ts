@@ -2,7 +2,7 @@
 import type { MetadataRoute } from 'next';
 import { PRODUCTS } from '@/lib/products';
 
-const BASE_URL = 'https://argho.com.br';
+const BASE_URL = 'https://arghoagrosciences.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const productUrls: MetadataRoute.Sitemap = PRODUCTS.map((product) => ({
