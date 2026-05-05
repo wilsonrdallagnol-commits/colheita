@@ -103,17 +103,15 @@ export function Footer() {
               { href: '/sobre', label: 'Sobre a Argho' },
               { href: '/sobre#valores', label: 'Valores' },
               { href: '/sobre#expertise', label: 'Nossa expertise' },
-              { href: 'https://colheita.app.br', label: 'Plataforma Colheita ↗', external: true },
-            ].map(({ href, label, external }) => (
+              { href: '/produtos', label: 'Portfólio completo' },
+            ].map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
-                target={external ? '_blank' : undefined}
-                rel={external ? 'noopener noreferrer' : undefined}
                 style={{
                   fontFamily: 'var(--font-body)',
                   fontSize: '0.875rem',
-                  color: external ? 'var(--gold-deep)' : 'var(--text-secondary)',
+                  color: 'var(--text-secondary)',
                   textDecoration: 'none',
                   letterSpacing: '-0.005em',
                 }}
