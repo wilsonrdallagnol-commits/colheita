@@ -9,10 +9,15 @@ import { TopNav } from '@/components/TopNav';
 
 export default async function PublicLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
-  const supabase = createServerClient(cookieStore);
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user: { email?: string | null } | null = null;
+  try {
+    const supabase = createServerClient(cookieStore);
+    const result = await supabase.auth.getUser();
+    user = result.data.user;
+  } catch {
+    // Supabase indisponivel (placeholder em deploy de demo) — segue sem user.
+    user = null;
+  }
 
   return (
     <div

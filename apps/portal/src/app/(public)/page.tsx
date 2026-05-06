@@ -77,9 +77,14 @@ export default async function CatalogPage({ searchParams }: PageProps) {
 
   const qTrimmed = q?.trim() ?? '';
 
-  // Fetch tenant
-  const { data: tenantData } = await supabase.from('tenants').select('id').limit(1).single();
-  const tenantId = tenantData?.id as string | undefined;
+  // Fetch tenant — fallback gracioso quando Supabase indisponivel.
+  let tenantId: string | undefined;
+  try {
+    const { data: tenantData } = await supabase.from('tenants').select('id').limit(1).single();
+    tenantId = tenantData?.id as string | undefined;
+  } catch {
+    tenantId = undefined;
+  }
 
   // Vector search
   let vectorProductIds: string[] | null = null;
@@ -87,10 +92,18 @@ export default async function CatalogPage({ searchParams }: PageProps) {
     vectorProductIds = await vectorSearchProductIds(qTrimmed, tenantId);
   }
 
-  // Fetch categories and products in parallel
-  const [{ data: categorias }, { data: produtos }] = await Promise.all([
-    supabase.from('product_categories').select('id, slug, name').order('name'),
-    (() => {
+  // Fetch categories and products em paralelo. Falhas viram listas vazias
+  // para o portal nao crashar quando o Supabase de producao nao esta configurado.
+  const categoriasResult = await (async () => {
+    try {
+      return await supabase.from('product_categories').select('id, slug, name').order('name');
+    } catch {
+      return { data: null as null | { id: string; slug: string; name: string }[] };
+    }
+  })();
+
+  const produtosResult = await (async () => {
+    try {
       let query = supabase
         .from('products')
         .select(
@@ -107,10 +120,14 @@ export default async function CatalogPage({ searchParams }: PageProps) {
           query = query.or(`name.ilike.%${qTrimmed}%,tagline.ilike.%${qTrimmed}%`);
         }
       }
+      return await query;
+    } catch {
+      return { data: null };
+    }
+  })();
 
-      return query;
-    })(),
-  ]);
+  const { data: categorias } = categoriasResult;
+  const { data: produtos } = produtosResult;
 
   const categoriasList = categorias ?? [];
   const activeCat = category ? (categoriasList.find((c) => c.slug === category) ?? null) : null;
