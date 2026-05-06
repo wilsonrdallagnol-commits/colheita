@@ -34,8 +34,11 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     });
     const result = await supabase.auth.getUser();
     user = result.data.user;
-  } catch {
-    // Supabase indisponivel — middleware no-op.
+  } catch (err) {
+    // Supabase indisponivel — middleware no-op. Log via console pois middleware roda
+    // em edge runtime onde o SDK Sentry completo (@colheita/observability) e pesado.
+    // Vercel captura console.error nos logs do projeto.
+    console.error('[portal.middleware.getUser] supabase auth failed', err);
     return supabaseResponse;
   }
 
