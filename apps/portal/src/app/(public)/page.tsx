@@ -71,6 +71,18 @@ async function vectorSearchProductIds(query: string, tenantId: string): Promise<
 }
 
 export default async function CatalogPage({ searchParams }: PageProps) {
+  // Fallback "em breve" quando Supabase nao esta configurado em producao.
+  // Detecta placeholder/local para evitar crash em runtime.
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+  const supabaseConfigured =
+    supabaseUrl !== '' &&
+    !supabaseUrl.includes('placeholder') &&
+    !supabaseUrl.includes('localhost');
+
+  if (!supabaseConfigured) {
+    return <PlaceholderHero />;
+  }
+
   const { q, category } = await searchParams;
   const cookieStore = await cookies();
   const supabase = createServerClient(cookieStore);
@@ -516,5 +528,87 @@ function ProductCard({
         Ver ficha técnica →
       </div>
     </Link>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Placeholder mostrado quando Supabase prod ainda nao esta configurado.
+// Apresenta a marca Argho com mensagem "em breve" — evita pagina de erro.
+function PlaceholderHero() {
+  return (
+    <section
+      style={{
+        minHeight: 'calc(100vh - 200px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '64px 32px',
+        background: 'linear-gradient(180deg, #ffffff 0%, #f9fafb 100%)',
+      }}
+    >
+      <div style={{ maxWidth: 720, textAlign: 'center' }}>
+        <p className="argho-eyebrow" style={{ marginBottom: 24 }}>
+          Plataforma Colheita · Em construção
+        </p>
+        <h1
+          className="argho-display"
+          style={{
+            fontSize: 'clamp(2.25rem, 4vw + 1rem, 3.25rem)',
+            color: '#0a0a0a',
+            marginBottom: 24,
+          }}
+        >
+          Catálogo digital <span style={{ color: '#489030' }}>chega</span>{' '}
+          <span style={{ color: '#183090' }}>em breve</span>.
+        </h1>
+        <p
+          style={{
+            fontSize: '1.0625rem',
+            color: '#4b5563',
+            lineHeight: 1.6,
+            maxWidth: 520,
+            margin: '0 auto 36px',
+          }}
+        >
+          Estamos finalizando a integração com nosso PIM e ERP para entregar ficha técnica,
+          indicações por cultura e dados regulatórios de cada produto Argho em um único lugar.
+        </p>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <a
+            href="https://arghoagrosciences.com/produtos"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '12px 24px',
+              borderRadius: 8,
+              background: '#183090',
+              color: '#fff',
+              fontSize: '0.9375rem',
+              fontWeight: 600,
+              textDecoration: 'none',
+            }}
+          >
+            Ver portfólio Argho →
+          </a>
+          <a
+            href="https://arghoagrosciences.com"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '12px 24px',
+              borderRadius: 8,
+              border: '1px solid #e5e7eb',
+              background: '#fff',
+              color: '#0a0a0a',
+              fontSize: '0.9375rem',
+              fontWeight: 500,
+              textDecoration: 'none',
+            }}
+          >
+            Site institucional
+          </a>
+        </div>
+      </div>
+    </section>
   );
 }
