@@ -15,7 +15,7 @@
 // sem mexer na lógica de transição.
 
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const SESSION_KEY = 'argho-intro-seen';
 
@@ -46,16 +46,29 @@ export function HeartIntro() {
     }
   }, [phase]);
 
-  function handleEnter() {
+  const handleEnter = useCallback(() => {
+    setPhase((current) => {
+      if (current !== 'visible') return current;
+      sessionStorage.setItem(SESSION_KEY, '1');
+      setTimeout(() => {
+        document.body.style.overflow = '';
+        setPhase('hidden');
+      }, 1400);
+      return 'exiting';
+    });
+  }, []);
+
+  useEffect(() => {
     if (phase !== 'visible') return;
-    setPhase('exiting');
-    sessionStorage.setItem(SESSION_KEY, '1');
-    // Após animação de saída, libera scroll
-    setTimeout(() => {
-      document.body.style.overflow = '';
-      setPhase('hidden');
-    }, 1400);
-  }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleEnter();
+      }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [phase, handleEnter]);
 
   if (phase === 'hidden') return null;
 

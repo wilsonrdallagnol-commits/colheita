@@ -50,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <HeartIntro />
         <Nav />
-        <main style={{ paddingTop: '88px' }}>{children}</main>
+        <div style={{ paddingTop: '88px' }}>{children}</div>
         <Footer />
       </body>
     </html>
