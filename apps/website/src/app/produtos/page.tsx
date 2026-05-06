@@ -1,4 +1,7 @@
 // apps/website/src/app/produtos/page.tsx
+// Catálogo — Argho Agrosciences (Redesign 2026)
+// White-first. Lista editorial. Filtros sticky. Paleta oficial Argho.
+
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -20,37 +23,52 @@ const CAT_COLORS: Record<ProductCategory, string> = {
 };
 
 const CAT_RAW: Record<ProductCategory, string> = {
-  'fertilizantes-minerais': 'oklch(0.58 0.165 148)',
-  organominerais: 'oklch(0.64 0.13 195)',
-  biologicos: 'oklch(0.66 0.150 150)',
-  adjuvantes: 'oklch(0.73 0.135 78)',
+  'fertilizantes-minerais': 'oklch(0.586 0.150 138.8)',
+  organominerais: 'oklch(0.362 0.160 266.7)',
+  biologicos: 'oklch(0.55 0.150 145)',
+  adjuvantes: 'oklch(0.62 0.130 78)',
 };
 
-const CAT_BG: Record<ProductCategory, string> = {
-  'fertilizantes-minerais': 'oklch(0.14 0.045 148 / 0.40)',
-  organominerais: 'oklch(0.14 0.040 195 / 0.40)',
-  biologicos: 'oklch(0.14 0.048 150 / 0.40)',
-  adjuvantes: 'oklch(0.16 0.038 78 / 0.40)',
+const CAT_BG_SOFT: Record<ProductCategory, string> = {
+  'fertilizantes-minerais': 'var(--cat-mineral-soft)',
+  organominerais: 'var(--cat-organo-soft)',
+  biologicos: 'var(--cat-bio-soft)',
+  adjuvantes: 'var(--cat-adj-soft)',
+};
+
+const CAT_LINE: Record<ProductCategory, string> = {
+  'fertilizantes-minerais': 'var(--cat-mineral-line)',
+  organominerais: 'var(--cat-organo-line)',
+  biologicos: 'var(--cat-bio-line)',
+  adjuvantes: 'var(--cat-adj-line)',
 };
 
 // Product mockup image mapping (slug → public image path)
+// PNGs com fundo transparente processados via rembg (scripts/process-mockups.py).
+// Cobre 100% do portfólio vigente.
 const PRODUCT_MOCKUP: Record<string, string> = {
+  xcensis: '/products/xcensis.png',
   stron: '/products/stron.png',
+  'grow-calcium': '/products/grow-calcium.png',
+  defon: '/products/defon.png',
+  'grow-mob': '/products/grow-mob.png',
   impuch: '/products/impuch.png',
   'life-on': '/products/lifeon.png',
   troian: '/products/troian.png',
   biovas: '/products/biovas.png',
-  'operate-plus': '/products/operate.png',
-  'operate-citronela': '/products/operate.png',
-  'operate-4em1': '/products/operate.png',
-  'operate-orange': '/products/operate.png',
+  bovex: '/products/bovex.png',
+  controx: '/products/controx.png',
+  nemax: '/products/nemax.png',
+  'operate-plus': '/products/operate-plus.png',
+  'operate-citronela': '/products/operate-citronela.png',
+  'operate-4em1': '/products/operate-4em1.png',
+  'operate-orange': '/products/operate-orange.png',
 };
 
 interface PageProps {
   searchParams: Promise<{ categoria?: string }>;
 }
 
-// Get the key nutrients present in a product, capped at 5 items
 function getNutrientLabels(product: import('@/lib/products').Product): string[] {
   const labels: string[] = [];
   const all = {
@@ -75,16 +93,19 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
   const mapaCount = PRODUCTS.filter((p) => p.registrationMapa).length;
 
   return (
-    <div style={{ minHeight: '100vh' }}>
-      {/* ── Page header ── */}
-      <div
+    <main style={{ backgroundColor: 'var(--bg)', minHeight: '100vh', overflowX: 'hidden' }}>
+      {/* ═══════════════════════════════════════════════════════════════════
+          HEADER — eyebrow + headline editorial bold + meta inline
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section
         style={{
           position: 'relative',
+          padding: '40px 48px 64px',
+          borderBottom: '1px solid var(--border-subtle)',
           overflow: 'hidden',
-          borderBottom: '1px solid oklch(0.14 0.022 148)',
         }}
       >
-        {/* Top scan-line bar */}
+        {/* Top scan-line bar (paleta oficial) */}
         <div
           aria-hidden
           style={{
@@ -94,79 +115,107 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
             right: 0,
             height: '2px',
             background:
-              'linear-gradient(90deg, oklch(0.58 0.165 148 / 0.5) 0%, oklch(0.73 0.135 78 / 0.7) 40%, oklch(0.64 0.13 195 / 0.4) 70%, transparent 100%)',
+              'linear-gradient(90deg, var(--argho-blue) 0%, var(--argho-green) 35%, var(--gold) 70%, transparent 100%)',
           }}
         />
-        {/* Faint circuit grid */}
+
+        {/* Faint editorial grid (mesmo padrão da home) */}
         <div
           aria-hidden
           style={{
             position: 'absolute',
             inset: 0,
-            backgroundImage:
-              'linear-gradient(oklch(0.22 0.025 148 / 0.06) 1px, transparent 1px), linear-gradient(90deg, oklch(0.22 0.025 148 / 0.06) 1px, transparent 1px)',
-            backgroundSize: '48px 48px',
+            backgroundImage: `
+              linear-gradient(var(--border-subtle) 1px, transparent 1px),
+              linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px)
+            `,
+            backgroundSize: '64px 64px',
+            opacity: 0.5,
+            maskImage: 'radial-gradient(ellipse 70% 80% at 50% 50%, black 30%, transparent 80%)',
+            WebkitMaskImage:
+              'radial-gradient(ellipse 70% 80% at 50% 50%, black 30%, transparent 80%)',
             pointerEvents: 'none',
           }}
         />
 
         <div
           style={{
-            maxWidth: '1200px',
+            maxWidth: '1320px',
             margin: '0 auto',
-            padding: '72px 48px 48px',
             position: 'relative',
+            zIndex: 2,
           }}
         >
-          {/* Top stat row */}
+          {/* Eyebrow + meta inline */}
           <div
             style={{
               display: 'flex',
-              gap: '24px',
-              marginBottom: '20px',
+              flexWrap: 'wrap',
+              gap: '14px',
               alignItems: 'center',
+              marginBottom: '32px',
             }}
           >
-            <span
+            <div
               style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.6875rem',
-                letterSpacing: '0.12em',
-                color: 'oklch(0.58 0.165 148)',
-                textTransform: 'uppercase',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '12px',
               }}
             >
-              Portfólio Argho
-            </span>
-            <span style={{ color: 'oklch(0.22 0.025 148)', fontSize: '0.75rem' }}>·</span>
+              <span
+                aria-hidden
+                style={{
+                  width: '28px',
+                  height: '1px',
+                  background: 'var(--argho-green)',
+                }}
+              />
+              <span
+                className="mono"
+                style={{
+                  fontSize: '0.6875rem',
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  color: 'var(--argho-blue)',
+                  fontWeight: 600,
+                }}
+              >
+                Portfólio Argho · Linha 2026
+              </span>
+            </div>
+            <span style={{ color: 'var(--text-faint)', fontSize: '0.75rem' }}>·</span>
             <span
+              className="mono"
               style={{
-                fontFamily: 'var(--font-mono)',
                 fontSize: '0.6875rem',
-                color: 'oklch(0.45 0.014 148)',
-                letterSpacing: '0.06em',
+                color: 'var(--text-tertiary)',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
               }}
             >
               {PRODUCTS.length} produtos
             </span>
-            <span style={{ color: 'oklch(0.22 0.025 148)', fontSize: '0.75rem' }}>·</span>
+            <span style={{ color: 'var(--text-faint)', fontSize: '0.75rem' }}>·</span>
             <span
+              className="mono"
               style={{
-                fontFamily: 'var(--font-mono)',
                 fontSize: '0.6875rem',
-                color: 'oklch(0.45 0.014 148)',
-                letterSpacing: '0.06em',
+                color: 'var(--text-tertiary)',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
               }}
             >
               {mapaCount} registros MAPA
             </span>
-            <span style={{ color: 'oklch(0.22 0.025 148)', fontSize: '0.75rem' }}>·</span>
+            <span style={{ color: 'var(--text-faint)', fontSize: '0.75rem' }}>·</span>
             <span
+              className="mono"
               style={{
-                fontFamily: 'var(--font-mono)',
                 fontSize: '0.6875rem',
-                color: 'oklch(0.45 0.014 148)',
-                letterSpacing: '0.06em',
+                color: 'var(--text-tertiary)',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
               }}
             >
               Origem Espanha
@@ -176,22 +225,23 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
           <h1
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2rem, 4vw, 3.25rem)',
+              fontSize: 'clamp(2.5rem, 6vw, 5rem)',
               fontWeight: 700,
-              letterSpacing: '-0.04em',
-              lineHeight: 1.0,
-              color: 'var(--text-primary)',
-              marginBottom: '16px',
+              letterSpacing: '-0.055em',
+              lineHeight: 0.95,
+              color: 'var(--argho-blue)',
+              marginBottom: '24px',
+              maxWidth: '900px',
             }}
           >
-            Catálogo completo.
+            Catálogo <span style={{ color: 'var(--argho-green)' }}>completo</span>.
           </h1>
           <p
             style={{
               fontFamily: 'var(--font-body)',
-              fontSize: '1rem',
+              fontSize: '1.0625rem',
               color: 'var(--text-secondary)',
-              maxWidth: '520px',
+              maxWidth: '580px',
               lineHeight: 1.65,
             }}
           >
@@ -199,23 +249,25 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
             quem exige ciência aplicada ao campo.
           </p>
         </div>
-      </div>
+      </section>
 
-      {/* ── Category filter tabs ── */}
+      {/* ═══════════════════════════════════════════════════════════════════
+          STICKY FILTER TABS — light, blur, accent por categoria
+      ══════════════════════════════════════════════════════════════════════ */}
       <div
         style={{
           position: 'sticky',
-          top: '64px',
+          top: '88px',
           zIndex: 10,
-          backgroundColor: 'oklch(0.07 0.018 148 / 0.94)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          borderBottom: '1px solid oklch(0.14 0.022 148)',
+          backgroundColor: 'rgba(255, 255, 255, 0.92)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          borderBottom: '1px solid var(--border-subtle)',
         }}
       >
         <div
           style={{
-            maxWidth: '1200px',
+            maxWidth: '1320px',
             margin: '0 auto',
             padding: '0 48px',
             display: 'flex',
@@ -229,32 +281,32 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '6px',
-              padding: '14px 18px',
+              gap: '8px',
+              padding: '16px 20px',
               borderBottom: !activeCategory
-                ? '2px solid var(--text-primary)'
+                ? '2px solid var(--argho-blue)'
                 : '2px solid transparent',
-              color: !activeCategory ? 'var(--text-primary)' : 'var(--text-muted)',
+              color: !activeCategory ? 'var(--argho-blue)' : 'var(--text-muted)',
               fontFamily: 'var(--font-mono)',
               fontSize: '0.75rem',
-              fontWeight: !activeCategory ? 600 : 400,
-              letterSpacing: '0.04em',
+              fontWeight: !activeCategory ? 700 : 500,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
               textDecoration: 'none',
               whiteSpace: 'nowrap',
-              transition: 'color 0.15s',
+              transition: 'color 0.15s ease, border-color 0.15s ease',
             }}
           >
-            TODOS
+            Todos
             <span
               style={{
                 fontSize: '0.625rem',
-                color: !activeCategory ? 'oklch(0.58 0.165 148)' : 'var(--text-faint)',
-                backgroundColor: !activeCategory
-                  ? 'oklch(0.14 0.045 148)'
-                  : 'oklch(0.10 0.016 148)',
-                padding: '1px 6px',
-                borderRadius: '3px',
+                color: !activeCategory ? 'var(--argho-blue)' : 'var(--text-faint)',
+                backgroundColor: !activeCategory ? 'var(--argho-blue-soft)' : 'var(--bg-soft)',
+                padding: '2px 7px',
+                borderRadius: '999px',
                 fontWeight: 700,
+                letterSpacing: '0.04em',
               }}
             >
               {PRODUCTS.length}
@@ -264,7 +316,6 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
           {CATEGORY_KEYS.map((cat) => {
             const count = PRODUCTS.filter((p) => p.category === cat).length;
             const isActive = activeCategory === cat;
-            const raw = CAT_RAW[cat];
             return (
               <Link
                 key={cat}
@@ -272,31 +323,30 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '6px',
-                  padding: '14px 18px',
+                  gap: '8px',
+                  padding: '16px 20px',
                   borderBottom: isActive ? `2px solid ${CAT_COLORS[cat]}` : '2px solid transparent',
                   color: isActive ? CAT_COLORS[cat] : 'var(--text-muted)',
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.75rem',
-                  fontWeight: isActive ? 600 : 400,
-                  letterSpacing: '0.04em',
+                  fontWeight: isActive ? 700 : 500,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
                   textDecoration: 'none',
                   whiteSpace: 'nowrap',
-                  transition: 'color 0.15s',
-                  ...(isActive && {
-                    textShadow: `0 0 12px ${raw.replace(')', ' / 0.4)')}`,
-                  }),
+                  transition: 'color 0.15s ease, border-color 0.15s ease',
                 }}
               >
-                {CATEGORIES[cat].label.toUpperCase()}
+                {CATEGORIES[cat].label}
                 <span
                   style={{
                     fontSize: '0.625rem',
                     color: isActive ? CAT_COLORS[cat] : 'var(--text-faint)',
-                    backgroundColor: isActive ? CAT_BG[cat] : 'oklch(0.10 0.016 148)',
-                    padding: '1px 6px',
-                    borderRadius: '3px',
+                    backgroundColor: isActive ? CAT_BG_SOFT[cat] : 'var(--bg-soft)',
+                    padding: '2px 7px',
+                    borderRadius: '999px',
                     fontWeight: 700,
+                    letterSpacing: '0.04em',
                   }}
                 >
                   {count}
@@ -307,30 +357,34 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
         </div>
       </div>
 
-      {/* ── Product list ── */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 48px 80px' }}>
+      {/* ═══════════════════════════════════════════════════════════════════
+          PRODUCT LIST — editorial rows, accent colorido por categoria
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section style={{ maxWidth: '1320px', margin: '0 auto', padding: '56px 48px 96px' }}>
         {/* Category description if filtered */}
         {activeCategory && (
-          <div style={{ marginBottom: '40px' }}>
+          <div style={{ marginBottom: '40px', maxWidth: '720px' }}>
             <div
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '10px',
-                padding: '8px 16px',
-                background: CAT_BG[activeCategory],
-                borderRadius: '6px',
-                border: `1px solid ${CAT_RAW[activeCategory].replace(')', ' / 0.20)')}`,
-                marginBottom: '14px',
+                padding: '8px 14px',
+                background: CAT_BG_SOFT[activeCategory],
+                borderRadius: '999px',
+                border: `1px solid ${CAT_LINE[activeCategory]}`,
+                marginBottom: '16px',
               }}
             >
               <span
+                aria-hidden
                 style={{
                   width: '6px',
                   height: '6px',
                   borderRadius: '50%',
                   backgroundColor: CAT_COLORS[activeCategory],
                   flexShrink: 0,
+                  boxShadow: `0 0 6px ${CAT_RAW[activeCategory].replace(')', ' / 0.4)')}`,
                 }}
               />
               <span
@@ -338,19 +392,19 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.6875rem',
                   color: CAT_COLORS[activeCategory],
-                  fontWeight: 600,
-                  letterSpacing: '0.08em',
+                  fontWeight: 700,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
                 }}
               >
-                {CATEGORIES[activeCategory].label.toUpperCase()}
+                {CATEGORIES[activeCategory].label}
               </span>
             </div>
             <p
               style={{
-                fontSize: '0.9375rem',
+                fontSize: '1rem',
                 color: 'var(--text-secondary)',
-                lineHeight: 1.65,
-                maxWidth: '640px',
+                lineHeight: 1.7,
               }}
             >
               {CATEGORIES[activeCategory].description}
@@ -359,60 +413,87 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
         )}
 
         {/* Product rows */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            backgroundColor: 'var(--bg)',
+          }}
+        >
           {displayed.map((product, i) => {
             const nutrients = getNutrientLabels(product);
             const color = CAT_COLORS[product.category];
             const raw = CAT_RAW[product.category];
+            const bgSoft = CAT_BG_SOFT[product.category];
+            const line = CAT_LINE[product.category];
             const mockupSrc: string | undefined = PRODUCT_MOCKUP[product.slug];
             return (
               <Link
                 key={product.slug}
                 href={`/produtos/${product.slug}`}
                 style={{ textDecoration: 'none', display: 'block' }}
+                className="product-row"
               >
-                <div
+                <article
+                  className="produto-row-grid"
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '64px 200px 1fr auto',
-                    gap: '0 24px',
+                    gridTemplateColumns: mockupSrc
+                      ? '160px minmax(0, 220px) minmax(0, 1fr) auto'
+                      : '80px minmax(0, 220px) minmax(0, 1fr) auto',
+                    gap: '0 28px',
                     alignItems: 'center',
-                    padding: '16px 20px',
-                    borderTop: i === 0 ? '1px solid oklch(0.14 0.022 148)' : 'none',
-                    borderBottom: '1px solid oklch(0.14 0.022 148)',
+                    padding: mockupSrc ? '24px 28px' : '20px 24px',
+                    borderTop: i === 0 ? 'none' : '1px solid var(--border-subtle)',
                     borderLeft: `3px solid ${color}`,
-                    transition: 'background-color 0.15s',
+                    transition: 'background-color 0.18s ease, transform 0.18s ease',
+                    backgroundColor: 'var(--bg)',
                   }}
                 >
-                  {/* Product mockup thumbnail */}
+                  {/* Product mockup thumbnail — destaque maior pros produtos com mockup real */}
                   <div
                     style={{
-                      width: '64px',
-                      height: '64px',
+                      width: mockupSrc ? '160px' : '80px',
+                      height: mockupSrc ? '160px' : '80px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      borderRadius: '8px',
-                      backgroundColor: mockupSrc ? 'transparent' : 'oklch(0.10 0.018 148)',
+                      borderRadius: '10px',
+                      background: mockupSrc
+                        ? `radial-gradient(ellipse 70% 80% at 50% 80%, ${bgSoft} 0%, transparent 70%)`
+                        : bgSoft,
+                      border: mockupSrc ? 'none' : `1px solid ${line}`,
                       flexShrink: 0,
+                      overflow: 'visible',
+                      position: 'relative',
                     }}
                   >
                     {mockupSrc ? (
                       <Image
                         src={mockupSrc}
                         alt={product.name}
-                        width={64}
-                        height={64}
-                        style={{ objectFit: 'contain', objectPosition: 'center' }}
+                        width={160}
+                        height={160}
+                        style={{
+                          objectFit: 'contain',
+                          objectPosition: 'center',
+                          filter: `drop-shadow(0 12px 24px ${raw.replace(')', ' / 0.18)')})`,
+                          maxWidth: '100%',
+                          maxHeight: '100%',
+                        }}
                       />
                     ) : (
                       <span
                         style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: '1.25rem',
+                          fontFamily: 'var(--font-display)',
+                          fontSize: '1.875rem',
                           fontWeight: 700,
+                          letterSpacing: '-0.04em',
                           color: color,
-                          opacity: 0.35,
+                          opacity: 0.85,
                         }}
                       >
                         {product.name.charAt(0)}
@@ -422,25 +503,27 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
 
                   {/* Name + category */}
                   <div>
-                    <p
+                    <h3
                       style={{
                         fontFamily: 'var(--font-display)',
-                        fontSize: '1.0625rem',
+                        fontSize: '1.125rem',
                         fontWeight: 700,
-                        letterSpacing: '-0.03em',
+                        letterSpacing: '0.02em',
+                        textTransform: 'uppercase',
                         color: 'var(--text-primary)',
-                        marginBottom: '4px',
+                        marginBottom: '6px',
+                        lineHeight: 1.05,
                       }}
                     >
                       {product.name}
-                    </p>
+                    </h3>
                     <p
                       style={{
                         fontFamily: 'var(--font-mono)',
                         fontSize: '0.625rem',
                         fontWeight: 700,
                         textTransform: 'uppercase',
-                        letterSpacing: '0.10em',
+                        letterSpacing: '0.12em',
                         color: color,
                       }}
                     >
@@ -448,34 +531,33 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
                     </p>
                   </div>
 
-                  {/* Center: tagline + nutrient badges */}
+                  {/* Tagline + nutrient badges */}
                   <div>
                     <p
                       style={{
                         fontFamily: 'var(--font-body)',
-                        fontSize: '0.875rem',
+                        fontSize: '0.9375rem',
                         color: 'var(--text-secondary)',
-                        lineHeight: 1.5,
-                        marginBottom: '8px',
+                        lineHeight: 1.55,
+                        marginBottom: '10px',
                       }}
                     >
                       {product.tagline}
                     </p>
-                    {/* Nutrient element badges */}
-                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
                       {nutrients.map((n) => (
                         <span
                           key={n}
                           style={{
                             fontFamily: 'var(--font-mono)',
-                            fontSize: '0.5875rem',
+                            fontSize: '0.625rem',
                             fontWeight: 700,
-                            letterSpacing: '0.04em',
+                            letterSpacing: '0.06em',
                             color: color,
-                            backgroundColor: raw.replace(')', ' / 0.10)'),
-                            border: `1px solid ${raw.replace(')', ' / 0.16)')}`,
-                            padding: '2px 6px',
-                            borderRadius: '3px',
+                            backgroundColor: bgSoft,
+                            border: `1px solid ${line}`,
+                            padding: '3px 8px',
+                            borderRadius: '4px',
                           }}
                         >
                           {n}
@@ -485,14 +567,14 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
                         <span
                           style={{
                             fontFamily: 'var(--font-mono)',
-                            fontSize: '0.5875rem',
+                            fontSize: '0.625rem',
                             fontWeight: 700,
-                            letterSpacing: '0.04em',
-                            color: 'oklch(0.58 0.165 148)',
-                            backgroundColor: 'oklch(0.12 0.038 148)',
-                            border: '1px solid oklch(0.20 0.045 148)',
-                            padding: '2px 6px',
-                            borderRadius: '3px',
+                            letterSpacing: '0.06em',
+                            color: 'var(--argho-blue)',
+                            backgroundColor: 'var(--argho-blue-soft)',
+                            border: '1px solid var(--cat-organo-line)',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
                           }}
                         >
                           ✓ MAPA
@@ -503,15 +585,18 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
 
                   {/* Arrow */}
                   <span
+                    aria-hidden
                     style={{
-                      fontSize: '0.875rem',
+                      fontSize: '1.125rem',
                       color: color,
-                      opacity: 0.6,
+                      opacity: 0.7,
+                      transition: 'transform 0.18s ease, opacity 0.18s ease',
                     }}
+                    className="product-arrow"
                   >
                     →
                   </span>
-                </div>
+                </article>
               </Link>
             );
           })}
@@ -530,18 +615,34 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
         <div
           style={{
             marginTop: '48px',
-            padding: '16px 20px',
-            backgroundColor: 'oklch(0.065 0.012 148)',
-            border: '1px solid oklch(0.13 0.018 148)',
-            borderRadius: '6px',
+            padding: '20px 24px',
+            backgroundColor: 'var(--bg-soft)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: '8px',
+            display: 'flex',
+            gap: '12px',
+            alignItems: 'flex-start',
           }}
         >
+          <span
+            aria-hidden
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.875rem',
+              color: 'var(--argho-blue)',
+              flexShrink: 0,
+              fontWeight: 700,
+              marginTop: '1px',
+            }}
+          >
+            §
+          </span>
           <p
             style={{
               fontFamily: 'var(--font-body)',
-              fontSize: '0.75rem',
-              color: 'oklch(0.38 0.010 148)',
-              lineHeight: 1.6,
+              fontSize: '0.8125rem',
+              color: 'var(--text-muted)',
+              lineHeight: 1.65,
               margin: 0,
             }}
           >
@@ -551,7 +652,30 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
             conforme Lei 5.194/66. As recomendações de dose são orientativas.
           </p>
         </div>
-      </div>
-    </div>
+      </section>
+
+      {/* Hover styling + responsive overrides */}
+      <style>{`
+        .product-row:hover article {
+          background-color: var(--bg-warm) !important;
+        }
+        .product-row:hover .product-arrow {
+          transform: translateX(4px);
+          opacity: 1 !important;
+        }
+        @media (max-width: 768px) {
+          .produto-row-grid {
+            grid-template-columns: 56px minmax(0, 1fr) auto !important;
+            grid-template-areas: "thumb name arrow" "thumb tag tag" !important;
+            gap: 8px 16px !important;
+            padding: 16px !important;
+          }
+          .produto-row-grid > div:nth-child(1) { grid-area: thumb; align-self: start; }
+          .produto-row-grid > div:nth-child(2) { grid-area: name; }
+          .produto-row-grid > div:nth-child(3) { grid-area: tag; }
+          .produto-row-grid > span:last-child { grid-area: arrow; }
+        }
+      `}</style>
+    </main>
   );
 }

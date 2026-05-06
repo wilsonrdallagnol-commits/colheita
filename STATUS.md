@@ -1,8 +1,23 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-04-30 — **MVP 100% FECHADO** ✅ (biome 2.0 limpo em 17 packages + 4 apps, typecheck strict, todos os hooks passando)
-**Fase atual:** MVP COMPLETO
-**Próximo passo:** Site Institucional Argho → CRM agro + BI + WhatsApp (último passo, após site Argho no ar)
+**Última atualização:** 2026-05-05 — **MVP COMPLETO + Site Argho redesign em PR #1** ✅
+**Fase atual:** Site Institucional Argho (PR #1 com 17 commits, mergeavel) → CRM agro + BI (próximo) → WhatsApp Business
+**Tests globais:** 416 passing + 25 skipped (DB integration sem Supabase local) — em 12 packages + apps/api
+
+## 🔄 Mudanças recentes (2026-05-03 → 2026-05-05)
+
+### Site Argho redesign (`feat/home-redesign-heart` — PR #1, 17 commits)
+- White-first editorial, paleta oficial Argho (azul `#183090` + verde `#489030`)
+- Tipografia bold (Geist 700, letter-spacing -0.05em)
+- Nomes de produto em CAPS preto (espelha embalagem oficial)
+- Coração digital + landing intro fullscreen + RootDividers de raízes
+- 16 mockups oficiais com fundo transparente (rembg pipeline em `scripts/process-mockups.py`)
+- Portfólio reduzido para 16 produtos vigentes (removidos: algen, grow-filling, grow-sulfur, grow-nitro-p, up-soil; adicionados: bovex, controx, nemax)
+- Nova seção P&D "Onde a ciência encontra o campo" com viz fenotipagem light-first + pipeline 6 etapas + 4 disciplinas
+- Skill `argho-brand` criada em `~/.claude/skills/argho-brand/` — fonte de verdade da marca
+- Domínio oficial: **arghoagrosciences.com** (corrigido — antiga memória dizia argho.com.br erradamente)
+- Plataforma Colheita interna: **colheita.arghoagrosciences.com** (subdomínio dedicado)
+- Cleanup: removidos ~34MB de mockups antigos não referenciados em `apps/website/public/`
 
 ---
 

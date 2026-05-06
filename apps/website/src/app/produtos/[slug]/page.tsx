@@ -1,4 +1,8 @@
 // apps/website/src/app/produtos/[slug]/page.tsx
+// Detalhe de produto — Argho Agrosciences (Redesign 2026)
+// White-first. Ficha técnica como instrumento de precisão (light panel).
+// Espelho da home: tipografia editorial bold + paleta oficial Argho.
+
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -12,19 +16,25 @@ const CAT_COLORS: Record<ProductCategory, string> = {
   adjuvantes: 'var(--cat-adj)',
 };
 
-// Raw oklch values for gradient construction
 const CAT_RAW: Record<ProductCategory, string> = {
-  'fertilizantes-minerais': 'oklch(0.58 0.165 148)',
-  organominerais: 'oklch(0.64 0.13 195)',
-  biologicos: 'oklch(0.66 0.150 150)',
-  adjuvantes: 'oklch(0.73 0.135 78)',
+  'fertilizantes-minerais': 'oklch(0.586 0.150 138.8)',
+  organominerais: 'oklch(0.362 0.160 266.7)',
+  biologicos: 'oklch(0.55 0.150 145)',
+  adjuvantes: 'oklch(0.62 0.130 78)',
 };
 
-const CAT_BG: Record<ProductCategory, string> = {
-  'fertilizantes-minerais': 'oklch(0.14 0.045 148)',
-  organominerais: 'oklch(0.14 0.040 195)',
-  biologicos: 'oklch(0.14 0.048 150)',
-  adjuvantes: 'oklch(0.16 0.038 78)',
+const CAT_BG_SOFT: Record<ProductCategory, string> = {
+  'fertilizantes-minerais': 'var(--cat-mineral-soft)',
+  organominerais: 'var(--cat-organo-soft)',
+  biologicos: 'var(--cat-bio-soft)',
+  adjuvantes: 'var(--cat-adj-soft)',
+};
+
+const CAT_LINE: Record<ProductCategory, string> = {
+  'fertilizantes-minerais': 'var(--cat-mineral-line)',
+  organominerais: 'var(--cat-organo-line)',
+  biologicos: 'var(--cat-bio-line)',
+  adjuvantes: 'var(--cat-adj-line)',
 };
 
 const APP_MODE_LABELS: Record<string, string> = {
@@ -36,21 +46,25 @@ const APP_MODE_LABELS: Record<string, string> = {
 // Max scale for composition bars per type
 const MAX_SCALE = { macro: 40, micro: 10, other: 10 };
 
-// Product mockup images mapping
+// PNGs com fundo transparente processados via rembg (scripts/process-mockups.py).
+// Cobre 100% do portfólio vigente.
 const PRODUCT_MOCKUP: Record<string, string> = {
+  xcensis: '/products/xcensis.png',
   stron: '/products/stron.png',
+  'grow-calcium': '/products/grow-calcium.png',
+  defon: '/products/defon.png',
+  'grow-mob': '/products/grow-mob.png',
   impuch: '/products/impuch.png',
   'life-on': '/products/lifeon.png',
   troian: '/products/troian.png',
   biovas: '/products/biovas.png',
-  'operate-plus': '/products/operate.png',
-  'operate-citronela': '/products/operate.png',
-  'operate-4em1': '/products/operate.png',
-  'operate-orange': '/products/operate.png',
   bovex: '/products/bovex.png',
+  controx: '/products/controx.png',
   nemax: '/products/nemax.png',
-  'n-import': '/products/n-import.png',
-  titan: '/products/titan.png',
+  'operate-plus': '/products/operate-plus.png',
+  'operate-citronela': '/products/operate-citronela.png',
+  'operate-4em1': '/products/operate-4em1.png',
+  'operate-orange': '/products/operate-orange.png',
 };
 
 interface PageProps {
@@ -78,7 +92,8 @@ export default async function ProductPage({ params }: PageProps) {
 
   const catColor = CAT_COLORS[product.category];
   const catRaw = CAT_RAW[product.category];
-  const catBg = CAT_BG[product.category];
+  const catBgSoft = CAT_BG_SOFT[product.category];
+  const catLine = CAT_LINE[product.category];
   const catLabel = CATEGORIES[product.category].label;
   const mockupSrc: string | undefined = PRODUCT_MOCKUP[product.slug];
 
@@ -136,62 +151,73 @@ export default async function ProductPage({ params }: PageProps) {
   const isBio = product.category === 'biologicos';
 
   return (
-    <div style={{ minHeight: '100vh' }}>
-      {/* ── Breadcrumb ── */}
-      <div
+    <main style={{ backgroundColor: 'var(--bg)', minHeight: '100vh', overflowX: 'hidden' }}>
+      {/* ═══════════════════════════════════════════════════════════════════
+          BREADCRUMB — minimal mono
+      ══════════════════════════════════════════════════════════════════════ */}
+      <nav
         style={{
-          maxWidth: '1200px',
+          maxWidth: '1320px',
           margin: '0 auto',
           padding: '32px 48px 0',
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
+          gap: '10px',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.75rem',
         }}
+        aria-label="Breadcrumb"
       >
         <Link
           href="/produtos"
           style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: '0.8125rem',
             color: 'var(--text-muted)',
             textDecoration: 'none',
+            letterSpacing: '0.04em',
           }}
         >
           Portfólio
         </Link>
-        <span style={{ color: 'var(--text-faint)', fontSize: '0.75rem' }}>›</span>
+        <span aria-hidden style={{ color: 'var(--text-faint)' }}>
+          ›
+        </span>
         <Link
           href={`/produtos?categoria=${product.category}`}
           style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: '0.8125rem',
             color: catColor,
             textDecoration: 'none',
+            letterSpacing: '0.04em',
+            fontWeight: 600,
           }}
         >
           {catLabel}
         </Link>
-        <span style={{ color: 'var(--text-faint)', fontSize: '0.75rem' }}>›</span>
+        <span aria-hidden style={{ color: 'var(--text-faint)' }}>
+          ›
+        </span>
         <span
           style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: '0.8125rem',
-            color: 'var(--text-secondary)',
+            color: 'var(--text-primary)',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            fontWeight: 600,
           }}
         >
           {product.name}
         </span>
-      </div>
+      </nav>
 
-      {/* ── Hero ── */}
-      <div
+      {/* ═══════════════════════════════════════════════════════════════════
+          HERO — copy editorial à esquerda + ficha técnica light à direita
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section
         style={{
           position: 'relative',
           overflow: 'hidden',
-          background: `radial-gradient(ellipse 55% 80% at 10% 50%, ${catRaw.replace(')', ' / 0.07)')} 0%, transparent 65%)`,
+          paddingBottom: '24px',
         }}
       >
-        {/* Decorative circuit trace — top accent bar */}
+        {/* Top accent bar (categoria) */}
         <div
           aria-hidden
           style={{
@@ -200,91 +226,88 @@ export default async function ProductPage({ params }: PageProps) {
             left: 0,
             right: 0,
             height: '2px',
-            background: `linear-gradient(90deg, ${catRaw.replace(')', ' / 0.6)')} 0%, transparent 60%)`,
+            background: `linear-gradient(90deg, ${catRaw} 0%, ${catRaw.replace(')', ' / 0.4)')} 50%, transparent 100%)`,
           }}
         />
-        {/* Subtle grid bg */}
+
+        {/* Subtle radial halo da cor da categoria */}
         <div
           aria-hidden
           style={{
             position: 'absolute',
             inset: 0,
-            backgroundImage: `linear-gradient(${catRaw.replace(')', ' / 0.04)')} 1px, transparent 1px), linear-gradient(90deg, ${catRaw.replace(')', ' / 0.04)')} 1px, transparent 1px)`,
-            backgroundSize: '48px 48px',
+            background: `radial-gradient(ellipse 60% 70% at 12% 40%, ${catRaw.replace(')', ' / 0.05)')} 0%, transparent 65%)`,
             pointerEvents: 'none',
           }}
         />
-        {/* Product mockup — floating right-center */}
-        {mockupSrc && (
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              right: '440px',
-              bottom: 0,
-              width: '220px',
-              display: 'flex',
-              alignItems: 'flex-end',
-              pointerEvents: 'none',
-            }}
-          >
-            <Image
-              src={mockupSrc}
-              alt=""
-              width={220}
-              height={300}
-              style={{
-                width: '100%',
-                height: 'auto',
-                objectFit: 'contain',
-                objectPosition: 'bottom center',
-                filter: `drop-shadow(0 16px 48px ${catRaw.replace(')', ' / 0.45)')})`,
-              }}
-              priority
-            />
-          </div>
-        )}
+
+        {/* Editorial grid bg */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: `
+              linear-gradient(var(--border-subtle) 1px, transparent 1px),
+              linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px)
+            `,
+            backgroundSize: '64px 64px',
+            opacity: 0.35,
+            maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
+            WebkitMaskImage:
+              'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
+            pointerEvents: 'none',
+          }}
+        />
 
         <div
+          className="slug-hero-grid"
           style={{
-            maxWidth: '1200px',
+            maxWidth: '1320px',
             margin: '0 auto',
-            padding: '48px 48px 64px',
+            padding: '56px 48px 72px',
             display: 'grid',
-            gridTemplateColumns: '1fr 400px',
+            gridTemplateColumns: 'minmax(0, 1.05fr) minmax(0, 460px)',
             gap: '80px',
             alignItems: 'start',
             position: 'relative',
+            zIndex: 2,
           }}
         >
-          {/* Left: Product identity */}
+          {/* ── Lado esquerdo: identidade do produto ── */}
           <div>
             {/* Category badge */}
             <div
+              className="anim-fade-in-up"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px',
-                marginBottom: '24px',
+                gap: '10px',
+                marginBottom: '28px',
+                padding: '7px 14px',
+                backgroundColor: catBgSoft,
+                border: `1px solid ${catLine}`,
+                borderRadius: '999px',
               }}
             >
               <span
+                aria-hidden
                 style={{
                   width: '6px',
                   height: '6px',
                   borderRadius: '50%',
                   backgroundColor: catColor,
                   flexShrink: 0,
-                  boxShadow: `0 0 6px ${catRaw.replace(')', ' / 0.6)')}`,
+                  boxShadow: `0 0 6px ${catRaw.replace(')', ' / 0.5)')}`,
                 }}
               />
               <span
                 style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.6875rem',
-                  fontWeight: 600,
+                  fontWeight: 700,
                   textTransform: 'uppercase',
-                  letterSpacing: '0.12em',
+                  letterSpacing: '0.14em',
                   color: catColor,
                 }}
               >
@@ -292,13 +315,20 @@ export default async function ProductPage({ params }: PageProps) {
               </span>
               {product.registrationMapa && (
                 <>
-                  <span style={{ color: 'var(--text-faint)', fontSize: '0.75rem' }}>·</span>
+                  <span
+                    aria-hidden
+                    style={{
+                      width: '1px',
+                      height: '10px',
+                      backgroundColor: catLine,
+                    }}
+                  />
                   <span
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.6875rem',
-                      color: 'var(--text-faint)',
-                      letterSpacing: '0.04em',
+                      color: 'var(--text-muted)',
+                      letterSpacing: '0.06em',
                     }}
                   >
                     MAPA {product.registrationMapa}
@@ -308,48 +338,55 @@ export default async function ProductPage({ params }: PageProps) {
             </div>
 
             <h1
+              className="anim-fade-in-up delay-1"
               style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(2.75rem, 6vw, 4.5rem)',
+                fontSize: 'clamp(2.75rem, 6.5vw, 5.25rem)',
                 fontWeight: 700,
-                letterSpacing: '-0.045em',
+                letterSpacing: '0.005em',
+                textTransform: 'uppercase',
                 lineHeight: 0.95,
                 color: 'var(--text-primary)',
-                marginBottom: '20px',
+                marginBottom: '24px',
               }}
             >
               {product.name}
             </h1>
 
             <p
+              className="anim-fade-in-up delay-2"
               style={{
                 fontFamily: 'var(--font-body)',
-                fontSize: '1.0625rem',
+                fontSize: '1.125rem',
                 color: 'var(--text-secondary)',
-                lineHeight: 1.65,
-                marginBottom: '32px',
-                maxWidth: '520px',
+                lineHeight: 1.6,
+                marginBottom: '36px',
+                maxWidth: '560px',
+                letterSpacing: '-0.005em',
               }}
             >
               {product.tagline}
             </p>
 
             {/* Application mode chips */}
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '40px' }}>
+            <div
+              className="anim-fade-in-up delay-3"
+              style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '40px' }}
+            >
               {product.applicationModes.map((mode) => (
                 <span
                   key={mode}
                   style={{
                     fontFamily: 'var(--font-mono)',
                     fontSize: '0.6875rem',
-                    fontWeight: 600,
+                    fontWeight: 700,
                     letterSpacing: '0.10em',
                     textTransform: 'uppercase',
                     color: catColor,
-                    backgroundColor: catBg,
-                    border: `1px solid ${catRaw.replace(')', ' / 0.20)')}`,
-                    padding: '5px 12px',
-                    borderRadius: '4px',
+                    backgroundColor: catBgSoft,
+                    border: `1px solid ${catLine}`,
+                    padding: '6px 12px',
+                    borderRadius: '6px',
                   }}
                 >
                   {APP_MODE_LABELS[mode] ?? mode}
@@ -362,11 +399,11 @@ export default async function ProductPage({ params }: PageProps) {
                   fontWeight: 600,
                   letterSpacing: '0.10em',
                   textTransform: 'uppercase',
-                  color: 'oklch(0.52 0.018 148)',
-                  backgroundColor: 'oklch(0.12 0.018 148)',
-                  border: '1px solid oklch(0.20 0.018 148)',
-                  padding: '5px 12px',
-                  borderRadius: '4px',
+                  color: 'var(--text-muted)',
+                  backgroundColor: 'var(--bg-soft)',
+                  border: '1px solid var(--border-subtle)',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
                 }}
               >
                 {product.physicalState}
@@ -378,77 +415,136 @@ export default async function ProductPage({ params }: PageProps) {
                   fontWeight: 600,
                   letterSpacing: '0.10em',
                   textTransform: 'uppercase',
-                  color: 'oklch(0.52 0.018 148)',
-                  backgroundColor: 'oklch(0.12 0.018 148)',
-                  border: '1px solid oklch(0.20 0.018 148)',
-                  padding: '5px 12px',
-                  borderRadius: '4px',
+                  color: 'var(--text-muted)',
+                  backgroundColor: 'var(--bg-soft)',
+                  border: '1px solid var(--border-subtle)',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
                 }}
               >
                 {product.originCountry}
               </span>
             </div>
 
-            {/* Full description */}
+            {/* Full description com border-left de categoria */}
             <p
+              className="anim-fade-in-up delay-4"
               style={{
                 fontFamily: 'var(--font-body)',
                 fontSize: '0.9375rem',
                 color: 'var(--text-secondary)',
                 lineHeight: 1.78,
-                maxWidth: '580px',
-                borderLeft: `2px solid ${catRaw.replace(')', ' / 0.25)')}`,
+                maxWidth: '600px',
+                borderLeft: `2px solid ${catLine}`,
                 paddingLeft: '20px',
               }}
             >
               {product.description}
             </p>
+
+            {/* Stat strip — origem, lote, MAPA */}
+            <div
+              className="anim-fade-in-up delay-4"
+              style={{
+                marginTop: '40px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                gap: '0',
+                borderTop: '1px solid var(--border-subtle)',
+                borderBottom: '1px solid var(--border-subtle)',
+                maxWidth: '560px',
+              }}
+            >
+              {[
+                { label: 'Origem', value: product.originCountry },
+                { label: 'Estado', value: product.physicalState },
+                {
+                  label: 'Reg. MAPA',
+                  value: product.registrationMapa ? '✓ Ativo' : 'N/A',
+                },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  style={{
+                    padding: '20px 4px 20px 0',
+                  }}
+                >
+                  <p
+                    className="mono"
+                    style={{
+                      fontSize: '0.625rem',
+                      letterSpacing: '0.14em',
+                      textTransform: 'uppercase',
+                      color: 'var(--text-tertiary)',
+                      marginBottom: '6px',
+                    }}
+                  >
+                    {s.label}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      letterSpacing: '-0.025em',
+                      color: 'var(--argho-blue)',
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    {s.value}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Right: Precision Instrument Panel */}
-          <div
+          {/* ── Lado direito: ficha técnica como instrumento de precisão (light) ── */}
+          <aside
+            className="anim-fade-in-up delay-3"
             style={{
               position: 'sticky',
-              top: '80px',
-              backgroundColor: 'oklch(0.075 0.016 148)',
-              border: `1px solid ${catRaw.replace(')', ' / 0.30)')}`,
-              borderTop: `2px solid ${catColor}`,
-              borderRadius: '8px',
+              top: '120px',
+              backgroundColor: 'var(--bg)',
+              border: '1px solid var(--border-subtle)',
+              borderTop: `3px solid ${catColor}`,
+              borderRadius: '12px',
               overflow: 'hidden',
               fontVariantNumeric: 'tabular-nums',
+              boxShadow: 'var(--shadow-card)',
             }}
           >
             {/* Panel header */}
             <div
               style={{
                 padding: '16px 24px',
-                borderBottom: '1px solid oklch(0.14 0.022 148)',
+                borderBottom: '1px solid var(--border-subtle)',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                backgroundColor: 'oklch(0.065 0.014 148)',
+                backgroundColor: 'var(--bg-mist)',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {/* Blinking status dot */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span
+                  aria-hidden
                   style={{
-                    width: '5px',
-                    height: '5px',
+                    width: '6px',
+                    height: '6px',
                     borderRadius: '50%',
                     backgroundColor: catColor,
                     display: 'inline-block',
-                    animation: 'pulseRing 2s ease-out infinite',
+                    boxShadow: `0 0 0 3px ${catRaw.replace(')', ' / 0.18)')}`,
                   }}
+                  className="anim-pulse-ring"
                 />
                 <span
                   style={{
                     fontFamily: 'var(--font-mono)',
-                    fontSize: '0.625rem',
-                    fontWeight: 600,
+                    fontSize: '0.6875rem',
+                    fontWeight: 700,
                     textTransform: 'uppercase',
-                    letterSpacing: '0.14em',
-                    color: 'var(--text-muted)',
+                    letterSpacing: '0.16em',
+                    color: 'var(--text-secondary)',
                   }}
                 >
                   Ficha Técnica
@@ -459,12 +555,13 @@ export default async function ProductPage({ params }: PageProps) {
                   style={{
                     fontFamily: 'var(--font-mono)',
                     fontSize: '0.625rem',
-                    color: 'oklch(0.58 0.165 148)',
-                    letterSpacing: '0.04em',
-                    backgroundColor: 'oklch(0.12 0.038 148)',
-                    padding: '3px 8px',
-                    borderRadius: '3px',
-                    border: '1px solid oklch(0.22 0.045 148)',
+                    color: 'var(--argho-blue)',
+                    letterSpacing: '0.06em',
+                    fontWeight: 700,
+                    backgroundColor: 'var(--argho-blue-soft)',
+                    padding: '4px 9px',
+                    borderRadius: '4px',
+                    border: '1px solid var(--cat-organo-line)',
                   }}
                 >
                   ✓ MAPA
@@ -488,16 +585,17 @@ export default async function ProductPage({ params }: PageProps) {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    padding: '10px 24px',
-                    borderBottom: '1px solid oklch(0.11 0.018 148)',
+                    padding: '12px 24px',
+                    borderBottom: '1px solid var(--border-subtle)',
                   }}
                 >
                   <span
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.75rem',
-                      color: 'var(--text-faint)',
-                      letterSpacing: '0.04em',
+                      color: 'var(--text-tertiary)',
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
                     }}
                   >
                     {label}
@@ -505,10 +603,11 @@ export default async function ProductPage({ params }: PageProps) {
                   <span
                     style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: '0.75rem',
-                      color: 'var(--text-secondary)',
+                      fontSize: '0.8125rem',
+                      color: 'var(--text-primary)',
+                      fontWeight: 600,
                       textAlign: 'right',
-                      maxWidth: '200px',
+                      maxWidth: '220px',
                     }}
                   >
                     {value}
@@ -522,22 +621,23 @@ export default async function ProductPage({ params }: PageProps) {
               <div>
                 <div
                   style={{
-                    padding: '12px 24px 8px',
-                    borderTop: '1px solid oklch(0.14 0.022 148)',
-                    borderBottom: '1px solid oklch(0.11 0.018 148)',
+                    padding: '14px 24px 10px',
+                    borderTop: '1px solid var(--border-subtle)',
+                    borderBottom: '1px solid var(--border-subtle)',
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
+                    backgroundColor: 'var(--bg-mist)',
                   }}
                 >
                   <span
                     style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: '0.6rem',
+                      fontSize: '0.625rem',
                       fontWeight: 700,
                       textTransform: 'uppercase',
-                      letterSpacing: '0.14em',
-                      color: 'var(--text-faint)',
+                      letterSpacing: '0.16em',
+                      color: 'var(--argho-blue)',
                     }}
                   >
                     Composição Garantida
@@ -545,8 +645,8 @@ export default async function ProductPage({ params }: PageProps) {
                   <span
                     style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: '0.55rem',
-                      color: 'oklch(0.35 0.012 148)',
+                      fontSize: '0.5875rem',
+                      color: 'var(--text-tertiary)',
                       letterSpacing: '0.04em',
                     }}
                   >
@@ -554,38 +654,33 @@ export default async function ProductPage({ params }: PageProps) {
                   </span>
                 </div>
 
-                {/* Bar gauges */}
-                <div style={{ padding: '6px 0 10px' }}>
+                <div style={{ padding: '8px 0 12px' }}>
                   {compRows.map(({ label, value, numValue, maxScale, type }) => {
                     const fillPct = maxScale > 0 ? Math.min((numValue / maxScale) * 100, 100) : 0;
                     const barColor =
+                      type === 'macro' ? catColor : type === 'micro' ? 'var(--gold)' : catColor;
+                    const barTrack =
                       type === 'macro'
-                        ? catColor
+                        ? catBgSoft
                         : type === 'micro'
-                          ? 'oklch(0.73 0.135 78)'
-                          : 'oklch(0.46 0.016 148)';
-                    const barBgColor =
-                      type === 'macro'
-                        ? catBg
-                        : type === 'micro'
-                          ? 'oklch(0.13 0.030 78)'
-                          : 'oklch(0.11 0.016 148)';
+                          ? 'var(--gold-soft)'
+                          : 'var(--bg-soft)';
                     return (
-                      <div key={label} style={{ padding: '7px 24px 5px' }}>
+                      <div key={label} style={{ padding: '8px 24px 6px' }}>
                         <div
                           style={{
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'baseline',
-                            marginBottom: '5px',
+                            marginBottom: '6px',
                           }}
                         >
                           <span
                             style={{
                               fontFamily: 'var(--font-mono)',
                               fontSize: '0.8125rem',
-                              color: barColor,
-                              fontWeight: type === 'macro' ? 600 : 400,
+                              color: 'var(--text-primary)',
+                              fontWeight: type === 'macro' ? 700 : 500,
                               letterSpacing: '0.02em',
                             }}
                           >
@@ -596,18 +691,17 @@ export default async function ProductPage({ params }: PageProps) {
                               fontFamily: 'var(--font-mono)',
                               fontSize: '0.875rem',
                               fontWeight: 700,
-                              color: 'var(--text-primary)',
+                              color: barColor,
                               letterSpacing: '-0.01em',
                             }}
                           >
                             {value}
                           </span>
                         </div>
-                        {/* Gauge bar */}
                         <div
                           style={{
-                            height: '3px',
-                            backgroundColor: barBgColor,
+                            height: '4px',
+                            backgroundColor: barTrack,
                             borderRadius: '2px',
                             overflow: 'hidden',
                           }}
@@ -618,7 +712,8 @@ export default async function ProductPage({ params }: PageProps) {
                               width: `${fillPct}%`,
                               backgroundColor: barColor,
                               borderRadius: '2px',
-                              opacity: type === 'micro' ? 0.75 : 1,
+                              opacity: type === 'micro' ? 0.85 : 1,
+                              transition: 'width 0.6s var(--ease-out-expo)',
                             }}
                           />
                         </div>
@@ -632,19 +727,19 @@ export default async function ProductPage({ params }: PageProps) {
             {/* ── Packaging ── */}
             <div
               style={{
-                padding: '12px 24px 16px',
-                borderTop: '1px solid oklch(0.14 0.022 148)',
+                padding: '16px 24px',
+                borderTop: '1px solid var(--border-subtle)',
               }}
             >
               <p
                 style={{
                   fontFamily: 'var(--font-mono)',
-                  fontSize: '0.6rem',
+                  fontSize: '0.625rem',
                   fontWeight: 700,
                   textTransform: 'uppercase',
-                  letterSpacing: '0.14em',
-                  color: 'var(--text-faint)',
-                  marginBottom: '10px',
+                  letterSpacing: '0.16em',
+                  color: 'var(--argho-blue)',
+                  marginBottom: '12px',
                 }}
               >
                 Embalagens
@@ -658,10 +753,11 @@ export default async function ProductPage({ params }: PageProps) {
                       style={{
                         fontFamily: 'var(--font-mono)',
                         fontSize: '0.75rem',
-                        color: 'var(--text-muted)',
-                        backgroundColor: 'oklch(0.10 0.016 148)',
-                        border: '1px solid oklch(0.18 0.020 148)',
-                        padding: '4px 10px',
+                        fontWeight: 600,
+                        color: 'var(--text-secondary)',
+                        backgroundColor: 'var(--bg-soft)',
+                        border: '1px solid var(--border-subtle)',
+                        padding: '5px 10px',
                         borderRadius: '4px',
                       }}
                     >
@@ -675,92 +771,326 @@ export default async function ProductPage({ params }: PageProps) {
             {/* Panel footer — legal note */}
             <div
               style={{
-                padding: '10px 24px',
-                borderTop: '1px solid oklch(0.11 0.016 148)',
-                backgroundColor: 'oklch(0.06 0.012 148)',
+                padding: '12px 24px',
+                borderTop: '1px solid var(--border-subtle)',
+                backgroundColor: 'var(--bg-mist)',
               }}
             >
               <p
                 style={{
                   fontFamily: 'var(--font-body)',
-                  fontSize: '0.65rem',
-                  color: 'oklch(0.35 0.010 148)',
-                  lineHeight: 1.5,
+                  fontSize: '0.6875rem',
+                  color: 'var(--text-tertiary)',
+                  lineHeight: 1.55,
                 }}
               >
                 Composição conforme Certificado de Análise MAPA.
                 {isBio && ' Produto biológico registrado sob legislação específica (IN MAPA).'}
               </p>
             </div>
-          </div>
+          </aside>
         </div>
-      </div>
+      </section>
 
-      {/* ── Applications table ── */}
-      {product.applications && product.applications.length > 0 && (
-        <div
+      {/* ═══════════════════════════════════════════════════════════════════
+          SHOWCASE — mockup dramático centralizado (apenas se tiver mockup)
+      ══════════════════════════════════════════════════════════════════════ */}
+      {mockupSrc && (
+        <section
           style={{
-            borderTop: '1px solid oklch(0.14 0.022 148)',
-            backgroundColor: 'oklch(0.075 0.016 148)',
+            position: 'relative',
+            borderTop: '1px solid var(--border-subtle)',
+            borderBottom: '1px solid var(--border-subtle)',
+            backgroundColor: 'var(--bg-soft)',
+            overflow: 'hidden',
           }}
         >
-          <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '56px 48px' }}>
-            {/* Section label */}
+          {/* Halo radial gigante atrás do produto */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: `radial-gradient(ellipse 50% 65% at 50% 70%, ${catRaw.replace(')', ' / 0.18)')} 0%, transparent 65%)`,
+              pointerEvents: 'none',
+            }}
+          />
+
+          {/* Grid técnico sutil */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: `
+                linear-gradient(var(--border-subtle) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px)
+              `,
+              backgroundSize: '64px 64px',
+              opacity: 0.4,
+              maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
+              WebkitMaskImage:
+                'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
+              pointerEvents: 'none',
+            }}
+          />
+
+          <div
+            className="slug-showcase-grid"
+            style={{
+              position: 'relative',
+              zIndex: 2,
+              maxWidth: '1320px',
+              margin: '0 auto',
+              padding: '88px 48px',
+              display: 'grid',
+              gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+              gap: '64px',
+              alignItems: 'center',
+            }}
+          >
+            {/* Mockup gigante */}
             <div
-              style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '8px' }}
-            >
-              <p
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.6875rem',
-                  letterSpacing: '0.12em',
-                  color: catColor,
-                  textTransform: 'uppercase',
-                }}
-              >
-                Recomendações Agronômicas
-              </p>
-              <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.6rem',
-                  color: 'oklch(0.40 0.012 148)',
-                  letterSpacing: '0.06em',
-                }}
-              >
-                · orientativo
-              </span>
-            </div>
-            <h2
               style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: '1.75rem',
-                fontWeight: 700,
-                letterSpacing: '-0.035em',
-                color: 'var(--text-primary)',
-                marginBottom: '32px',
+                position: 'relative',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '560px',
               }}
             >
-              Protocolo de Aplicação
-            </h2>
+              {/* Sombra de chão */}
+              <div
+                aria-hidden
+                style={{
+                  position: 'absolute',
+                  bottom: '40px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '60%',
+                  height: '40px',
+                  background: `radial-gradient(ellipse 50% 50%, ${catRaw.replace(')', ' / 0.35)')} 0%, transparent 70%)`,
+                  filter: 'blur(20px)',
+                  pointerEvents: 'none',
+                }}
+              />
+              <Image
+                src={mockupSrc}
+                alt={product.name}
+                width={500}
+                height={680}
+                priority
+                style={{
+                  width: 'auto',
+                  height: 'auto',
+                  maxWidth: '100%',
+                  maxHeight: '640px',
+                  objectFit: 'contain',
+                  objectPosition: 'center bottom',
+                  filter: `drop-shadow(0 32px 64px ${catRaw.replace(')', ' / 0.30)')}) drop-shadow(0 8px 20px ${catRaw.replace(')', ' / 0.15)')})`,
+                  position: 'relative',
+                  zIndex: 1,
+                }}
+              />
+            </div>
+
+            {/* Copy ao lado */}
+            <div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  marginBottom: '24px',
+                }}
+              >
+                <span
+                  aria-hidden
+                  style={{
+                    width: '24px',
+                    height: '1px',
+                    background: catColor,
+                  }}
+                />
+                <span
+                  className="mono"
+                  style={{
+                    fontSize: '0.6875rem',
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    color: catColor,
+                    fontWeight: 700,
+                  }}
+                >
+                  Embalagem oficial · {product.physicalState}
+                </span>
+              </div>
+
+              <h2
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
+                  fontWeight: 700,
+                  lineHeight: 0.95,
+                  marginBottom: '24px',
+                }}
+              >
+                <span
+                  style={{
+                    color: 'var(--text-primary)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.01em',
+                    display: 'inline-block',
+                  }}
+                >
+                  {product.name}.
+                </span>
+                <br />
+                <span
+                  style={{
+                    color: catColor,
+                    letterSpacing: '-0.05em',
+                  }}
+                >
+                  Pronto para o campo.
+                </span>
+              </h2>
+
+              <p
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '1.0625rem',
+                  color: 'var(--text-secondary)',
+                  lineHeight: 1.65,
+                  marginBottom: '32px',
+                  maxWidth: '480px',
+                }}
+              >
+                {product.tagline}
+              </p>
+
+              {/* Embalagens disponíveis */}
+              <div>
+                <p
+                  className="mono"
+                  style={{
+                    fontSize: '0.625rem',
+                    letterSpacing: '0.16em',
+                    textTransform: 'uppercase',
+                    color: 'var(--text-tertiary)',
+                    fontWeight: 700,
+                    marginBottom: '12px',
+                  }}
+                >
+                  Disponível em
+                </p>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {product.packaging.map((pkg) => {
+                    const desc = pkg.weightKg ? `${pkg.weightKg} kg` : `${pkg.volumeL} L`;
+                    return (
+                      <span
+                        key={pkg.sku}
+                        style={{
+                          fontFamily: 'var(--font-display)',
+                          fontSize: '1.125rem',
+                          fontWeight: 700,
+                          letterSpacing: '-0.025em',
+                          color: 'var(--text-primary)',
+                          backgroundColor: 'var(--bg)',
+                          border: `1px solid ${catLine}`,
+                          borderTop: `2px solid ${catColor}`,
+                          padding: '12px 20px',
+                          borderRadius: '6px',
+                          minWidth: '72px',
+                          textAlign: 'center',
+                        }}
+                      >
+                        {desc}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          APPLICATIONS — protocolo de aplicação por cultura
+      ══════════════════════════════════════════════════════════════════════ */}
+      {product.applications && product.applications.length > 0 && (
+        <section
+          style={{
+            borderTop: '1px solid var(--border-subtle)',
+            backgroundColor: 'var(--bg-soft)',
+          }}
+        >
+          <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '80px 48px' }}>
+            <div style={{ marginBottom: '48px', maxWidth: '720px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  marginBottom: '20px',
+                }}
+              >
+                <span
+                  aria-hidden
+                  style={{
+                    width: '24px',
+                    height: '1px',
+                    background: catColor,
+                  }}
+                />
+                <span
+                  className="mono"
+                  style={{
+                    fontSize: '0.6875rem',
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    color: catColor,
+                    fontWeight: 700,
+                  }}
+                >
+                  Recomendações Agronômicas · orientativo
+                </span>
+              </div>
+              <h2
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'clamp(2rem, 4vw, 3rem)',
+                  fontWeight: 700,
+                  letterSpacing: '-0.05em',
+                  color: 'var(--argho-blue)',
+                  lineHeight: 0.95,
+                }}
+              >
+                Protocolo de Aplicação.
+              </h2>
+            </div>
 
             {/* Table */}
             <div
               style={{
-                border: `1px solid ${catRaw.replace(')', ' / 0.20)')}`,
-                borderRadius: '8px',
+                border: '1px solid var(--border-subtle)',
+                borderTop: `2px solid ${catColor}`,
+                borderRadius: '12px',
                 overflow: 'hidden',
+                backgroundColor: 'var(--bg)',
               }}
             >
               {/* Header */}
               <div
+                className="slug-app-grid slug-app-header"
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '160px 200px 140px 1fr',
+                  gridTemplateColumns: '180px 220px 160px 1fr',
                   gap: '0',
-                  backgroundColor: 'oklch(0.065 0.014 148)',
-                  borderBottom: `1px solid ${catRaw.replace(')', ' / 0.20)')}`,
-                  padding: '12px 24px',
+                  backgroundColor: 'var(--bg-mist)',
+                  borderBottom: '1px solid var(--border-subtle)',
+                  padding: '14px 28px',
                 }}
               >
                 {['Cultura', 'Fase fenológica', 'Dose / ha', 'Observações'].map((h) => (
@@ -768,11 +1098,11 @@ export default async function ProductPage({ params }: PageProps) {
                     key={h}
                     style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: '0.6rem',
+                      fontSize: '0.625rem',
                       fontWeight: 700,
                       textTransform: 'uppercase',
-                      letterSpacing: '0.12em',
-                      color: 'var(--text-faint)',
+                      letterSpacing: '0.14em',
+                      color: 'var(--text-tertiary)',
                     }}
                   >
                     {h}
@@ -783,25 +1113,27 @@ export default async function ProductPage({ params }: PageProps) {
               {product.applications.map((app, i) => (
                 <div
                   key={`${app.crop}-${i}`}
+                  className="slug-app-grid"
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '160px 200px 140px 1fr',
+                    gridTemplateColumns: '180px 220px 160px 1fr',
                     gap: '0',
-                    padding: '16px 24px',
+                    padding: '20px 28px',
                     borderBottom:
                       i < (product.applications?.length ?? 0) - 1
-                        ? '1px solid oklch(0.11 0.016 148)'
+                        ? '1px solid var(--border-subtle)'
                         : 'none',
-                    borderLeft: `2px solid ${catRaw.replace(')', ' / 0.18)')}`,
+                    borderLeft: `2px solid ${catLine}`,
+                    transition: 'background-color 0.15s ease',
                   }}
                 >
                   <span
                     style={{
                       fontFamily: 'var(--font-display)',
-                      fontSize: '0.9375rem',
-                      fontWeight: 600,
+                      fontSize: '1rem',
+                      fontWeight: 700,
                       color: 'var(--text-primary)',
-                      letterSpacing: '-0.02em',
+                      letterSpacing: '-0.025em',
                     }}
                   >
                     {app.crop}
@@ -811,6 +1143,7 @@ export default async function ProductPage({ params }: PageProps) {
                       fontFamily: 'var(--font-body)',
                       fontSize: '0.875rem',
                       color: 'var(--text-secondary)',
+                      lineHeight: 1.5,
                     }}
                   >
                     {app.stage}
@@ -818,17 +1151,18 @@ export default async function ProductPage({ params }: PageProps) {
                   <span
                     style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: '0.9375rem',
+                      fontSize: '1rem',
                       color: catColor,
                       fontWeight: 700,
+                      letterSpacing: '-0.01em',
                     }}
                   >
                     {app.dosePerHa}
                     <span
                       style={{
                         fontSize: '0.6875rem',
-                        fontWeight: 400,
-                        marginLeft: '3px',
+                        fontWeight: 500,
+                        marginLeft: '4px',
                         color: 'var(--text-muted)',
                       }}
                     >
@@ -838,9 +1172,9 @@ export default async function ProductPage({ params }: PageProps) {
                   <span
                     style={{
                       fontFamily: 'var(--font-body)',
-                      fontSize: '0.8125rem',
+                      fontSize: '0.875rem',
                       color: 'var(--text-muted)',
-                      lineHeight: 1.5,
+                      lineHeight: 1.55,
                     }}
                   >
                     {app.notes ?? '—'}
@@ -852,13 +1186,14 @@ export default async function ProductPage({ params }: PageProps) {
             {/* ── Legal disclaimer ── */}
             <div
               style={{
-                marginTop: '20px',
-                padding: '14px 20px',
-                backgroundColor: 'oklch(0.065 0.012 148)',
-                border: '1px solid oklch(0.13 0.018 148)',
+                marginTop: '24px',
+                padding: '18px 24px',
+                backgroundColor: 'var(--bg)',
+                border: '1px solid var(--border-subtle)',
+                borderLeft: `3px solid ${catColor}`,
                 borderRadius: '6px',
                 display: 'flex',
-                gap: '10px',
+                gap: '14px',
                 alignItems: 'flex-start',
               }}
             >
@@ -866,10 +1201,11 @@ export default async function ProductPage({ params }: PageProps) {
                 aria-hidden
                 style={{
                   fontFamily: 'var(--font-mono)',
-                  fontSize: '0.75rem',
-                  color: 'oklch(0.40 0.014 148)',
+                  fontSize: '1rem',
+                  color: catColor,
                   flexShrink: 0,
-                  marginTop: '1px',
+                  fontWeight: 700,
+                  marginTop: '-2px',
                 }}
               >
                 ⚠
@@ -877,13 +1213,13 @@ export default async function ProductPage({ params }: PageProps) {
               <p
                 style={{
                   fontFamily: 'var(--font-body)',
-                  fontSize: '0.75rem',
-                  color: 'oklch(0.42 0.012 148)',
-                  lineHeight: 1.6,
+                  fontSize: '0.8125rem',
+                  color: 'var(--text-secondary)',
+                  lineHeight: 1.65,
                   margin: 0,
                 }}
               >
-                <strong style={{ color: 'oklch(0.52 0.014 148)', fontWeight: 600 }}>
+                <strong style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
                   Recomendações orientativas.
                 </strong>{' '}
                 O uso de fertilizantes requer acompanhamento de Engenheiro Agrônomo ou Engenheiro
@@ -899,72 +1235,182 @@ export default async function ProductPage({ params }: PageProps) {
               </p>
             </div>
           </div>
-        </div>
+        </section>
       )}
 
-      {/* ── Related products ── */}
+      {/* ═══════════════════════════════════════════════════════════════════
+          RELATED PRODUCTS — outros da mesma categoria
+      ══════════════════════════════════════════════════════════════════════ */}
       {related.length > 0 && (
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '56px 48px 80px' }}>
-          <p
+        <section style={{ maxWidth: '1320px', margin: '0 auto', padding: '80px 48px' }}>
+          <div style={{ marginBottom: '40px' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                marginBottom: '20px',
+              }}
+            >
+              <span
+                aria-hidden
+                style={{
+                  width: '24px',
+                  height: '1px',
+                  background: 'var(--argho-green)',
+                }}
+              />
+              <span
+                className="mono"
+                style={{
+                  fontSize: '0.6875rem',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.18em',
+                  color: 'var(--argho-blue)',
+                }}
+              >
+                Outros em {catLabel}
+              </span>
+            </div>
+          </div>
+
+          <div
             style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.6875rem',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.12em',
-              color: 'var(--text-muted)',
-              marginBottom: '24px',
+              display: 'flex',
+              flexDirection: 'column',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              backgroundColor: 'var(--bg)',
             }}
           >
-            Outros em {catLabel}
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
             {related.map((p, i) => (
               <Link
                 key={p.slug}
                 href={`/produtos/${p.slug}`}
                 style={{ textDecoration: 'none', display: 'block' }}
+                className="related-row"
               >
-                <div
+                <article
+                  className="slug-related-grid"
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '200px 1fr auto',
-                    gap: '0 32px',
+                    gridTemplateColumns: 'minmax(0, 220px) minmax(0, 1fr) auto',
+                    gap: '32px',
                     alignItems: 'center',
-                    padding: '18px 20px',
-                    borderTop: i === 0 ? '1px solid oklch(0.14 0.022 148)' : 'none',
-                    borderBottom: '1px solid oklch(0.14 0.022 148)',
-                    borderLeft: `2px solid ${catColor}`,
-                    transition: 'background-color 0.15s',
+                    padding: '20px 24px',
+                    borderTop: i === 0 ? 'none' : '1px solid var(--border-subtle)',
+                    borderLeft: `3px solid ${catColor}`,
+                    transition: 'background-color 0.18s ease',
+                    backgroundColor: 'var(--bg)',
                   }}
                 >
-                  <p
+                  <h3
                     style={{
                       fontFamily: 'var(--font-display)',
                       fontSize: '1rem',
-                      fontWeight: 600,
-                      letterSpacing: '-0.025em',
+                      fontWeight: 700,
+                      letterSpacing: '0.02em',
+                      textTransform: 'uppercase',
                       color: 'var(--text-primary)',
+                      lineHeight: 1.05,
                     }}
                   >
                     {p.name}
-                  </p>
+                  </h3>
                   <p
                     style={{
                       fontFamily: 'var(--font-body)',
-                      fontSize: '0.875rem',
+                      fontSize: '0.9375rem',
                       color: 'var(--text-secondary)',
+                      lineHeight: 1.5,
                     }}
                   >
                     {p.tagline}
                   </p>
-                  <span style={{ color: catColor, fontSize: '0.875rem' }}>→</span>
-                </div>
+                  <span
+                    aria-hidden
+                    style={{
+                      color: catColor,
+                      fontSize: '1.125rem',
+                      opacity: 0.7,
+                    }}
+                    className="related-arrow"
+                  >
+                    →
+                  </span>
+                </article>
               </Link>
             ))}
           </div>
-        </div>
+
+          {/* Back to portfolio */}
+          <div style={{ marginTop: '48px' }}>
+            <Link
+              href="/produtos"
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.9375rem',
+                fontWeight: 500,
+                color: 'var(--text-primary)',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '10px',
+                borderBottom: '1px solid var(--text-primary)',
+                paddingBottom: '4px',
+                letterSpacing: '-0.005em',
+              }}
+            >
+              <span aria-hidden style={{ fontSize: '1.1em', lineHeight: 1 }}>
+                ←
+              </span>
+              Voltar ao portfólio completo
+            </Link>
+          </div>
+        </section>
       )}
-    </div>
+
+      <style>{`
+        .related-row:hover article {
+          background-color: var(--bg-warm) !important;
+        }
+        .related-row:hover .related-arrow {
+          transform: translateX(4px);
+          opacity: 1 !important;
+        }
+        @media (max-width: 968px) {
+          .slug-hero-grid {
+            grid-template-columns: 1fr !important;
+            gap: 48px !important;
+          }
+          .slug-showcase-grid {
+            grid-template-columns: 1fr !important;
+            gap: 48px !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .slug-app-grid {
+            grid-template-columns: 1fr 1fr !important;
+            grid-template-areas: "crop dose" "stage stage" "notes notes" !important;
+            gap: 8px 16px !important;
+            padding: 16px !important;
+          }
+          .slug-app-grid > span:nth-child(1) { grid-area: crop; }
+          .slug-app-grid > span:nth-child(2) { grid-area: stage; }
+          .slug-app-grid > span:nth-child(3) { grid-area: dose; text-align: right; }
+          .slug-app-grid > span:nth-child(4) { grid-area: notes; }
+          .slug-app-header {
+            display: none !important;
+          }
+          .slug-related-grid {
+            grid-template-columns: 1fr auto !important;
+            gap: 8px 16px !important;
+          }
+          .slug-related-grid > p { grid-column: 1 / -1; }
+        }
+      `}</style>
+    </main>
   );
 }

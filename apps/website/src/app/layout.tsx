@@ -4,11 +4,12 @@ import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import type { Metadata, Viewport } from 'next';
 import { Footer } from '@/components/footer';
+import { HeartIntro } from '@/components/heart-intro';
 import { Nav } from '@/components/nav';
 import './globals.css';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://argho.com.br'),
+  metadataBase: new URL('https://arghoagrosciences.com'),
   title: {
     default: 'Argho Agrosciences — Nutrição de precisão para o agro brasileiro',
     template: '%s | Argho Agrosciences',
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
     description: 'Nutrição de precisão para a agricultura brasileira.',
     locale: 'pt_BR',
     type: 'website',
-    url: 'https://argho.com.br',
+    url: 'https://arghoagrosciences.com',
     siteName: 'Argho Agrosciences',
   },
   twitter: {
@@ -40,15 +41,16 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0b1510',
+  themeColor: '#ffffff',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body>
+        <HeartIntro />
         <Nav />
-        <main style={{ paddingTop: '64px' }}>{children}</main>
+        <div style={{ paddingTop: '88px' }}>{children}</div>
         <Footer />
       </body>
     </html>

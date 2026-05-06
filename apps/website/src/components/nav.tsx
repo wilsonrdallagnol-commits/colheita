@@ -1,4 +1,5 @@
 // apps/website/src/components/nav.tsx
+// Nav clara — wis.digital influence + Argho identity gold accent
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -14,36 +15,37 @@ export function Nav() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '0 64px',
-        height: '64px',
-        backgroundColor: 'rgba(8, 14, 10, 0.88)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(255,255,255,0.055)',
+        padding: '0 48px',
+        height: '88px',
+        backgroundColor: 'rgba(255, 255, 255, 0.88)',
+        backdropFilter: 'saturate(180%) blur(20px)',
+        WebkitBackdropFilter: 'saturate(180%) blur(20px)',
+        borderBottom: '1px solid var(--border-subtle)',
       }}
     >
-      {/* Logo */}
+      {/* Logo — proporção respeitosa, peso visual aumentado */}
       <Link
         href="/"
         style={{
           textDecoration: 'none',
           display: 'flex',
           alignItems: 'center',
-          height: '40px',
+          height: '52px',
+          gap: '14px',
         }}
       >
         <Image
-          src="/argho-logo-white.png"
+          src="/argho-logo-color.png"
           alt="Argho Agrosciences"
-          width={148}
-          height={40}
+          width={196}
+          height={52}
           style={{ objectFit: 'contain', objectPosition: 'left center' }}
           priority
         />
       </Link>
 
       {/* Links */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
         {[
           { href: '/produtos', label: 'Portfólio' },
           { href: '/sobre', label: 'Sobre' },
@@ -55,11 +57,12 @@ export function Nav() {
               fontFamily: 'var(--font-body)',
               fontSize: '0.875rem',
               fontWeight: 400,
-              color: 'oklch(0.62 0.022 148)',
+              color: 'var(--text-secondary)',
               textDecoration: 'none',
-              letterSpacing: '-0.01em',
-              padding: '6px 14px',
+              letterSpacing: '-0.005em',
+              padding: '8px 16px',
               borderRadius: '6px',
+              transition: 'color 0.2s',
             }}
           >
             {label}
@@ -72,29 +75,29 @@ export function Nav() {
           style={{
             width: '1px',
             height: '20px',
-            backgroundColor: 'oklch(0.22 0.025 148)',
-            margin: '0 8px',
+            backgroundColor: 'var(--border)',
+            margin: '0 12px',
           }}
         />
 
-        {/* Plataforma — gold accent */}
+        {/* Plataforma Colheita — gold ghost, subdomínio dedicado */}
         <Link
-          href="https://colheita.app.br"
+          href="https://colheita.arghoagrosciences.com"
           target="_blank"
           rel="noopener noreferrer"
           style={{
             fontFamily: 'var(--font-body)',
             fontSize: '0.8125rem',
             fontWeight: 500,
-            color: 'oklch(0.73 0.135 78)',
+            color: 'var(--gold-deep)',
             textDecoration: 'none',
-            padding: '6px 14px',
+            padding: '8px 16px',
             borderRadius: '6px',
-            border: '1px solid oklch(0.73 0.135 78 / 0.30)',
-            letterSpacing: '-0.01em',
+            border: '1px solid oklch(0.66 0.130 78 / 0.30)',
+            letterSpacing: '-0.005em',
             display: 'flex',
             alignItems: 'center',
-            gap: '6px',
+            gap: '8px',
           }}
         >
           <span
@@ -103,26 +106,29 @@ export function Nav() {
               width: '6px',
               height: '6px',
               borderRadius: '50%',
-              backgroundColor: 'oklch(0.73 0.135 78)',
+              backgroundColor: 'var(--gold)',
+              boxShadow: '0 0 8px oklch(0.66 0.130 78 / 0.6)',
             }}
           />
           Plataforma
         </Link>
 
-        {/* CTA */}
+        {/* CTA primary — azul Argho */}
         <Link
           href="/produtos"
           style={{
             fontFamily: 'var(--font-body)',
             fontSize: '0.8125rem',
             fontWeight: 600,
-            color: 'oklch(0.08 0 0)',
-            backgroundColor: 'oklch(0.73 0.135 78)',
+            color: '#ffffff',
+            backgroundColor: 'var(--argho-blue)',
             textDecoration: 'none',
-            padding: '7px 18px',
+            padding: '9px 20px',
             borderRadius: '6px',
-            letterSpacing: '-0.01em',
-            marginLeft: '4px',
+            letterSpacing: '-0.005em',
+            marginLeft: '6px',
+            transition: 'transform 0.2s',
+            boxShadow: '0 4px 12px -4px oklch(0.362 0.160 266.7 / 0.4)',
           }}
         >
           Ver catálogo

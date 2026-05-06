@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
       },
     ],
-    sitemap: 'https://argho.com.br/sitemap.xml',
+    sitemap: 'https://arghoagrosciences.com/sitemap.xml',
   };
 }

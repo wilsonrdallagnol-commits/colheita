@@ -1,6 +1,6 @@
 /* apps/website/src/app/globals.css
-   Design system — Argho Agrosciences
-   Dark-first. Verde floresta técnico. Ouro da colheita.
+   Design system — Argho Agrosciences (Redesign 2026)
+   Light-first. Editorial. Coração digital como ponto focal escultural.
 */
 
 *, *::before, *::after {
@@ -10,39 +10,96 @@
 }
 
 :root {
-  /* Backgrounds */
-  --bg:              oklch(0.07 0.018 148);
-  --surface:         oklch(0.105 0.020 148);
-  --surface-raised:  oklch(0.135 0.022 148);
+  /* Backgrounds — white-first */
+  --bg:              #ffffff;
+  --bg-warm:         #fafafa;
+  --bg-elevated:     #ffffff;
+  --bg-soft:         #f5f5f3;
+  --bg-mist:         #f8f8f6;
+
+  /* Surface aliases (semânticos) */
+  --surface:           var(--bg-soft);
+  --surface-warm:      var(--bg-warm);
+  --surface-mist:      var(--bg-mist);
+  --surface-elevated:  var(--bg);
+  --surface-deep:      #f1f1ed;
 
   /* Borders */
-  --border:          oklch(0.22 0.025 148);
-  --border-subtle:   oklch(0.155 0.018 148);
+  --border:          #e8e8e3;
+  --border-subtle:   #f0f0eb;
+  --border-strong:   #d8d8d2;
 
-  /* Text */
-  --text-primary:    oklch(0.96 0.004 148);
-  --text-secondary:  oklch(0.72 0.025 148);
-  --text-muted:      oklch(0.52 0.018 148);
-  --text-faint:      oklch(0.38 0.012 148);
+  /* Text — dark on light */
+  --text-primary:    #0a0e0c;
+  --text-secondary:  #2a2e2c;
+  --text-muted:      #5a5e5c;
+  --text-tertiary:   #8a8e8c;
+  --text-faint:      #b8b8b3;
 
-  /* Brand */
-  --green:           oklch(0.58 0.165 148);
-  --green-dim:       oklch(0.48 0.130 148);
-  --green-subtle:    oklch(0.14 0.045 148);
-  --gold:            oklch(0.73 0.135 78);
-  --gold-subtle:     oklch(0.16 0.038 78);
-  --teal:            oklch(0.64 0.13 195);
+  /* Brand — paleta oficial Argho */
+  /* Azul profundo (cor primária — palavra "argho" no logo) #183090 */
+  --argho-blue:        oklch(0.362 0.160 266.7);
+  --argho-blue-deep:   oklch(0.280 0.155 266.7);
+  --argho-blue-soft:   oklch(0.93 0.045 266);
+  --argho-blue-hover:  oklch(0.42 0.180 266.7);
 
-  /* Category accent colors */
-  --cat-mineral:     oklch(0.58 0.165 148);   /* verde brand */
-  --cat-organo:      oklch(0.64 0.13 195);    /* teal */
-  --cat-bio:         oklch(0.66 0.150 150);   /* verde vivo */
-  --cat-adj:         oklch(0.73 0.135 78);    /* ouro */
+  /* Verde Argho (cor secundária — símbolo da folha) #489030 */
+  --argho-green:       oklch(0.586 0.150 138.8);
+  --argho-green-deep:  oklch(0.470 0.140 138.8);
+  --argho-green-soft:  oklch(0.94 0.040 138);
+  --argho-green-hover: oklch(0.640 0.160 138.8);
 
-  /* Typography */
-  --font-display: "Geist", "Inter", -apple-system, system-ui, sans-serif;
-  --font-body:    "Inter", -apple-system, system-ui, sans-serif;
-  --font-mono:    "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
+  /* Aliases para legibilidade */
+  --green:           var(--argho-green);
+  --green-deep:      var(--argho-green-deep);
+  --green-soft:      var(--argho-green-soft);
+  --blue:            var(--argho-blue);
+  --blue-deep:       var(--argho-blue-deep);
+  --blue-soft:       var(--argho-blue-soft);
+
+  /* Acentos secundários (uso restrito) */
+  --gold:            oklch(0.66 0.130 78);
+  --gold-deep:       oklch(0.52 0.115 78);
+  --gold-soft:       oklch(0.94 0.040 78);
+  --teal:            oklch(0.58 0.125 195);
+  --teal-soft:       oklch(0.93 0.035 195);
+
+  /* Category accent colors — alinhado com identidade */
+  --cat-mineral:       var(--argho-green);     /* fertilizantes minerais = verde */
+  --cat-organo:        var(--argho-blue);      /* organominerais = azul */
+  --cat-bio:           oklch(0.55 0.150 145);  /* biológicos = verde alternativo */
+  --cat-adj:           oklch(0.62 0.130 78);   /* adjuvantes = ouro (acento) */
+
+  /* Soft tints derivadas — backgrounds light por categoria */
+  --cat-mineral-soft:  oklch(0.96 0.030 138.8);
+  --cat-organo-soft:   oklch(0.96 0.025 266.7);
+  --cat-bio-soft:      oklch(0.96 0.028 145);
+  --cat-adj-soft:      oklch(0.96 0.030 78);
+
+  /* Borders categóricas (linha sutil) */
+  --cat-mineral-line:  oklch(0.86 0.075 138.8);
+  --cat-organo-line:   oklch(0.86 0.060 266.7);
+  --cat-bio-line:      oklch(0.86 0.070 145);
+  --cat-adj-line:      oklch(0.86 0.080 78);
+
+  /* Glows reutilizáveis */
+  --shadow-blue-glow:    0 8px 24px -8px oklch(0.362 0.160 266.7 / 0.35);
+  --shadow-blue-glow-lg: 0 16px 48px -12px oklch(0.362 0.160 266.7 / 0.30);
+  --shadow-green-glow:   0 8px 24px -8px oklch(0.586 0.150 138.8 / 0.30);
+  --shadow-card:         0 1px 2px oklch(0 0 0 / 0.04), 0 4px 16px -8px oklch(0 0 0 / 0.06);
+
+  /* Typography — editorial display + clean sans */
+  --font-display: "Geist", "Inter Display", -apple-system, system-ui, sans-serif;
+  --font-body:    "Geist", "Inter", -apple-system, system-ui, sans-serif;
+  --font-mono:    "Geist Mono", "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+
+  /* Spacing rhythm */
+  --section-y:        120px;
+  --section-y-mobile: 64px;
+
+  /* Easing */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
 html {
@@ -58,44 +115,37 @@ html {
 
 body {
   background-color: var(--bg);
+  color: var(--text-primary);
   min-height: 100vh;
-  /* Atmospheric orbs + diagnostic grid — tech/agro living world */
-  background-image:
-    radial-gradient(ellipse 70% 55% at 5% 10%, oklch(0.58 0.165 148 / 0.13) 0%, transparent 55%),
-    radial-gradient(ellipse 55% 50% at 95% 85%, oklch(0.64 0.13 195 / 0.11) 0%, transparent 52%),
-    radial-gradient(ellipse 40% 35% at 80% 5%, oklch(0.73 0.135 78 / 0.07) 0%, transparent 45%),
-    radial-gradient(ellipse 35% 30% at 15% 90%, oklch(0.66 0.150 150 / 0.08) 0%, transparent 42%),
-    linear-gradient(oklch(0.22 0.025 148 / 0.10) 1px, transparent 1px),
-    linear-gradient(90deg, oklch(0.22 0.025 148 / 0.10) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 64px 64px, 64px 64px;
-  background-attachment: fixed;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+/* Scrollbar — minimalista no claro */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
 
 /* Focus ring */
 :focus-visible {
   outline: 2px solid var(--green);
-  outline-offset: 2px;
+  outline-offset: 3px;
   border-radius: 4px;
 }
 
-/* Selection */
+/* Selection — Argho blue tint */
 ::selection {
-  background-color: oklch(0.58 0.165 148 / 0.25);
+  background-color: oklch(0.362 0.160 266.7 / 0.20);
   color: var(--text-primary);
 }
 
-/* Typography scale */
+/* Typography scale — editorial bold */
 h1, h2, h3, h4, h5 {
   font-family: var(--font-display);
-  letter-spacing: -0.035em;
-  line-height: 1.1;
+  letter-spacing: -0.05em;
+  line-height: 1.0;
   color: var(--text-primary);
+  font-weight: 700;
+  font-feature-settings: "ss01", "cv11";
 }
 
 p {
@@ -113,16 +163,16 @@ a {
 .mono {
   font-family: var(--font-mono);
   font-size: 0.875em;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 
 .label {
-  font-family: var(--font-body);
+  font-family: var(--font-mono);
   font-size: 0.6875rem;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.10em;
-  color: var(--text-muted);
+  letter-spacing: 0.14em;
+  color: var(--text-tertiary);
 }
 
 /* Category badge colors */
@@ -134,89 +184,75 @@ a {
 /* ── Keyframe animations ───────────────────────────────────────── */
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 @keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33%       { transform: translateY(-5px) rotate(1deg); }
-  66%       { transform: translateY(-2px) rotate(-0.5deg); }
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-6px); }
 }
 
 @keyframes shimmer {
-  0%, 100% { opacity: 0.15; }
-  50%       { opacity: 0.35; }
-}
-
-@keyframes scanLine {
-  from { transform: translateY(-100%); }
-  to   { transform: translateY(100vh); }
+  0%, 100% { opacity: 0.20; }
+  50%      { opacity: 0.45; }
 }
 
 @keyframes pulseRing {
-  0%   { box-shadow: 0 0 0 0 oklch(0.58 0.165 148 / 0.25); }
-  70%  { box-shadow: 0 0 0 8px oklch(0.58 0.165 148 / 0); }
-  100% { box-shadow: 0 0 0 0 oklch(0.58 0.165 148 / 0); }
+  0%   { box-shadow: 0 0 0 0 oklch(0.362 0.160 266.7 / 0.35); }
+  70%  { box-shadow: 0 0 0 12px oklch(0.362 0.160 266.7 / 0); }
+  100% { box-shadow: 0 0 0 0 oklch(0.362 0.160 266.7 / 0); }
 }
-
-/* Animation utility classes */
-.anim-fade-in-up { animation: fadeInUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.anim-float      { animation: float 6s ease-in-out infinite; }
-.anim-shimmer    { animation: shimmer 3s ease-in-out infinite; }
-.anim-pulse-ring { animation: pulseRing 2.5s ease-out infinite; }
-
-/* Stagger delays */
-.delay-1 { animation-delay: 0.08s; }
-.delay-2 { animation-delay: 0.16s; }
-.delay-3 { animation-delay: 0.24s; }
-.delay-4 { animation-delay: 0.32s; }
-.delay-5 { animation-delay: 0.40s; }
-.delay-6 { animation-delay: 0.50s; }
-
-/* Float delay variants */
-.float-1 { animation-delay: 0s;    animation-duration: 6.0s; }
-.float-2 { animation-delay: 1.2s;  animation-duration: 7.5s; }
-.float-3 { animation-delay: 2.4s;  animation-duration: 5.5s; }
-.float-4 { animation-delay: 0.8s;  animation-duration: 8.0s; }
-.float-5 { animation-delay: 3.0s;  animation-duration: 6.8s; }
-.float-6 { animation-delay: 1.8s;  animation-duration: 7.2s; }
-
-/* ── Ecosystem / Digital Heart animations ──────────────────────────────────── */
 
 @keyframes heartbeat {
   0%, 100% { transform: scale(1); }
-  14%       { transform: scale(1.055); }
-  28%       { transform: scale(1.0); }
-  42%       { transform: scale(1.028); }
-  56%       { transform: scale(1.0); }
+  14%      { transform: scale(1.04); }
+  28%      { transform: scale(1.0); }
+  42%      { transform: scale(1.02); }
+  56%      { transform: scale(1.0); }
 }
 
-@keyframes dashFlow {
-  from { stroke-dashoffset: 0; }
-  to   { stroke-dashoffset: -13; }
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(1.05); }
 }
 
-@keyframes ringExpand {
-  0%   { r: 100px; stroke-opacity: 0.45; }
-  100% { r: 172px; stroke-opacity: 0;    }
+@keyframes drawLine {
+  from { stroke-dashoffset: 100; }
+  to   { stroke-dashoffset: 0; }
 }
 
-@keyframes nodeGlow {
-  0%, 100% { opacity: 0.65; }
-  50%       { opacity: 1.0;  }
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
-@keyframes particleDrift {
-  0%   { opacity: 0; transform: translate(0, 0);   }
-  10%  { opacity: 1; }
-  90%  { opacity: 1; }
-  100% { opacity: 0; transform: translate(var(--pdx), var(--pdy)); }
-}
+/* Animation utility classes */
+.anim-fade-in-up { animation: fadeInUp 0.8s var(--ease-out-expo) both; }
+.anim-fade-in    { animation: fadeIn 1.0s var(--ease-out-expo) both; }
+.anim-float      { animation: float 6s ease-in-out infinite; }
+.anim-shimmer    { animation: shimmer 3s ease-in-out infinite; }
+.anim-pulse-ring { animation: pulseRing 2.5s ease-out infinite; }
+.anim-glow-pulse { animation: glowPulse 4s ease-in-out infinite; }
+.anim-marquee    { animation: marquee 40s linear infinite; }
 
-/* Ecosystem animation classes */
-.eco-heartbeat  { animation: heartbeat 1.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
-.eco-dash       { animation: dashFlow 0.65s linear infinite; }
-.eco-ring-1     { animation: ringExpand 2.8s ease-out infinite; }
-.eco-ring-2     { animation: ringExpand 2.8s ease-out infinite 1.4s; }
-.eco-node-glow  { animation: nodeGlow 2.2s ease-in-out infinite; }
+/* Stagger delays */
+.delay-1 { animation-delay: 0.10s; }
+.delay-2 { animation-delay: 0.20s; }
+.delay-3 { animation-delay: 0.30s; }
+.delay-4 { animation-delay: 0.40s; }
+.delay-5 { animation-delay: 0.55s; }
+.delay-6 { animation-delay: 0.70s; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
