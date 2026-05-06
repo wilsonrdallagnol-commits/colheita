@@ -1,8 +1,55 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-05-05 — **MVP COMPLETO + Site Argho redesign em PR #1** ✅
-**Fase atual:** Site Institucional Argho (PR #1 com 17 commits, mergeavel) → CRM agro + BI (próximo) → WhatsApp Business
+**Última atualização:** 2026-05-06 (sessão noturna) — **Plataforma Colheita NO AR** ✅
+**Fase atual:** colheita.arghoagrosciences.com com placeholder "em breve" elegante; aguarda Supabase prod credentials
 **Tests globais:** 416 passing + 25 skipped (DB integration sem Supabase local) — em 12 packages + apps/api
+
+## 🚀 Sessão 2026-05-06 noturna — Plataforma Colheita deployada
+
+**Branch:** `feat/portal-redesign-argho` → main (10 commits)
+**Vercel project novo:** `colheita-portal` (org `evofitia`)
+**URL pública:** https://colheita.arghoagrosciences.com → 200 OK ✅
+**URL interna:** https://colheita-portal.vercel.app
+
+### Redesign editorial apps/portal alinhado com brand Argho oficial
+- `globals.css` reescrito com tokens override (paleta blue `#183090` + green `#489030`, white-first)
+- `<TopNav>` + `<Footer>` novos com logo Argho color + tag "Plataforma Colheita"
+- Home (catálogo): hero editorial split blue/green, search 48px, chips de categoria,
+  cards com nome em CAPS preto + CTA azul, agrupamento por categoria
+- `/entrar`: split-screen — gradiente azul Argho à esquerda com claim "Tecnologia viva
+  para o agro brasileiro", formulário magic link à direita
+- `/conta`: TopNav + Footer aplicados (mantém estatísticas, certificações, pedidos, soluções)
+- Header de `/produtos/[slug]` em CAPS preto + eyebrow azul/verde
+- Logos Argho copiados para `apps/portal/public/`
+- `<PlaceholderHero />` mostrado quando Supabase prod ausente (white-first, brand Argho,
+  CTAs "Ver portfólio Argho" e "Site institucional")
+
+### Deploy Vercel + DNS
+- `apps/portal/vercel.json` força `buildCommand: "cd ../.. && pnpm install --frozen-lockfile && pnpm --filter @colheita/portal build"` e `outputDirectory: ".next"` (Vercel UI overrides eram ignoradas pelo auto-detection do monorepo).
+- `colheita.arghoagrosciences.com` movido do projeto `colheita` (website) para o `colheita-portal`. SSL via Let's Encrypt automático.
+- Env vars Vercel `colheita-portal` (placeholders, troca quando criar Supabase prod):
+  `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_PORTAL_URL`.
+
+### Resiliência runtime aplicada
+- `(public)/page.tsx`: try/catch em fetches Supabase; placeholder hero quando URL é placeholder/localhost
+- `(public)/layout.tsx`: try/catch em `supabase.auth.getUser`, default `user=null`
+- `middleware.ts`: no-op fallback quando Supabase URL ausente/falha
+
+### Bumps & fixes durante deploy
+- Next 15.3.1 → 15.3.9 (Vercel bloqueava deploy de versão vulnerável)
+
+### Domínios validados (via curl)
+- `https://arghoagrosciences.com` → 200 site institucional ✅
+- `https://www.arghoagrosciences.com` → 307 → apex ✅
+- `https://colheita.arghoagrosciences.com` → 200 Plataforma Colheita ✅
+
+### Próximo passo do user (handoff em `docs/HANDOFF-2026-05-06-PORTAL-DEPLOY.md`)
+1. Criar Supabase de produção (Pro $25)
+2. Trocar 3 env vars no Vercel `colheita-portal` por credenciais reais
+3. Rodar `pnpm db:migrate` + `pnpm db:seed` apontando pro Supabase prod
+4. Redeploy → portal exibe catálogo completo
+
+---
 
 ## 🔄 Mudanças recentes (2026-05-03 → 2026-05-05)
 
