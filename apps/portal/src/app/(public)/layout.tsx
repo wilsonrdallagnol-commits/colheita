@@ -1,11 +1,11 @@
 // apps/portal/src/app/(public)/layout.tsx
+// Layout publico da Plataforma Colheita.
 import { createServerClient } from '@colheita/auth';
 import { cookies } from 'next/headers';
-import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { ChatWidget } from '@/components/chat-widget';
-import { NavEntrarLink } from '@/components/nav-entrar-link';
-import { signOut } from '@/lib/actions/auth';
+import { Footer } from '@/components/Footer';
+import { TopNav } from '@/components/TopNav';
 
 export default async function PublicLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
@@ -15,138 +15,17 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   } = await supabase.auth.getUser();
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Top navigation */}
-      <header
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 50,
-          borderBottom: '1px solid var(--colheita-border-subtle)',
-          backgroundColor: 'var(--colheita-surface-background)',
-          backdropFilter: 'blur(8px)',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-            padding: '0 32px',
-            height: '56px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Link
-            href="/"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              textDecoration: 'none',
-            }}
-          >
-            <div
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: 'var(--colheita-radius-md)',
-                backgroundColor: 'var(--colheita-brand-primary)',
-                flexShrink: 0,
-              }}
-            />
-            <span
-              style={{
-                fontSize: '0.9375rem',
-                fontWeight: '600',
-                color: 'var(--colheita-text-primary)',
-                letterSpacing: '-0.02em',
-              }}
-            >
-              Argho
-            </span>
-          </Link>
+    <div
+      style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fff' }}
+    >
+      <TopNav userEmail={user?.email ?? null} />
 
-          <nav style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-            <Link
-              href="/"
-              style={{
-                fontSize: '0.875rem',
-                color: 'var(--colheita-text-secondary)',
-                textDecoration: 'none',
-              }}
-            >
-              Produtos
-            </Link>
-
-            {user ? (
-              <>
-                <Link
-                  href="/conta"
-                  style={{
-                    fontSize: '0.875rem',
-                    color: 'var(--colheita-text-secondary)',
-                    textDecoration: 'none',
-                  }}
-                >
-                  Minha Conta
-                </Link>
-                <form action={signOut} style={{ margin: 0 }}>
-                  <button
-                    type="submit"
-                    style={{
-                      padding: '6px 14px',
-                      borderRadius: 'var(--colheita-radius-md)',
-                      backgroundColor: 'transparent',
-                      color: 'var(--colheita-text-tertiary)',
-                      fontSize: '0.8125rem',
-                      fontWeight: '500',
-                      border: '1px solid var(--colheita-border)',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Sair
-                  </button>
-                </form>
-              </>
-            ) : (
-              <NavEntrarLink />
-            )}
-          </nav>
-        </div>
-      </header>
-
-      {/* Page content */}
       <main style={{ flex: 1 }}>{children}</main>
 
-      {/* Chat widget — só para distribuidores autenticados */}
+      {/* Chat widget — apenas para distribuidores autenticados */}
       {user && <ChatWidget />}
 
-      {/* Footer */}
-      <footer
-        style={{
-          borderTop: '1px solid var(--colheita-border-subtle)',
-          padding: '24px 32px',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <span style={{ fontSize: '0.8125rem', color: 'var(--colheita-text-tertiary)' }}>
-            © {new Date().getFullYear()} Argho Agrosciences
-          </span>
-          <span style={{ fontSize: '0.8125rem', color: 'var(--colheita-text-tertiary)' }}>
-            Fertilizantes · Biológicos · Adjuvantes
-          </span>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

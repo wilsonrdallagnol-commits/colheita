@@ -132,25 +132,37 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
             {category && (
               <p
                 style={{
-                  fontSize: '0.75rem',
-                  fontWeight: '600',
-                  color: 'var(--colheita-brand-primary)',
+                  fontSize: '0.6875rem',
+                  fontWeight: 700,
+                  color: '#183090',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  marginBottom: '10px',
+                  letterSpacing: '0.14em',
+                  marginBottom: 14,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
                 }}
               >
+                <span
+                  style={{
+                    display: 'inline-block',
+                    width: 24,
+                    height: 2,
+                    background: '#489030',
+                  }}
+                />
                 {category.name}
               </p>
             )}
             <h1
               style={{
-                fontSize: '2.25rem',
-                fontWeight: '600',
-                color: 'var(--colheita-text-primary)',
-                letterSpacing: '-0.03em',
-                marginBottom: '12px',
-                lineHeight: 1.2,
+                fontSize: 'clamp(2rem, 4vw, 3rem)',
+                fontWeight: 800,
+                color: '#0a0a0a',
+                letterSpacing: '-0.04em',
+                marginBottom: 14,
+                lineHeight: 1.05,
+                textTransform: 'uppercase',
               }}
             >
               {data.name}
@@ -158,9 +170,10 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
             {data.tagline && (
               <p
                 style={{
-                  fontSize: '1.0625rem',
-                  color: 'var(--colheita-text-secondary)',
+                  fontSize: '1.125rem',
+                  color: '#4b5563',
                   lineHeight: 1.6,
+                  maxWidth: 640,
                 }}
               >
                 {data.tagline}

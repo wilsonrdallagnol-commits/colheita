@@ -1,34 +1,128 @@
-/* apps/portal/src/app/globals.css */
-@import "tailwindcss";
-@import "@colheita/ui/globals.css";
+/* apps/portal/src/app/globals.css
+   Plataforma Colheita — face publica para distribuidores Argho.
+   White-first editorial alinhado com brand Argho oficial. */
 
-/* Tailwind v4: definir tokens customizados para uso em classes utilitárias */
+@import "tailwindcss";
+
+/* Argho brand override — white-first editorial.
+   Substitui os tokens dark do @colheita/ui sem importar o globals.css de la. */
+:root {
+  /* Surfaces (white-first) */
+  --colheita-surface-background: #ffffff;
+  --colheita-surface-elevated: #ffffff;
+  --colheita-surface-card: #ffffff;
+  --colheita-surface-overlay: #f9fafb;
+  --colheita-surface-hover: #f3f4f6;
+  --colheita-surface-muted: #f9fafb;
+
+  /* Borders */
+  --colheita-border-subtle: #f3f4f6;
+  --colheita-border: #e5e7eb;
+  --colheita-border-strong: #d1d5db;
+
+  /* Text */
+  --colheita-text-primary: #0a0a0a;
+  --colheita-text-secondary: #4b5563;
+  --colheita-text-tertiary: #6b7280;
+  --colheita-text-disabled: #9ca3af;
+  --colheita-text-inverse: #ffffff;
+
+  /* Brand Argho — paleta oficial */
+  --colheita-brand-primary: #183090;          /* Argho blue */
+  --colheita-brand-primary-fg: #ffffff;
+  --colheita-brand-primary-soft: #eaf0ff;     /* azul lavado */
+  --colheita-brand-primary-line: #c7d3ff;
+  --colheita-brand-secondary: #489030;        /* Argho green */
+  --colheita-brand-secondary-fg: #ffffff;
+  --colheita-brand-secondary-soft: #e9f5e1;
+  --colheita-brand-secondary-line: #c5e0b1;
+  --colheita-brand-accent: #183090;
+  --colheita-brand-accent-fg: #ffffff;
+
+  /* Semântico */
+  --colheita-success: #15803d;
+  --colheita-warning: #b45309;
+  --colheita-danger: #b91c1c;
+  --colheita-info: #1e40af;
+
+  /* Radius */
+  --colheita-radius-sm: 4px;
+  --colheita-radius-md: 8px;
+  --colheita-radius-lg: 12px;
+  --colheita-radius-xl: 16px;
+  --colheita-radius-full: 9999px;
+
+  /* Transições */
+  --colheita-transition-fast: 100ms ease;
+  --colheita-transition-base: 200ms ease;
+  --colheita-transition-slow: 300ms ease;
+
+  /* Shadows */
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 1px rgba(15, 23, 42, 0.02);
+  --shadow-card-hover: 0 4px 12px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.04);
+  --shadow-blue-glow: 0 8px 32px -12px rgba(24, 48, 144, 0.18);
+}
+
+/* Tailwind v4 theme tokens — expostos como classes utilitárias */
 @theme {
-  --color-brand: var(--colheita-brand-primary);
-  --color-brand-fg: var(--colheita-brand-primary-fg);
-  --color-surface: var(--colheita-surface-background);
-  --color-surface-elevated: var(--colheita-surface-elevated);
-  --color-surface-card: var(--colheita-surface-card);
-  --color-border: var(--colheita-border);
-  --color-border-subtle: var(--colheita-border-subtle);
-  --color-text: var(--colheita-text-primary);
-  --color-text-secondary: var(--colheita-text-secondary);
-  --color-text-tertiary: var(--colheita-text-tertiary);
+  --color-brand: #183090;
+  --color-brand-fg: #ffffff;
+  --color-brand-soft: #eaf0ff;
+  --color-brand-line: #c7d3ff;
+  --color-secondary: #489030;
+  --color-secondary-fg: #ffffff;
+  --color-secondary-soft: #e9f5e1;
+  --color-secondary-line: #c5e0b1;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-surface-card: #ffffff;
+  --color-surface-muted: #f9fafb;
+  --color-border: #e5e7eb;
+  --color-border-subtle: #f3f4f6;
+  --color-border-strong: #d1d5db;
+  --color-text: #0a0a0a;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #6b7280;
 
   --font-display: var(--font-geist-sans), "Inter", -apple-system, system-ui, sans-serif;
-  --font-body: "Inter", -apple-system, system-ui, sans-serif;
+  --font-body: var(--font-geist-sans), "Inter", -apple-system, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
 }
 
 html,
 body {
-  background-color: var(--colheita-surface-background);
-  color: var(--colheita-text-primary);
-  font-family: var(--font-body);
+  background-color: #ffffff;
+  color: #0a0a0a;
+  font-family: var(--font-geist-sans), "Inter", -apple-system, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* Editorial hero typography helpers */
+.argho-display {
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.argho-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--colheita-brand-primary);
+}
+
+.argho-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 28px;
+  height: 2px;
+  background: var(--colheita-brand-secondary);
+  margin-right: 12px;
+  vertical-align: middle;
 }

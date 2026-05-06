@@ -1,4 +1,5 @@
 // apps/portal/src/app/(public)/page.tsx
+// Home da Plataforma Colheita — catalogo editorial Argho.
 import {
   type MockEmbeddingProvider,
   OpenAIEmbeddingProvider,
@@ -10,7 +11,11 @@ import { createClient as createServiceClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 
-export const metadata = { title: 'Produtos — Argho' };
+export const metadata = {
+  title: 'Catálogo — Plataforma Colheita',
+  description:
+    'Catálogo digital de fertilizantes, biológicos e adjuvantes Argho — acesso para distribuidores e clientes.',
+};
 
 type Status = 'draft' | 'published' | 'archived';
 
@@ -19,11 +24,6 @@ interface PageProps {
 }
 
 // ── Vector search helper ──────────────────────────────────────────────────────
-
-/**
- * Retorna IDs de produtos relevantes para a query via pgvector.
- * Retorna null se as env vars de embedding não estiverem configuradas (fallback para ilike).
- */
 async function vectorSearchProductIds(query: string, tenantId: string): Promise<string[] | null> {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -55,7 +55,6 @@ async function vectorSearchProductIds(query: string, tenantId: string): Promise<
       topK: 20,
     });
 
-    // Deduplica por documentId (produto pode ter múltiplos chunks)
     const seen = new Set<string>();
     const ids: string[] = [];
     for (const r of results) {
@@ -67,7 +66,6 @@ async function vectorSearchProductIds(query: string, tenantId: string): Promise<
     }
     return ids;
   } catch {
-    // Falha silenciosa — fallback para ilike
     return null;
   }
 }
@@ -79,11 +77,11 @@ export default async function CatalogPage({ searchParams }: PageProps) {
 
   const qTrimmed = q?.trim() ?? '';
 
-  // Fetch tenant (needed for vector search scope)
+  // Fetch tenant
   const { data: tenantData } = await supabase.from('tenants').select('id').limit(1).single();
   const tenantId = tenantData?.id as string | undefined;
 
-  // Vector search — tenta semântico, fallback para ilike
+  // Vector search
   let vectorProductIds: string[] | null = null;
   if (qTrimmed && tenantId) {
     vectorProductIds = await vectorSearchProductIds(qTrimmed, tenantId);
@@ -92,7 +90,6 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   // Fetch categories and products in parallel
   const [{ data: categorias }, { data: produtos }] = await Promise.all([
     supabase.from('product_categories').select('id, slug, name').order('name'),
-
     (() => {
       let query = supabase
         .from('products')
@@ -105,13 +102,10 @@ export default async function CatalogPage({ searchParams }: PageProps) {
 
       if (qTrimmed) {
         if (vectorProductIds && vectorProductIds.length > 0) {
-          // Semântico: filtra por IDs retornados pelo pgvector
           query = query.in('id', vectorProductIds);
         } else if (!vectorProductIds) {
-          // Fallback léxico: ilike em nome e tagline
           query = query.or(`name.ilike.%${qTrimmed}%,tagline.ilike.%${qTrimmed}%`);
         }
-        // vectorProductIds === [] significa busca retornou vazio — não filtra (mostra nada)
       }
 
       return query;
@@ -119,8 +113,6 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   ]);
 
   const categoriasList = categorias ?? [];
-
-  // Resolve active category filter
   const activeCat = category ? (categoriasList.find((c) => c.slug === category) ?? null) : null;
 
   const produtosList = (produtos ?? [])
@@ -131,282 +123,302 @@ export default async function CatalogPage({ searchParams }: PageProps) {
     }))
     .filter((p) => !activeCat || p.category_id === activeCat.id);
 
-  // Group by category when not filtering
   const grouped = new Map<string, typeof produtosList>();
   const uncategorized: typeof produtosList = [];
-
   for (const p of produtosList) {
-    if (!p.category) {
-      uncategorized.push(p);
-    } else {
+    if (!p.category) uncategorized.push(p);
+    else {
       const key = p.category.name;
       if (!grouped.has(key)) grouped.set(key, []);
-      // biome-ignore lint/style/noNonNullAssertion: guarded by has() check above
-      grouped.get(key)!.push(p);
+      grouped.get(key)?.push(p);
     }
   }
 
   const hasFilter = Boolean(q?.trim() ?? activeCat);
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 32px' }}>
-      {/* Hero */}
-      <div style={{ marginBottom: '40px', maxWidth: '640px' }}>
-        <h1
-          style={{
-            fontSize: '2.25rem',
-            fontWeight: '600',
-            color: 'var(--colheita-text-primary)',
-            letterSpacing: '-0.03em',
-            marginBottom: '12px',
-            lineHeight: 1.2,
-          }}
-        >
-          Portfólio Argho
-        </h1>
-        <p
-          style={{
-            fontSize: '1.0625rem',
-            color: 'var(--colheita-text-secondary)',
-            lineHeight: 1.6,
-          }}
-        >
-          Fertilizantes minerais, organominerais, biológicos e adjuvantes desenvolvidos para máxima
-          eficiência agronômica.
-        </p>
-      </div>
-
-      {/* Search bar */}
-      <form
-        method="GET"
+    <>
+      {/* Hero editorial */}
+      <section
         style={{
-          display: 'flex',
-          gap: '8px',
-          marginBottom: '24px',
-          maxWidth: '480px',
+          borderBottom: '1px solid #f3f4f6',
+          background: 'linear-gradient(180deg, #ffffff 0%, #f9fafb 100%)',
         }}
       >
-        {activeCat && <input type="hidden" name="category" value={activeCat.slug} />}
-        <input
-          type="search"
-          name="q"
-          defaultValue={q ?? ''}
-          placeholder="Buscar produto..."
-          style={{
-            flex: 1,
-            height: '40px',
-            padding: '0 14px',
-            borderRadius: 'var(--colheita-radius-md)',
-            border: '1px solid var(--colheita-border)',
-            backgroundColor: 'var(--colheita-surface-elevated)',
-            color: 'var(--colheita-text-primary)',
-            fontSize: '0.9375rem',
-            outline: 'none',
-          }}
-        />
-        <button
-          type="submit"
-          style={{
-            height: '40px',
-            padding: '0 18px',
-            borderRadius: 'var(--colheita-radius-md)',
-            backgroundColor: 'var(--colheita-brand-primary)',
-            color: 'white',
-            fontSize: '0.875rem',
-            fontWeight: '500',
-            border: 'none',
-            cursor: 'pointer',
-          }}
-        >
-          Buscar
-        </button>
-        {hasFilter && (
-          <Link
-            href="/"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              height: '40px',
-              padding: '0 14px',
-              borderRadius: 'var(--colheita-radius-md)',
-              border: '1px solid var(--colheita-border)',
-              fontSize: '0.8125rem',
-              color: 'var(--colheita-text-secondary)',
-              textDecoration: 'none',
-            }}
-          >
-            Limpar
-          </Link>
-        )}
-      </form>
-
-      {/* Category filter chips */}
-      {categoriasList.length > 0 && (
         <div
           style={{
-            display: 'flex',
-            gap: '8px',
-            flexWrap: 'wrap',
-            marginBottom: '40px',
+            maxWidth: 1280,
+            margin: '0 auto',
+            padding: '64px 32px 48px',
           }}
         >
-          <Link
-            href={q ? `/?q=${encodeURIComponent(q)}` : '/'}
-            style={{
-              display: 'inline-block',
-              padding: '5px 14px',
-              borderRadius: '999px',
-              fontSize: '0.8125rem',
-              fontWeight: '500',
-              textDecoration: 'none',
-              border: `1px solid ${!activeCat ? 'var(--colheita-brand-primary)' : 'var(--colheita-border)'}`,
-              backgroundColor: !activeCat
-                ? 'color-mix(in srgb, var(--colheita-brand-primary) 12%, transparent)'
-                : 'transparent',
-              color: !activeCat
-                ? 'var(--colheita-brand-primary)'
-                : 'var(--colheita-text-secondary)',
-            }}
-          >
-            Todos
-          </Link>
-          {categoriasList.map((c) => {
-            const isActive = activeCat?.id === c.id;
-            const href = q
-              ? `/?q=${encodeURIComponent(q)}&category=${c.slug}`
-              : `/?category=${c.slug}`;
-            return (
-              <Link
-                key={c.id}
-                href={href}
-                style={{
-                  display: 'inline-block',
-                  padding: '5px 14px',
-                  borderRadius: '999px',
-                  fontSize: '0.8125rem',
-                  fontWeight: '500',
-                  textDecoration: 'none',
-                  border: `1px solid ${isActive ? 'var(--colheita-brand-primary)' : 'var(--colheita-border)'}`,
-                  backgroundColor: isActive
-                    ? 'color-mix(in srgb, var(--colheita-brand-primary) 12%, transparent)'
-                    : 'transparent',
-                  color: isActive
-                    ? 'var(--colheita-brand-primary)'
-                    : 'var(--colheita-text-secondary)',
-                }}
-              >
-                {c.name}
-              </Link>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Product grids */}
-      {activeCat ? (
-        /* Flat list when category filter is active */
-        produtosList.length > 0 ? (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '16px',
-            }}
-          >
-            {produtosList.map((p) => (
-              <ProductCard key={p.slug} produto={p} />
-            ))}
-          </div>
-        ) : null
-      ) : (
-        /* Grouped by category */
-        <>
-          {Array.from(grouped.entries()).map(([catName, prods]) => (
-            <section key={catName} style={{ marginBottom: '48px' }}>
-              <h2
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: '600',
-                  color: 'var(--colheita-text-tertiary)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  marginBottom: '20px',
-                }}
-              >
-                {catName}
-              </h2>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                  gap: '16px',
-                }}
-              >
-                {prods.map((p) => (
-                  <ProductCard key={p.slug} produto={p} />
-                ))}
-              </div>
-            </section>
-          ))}
-          {uncategorized.length > 0 && (
-            <section style={{ marginBottom: '48px' }}>
-              <h2
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: '600',
-                  color: 'var(--colheita-text-tertiary)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  marginBottom: '20px',
-                }}
-              >
-                Outros
-              </h2>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                  gap: '16px',
-                }}
-              >
-                {uncategorized.map((p) => (
-                  <ProductCard key={p.slug} produto={p} />
-                ))}
-              </div>
-            </section>
-          )}
-        </>
-      )}
-
-      {produtosList.length === 0 && (
-        <div
-          style={{
-            textAlign: 'center',
-            padding: '80px 0',
-            color: 'var(--colheita-text-tertiary)',
-          }}
-        >
-          <p style={{ fontSize: '1rem' }}>
-            {hasFilter
-              ? 'Nenhum produto encontrado para este filtro.'
-              : 'Nenhum produto disponível no momento.'}
+          <p className="argho-eyebrow" style={{ marginBottom: 16 }}>
+            Plataforma Colheita · Catálogo digital
           </p>
-          {hasFilter && (
-            <Link
-              href="/"
+          <h1
+            className="argho-display"
+            style={{
+              fontSize: 'clamp(2.25rem, 4vw + 1rem, 3.5rem)',
+              maxWidth: 880,
+              marginBottom: 20,
+              color: '#0a0a0a',
+            }}
+          >
+            Portfólio Argho <span style={{ color: '#489030' }}>vivo</span>{' '}
+            <span style={{ color: '#183090' }}>e técnico</span>.
+          </h1>
+          <p
+            style={{
+              fontSize: '1.0625rem',
+              color: '#4b5563',
+              lineHeight: 1.6,
+              maxWidth: 640,
+            }}
+          >
+            Fertilizantes minerais, organominerais, biológicos e adjuvantes desenvolvidos com
+            ciência de ponta. Aqui você encontra ficha técnica, indicações por cultura e dados de
+            registro MAPA de cada produto.
+          </p>
+
+          {/* Search */}
+          <form
+            method="GET"
+            style={{
+              marginTop: 32,
+              display: 'flex',
+              gap: 8,
+              maxWidth: 560,
+            }}
+          >
+            {activeCat && <input type="hidden" name="category" value={activeCat.slug} />}
+            <input
+              type="search"
+              name="q"
+              defaultValue={q ?? ''}
+              placeholder="Buscar produto, cultura ou ingrediente ativo…"
               style={{
-                display: 'inline-block',
-                marginTop: '12px',
+                flex: 1,
+                height: 48,
+                padding: '0 18px',
+                borderRadius: 8,
+                border: '1px solid #e5e7eb',
+                background: '#fff',
+                color: '#0a0a0a',
+                fontSize: '0.9375rem',
+                outline: 'none',
+                boxShadow: '0 1px 2px rgba(15, 23, 42, 0.04)',
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                height: 48,
+                padding: '0 22px',
+                borderRadius: 8,
+                background: '#183090',
+                color: '#fff',
                 fontSize: '0.875rem',
-                color: 'var(--colheita-brand-primary)',
-                textDecoration: 'none',
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
               }}
             >
-              Ver todos os produtos
-            </Link>
+              Buscar
+            </button>
+            {hasFilter && (
+              <Link
+                href="/"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  height: 48,
+                  padding: '0 16px',
+                  borderRadius: 8,
+                  border: '1px solid #e5e7eb',
+                  fontSize: '0.875rem',
+                  color: '#4b5563',
+                  textDecoration: 'none',
+                  background: '#fff',
+                }}
+              >
+                Limpar
+              </Link>
+            )}
+          </form>
+
+          {/* Category chips */}
+          {categoriasList.length > 0 && (
+            <div
+              style={{
+                marginTop: 24,
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 8,
+              }}
+            >
+              <CategoryChip href={q ? `/?q=${encodeURIComponent(q)}` : '/'} active={!activeCat}>
+                Todos
+              </CategoryChip>
+              {categoriasList.map((c) => {
+                const isActive = activeCat?.id === c.id;
+                const href = q
+                  ? `/?q=${encodeURIComponent(q)}&category=${c.slug}`
+                  : `/?category=${c.slug}`;
+                return (
+                  <CategoryChip key={c.id} href={href} active={isActive}>
+                    {c.name}
+                  </CategoryChip>
+                );
+              })}
+            </div>
           )}
         </div>
-      )}
+      </section>
+
+      {/* Product grids */}
+      <section style={{ maxWidth: 1280, margin: '0 auto', padding: '48px 32px' }}>
+        {activeCat ? (
+          produtosList.length > 0 ? (
+            <ProductGrid produtos={produtosList} />
+          ) : null
+        ) : (
+          <>
+            {Array.from(grouped.entries()).map(([catName, prods]) => (
+              <section key={catName} style={{ marginBottom: 56 }}>
+                <h2
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    color: '#183090',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.12em',
+                    marginBottom: 24,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                  }}
+                >
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      width: 24,
+                      height: 2,
+                      background: '#489030',
+                    }}
+                  />
+                  {catName}
+                </h2>
+                <ProductGrid produtos={prods} />
+              </section>
+            ))}
+            {uncategorized.length > 0 && (
+              <section style={{ marginBottom: 56 }}>
+                <h2
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    color: '#6b7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.12em',
+                    marginBottom: 24,
+                  }}
+                >
+                  Outros
+                </h2>
+                <ProductGrid produtos={uncategorized} />
+              </section>
+            )}
+          </>
+        )}
+
+        {produtosList.length === 0 && (
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '120px 0',
+              color: '#6b7280',
+            }}
+          >
+            <p style={{ fontSize: '1.125rem', marginBottom: 12 }}>
+              {hasFilter
+                ? 'Nenhum produto encontrado para este filtro.'
+                : 'Nenhum produto disponível no momento.'}
+            </p>
+            {hasFilter && (
+              <Link
+                href="/"
+                style={{
+                  display: 'inline-block',
+                  marginTop: 12,
+                  fontSize: '0.875rem',
+                  color: '#183090',
+                  textDecoration: 'none',
+                  fontWeight: 500,
+                }}
+              >
+                Ver todos os produtos →
+              </Link>
+            )}
+          </div>
+        )}
+      </section>
+    </>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+function CategoryChip({
+  href,
+  active,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      style={{
+        display: 'inline-block',
+        padding: '6px 14px',
+        borderRadius: 999,
+        fontSize: '0.8125rem',
+        fontWeight: 500,
+        textDecoration: 'none',
+        border: `1px solid ${active ? '#183090' : '#e5e7eb'}`,
+        background: active ? '#eaf0ff' : '#ffffff',
+        color: active ? '#183090' : '#4b5563',
+        transition: 'all 150ms',
+      }}
+    >
+      {children}
+    </Link>
+  );
+}
+
+function ProductGrid({
+  produtos,
+}: {
+  produtos: Array<{
+    slug: string;
+    name: string;
+    tagline: string | null;
+    category: { name: string } | null;
+  }>;
+}) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+        gap: 16,
+      }}
+    >
+      {produtos.map((p) => (
+        <ProductCard key={p.slug} produto={p} />
+      ))}
     </div>
   );
 }
@@ -426,23 +438,26 @@ function ProductCard({
       href={`/produtos/${produto.slug}`}
       style={{
         display: 'block',
-        padding: '20px 24px',
-        borderRadius: 'var(--colheita-radius-lg)',
-        border: '1px solid var(--colheita-border)',
-        backgroundColor: 'var(--colheita-surface-elevated)',
+        padding: '24px 24px 20px',
+        borderRadius: 12,
+        border: '1px solid #e5e7eb',
+        background: '#fff',
         textDecoration: 'none',
-        transition: 'border-color 0.15s, background-color 0.15s',
+        boxShadow: '0 1px 2px rgba(15, 23, 42, 0.04)',
+        transition: 'all 150ms',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
       {produto.category && (
         <p
           style={{
             fontSize: '0.6875rem',
-            fontWeight: '600',
-            color: 'var(--colheita-brand-primary)',
+            fontWeight: 700,
+            color: '#183090',
             textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            marginBottom: '8px',
+            letterSpacing: '0.10em',
+            marginBottom: 10,
           }}
         >
           {produto.category.name}
@@ -450,11 +465,12 @@ function ProductCard({
       )}
       <p
         style={{
-          fontSize: '1rem',
-          fontWeight: '600',
-          color: 'var(--colheita-text-primary)',
-          letterSpacing: '-0.01em',
-          marginBottom: produto.tagline ? '6px' : 0,
+          fontSize: '1.0625rem',
+          fontWeight: 700,
+          color: '#0a0a0a',
+          letterSpacing: '-0.02em',
+          marginBottom: produto.tagline ? 8 : 0,
+          textTransform: 'uppercase',
         }}
       >
         {produto.name}
@@ -462,14 +478,26 @@ function ProductCard({
       {produto.tagline && (
         <p
           style={{
-            fontSize: '0.8125rem',
-            color: 'var(--colheita-text-secondary)',
+            fontSize: '0.875rem',
+            color: '#4b5563',
             lineHeight: 1.5,
           }}
         >
           {produto.tagline}
         </p>
       )}
+      <div
+        style={{
+          marginTop: 16,
+          paddingTop: 12,
+          borderTop: '1px solid #f3f4f6',
+          fontSize: '0.75rem',
+          color: '#183090',
+          fontWeight: 600,
+        }}
+      >
+        Ver ficha técnica →
+      </div>
     </Link>
   );
 }

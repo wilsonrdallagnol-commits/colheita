@@ -1,9 +1,10 @@
 // apps/portal/src/app/(auth)/entrar/login-form.tsx
 'use client';
 
-import { Button, Input } from '@colheita/ui';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useActionState, useId } from 'react';
-import { signInWithMagicLink } from './actions.js';
+import { signInWithMagicLink } from './actions';
 
 interface LoginFormProps {
   next?: string;
@@ -13,26 +14,17 @@ export function LoginForm({ next }: LoginFormProps) {
   const [state, action, pending] = useActionState(signInWithMagicLink, null);
   const emailId = useId();
 
+  // ── Sucesso ──────────────────────────────────────────────────────────────
   if (state !== null && !state.error) {
     return (
-      <div
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'var(--colheita-surface-background)',
-          padding: '24px',
-        }}
-      >
-        <div style={{ width: '100%', maxWidth: '360px', textAlign: 'center' }}>
+      <Shell>
+        <div style={{ textAlign: 'center', padding: '24px 0' }}>
           <div
             style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: 'var(--colheita-radius-full)',
-              backgroundColor: 'var(--colheita-brand-primary)',
+              width: 56,
+              height: 56,
+              borderRadius: 999,
+              background: '#e9f5e1',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -40,15 +32,15 @@ export function LoginForm({ next }: LoginFormProps) {
             }}
           >
             <svg
-              width="22"
-              height="22"
+              width={26}
+              height={26}
               viewBox="0 0 24 24"
               fill="none"
-              stroke="white"
-              strokeWidth="2.5"
+              stroke="#489030"
+              strokeWidth={2.5}
               strokeLinecap="round"
               strokeLinejoin="round"
-              aria-label="Link enviado com sucesso"
+              aria-label="Sucesso"
               role="img"
             >
               <polyline points="20 6 9 17 4 12" />
@@ -56,144 +48,279 @@ export function LoginForm({ next }: LoginFormProps) {
           </div>
           <h1
             style={{
-              fontSize: '1.25rem',
-              fontWeight: '600',
-              color: 'var(--colheita-text-primary)',
-              marginBottom: '8px',
-              letterSpacing: '-0.01em',
+              fontSize: '1.5rem',
+              fontWeight: 700,
+              color: '#0a0a0a',
+              marginBottom: 8,
+              letterSpacing: '-0.02em',
             }}
           >
             Link enviado
           </h1>
           <p
             style={{
-              fontSize: '0.875rem',
-              color: 'var(--colheita-text-secondary)',
-              lineHeight: '1.5',
+              fontSize: '0.9375rem',
+              color: '#4b5563',
+              lineHeight: 1.6,
+              maxWidth: 320,
+              margin: '0 auto',
             }}
           >
-            Verifique seu email e clique no link para acessar a área exclusiva.
+            Verifique seu email e clique no link para acessar a Plataforma Colheita. O link expira
+            em 1 hora.
           </p>
         </div>
-      </div>
+      </Shell>
     );
   }
 
+  // ── Formulário ───────────────────────────────────────────────────────────
+  return (
+    <Shell>
+      <div style={{ marginBottom: 28 }}>
+        <p
+          style={{
+            fontSize: '0.6875rem',
+            fontWeight: 600,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            color: '#183090',
+            marginBottom: 14,
+          }}
+        >
+          <span
+            style={{
+              display: 'inline-block',
+              width: 24,
+              height: 2,
+              background: '#489030',
+              marginRight: 12,
+              verticalAlign: 'middle',
+            }}
+          />
+          Acesso de distribuidor
+        </p>
+        <h1
+          style={{
+            fontSize: '1.75rem',
+            fontWeight: 700,
+            color: '#0a0a0a',
+            letterSpacing: '-0.03em',
+            lineHeight: 1.15,
+            marginBottom: 8,
+          }}
+        >
+          Entrar na Plataforma <span style={{ color: '#489030' }}>Colheita</span>.
+        </h1>
+        <p
+          style={{
+            fontSize: '0.9375rem',
+            color: '#4b5563',
+            lineHeight: 1.6,
+          }}
+        >
+          Receba um link de acesso seguro no seu email — sem senha.
+        </p>
+      </div>
+
+      <form action={action} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        {next && <input type="hidden" name="next" value={next} />}
+        <div>
+          <label
+            htmlFor={emailId}
+            style={{
+              display: 'block',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+              color: '#0a0a0a',
+              marginBottom: 8,
+            }}
+          >
+            Email
+          </label>
+          <input
+            id={emailId}
+            name="email"
+            type="email"
+            placeholder="distribuidor@empresa.com.br"
+            autoComplete="email"
+            required
+            disabled={pending}
+            style={{
+              width: '100%',
+              height: 48,
+              padding: '0 16px',
+              borderRadius: 8,
+              border: '1px solid #e5e7eb',
+              background: '#fff',
+              color: '#0a0a0a',
+              fontSize: '0.9375rem',
+              outline: 'none',
+              transition: 'border 150ms',
+            }}
+          />
+        </div>
+
+        {state?.error && (
+          <p
+            style={{
+              fontSize: '0.8125rem',
+              color: '#b91c1c',
+              padding: '10px 12px',
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
+              borderRadius: 6,
+            }}
+          >
+            {state.error}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          disabled={pending}
+          style={{
+            height: 48,
+            background: pending ? '#6b7280' : '#183090',
+            color: '#fff',
+            fontSize: '0.9375rem',
+            fontWeight: 600,
+            border: 'none',
+            borderRadius: 8,
+            cursor: pending ? 'wait' : 'pointer',
+            marginTop: 4,
+          }}
+        >
+          {pending ? 'Enviando link…' : 'Enviar link de acesso'}
+        </button>
+      </form>
+
+      <p
+        style={{
+          marginTop: 28,
+          fontSize: '0.8125rem',
+          color: '#6b7280',
+          textAlign: 'center',
+          lineHeight: 1.6,
+        }}
+      >
+        Ainda não é distribuidor Argho?{' '}
+        <a
+          href="https://arghoagrosciences.com/contato"
+          style={{ color: '#183090', textDecoration: 'underline', fontWeight: 500 }}
+        >
+          Fale com nossa equipe comercial
+        </a>
+        .
+      </p>
+    </Shell>
+  );
+}
+
+// ── Shell visual reutilizado ────────────────────────────────────────────────
+
+function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{
         minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'var(--colheita-surface-background)',
-        padding: '24px',
+        display: 'grid',
+        gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+        background: '#fff',
       }}
     >
-      <div style={{ width: '100%', maxWidth: '360px' }}>
-        {/* Marca */}
-        <div style={{ marginBottom: '40px', textAlign: 'center' }}>
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '10px',
-              marginBottom: '8px',
-            }}
-          >
-            <div
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: 'var(--colheita-radius-md)',
-                backgroundColor: 'var(--colheita-brand-primary)',
-              }}
-            />
-            <span
-              style={{
-                fontSize: '1.125rem',
-                fontWeight: '600',
-                color: 'var(--colheita-text-primary)',
-                letterSpacing: '-0.025em',
-              }}
-            >
-              Argho
-            </span>
-          </div>
-          <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-tertiary)' }}>
-            Portal de distribuidores
-          </p>
-        </div>
-
-        {/* Formulário */}
-        <div
+      {/* Coluna esquerda — branding */}
+      <aside
+        style={{
+          background: 'linear-gradient(160deg, #183090 0%, #0e1f5e 100%)',
+          color: '#fff',
+          padding: '64px 48px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Link
+          href="/"
+          aria-label="Voltar para o catálogo"
           style={{
-            backgroundColor: 'var(--colheita-surface-card)',
-            border: '1px solid var(--colheita-border-subtle)',
-            borderRadius: 'var(--colheita-radius-lg)',
-            padding: '28px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 12,
+            color: '#fff',
+            textDecoration: 'none',
           }}
         >
-          <h1
+          <Image
+            src="/argho-logo.png"
+            alt="Argho"
+            width={144}
+            height={38}
+            style={{ height: 32, width: 'auto', filter: 'brightness(0) invert(1)' }}
+          />
+          <span
             style={{
-              fontSize: '1.125rem',
-              fontWeight: '600',
-              color: 'var(--colheita-text-primary)',
-              marginBottom: '4px',
-              letterSpacing: '-0.015em',
+              fontSize: '0.6875rem',
+              fontWeight: 600,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              borderLeft: '1px solid rgba(255,255,255,0.4)',
+              paddingLeft: 12,
             }}
           >
-            Entrar
-          </h1>
+            Plataforma
+            <br />
+            Colheita
+          </span>
+        </Link>
+
+        <div>
+          <p
+            className="argho-display"
+            style={{
+              fontSize: 'clamp(1.75rem, 2.5vw, 2.5rem)',
+              maxWidth: 460,
+              marginBottom: 24,
+            }}
+          >
+            Tecnologia viva
+            <br />
+            <span style={{ color: '#a8d18d' }}>para o agro brasileiro</span>.
+          </p>
           <p
             style={{
-              fontSize: '0.875rem',
-              color: 'var(--colheita-text-secondary)',
-              marginBottom: '24px',
+              fontSize: '0.9375rem',
+              color: 'rgba(255,255,255,0.78)',
+              maxWidth: 420,
+              lineHeight: 1.6,
             }}
           >
-            Receba um link de acesso no seu email.
+            Catálogo digital, ficha técnica completa, indicações por cultura e dados regulatórios
+            MAPA — em um único lugar.
           </p>
-
-          <form action={action} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {next && <input type="hidden" name="next" value={next} />}
-            <div>
-              <label
-                htmlFor={emailId}
-                style={{
-                  display: 'block',
-                  fontSize: '0.8125rem',
-                  fontWeight: '500',
-                  color: 'var(--colheita-text-secondary)',
-                  marginBottom: '6px',
-                }}
-              >
-                Email
-              </label>
-              <Input
-                id={emailId}
-                name="email"
-                type="email"
-                placeholder="seu@email.com"
-                autoComplete="email"
-                required
-                disabled={pending}
-              />
-            </div>
-
-            {state?.error && (
-              <p style={{ fontSize: '0.8125rem', color: 'var(--colheita-danger)' }}>
-                {state.error}
-              </p>
-            )}
-
-            <Button type="submit" disabled={pending} style={{ marginTop: '4px' }}>
-              {pending ? 'Enviando...' : 'Enviar link de acesso'}
-            </Button>
-          </form>
         </div>
-      </div>
+
+        <p
+          style={{
+            fontSize: '0.75rem',
+            color: 'rgba(255,255,255,0.55)',
+          }}
+        >
+          © {new Date().getFullYear()} Argho Agrosciences
+        </p>
+      </aside>
+
+      {/* Coluna direita — formulário */}
+      <main
+        style={{
+          padding: '64px 48px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div style={{ width: '100%', maxWidth: 400 }}>{children}</div>
+      </main>
     </div>
   );
 }
