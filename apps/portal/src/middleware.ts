@@ -6,11 +6,20 @@ type CookieToSet = { name: string; value: string; options?: Record<string, unkno
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   let supabaseResponse = NextResponse.next({ request });
+  const pathname = request.nextUrl.pathname;
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
-    {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Sem credenciais: middleware vira no-op para nao crashar (502/MIDDLEWARE_INVOCATION_FAILED).
+  // Rotas /conta sao protegidas pelo layout (conta) via redirect.
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return supabaseResponse;
+  }
+
+  let user: { email?: string | null } | null = null;
+  try {
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -22,13 +31,13 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
             supabaseResponse.cookies.set(name, value, options);
         },
       },
-    },
-  );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const pathname = request.nextUrl.pathname;
+    });
+    const result = await supabase.auth.getUser();
+    user = result.data.user;
+  } catch {
+    // Supabase indisponivel — middleware no-op.
+    return supabaseResponse;
+  }
 
   // Protege rotas /conta/* — requer autenticação
   if (!user && pathname.startsWith('/conta')) {
