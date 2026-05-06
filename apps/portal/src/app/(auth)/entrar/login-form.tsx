@@ -252,11 +252,11 @@ function Shell({ children }: { children: React.ReactNode }) {
           }}
         >
           <Image
-            src="/argho-logo.png"
+            src="/argho-logo-white.png"
             alt="Argho"
-            width={144}
-            height={38}
-            style={{ height: 32, width: 'auto', filter: 'brightness(0) invert(1)' }}
+            width={180}
+            height={48}
+            style={{ height: 32, width: 'auto' }}
           />
           <span
             style={{
