@@ -75,12 +75,15 @@ export function TopNav({ userEmail }: TopNavProps) {
           <Link href="/" style={{ color: '#0a0a0a', textDecoration: 'none' }}>
             Catálogo
           </Link>
-          <Link
-            href="https://arghoagrosciences.com"
-            style={{ color: '#4b5563', textDecoration: 'none' }}
-          >
-            Sobre a Argho
+          <Link href="/sobre" style={{ color: '#4b5563', textDecoration: 'none' }}>
+            Sobre
           </Link>
+          <a
+            href="https://arghoagrosciences.com"
+            style={{ color: '#6b7280', textDecoration: 'none', fontSize: '0.8125rem' }}
+          >
+            arghoagrosciences.com ↗
+          </a>
           {userEmail ? (
             <Link
               href="/conta"

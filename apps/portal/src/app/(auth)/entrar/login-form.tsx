@@ -1,7 +1,6 @@
 // apps/portal/src/app/(auth)/entrar/login-form.tsx
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useActionState, useId } from 'react';
 import { signInWithMagicLink } from './actions';
@@ -251,12 +250,13 @@ function Shell({ children }: { children: React.ReactNode }) {
             textDecoration: 'none',
           }}
         >
-          <Image
+          {/* <img> direto em vez de <Image>: PNG pequeno (126KB) e Next/Image
+              estava omitindo a render quando width/height conflitavam com style. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/argho-logo-white.png"
             alt="Argho"
-            width={180}
-            height={48}
-            style={{ height: 32, width: 'auto' }}
+            style={{ height: 32, width: 'auto', display: 'block' }}
           />
           <span
             style={{
