@@ -134,7 +134,7 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
                 style={{
                   fontSize: '0.6875rem',
                   fontWeight: 700,
-                  color: '#183090',
+                  color: 'var(--colheita-brand-primary)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.14em',
                   marginBottom: 14,
@@ -148,7 +148,7 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
                     display: 'inline-block',
                     width: 24,
                     height: 2,
-                    background: '#489030',
+                    background: 'var(--colheita-brand-secondary)',
                   }}
                 />
                 {category.name}
@@ -158,7 +158,7 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
               style={{
                 fontSize: 'clamp(2rem, 4vw, 3rem)',
                 fontWeight: 800,
-                color: '#0a0a0a',
+                color: 'var(--colheita-text-primary)',
                 letterSpacing: '-0.04em',
                 marginBottom: 14,
                 lineHeight: 1.05,
@@ -171,7 +171,7 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
               <p
                 style={{
                   fontSize: '1.125rem',
-                  color: '#4b5563',
+                  color: 'var(--colheita-text-secondary)',
                   lineHeight: 1.6,
                   maxWidth: 640,
                 }}

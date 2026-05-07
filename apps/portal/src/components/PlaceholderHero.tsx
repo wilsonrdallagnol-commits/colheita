@@ -25,17 +25,17 @@ export function PlaceholderHero() {
           className="argho-display"
           style={{
             fontSize: 'clamp(2.25rem, 4vw + 1rem, 3.25rem)',
-            color: '#0a0a0a',
+            color: 'var(--colheita-text-primary)',
             marginBottom: 24,
           }}
         >
-          Catálogo digital <span style={{ color: '#489030' }}>chega</span>{' '}
-          <span style={{ color: '#183090' }}>em breve</span>.
+          Catálogo digital <span style={{ color: 'var(--colheita-brand-secondary)' }}>chega</span>{' '}
+          <span style={{ color: 'var(--colheita-brand-primary)' }}>em breve</span>.
         </h1>
         <p
           style={{
             fontSize: '1.0625rem',
-            color: '#4b5563',
+            color: 'var(--colheita-text-secondary)',
             lineHeight: 1.6,
             maxWidth: 520,
             margin: '0 auto 36px',
@@ -52,7 +52,7 @@ export function PlaceholderHero() {
               alignItems: 'center',
               padding: '12px 24px',
               borderRadius: 8,
-              background: '#183090',
+              background: 'var(--colheita-brand-primary)',
               color: '#fff',
               fontSize: '0.9375rem',
               fontWeight: 600,
@@ -70,7 +70,7 @@ export function PlaceholderHero() {
               borderRadius: 8,
               border: '1px solid #e5e7eb',
               background: '#fff',
-              color: '#0a0a0a',
+              color: 'var(--colheita-text-primary)',
               fontSize: '0.9375rem',
               fontWeight: 500,
               textDecoration: 'none',

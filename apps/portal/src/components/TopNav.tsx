@@ -51,7 +51,7 @@ export function TopNav({ userEmail }: TopNavProps) {
               fontWeight: 600,
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
-              color: '#489030',
+              color: 'var(--colheita-brand-secondary)',
               borderLeft: '1px solid #d1d5db',
               paddingLeft: 12,
               lineHeight: 1.2,
@@ -72,15 +72,22 @@ export function TopNav({ userEmail }: TopNavProps) {
             fontWeight: 500,
           }}
         >
-          <Link href="/" style={{ color: '#0a0a0a', textDecoration: 'none' }}>
+          <Link href="/" style={{ color: 'var(--colheita-text-primary)', textDecoration: 'none' }}>
             Catálogo
           </Link>
-          <Link href="/sobre" style={{ color: '#4b5563', textDecoration: 'none' }}>
+          <Link
+            href="/sobre"
+            style={{ color: 'var(--colheita-text-secondary)', textDecoration: 'none' }}
+          >
             Sobre
           </Link>
           <a
             href="https://arghoagrosciences.com"
-            style={{ color: '#6b7280', textDecoration: 'none', fontSize: '0.8125rem' }}
+            style={{
+              color: 'var(--colheita-text-tertiary)',
+              textDecoration: 'none',
+              fontSize: '0.8125rem',
+            }}
           >
             arghoagrosciences.com ↗
           </a>
@@ -93,7 +100,7 @@ export function TopNav({ userEmail }: TopNavProps) {
                 gap: 8,
                 padding: '8px 16px',
                 borderRadius: 8,
-                background: '#183090',
+                background: 'var(--colheita-brand-primary)',
                 color: '#fff',
                 textDecoration: 'none',
                 fontWeight: 500,
@@ -110,7 +117,7 @@ export function TopNav({ userEmail }: TopNavProps) {
                 gap: 8,
                 padding: '8px 16px',
                 borderRadius: 8,
-                background: '#183090',
+                background: 'var(--colheita-brand-primary)',
                 color: '#fff',
                 textDecoration: 'none',
                 fontWeight: 500,

@@ -195,16 +195,16 @@ export default async function CatalogPage({ searchParams }: PageProps) {
               fontSize: 'clamp(2.25rem, 4vw + 1rem, 3.5rem)',
               maxWidth: 880,
               marginBottom: 20,
-              color: '#0a0a0a',
+              color: 'var(--colheita-text-primary)',
             }}
           >
-            Portfólio Argho <span style={{ color: '#489030' }}>vivo</span>{' '}
-            <span style={{ color: '#183090' }}>e técnico</span>.
+            Portfólio Argho <span style={{ color: 'var(--colheita-brand-secondary)' }}>vivo</span>{' '}
+            <span style={{ color: 'var(--colheita-brand-primary)' }}>e técnico</span>.
           </h1>
           <p
             style={{
               fontSize: '1.0625rem',
-              color: '#4b5563',
+              color: 'var(--colheita-text-secondary)',
               lineHeight: 1.6,
               maxWidth: 640,
             }}
@@ -237,7 +237,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
                 borderRadius: 8,
                 border: '1px solid #e5e7eb',
                 background: '#fff',
-                color: '#0a0a0a',
+                color: 'var(--colheita-text-primary)',
                 fontSize: '0.9375rem',
                 outline: 'none',
                 boxShadow: '0 1px 2px rgba(15, 23, 42, 0.04)',
@@ -249,7 +249,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
                 height: 48,
                 padding: '0 22px',
                 borderRadius: 8,
-                background: '#183090',
+                background: 'var(--colheita-brand-primary)',
                 color: '#fff',
                 fontSize: '0.875rem',
                 fontWeight: 600,
@@ -270,7 +270,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
                   borderRadius: 8,
                   border: '1px solid #e5e7eb',
                   fontSize: '0.875rem',
-                  color: '#4b5563',
+                  color: 'var(--colheita-text-secondary)',
                   textDecoration: 'none',
                   background: '#fff',
                 }}
@@ -323,7 +323,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
                   style={{
                     fontSize: '0.75rem',
                     fontWeight: 700,
-                    color: '#183090',
+                    color: 'var(--colheita-brand-primary)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.12em',
                     marginBottom: 24,
@@ -337,7 +337,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
                       display: 'inline-block',
                       width: 24,
                       height: 2,
-                      background: '#489030',
+                      background: 'var(--colheita-brand-secondary)',
                     }}
                   />
                   {catName}
@@ -351,7 +351,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
                   style={{
                     fontSize: '0.75rem',
                     fontWeight: 700,
-                    color: '#6b7280',
+                    color: 'var(--colheita-text-tertiary)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.12em',
                     marginBottom: 24,
@@ -370,7 +370,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
             style={{
               textAlign: 'center',
               padding: '120px 0',
-              color: '#6b7280',
+              color: 'var(--colheita-text-tertiary)',
             }}
           >
             <p style={{ fontSize: '1.125rem', marginBottom: 12 }}>
@@ -385,7 +385,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
                   display: 'inline-block',
                   marginTop: 12,
                   fontSize: '0.875rem',
-                  color: '#183090',
+                  color: 'var(--colheita-brand-primary)',
                   textDecoration: 'none',
                   fontWeight: 500,
                 }}
@@ -421,9 +421,9 @@ function CategoryChip({
         fontSize: '0.8125rem',
         fontWeight: 500,
         textDecoration: 'none',
-        border: `1px solid ${active ? '#183090' : '#e5e7eb'}`,
+        border: `1px solid ${active ? 'var(--colheita-brand-primary)' : 'var(--colheita-border)'}`,
         background: active ? '#eaf0ff' : '#ffffff',
-        color: active ? '#183090' : '#4b5563',
+        color: active ? 'var(--colheita-brand-primary)' : 'var(--colheita-text-secondary)',
         transition: 'all 150ms',
       }}
     >
@@ -488,7 +488,7 @@ function ProductCard({
           style={{
             fontSize: '0.6875rem',
             fontWeight: 700,
-            color: '#183090',
+            color: 'var(--colheita-brand-primary)',
             textTransform: 'uppercase',
             letterSpacing: '0.10em',
             marginBottom: 10,
@@ -501,7 +501,7 @@ function ProductCard({
         style={{
           fontSize: '1.0625rem',
           fontWeight: 700,
-          color: '#0a0a0a',
+          color: 'var(--colheita-text-primary)',
           letterSpacing: '-0.02em',
           marginBottom: produto.tagline ? 8 : 0,
           textTransform: 'uppercase',
@@ -513,7 +513,7 @@ function ProductCard({
         <p
           style={{
             fontSize: '0.875rem',
-            color: '#4b5563',
+            color: 'var(--colheita-text-secondary)',
             lineHeight: 1.5,
           }}
         >
@@ -526,7 +526,7 @@ function ProductCard({
           paddingTop: 12,
           borderTop: '1px solid #f3f4f6',
           fontSize: '0.75rem',
-          color: '#183090',
+          color: 'var(--colheita-brand-primary)',
           fontWeight: 600,
         }}
       >

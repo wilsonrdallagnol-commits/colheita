@@ -34,9 +34,11 @@ describe('PlaceholderHero', () => {
     expect(html).toContain('Site institucional');
   });
 
-  it('usa cores Argho oficiais (azul #183090 e verde #489030)', () => {
+  it('usa tokens CSS para cores Argho (multi-tenant ready)', () => {
     const html = renderToStaticMarkup(<PlaceholderHero />);
-    expect(html).toContain('#183090');
-    expect(html).toContain('#489030');
+    // Cores via var(--colheita-*) em vez de hex hardcoded — permite override por
+    // tenant via CSS custom properties sem mudar componente.
+    expect(html).toContain('var(--colheita-brand-primary)');
+    expect(html).toContain('var(--colheita-brand-secondary)');
   });
 });

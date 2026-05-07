@@ -11,7 +11,7 @@ export function Footer() {
       style={{
         marginTop: 96,
         borderTop: '1px solid #e5e7eb',
-        background: '#f9fafb',
+        background: 'var(--colheita-surface-muted)',
       }}
     >
       <div
@@ -31,7 +31,7 @@ export function Footer() {
               fontWeight: 600,
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
-              color: '#183090',
+              color: 'var(--colheita-brand-primary)',
               marginBottom: 12,
             }}
           >
@@ -40,7 +40,7 @@ export function Footer() {
                 display: 'inline-block',
                 width: 28,
                 height: 2,
-                background: '#489030',
+                background: 'var(--colheita-brand-secondary)',
                 marginRight: 12,
                 verticalAlign: 'middle',
               }}
@@ -50,7 +50,7 @@ export function Footer() {
           <p
             style={{
               fontSize: '0.9375rem',
-              color: '#4b5563',
+              color: 'var(--colheita-text-secondary)',
               lineHeight: 1.6,
               maxWidth: 320,
             }}
@@ -65,7 +65,7 @@ export function Footer() {
             style={{
               fontSize: '0.75rem',
               fontWeight: 600,
-              color: '#0a0a0a',
+              color: 'var(--colheita-text-primary)',
               marginBottom: 12,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
@@ -92,7 +92,7 @@ export function Footer() {
             style={{
               fontSize: '0.75rem',
               fontWeight: 600,
-              color: '#0a0a0a',
+              color: 'var(--colheita-text-primary)',
               marginBottom: 12,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
@@ -124,7 +124,7 @@ export function Footer() {
             style={{
               fontSize: '0.75rem',
               fontWeight: 600,
-              color: '#0a0a0a',
+              color: 'var(--colheita-text-primary)',
               marginBottom: 12,
               letterSpacing: '0.04em',
               textTransform: 'uppercase',
@@ -138,7 +138,9 @@ export function Footer() {
                 contato@arghoagrosciences.com
               </a>
             </li>
-            <li style={{ fontSize: '0.875rem', color: '#4b5563' }}>Toledo · Paraná · Brasil</li>
+            <li style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
+              Toledo · Paraná · Brasil
+            </li>
           </ul>
         </div>
       </div>
@@ -149,7 +151,7 @@ export function Footer() {
           padding: '20px 32px',
           textAlign: 'center',
           fontSize: '0.75rem',
-          color: '#6b7280',
+          color: 'var(--colheita-text-tertiary)',
         }}
       >
         © {year} Argho Agrosciences. Plataforma Colheita — todos os direitos reservados.
@@ -160,7 +162,7 @@ export function Footer() {
 
 const linkStyle: React.CSSProperties = {
   fontSize: '0.875rem',
-  color: '#4b5563',
+  color: 'var(--colheita-text-secondary)',
   textDecoration: 'none',
   transition: 'color 150ms',
 };

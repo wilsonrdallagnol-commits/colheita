@@ -49,7 +49,7 @@ export function LoginForm({ next }: LoginFormProps) {
             style={{
               fontSize: '1.5rem',
               fontWeight: 700,
-              color: '#0a0a0a',
+              color: 'var(--colheita-text-primary)',
               marginBottom: 8,
               letterSpacing: '-0.02em',
             }}
@@ -59,7 +59,7 @@ export function LoginForm({ next }: LoginFormProps) {
           <p
             style={{
               fontSize: '0.9375rem',
-              color: '#4b5563',
+              color: 'var(--colheita-text-secondary)',
               lineHeight: 1.6,
               maxWidth: 320,
               margin: '0 auto',
@@ -83,7 +83,7 @@ export function LoginForm({ next }: LoginFormProps) {
             fontWeight: 600,
             letterSpacing: '0.14em',
             textTransform: 'uppercase',
-            color: '#183090',
+            color: 'var(--colheita-brand-primary)',
             marginBottom: 14,
           }}
         >
@@ -92,7 +92,7 @@ export function LoginForm({ next }: LoginFormProps) {
               display: 'inline-block',
               width: 24,
               height: 2,
-              background: '#489030',
+              background: 'var(--colheita-brand-secondary)',
               marginRight: 12,
               verticalAlign: 'middle',
             }}
@@ -103,18 +103,19 @@ export function LoginForm({ next }: LoginFormProps) {
           style={{
             fontSize: '1.75rem',
             fontWeight: 700,
-            color: '#0a0a0a',
+            color: 'var(--colheita-text-primary)',
             letterSpacing: '-0.03em',
             lineHeight: 1.15,
             marginBottom: 8,
           }}
         >
-          Entrar na Plataforma <span style={{ color: '#489030' }}>Colheita</span>.
+          Entrar na Plataforma{' '}
+          <span style={{ color: 'var(--colheita-brand-secondary)' }}>Colheita</span>.
         </h1>
         <p
           style={{
             fontSize: '0.9375rem',
-            color: '#4b5563',
+            color: 'var(--colheita-text-secondary)',
             lineHeight: 1.6,
           }}
         >
@@ -131,7 +132,7 @@ export function LoginForm({ next }: LoginFormProps) {
               display: 'block',
               fontSize: '0.8125rem',
               fontWeight: 600,
-              color: '#0a0a0a',
+              color: 'var(--colheita-text-primary)',
               marginBottom: 8,
             }}
           >
@@ -152,7 +153,7 @@ export function LoginForm({ next }: LoginFormProps) {
               borderRadius: 8,
               border: '1px solid #e5e7eb',
               background: '#fff',
-              color: '#0a0a0a',
+              color: 'var(--colheita-text-primary)',
               fontSize: '0.9375rem',
               outline: 'none',
               transition: 'border 150ms',
@@ -180,7 +181,7 @@ export function LoginForm({ next }: LoginFormProps) {
           disabled={pending}
           style={{
             height: 48,
-            background: pending ? '#6b7280' : '#183090',
+            background: pending ? 'var(--colheita-text-tertiary)' : 'var(--colheita-brand-primary)',
             color: '#fff',
             fontSize: '0.9375rem',
             fontWeight: 600,
@@ -198,7 +199,7 @@ export function LoginForm({ next }: LoginFormProps) {
         style={{
           marginTop: 28,
           fontSize: '0.8125rem',
-          color: '#6b7280',
+          color: 'var(--colheita-text-tertiary)',
           textAlign: 'center',
           lineHeight: 1.6,
         }}
@@ -206,7 +207,11 @@ export function LoginForm({ next }: LoginFormProps) {
         Ainda não é distribuidor Argho?{' '}
         <a
           href="https://arghoagrosciences.com/contato"
-          style={{ color: '#183090', textDecoration: 'underline', fontWeight: 500 }}
+          style={{
+            color: 'var(--colheita-brand-primary)',
+            textDecoration: 'underline',
+            fontWeight: 500,
+          }}
         >
           Fale com nossa equipe comercial
         </a>

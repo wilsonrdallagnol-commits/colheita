@@ -28,16 +28,17 @@ export default function SobrePage() {
               fontSize: 'clamp(2.25rem, 4vw + 1rem, 3.25rem)',
               maxWidth: 880,
               marginBottom: 20,
-              color: '#0a0a0a',
+              color: 'var(--colheita-text-primary)',
             }}
           >
-            O catálogo <span style={{ color: '#489030' }}>vivo</span>{' '}
-            <span style={{ color: '#183090' }}>e técnico</span> dos produtos Argho.
+            O catálogo <span style={{ color: 'var(--colheita-brand-secondary)' }}>vivo</span>{' '}
+            <span style={{ color: 'var(--colheita-brand-primary)' }}>e técnico</span> dos produtos
+            Argho.
           </h1>
           <p
             style={{
               fontSize: '1.125rem',
-              color: '#4b5563',
+              color: 'var(--colheita-text-secondary)',
               lineHeight: 1.6,
               maxWidth: 720,
             }}
@@ -82,7 +83,7 @@ export default function SobrePage() {
           style={{
             fontSize: '0.75rem',
             fontWeight: 700,
-            color: '#183090',
+            color: 'var(--colheita-brand-primary)',
             textTransform: 'uppercase',
             letterSpacing: '0.12em',
             marginBottom: 24,
@@ -91,7 +92,14 @@ export default function SobrePage() {
             gap: 12,
           }}
         >
-          <span style={{ display: 'inline-block', width: 24, height: 2, background: '#489030' }} />
+          <span
+            style={{
+              display: 'inline-block',
+              width: 24,
+              height: 2,
+              background: 'var(--colheita-brand-secondary)',
+            }}
+          />
           Para quem é
         </h2>
         <div
@@ -139,7 +147,7 @@ export default function SobrePage() {
             className="argho-display"
             style={{
               fontSize: 'clamp(1.75rem, 2.5vw + 1rem, 2.5rem)',
-              color: '#0a0a0a',
+              color: 'var(--colheita-text-primary)',
               marginBottom: 16,
             }}
           >
@@ -148,7 +156,7 @@ export default function SobrePage() {
           <p
             style={{
               fontSize: '1.0625rem',
-              color: '#4b5563',
+              color: 'var(--colheita-text-secondary)',
               lineHeight: 1.6,
               maxWidth: 520,
               margin: '0 auto 32px',
@@ -165,7 +173,7 @@ export default function SobrePage() {
                 alignItems: 'center',
                 padding: '12px 24px',
                 borderRadius: 8,
-                background: '#183090',
+                background: 'var(--colheita-brand-primary)',
                 color: '#fff',
                 fontSize: '0.9375rem',
                 fontWeight: 600,
@@ -183,7 +191,7 @@ export default function SobrePage() {
                 borderRadius: 8,
                 border: '1px solid #e5e7eb',
                 background: '#fff',
-                color: '#0a0a0a',
+                color: 'var(--colheita-text-primary)',
                 fontSize: '0.9375rem',
                 fontWeight: 500,
                 textDecoration: 'none',
@@ -223,7 +231,7 @@ function Pilar({
         style={{
           fontSize: '0.6875rem',
           fontWeight: 700,
-          color: '#183090',
+          color: 'var(--colheita-brand-primary)',
           textTransform: 'uppercase',
           letterSpacing: '0.10em',
           marginBottom: 10,
@@ -235,14 +243,18 @@ function Pilar({
         style={{
           fontSize: '1.0625rem',
           fontWeight: 700,
-          color: '#0a0a0a',
+          color: 'var(--colheita-text-primary)',
           letterSpacing: '-0.02em',
           marginBottom: 8,
         }}
       >
         {titulo}
       </h3>
-      <p style={{ fontSize: '0.9375rem', color: '#4b5563', lineHeight: 1.6 }}>{descricao}</p>
+      <p
+        style={{ fontSize: '0.9375rem', color: 'var(--colheita-text-secondary)', lineHeight: 1.6 }}
+      >
+        {descricao}
+      </p>
     </div>
   );
 }
@@ -253,7 +265,7 @@ function ParaQuem({ titulo, descricao }: { titulo: string; descricao: string }) 
       style={{
         padding: '20px 22px',
         borderRadius: 10,
-        background: '#f9fafb',
+        background: 'var(--colheita-surface-muted)',
         borderLeft: '3px solid #489030',
       }}
     >
@@ -261,13 +273,17 @@ function ParaQuem({ titulo, descricao }: { titulo: string; descricao: string }) 
         style={{
           fontSize: '0.9375rem',
           fontWeight: 700,
-          color: '#0a0a0a',
+          color: 'var(--colheita-text-primary)',
           marginBottom: 6,
         }}
       >
         {titulo}
       </p>
-      <p style={{ fontSize: '0.875rem', color: '#4b5563', lineHeight: 1.55 }}>{descricao}</p>
+      <p
+        style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)', lineHeight: 1.55 }}
+      >
+        {descricao}
+      </p>
     </div>
   );
 }
