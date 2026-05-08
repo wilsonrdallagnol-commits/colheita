@@ -111,8 +111,12 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Run migrations
-        run: pnpm db:migrate
-
+      # NOTA: o step "Run migrations" foi removido em 2026-05-08 porque
+      # `pnpm db:migrate` roda contra Postgres vanilla (sem schema `auth` do
+      # Supabase) e a primeira migration falha com `schema "auth" does not exist`.
+      # Os testes RLS aplicam todas as migrations dentro de setupDb() com auth
+      # stubs criados antes — isso ja cobre "migrations rodam corretamente".
+      # Se quisermos validar migrations 0010+ contra Postgres vanilla, precisa
+      # de refactor maior (auth stub script separado + extensao vector opcional).
       - name: Run RLS tests
         run: pnpm --filter @colheita/db test
