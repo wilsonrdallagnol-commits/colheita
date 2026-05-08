@@ -234,4 +234,109 @@ describeRls('RLS isolation tests', () => {
       expect(rows).toHaveLength(0);
     });
   });
+
+  // ==========================================================================
+  // SPRINT-6-BLOCKERS — C1: privilege escalation via users tenant_id
+  // ==========================================================================
+  //
+  // Cenario: user de Tenant A tenta fazer UPDATE na propria row mudando
+  // tenant_id pro tenant B. Sem o trigger users_no_tenant_change, atacante
+  // conseguiria migrar entre tenants apos relogar (auth hook le tenant_id
+  // de public.users e injeta no JWT).
+  //
+  // Trigger esperado: prevent_user_tenant_change que RAISE exception se
+  // old.tenant_id != new.tenant_id.
+
+  describe('SPRINT-6-BLOCKERS — C1: tenant_id imutavel em users', () => {
+    it('UPDATE users SET tenant_id = <outro tenant> deve falhar', async () => {
+      // Simula um user existente ligado ao tenant A. Usamos fixture.
+      // Como os fixtures nao criam users em public.users por design (cuidam
+      // de tenants + products), vamos inserir um user de teste via service
+      // role primeiro.
+      const fakeUserId = '11111111-1111-1111-1111-111111111111';
+      // Usa o postgres direto (bypass RLS) pra criar o user de teste
+      const setupSql = (await import('postgres')).default(
+        process.env.DATABASE_URL ?? 'postgres://postgres:postgres@localhost:5432/colheita_test',
+        { max: 1, onnotice: () => {} },
+      );
+      try {
+        await setupSql`
+          INSERT INTO auth.users (id, email)
+          VALUES (${fakeUserId}::uuid, 'attacker@test.com')
+          ON CONFLICT (id) DO NOTHING
+        `;
+        await setupSql`
+          INSERT INTO public.users (id, tenant_id, email)
+          VALUES (${fakeUserId}::uuid, ${tenantA.id}::uuid, 'attacker@test.com')
+          ON CONFLICT (id) DO NOTHING
+        `;
+
+        // Agora tenta fazer o ataque: user logado como ele mesmo, tentando
+        // mover-se pro tenant B.
+        let raised: Error | null = null;
+        try {
+          await queryAsTenant({ tenantId: tenantA.id, sub: fakeUserId }, async (txSql) => {
+            await txSql`UPDATE public.users SET tenant_id = ${tenantB.id}::uuid WHERE id = ${fakeUserId}::uuid`;
+          });
+        } catch (err) {
+          raised = err as Error;
+        }
+
+        expect(raised).not.toBeNull();
+        expect(raised?.message ?? '').toMatch(/tenant_id is immutable on users/);
+      } finally {
+        await setupSql.end();
+      }
+    });
+  });
+
+  // ==========================================================================
+  // SPRINT-6-BLOCKERS — A3: tenant slug e primary_domain imutaveis
+  // ==========================================================================
+  //
+  // Cenario: tenant_owner via UI tenta editar slug do proprio tenant. Sem o
+  // trigger, mudanca quebra URLs externas e pode causar colisao com outros
+  // tenants. Slug + primary_domain sao identidade — gestao via service role.
+
+  describe('SPRINT-6-BLOCKERS — A3: tenant identity imutavel', () => {
+    it('UPDATE tenants SET slug = ... deve falhar', async () => {
+      const setupSql = (await import('postgres')).default(
+        process.env.DATABASE_URL ?? 'postgres://postgres:postgres@localhost:5432/colheita_test',
+        { max: 1, onnotice: () => {} },
+      );
+      try {
+        let raised: Error | null = null;
+        try {
+          await setupSql`UPDATE public.tenants SET slug = 'evil-slug' WHERE id = ${tenantA.id}::uuid`;
+        } catch (err) {
+          raised = err as Error;
+        }
+
+        expect(raised).not.toBeNull();
+        expect(raised?.message ?? '').toMatch(/tenant slug is immutable/);
+      } finally {
+        await setupSql.end();
+      }
+    });
+
+    it('UPDATE tenants SET primary_domain = ... deve falhar', async () => {
+      const setupSql = (await import('postgres')).default(
+        process.env.DATABASE_URL ?? 'postgres://postgres:postgres@localhost:5432/colheita_test',
+        { max: 1, onnotice: () => {} },
+      );
+      try {
+        let raised: Error | null = null;
+        try {
+          await setupSql`UPDATE public.tenants SET primary_domain = 'evil.example.com' WHERE id = ${tenantA.id}::uuid`;
+        } catch (err) {
+          raised = err as Error;
+        }
+
+        expect(raised).not.toBeNull();
+        expect(raised?.message ?? '').toMatch(/tenant primary_domain managed by platform admin/);
+      } finally {
+        await setupSql.end();
+      }
+    });
+  });
 });

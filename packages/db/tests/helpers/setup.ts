@@ -83,6 +83,10 @@ const MIGRATION_FILES = [
   '0007_audit_partitioning.sql',
   '0008_fk_indexes.sql',
   '0009_auth_hook.sql',
+  // 0010-0014 rodam contra Postgres com extensions especificas (vector etc).
+  // Listamos aqui as que rodam contra vanilla pra ampliar cobertura RLS.
+  // 0021 traz os triggers de imutabilidade C1+A3 testados em rls.test.ts.
+  '0021_fix_sprint6_blockers.sql',
 ] as const;
 
 // ============================================================================
