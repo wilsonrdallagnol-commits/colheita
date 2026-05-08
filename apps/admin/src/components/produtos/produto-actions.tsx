@@ -31,6 +31,19 @@ export function ProdutoActions({ slug, status }: ProdutoActionsProps) {
           <Link href={`/produtos/${slug}/editar`}>Editar</Link>
         </Button>
 
+        {/*
+          Gerar Ficha Técnica em PDF — sempre visível.
+          A rota route.ts gera o PDF via Playwright e retorna application/pdf
+          com Content-Disposition attachment, fazendo o browser baixar direto.
+          Usar <a download> em vez de <Link> garante o download attachment;
+          o PDF abre numa request nova (HTTP GET) — sem fetch + blob na client.
+        */}
+        <Button variant="outline" size="sm" asChild>
+          <a href={`/produtos/${slug}/ficha-tecnica`} download>
+            Baixar ficha técnica (PDF)
+          </a>
+        </Button>
+
         {/* Publicar — só se draft ou archived */}
         {status !== 'published' && (
           <Button size="sm" disabled={isPending} onClick={() => handle(() => publishProduto(slug))}>
