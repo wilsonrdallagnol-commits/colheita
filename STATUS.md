@@ -1,8 +1,63 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-05-06 (sessão noturna) — **Plataforma Colheita NO AR** ✅
-**Fase atual:** colheita.arghoagrosciences.com com placeholder "em breve" elegante; aguarda Supabase prod credentials
-**Tests globais:** 416 passing + 25 skipped (DB integration sem Supabase local) — em 12 packages + apps/api
+**Última atualização:** 2026-05-07 — **Plataforma Colheita 100% NO AR** com catálogo real ✅
+**Fase atual:** Supabase prod conectado, 18 produtos seedados, login magic link configurado
+**Domínios:** `colheita.arghoagrosciences.com` (200, Plataforma) | `arghoagrosciences.com` + `www` **fora do ar** (decisão fundador)
+**Tests globais:** 437 passing + 25 skipped (416 prévios + 21 novos do portal)
+
+## 🚀 Sessão 2026-05-07 — Supabase prod conectado, catálogo real no ar
+
+**Branch:** main | Commits desta sessão: 5 (env vars + redeploy + tradução specs + tirar argho do ar)
+
+### Banco Supabase prod (PROJETO COLHEITA ARGHO)
+- Project ref: `htoqhomunwkrnizibusc.supabase.co` (plano Free, região us-east-1)
+- Keys formato 2025+: `sb_publishable_*` (anon) e `sb_secret_*` (service_role)
+- **14 migrations aplicadas** via Supabase Management API com PAT
+- **Refactor crítico:** Supabase Free 2025+ removeu permissão de DDL no schema `auth` mesmo via SQL Editor / PAT.
+  Migrations refatoradas pra mover funções customizadas de `auth.*` → `public.app_*`:
+  `app_tenant_id`, `app_has_role`, `app_tenant_id_with_role`, `app_custom_access_token_hook`.
+  Built-ins `auth.users`, `auth.uid()` mantidos.
+- **Vector extension:** instalada em schema `extensions`, funções `match_*` com
+  `set search_path = public, extensions` pra resolver operator `<=>`.
+- **Seed completo:** 1 tenant Argho + 4 categorias + **18 produtos published** + 12 registros MAPA + 2 trilhas + 7 lições.
+- **GRANTS:** `anon`/`authenticated` lêem `products`, `product_categories`, `regulatory_registrations`,
+  `product_assets`, `assets`, `tenants`, `product_stock`.
+- **Auth config:** site_url + 4 redirect URLs (prod + local) + custom_access_token_hook habilitado
+  apontando para `public.app_custom_access_token_hook`. `supabase_auth_admin` tem grant execute.
+
+### Vercel `colheita-portal`
+- 5 env vars com valores reais Supabase prod:
+  `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_PORTAL_URL`,
+  `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
+- Auto-redeploy aplicou env novas
+- Build limpo (8 rotas, 21 testes vitest, 0 fails)
+
+### Vercel `colheita` (website institucional)
+- `arghoagrosciences.com` removido
+- `www.arghoagrosciences.com` removido
+- DNS Hostinger continua intacto — pra religar é só re-adicionar no Vercel
+
+### Polish UX
+- `/produtos/[slug]`: labels de specs técnicas traduzidos pra pt-BR via `translateSpecKey`
+  (PRODUCT TYPE → Tipo de produto, RAW MATERIALS → Matérias-primas, etc.)
+
+### Validações finais
+- `https://colheita.arghoagrosciences.com` → catálogo com 18 produtos (Xcensis, Stron, Impuch, Defon, etc.)
+- `https://colheita.arghoagrosciences.com/produtos/xcensis` → ficha técnica completa
+  (composição garantida, especificações, embalagens, disponibilidade, CTA login)
+- `https://colheita.arghoagrosciences.com/sobre` → página estática "vivo e técnico"
+- `https://colheita.arghoagrosciences.com/entrar` → split-screen branding com logo Argho
+- 0 erros no console (sessão atual)
+
+### Próximo passo do user
+1. Testar login: digitar email em `/entrar` → magic link → `/conta`
+2. (Quando quiser) Religar institucional Argho — re-adicionar `arghoagrosciences.com` no Vercel
+3. Revogar PAT `claude-agent-migrations-2026-05-07` em https://supabase.com/dashboard/account/tokens
+4. Ler `docs/RUNBOOK-PORTAL-SUPABASE-PROD.md` se precisar reaplicar/recriar
+
+---
+
+## 🚀 Sessão 2026-05-06 noturna — Plataforma Colheita deployada
 
 ## 🚀 Sessão 2026-05-06 noturna — Plataforma Colheita deployada
 
