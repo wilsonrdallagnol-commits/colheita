@@ -104,22 +104,51 @@ export default async function DashboardPage() {
       .eq('status', 'published'),
     supabase.from('learning_lessons').select('id', { count: 'exact', head: true }),
     supabase.from('users').select('id', { count: 'exact', head: true }).eq('status', 'active'),
-    // Registros regulatórios ativos com vencimento nos próximos 30 dias
+    // Registros regulatórios ativos com vencimento nos próximos 60 dias.
+    // Stratificamos no client-side em 4 buckets: expirado, <=15d, <=30d, <=60d.
+    // Pega 60d numa query só pra evitar N requests; volume baixo (Argho tem ~12 regs).
     supabase
       .from('regulatory_registrations')
-      .select('id, expires_at')
+      .select('id, expires_at, registration_no, authority, products!inner(name, slug)')
       .eq('status', 'active')
       .not('expires_at', 'is', null)
       .lte(
         'expires_at',
-        new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      ),
+        new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      )
+      .order('expires_at', { ascending: true })
+      .limit(50),
     supabase.from('orders').select('id', { count: 'exact', head: true }),
     supabase
       .from('orders')
       .select('id', { count: 'exact', head: true })
       .in('status', ['confirmado', 'faturado']),
   ]);
+
+  // Stratifica registros regulatorios em buckets de criticidade.
+  // expired: ja venceu (urgencia maxima — risco de multa MAPA)
+  // critical: vence em <=15 dias (sem tempo pra renovar via canal normal)
+  // warning: vence em <=30 dias (janela de renovacao curta)
+  // notice: vence em <=60 dias (tempo pra acionar regulatorio com folga)
+  const now = Date.now();
+  const expired: typeof expiringRegs = [];
+  const critical15d: typeof expiringRegs = [];
+  const warning30d: typeof expiringRegs = [];
+  const notice60d: typeof expiringRegs = [];
+
+  for (const reg of expiringRegs ?? []) {
+    if (!reg.expires_at) continue;
+    const daysLeft = Math.ceil(
+      (new Date(reg.expires_at as string).getTime() - now) / (1000 * 60 * 60 * 24),
+    );
+    if (daysLeft < 0) expired.push(reg);
+    else if (daysLeft <= 15) critical15d.push(reg);
+    else if (daysLeft <= 30) warning30d.push(reg);
+    else if (daysLeft <= 60) notice60d.push(reg);
+  }
+
+  // Top 3 mais urgentes pra mostrar no banner (se houver expirado/critico).
+  const topUrgent = [...expired, ...critical15d].slice(0, 3);
 
   // Busca produtos recentes
   const { data: recentes } = await supabase
@@ -144,7 +173,7 @@ export default async function DashboardPage() {
   return (
     <div style={{ padding: '32px', maxWidth: '860px' }}>
       {/* Header */}
-      <div style={{ marginBottom: '36px' }}>
+      <div style={{ marginBottom: '24px' }}>
         <h1
           style={{
             fontSize: '1.5rem',
@@ -160,6 +189,127 @@ export default async function DashboardPage() {
           Argho Agrosciences — painel de gestão
         </p>
       </div>
+
+      {/* Banner de alerta regulatorio — so aparece quando ha expirados OU criticos.
+          Camada 9 (Compliance): visibilidade #1 ao abrir o admin. Sem isto, fundador
+          descobre vencimento por multa do MAPA. */}
+      {(expired.length > 0 || critical15d.length > 0) && (
+        <div
+          style={{
+            marginBottom: '32px',
+            padding: '20px 24px',
+            borderRadius: 'var(--colheita-radius-lg)',
+            backgroundColor: expired.length > 0 ? 'rgba(239,68,68,0.08)' : 'rgba(249,115,22,0.08)',
+            border: `1px solid ${
+              expired.length > 0 ? 'rgba(239,68,68,0.3)' : 'rgba(249,115,22,0.3)'
+            }`,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+            <span
+              style={{
+                fontSize: '1.5rem',
+                lineHeight: 1,
+                flexShrink: 0,
+              }}
+              aria-hidden="true"
+            >
+              {expired.length > 0 ? '🛑' : '⚠️'}
+            </span>
+            <div style={{ flex: 1 }}>
+              <p
+                style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '700',
+                  color: expired.length > 0 ? '#ef4444' : '#f97316',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  marginBottom: '6px',
+                }}
+              >
+                {expired.length > 0
+                  ? `${expired.length} registro${expired.length === 1 ? '' : 's'} regulatório${
+                      expired.length === 1 ? '' : 's'
+                    } EXPIRADO${expired.length === 1 ? '' : 'S'}`
+                  : `${critical15d.length} registro${critical15d.length === 1 ? '' : 's'} crítico${
+                      critical15d.length === 1 ? '' : 's'
+                    } — vence${critical15d.length === 1 ? '' : 'm'} em ≤15 dias`}
+              </p>
+              <p
+                style={{
+                  fontSize: '0.875rem',
+                  color: 'var(--colheita-text-secondary)',
+                  lineHeight: 1.5,
+                  marginBottom: '12px',
+                }}
+              >
+                {expired.length > 0
+                  ? 'Produtos com registro expirado não podem ser comercializados. Renove imediatamente ou suspenda a publicação.'
+                  : 'Janela curta de renovação. Acione o regulatório agora pra evitar interrupção de comercialização.'}
+              </p>
+
+              {/* Lista compacta dos top 3 mais urgentes */}
+              <ul
+                style={{
+                  listStyle: 'none',
+                  padding: 0,
+                  margin: '0 0 12px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '4px',
+                }}
+              >
+                {topUrgent.map((reg) => {
+                  const product = Array.isArray(reg.products) ? reg.products[0] : reg.products;
+                  const daysLeft = reg.expires_at
+                    ? Math.ceil(
+                        (new Date(reg.expires_at as string).getTime() - now) /
+                          (1000 * 60 * 60 * 24),
+                      )
+                    : null;
+                  return (
+                    <li
+                      key={reg.id}
+                      style={{
+                        fontSize: '0.8125rem',
+                        color: 'var(--colheita-text-primary)',
+                        fontFamily: 'var(--font-mono)',
+                      }}
+                    >
+                      <span style={{ fontWeight: 600 }}>
+                        {(product as { name?: string } | null)?.name ?? '—'}
+                      </span>
+                      <span style={{ color: 'var(--colheita-text-tertiary)' }}>
+                        {' · '}
+                        {reg.authority} {reg.registration_no}
+                        {' · '}
+                        {daysLeft !== null && daysLeft < 0
+                          ? `vencido há ${Math.abs(daysLeft)}d`
+                          : daysLeft !== null
+                            ? `${daysLeft}d restantes`
+                            : '—'}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <Link
+                href="/compliance"
+                style={{
+                  display: 'inline-block',
+                  fontSize: '0.8125rem',
+                  fontWeight: '600',
+                  color: expired.length > 0 ? '#ef4444' : '#f97316',
+                  textDecoration: 'none',
+                }}
+              >
+                Ver compliance →
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Cards de stats */}
       <div
@@ -224,11 +374,27 @@ export default async function DashboardPage() {
           href="/distribuidores"
           accent="var(--colheita-brand-teal)"
         />
+        {/* 3 cards stratificados em vez de 1 — visibilidade gradiente da urgencia.
+            Cores seguem semaforo: laranja (warning), amarelo (notice), cinza (none). */}
         <StatCard
-          label="Reg. vencem em 30d"
-          value={expiringRegs?.length ?? 0}
-          href="/compliance"
-          accent={(expiringRegs?.length ?? 0) > 0 ? '#f97316' : 'var(--colheita-text-tertiary)'}
+          label="Reg. vencem ≤15d"
+          value={critical15d.length}
+          href="/compliance?status=active"
+          accent={critical15d.length > 0 ? '#ef4444' : 'var(--colheita-text-tertiary)'}
+        />
+        <StatCard
+          label="Reg. vencem ≤30d"
+          value={warning30d.length}
+          href="/compliance?status=active"
+          accent={warning30d.length > 0 ? '#f97316' : 'var(--colheita-text-tertiary)'}
+        />
+        <StatCard
+          label="Reg. vencem ≤60d"
+          value={notice60d.length}
+          href="/compliance?status=active"
+          accent={
+            notice60d.length > 0 ? 'var(--colheita-brand-gold)' : 'var(--colheita-text-tertiary)'
+          }
         />
         <StatCard
           label="Pedidos"
