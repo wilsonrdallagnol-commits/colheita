@@ -59,7 +59,8 @@ export default async function AssetDetailPage({ params }: PageProps) {
   const { data: asset, error } = await supabase
     .from('assets')
     .select(
-      'id, filename, original_name, mime_type, file_size, storage_path, type, title, alt_text, width, height, created_at',
+      `id, filename, original_name, mime_type, file_size, storage_path, type, title, alt_text,
+       width, height, created_at, tags, license, license_notes, expires_at`,
     )
     .eq('id', id)
     .is('deleted_at', null)
@@ -186,6 +187,150 @@ export default async function AssetDetailPage({ params }: PageProps) {
             ))}
           </div>
 
+          {/* Tags atuais — chips read-only (edicao via formulario a direita) */}
+          {((asset.tags as string[] | null)?.length ?? 0) > 0 && (
+            <div style={{ marginTop: '16px' }}>
+              <p
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: '500',
+                  color: 'var(--colheita-text-tertiary)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  marginBottom: '8px',
+                }}
+              >
+                Tags
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                {(asset.tags as string[]).map((tag) => (
+                  <Link
+                    key={tag}
+                    href={`/midias?tag=${encodeURIComponent(tag)}`}
+                    style={{
+                      display: 'inline-block',
+                      padding: '3px 10px',
+                      borderRadius: '999px',
+                      backgroundColor: 'var(--colheita-surface-elevated)',
+                      border: '1px solid var(--colheita-border-subtle)',
+                      fontSize: '0.75rem',
+                      color: 'var(--colheita-text-secondary)',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    {tag}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Licenca + expiracao — badge informativo */}
+          {asset.license && (
+            <div style={{ marginTop: '16px' }}>
+              <p
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: '500',
+                  color: 'var(--colheita-text-tertiary)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  marginBottom: '8px',
+                }}
+              >
+                Licença
+              </p>
+              {(() => {
+                const lic = asset.license as 'internal' | 'public' | 'restricted' | 'licensed';
+                const expIso = asset.expires_at as string | null;
+                const daysLeft = expIso
+                  ? Math.ceil((new Date(expIso).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                  : null;
+                const expired = daysLeft !== null && daysLeft < 0;
+                const expiringSoon = daysLeft !== null && daysLeft >= 0 && daysLeft <= 30;
+
+                const labelMap = {
+                  internal: 'Interno (Argho)',
+                  public: 'Público',
+                  restricted: 'Restrito',
+                  licensed: 'Licenciado de terceiro',
+                };
+                const colorMap = {
+                  internal: {
+                    bg: 'rgba(52,199,89,0.1)',
+                    color: '#34c759',
+                    border: 'rgba(52,199,89,0.25)',
+                  },
+                  public: {
+                    bg: 'rgba(59,130,246,0.1)',
+                    color: '#3b82f6',
+                    border: 'rgba(59,130,246,0.25)',
+                  },
+                  restricted: {
+                    bg: 'rgba(212,175,55,0.12)',
+                    color: 'var(--colheita-brand-gold)',
+                    border: 'rgba(212,175,55,0.25)',
+                  },
+                  licensed: {
+                    bg: 'rgba(139,92,246,0.1)',
+                    color: '#8b5cf6',
+                    border: 'rgba(139,92,246,0.25)',
+                  },
+                };
+                const c = colorMap[lic];
+
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        alignSelf: 'flex-start',
+                        padding: '3px 10px',
+                        borderRadius: '999px',
+                        backgroundColor: c.bg,
+                        color: c.color,
+                        border: `1px solid ${c.border}`,
+                        fontSize: '0.75rem',
+                        fontWeight: '500',
+                      }}
+                    >
+                      {labelMap[lic]}
+                    </span>
+                    {expIso && (
+                      <span
+                        style={{
+                          fontSize: '0.75rem',
+                          color: expired
+                            ? '#ef4444'
+                            : expiringSoon
+                              ? '#f97316'
+                              : 'var(--colheita-text-tertiary)',
+                        }}
+                      >
+                        {expired
+                          ? `⚠ Licença expirada há ${Math.abs(daysLeft as number)}d`
+                          : expiringSoon
+                            ? `⚠ Vence em ${daysLeft}d`
+                            : `Válida até ${new Date(expIso).toLocaleDateString('pt-BR')}`}
+                      </span>
+                    )}
+                    {asset.license_notes && (
+                      <span
+                        style={{
+                          fontSize: '0.75rem',
+                          color: 'var(--colheita-text-tertiary)',
+                          fontStyle: 'italic',
+                        }}
+                      >
+                        {asset.license_notes as string}
+                      </span>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
           {/* URL pública */}
           {publicUrl && (
             <div style={{ marginTop: '16px' }}>
@@ -258,6 +403,12 @@ export default async function AssetDetailPage({ params }: PageProps) {
             id={id}
             title={(asset.title as string | null) ?? ''}
             altText={(asset.alt_text as string | null) ?? ''}
+            tags={(asset.tags as string[] | null) ?? []}
+            license={
+              (asset.license as 'internal' | 'public' | 'restricted' | 'licensed') ?? 'internal'
+            }
+            licenseNotes={(asset.license_notes as string | null) ?? ''}
+            expiresAt={(asset.expires_at as string | null) ?? null}
             isImage={assetType === 'image'}
           />
         </div>

@@ -30,6 +30,20 @@ const ALL_TYPES: { value: AssetType | 'all'; label: string }[] = [
 interface SearchParams {
   tipo?: string;
   q?: string;
+  tag?: string;
+}
+
+/**
+ * Sanitiza tag vinda da URL (?tag=...) antes de passar pra Postgres.contains().
+ * Lowercase, sem caracteres que poderiam quebrar a sintaxe text[]. Limita 30
+ * chars consistente com o validator do form de edicao de asset.
+ */
+function sanitizeTagFilter(raw: string | undefined): string | null {
+  if (!raw) return null;
+  const trimmed = raw.trim().toLowerCase().slice(0, 30);
+  if (trimmed === '') return null;
+  if (!/^[a-z0-9çáéíóúâêôãõà][a-z0-9çáéíóúâêôãõà\s-]*$/i.test(trimmed)) return null;
+  return trimmed;
 }
 
 export default async function MidiasPage({
@@ -37,24 +51,31 @@ export default async function MidiasPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const { tipo, q } = await searchParams;
+  const { tipo, q, tag } = await searchParams;
   const cookieStore = await cookies();
   await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
   const validTypes: AssetType[] = ['image', 'video', 'document', 'audio', 'other'];
   const activeType = validTypes.includes(tipo as AssetType) ? (tipo as AssetType) : undefined;
+  const activeTag = sanitizeTagFilter(tag);
 
   let query = supabase
     .from('assets')
     .select(
-      'id, filename, original_name, mime_type, file_size, storage_path, type, title, alt_text, width, height, created_at',
+      'id, filename, original_name, mime_type, file_size, storage_path, type, title, alt_text, width, height, tags, created_at',
     )
     .is('deleted_at', null)
     .order('created_at', { ascending: false });
 
   if (activeType) {
     query = query.eq('type', activeType);
+  }
+
+  // Filtro por tag — usa contains do PostgREST sobre text[]
+  // (gera "tags=cs.{value}" no wire). Index GIN ja existe (assets_tags_idx).
+  if (activeTag) {
+    query = query.contains('tags', [activeTag]);
   }
 
   if (q) {
@@ -83,6 +104,7 @@ export default async function MidiasPage({
       altText: a.alt_text as string | null,
       width: a.width as number | null,
       height: a.height as number | null,
+      tags: ((a.tags as string[] | null) ?? []) as string[],
       createdAt: a.created_at as string,
     };
   });
@@ -130,7 +152,38 @@ export default async function MidiasPage({
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
             {assets.length} {assets.length === 1 ? 'arquivo' : 'arquivos'}
-            {activeType ? ` · filtrado por ${activeType}` : ''}
+            {activeType ? ` · ${activeType}` : ''}
+            {activeTag ? (
+              <>
+                {' · tag '}
+                <span
+                  style={{
+                    display: 'inline-block',
+                    padding: '1px 8px',
+                    borderRadius: '999px',
+                    backgroundColor: 'var(--colheita-surface-elevated)',
+                    border: '1px solid var(--colheita-border)',
+                    fontSize: '0.75rem',
+                    color: 'var(--colheita-text-primary)',
+                    fontWeight: 500,
+                    marginLeft: '4px',
+                  }}
+                >
+                  {activeTag}
+                </span>{' '}
+                <Link
+                  href={activeType ? `/midias?tipo=${activeType}` : '/midias'}
+                  style={{
+                    color: 'var(--colheita-text-tertiary)',
+                    textDecoration: 'none',
+                    fontSize: '0.75rem',
+                    marginLeft: '6px',
+                  }}
+                >
+                  ✕ remover
+                </Link>
+              </>
+            ) : null}
           </p>
         </div>
 

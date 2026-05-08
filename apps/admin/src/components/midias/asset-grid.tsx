@@ -17,6 +17,8 @@ export interface AssetSummary {
   altText: string | null;
   width: number | null;
   height: number | null;
+  /** Tags pra organizacao/busca (Camada 4 DAM). Vazio = sem tags. */
+  tags: string[];
   createdAt: string;
 }
 
@@ -196,6 +198,47 @@ export function AssetGrid({ assets }: AssetGridProps) {
                   {formatFileSize(asset.fileSize)}
                 </span>
               </div>
+
+              {/* Chips de tag — max 3 visiveis no card pra nao poluir.
+                  +N se houver mais. Click no card abre o detalhe (Link wrapper),
+                  entao tags aqui sao somente visuais (filtro real eh via /midias?tag=). */}
+              {asset.tags.length > 0 && (
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '4px',
+                    marginTop: '8px',
+                  }}
+                >
+                  {asset.tags.slice(0, 3).map((tag) => (
+                    <span
+                      key={tag}
+                      style={{
+                        fontSize: '0.625rem',
+                        padding: '1px 6px',
+                        borderRadius: '999px',
+                        backgroundColor: 'var(--colheita-surface-elevated)',
+                        color: 'var(--colheita-text-tertiary)',
+                        border: '1px solid var(--colheita-border-subtle)',
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                  {asset.tags.length > 3 && (
+                    <span
+                      style={{
+                        fontSize: '0.625rem',
+                        color: 'var(--colheita-text-tertiary)',
+                        padding: '1px 4px',
+                      }}
+                    >
+                      +{asset.tags.length - 3}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </Link>
