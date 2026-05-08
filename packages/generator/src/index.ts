@@ -1,15 +1,28 @@
 // packages/generator/src/index.ts
 import { createElement } from 'react';
-import { renderToPdf } from './render.js';
+import { renderToPdf, renderToPng } from './render.js';
+import { BannerSocial } from './templates/BannerSocial.js';
 import { Catalogo } from './templates/Catalogo.js';
 import { FichaTecnica } from './templates/FichaTecnica.js';
-import type { CatalogoData, FichaTecnicaData, GenerateOptions, GenerateResult } from './types.js';
+import type {
+  BannerOptions,
+  BannerResult,
+  BannerSocialData,
+  CatalogoData,
+  FichaTecnicaData,
+  GenerateOptions,
+  GenerateResult,
+} from './types.js';
 
 export { type GenerateFromSpecOptions, generateFromRenderSpec } from './generate-spec.js';
+export { BannerSocial } from './templates/BannerSocial.js';
 export { Catalogo } from './templates/Catalogo.js';
 export { FichaTecnica } from './templates/FichaTecnica.js';
 export { RenderSpecLayout } from './templates/RenderSpecLayout.js';
 export type {
+  BannerOptions,
+  BannerResult,
+  BannerSocialData,
   CatalogoData,
   CatalogoProduto,
   FichaTecnicaData,
@@ -73,4 +86,34 @@ export async function generateCatalogo(
 ): Promise<GenerateResult> {
   const element = createElement(Catalogo, { data });
   return renderToPdf(element, options);
+}
+
+/**
+ * Gera o Banner Social (PNG 1200x630, deviceScaleFactor=2 → 2400x1260) de um
+ * produto. Formato pensado pra LinkedIn / Instagram link sticker / WhatsApp
+ * preview / Open Graph.
+ *
+ * Layout fixo editorial Argho — copy à esquerda (eyebrow + nome em CAPS +
+ * tagline + tenant lockup) e accent verde à direita (NPK gigante quando
+ * fornecido, ou fallback "Tecnologia Argho").
+ *
+ * @example
+ * ```ts
+ * const { png } = await generateBannerSocial({
+ *   productName: 'Xcensis 10-00-06',
+ *   tagline: 'Folialização de alta performance',
+ *   categoryName: 'FERTILIZANTE FOLIAR',
+ *   npkLabel: '10-00-06',
+ *   mapaRegistration: '12345',
+ *   tenantName: 'Argho AgriSciences',
+ * });
+ * await fs.writeFile('banner-xcensis.png', png);
+ * ```
+ */
+export async function generateBannerSocial(
+  data: BannerSocialData,
+  options?: BannerOptions,
+): Promise<BannerResult> {
+  const element = createElement(BannerSocial, { data });
+  return renderToPng(element, { width: 1200, height: 630, deviceScaleFactor: 2 }, options);
 }

@@ -1,7 +1,14 @@
 // packages/generator/src/render.ts
 
 import type { ReactElement } from 'react';
-import type { GenerateOptions, GenerateResult } from './types.js';
+import type { BannerOptions, BannerResult, GenerateOptions, GenerateResult } from './types.js';
+
+interface PngViewport {
+  width: number;
+  height: number;
+  /** Multiplicador de DPI. 2 = retina (output 2x do tamanho do viewport) */
+  deviceScaleFactor?: number;
+}
 
 /**
  * Renderiza um ReactElement para PDF usando Playwright Chromium.
@@ -47,6 +54,60 @@ export async function renderToPdf(
     });
 
     return { pdf: Buffer.from(pdfBuffer), html };
+  } finally {
+    await browser.close();
+  }
+}
+
+/**
+ * Renderiza um ReactElement para PNG (formato fixo, ex: 1200x630 OG).
+ *
+ * Diferenças vs renderToPdf:
+ *   - Não usa @page/A4 — viewport HTML define dimensões exatas
+ *   - deviceScaleFactor=2 produz PNG 2x (retina) — feed do LinkedIn/Insta
+ *     adora PNG nítido em telas de alta densidade
+ *   - omitBackground=false garante que o background CSS apareça (PNGs sociais
+ *     normalmente são sólidos, não transparentes)
+ */
+export async function renderToPng(
+  element: ReactElement,
+  viewport: PngViewport,
+  options: BannerOptions = {},
+): Promise<BannerResult> {
+  const { renderToStaticMarkup } = await import('react-dom/server');
+  const html = `<!DOCTYPE html>${renderToStaticMarkup(element)}`;
+
+  const { chromium } = await import('playwright-core');
+
+  const launchOptions: Parameters<typeof chromium.launch>[0] = {
+    headless: true,
+  };
+  if (options.executablePath) {
+    launchOptions.executablePath = options.executablePath;
+  }
+
+  const browser = await chromium.launch(launchOptions);
+
+  try {
+    const page = await browser.newPage({
+      viewport: {
+        width: viewport.width,
+        height: viewport.height,
+      },
+      deviceScaleFactor: viewport.deviceScaleFactor ?? 2,
+    });
+
+    await page.setContent(html, { waitUntil: 'networkidle' });
+
+    const pngBuffer = await page.screenshot({
+      type: 'png',
+      fullPage: false,
+      omitBackground: false,
+      // Limita à viewport definida — sem captura de scroll vertical
+      clip: { x: 0, y: 0, width: viewport.width, height: viewport.height },
+    });
+
+    return { png: Buffer.from(pngBuffer), html };
   } finally {
     await browser.close();
   }

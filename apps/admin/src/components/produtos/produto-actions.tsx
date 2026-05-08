@@ -32,15 +32,20 @@ export function ProdutoActions({ slug, status }: ProdutoActionsProps) {
         </Button>
 
         {/*
-          Gerar Ficha Técnica em PDF — sempre visível.
-          A rota route.ts gera o PDF via Playwright e retorna application/pdf
-          com Content-Disposition attachment, fazendo o browser baixar direto.
-          Usar <a download> em vez de <Link> garante o download attachment;
-          o PDF abre numa request nova (HTTP GET) — sem fetch + blob na client.
+          Materiais gerados sob demanda — Camada 3 do projeto Colheita.
+          Toda geração registra metadata em generated_materials (visível em
+          /materiais/historico). Cada link usa <a download> pra forçar download
+          attachment direto do browser sem fetch+blob no client.
         */}
         <Button variant="outline" size="sm" asChild>
           <a href={`/produtos/${slug}/ficha-tecnica`} download>
-            Baixar ficha técnica (PDF)
+            Ficha técnica (PDF)
+          </a>
+        </Button>
+
+        <Button variant="outline" size="sm" asChild>
+          <a href={`/produtos/${slug}/banner`} download>
+            Banner social (PNG)
           </a>
         </Button>
 

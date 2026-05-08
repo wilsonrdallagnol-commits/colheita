@@ -82,6 +82,39 @@ export interface CatalogoData {
   subtitle?: string;
 }
 
+// ---------------------------------------------------------------------------
+// Banner Social (Camada 3 — formato OG/LinkedIn 1200x630)
+// ---------------------------------------------------------------------------
+
+export interface BannerSocialData {
+  /** Nome comercial do produto (vira hero do banner em CAPS) */
+  productName: string;
+  /** Tagline curta (até ~80 chars). Aparece abaixo do nome em peso menor. */
+  tagline?: string;
+  /** Categoria do produto — vira eyebrow no topo (ex: "FERTILIZANTE FOLIAR") */
+  categoryName?: string;
+  /** Composição NPK resumida (ex: "10-00-06") — opcional, vira chip destaque */
+  npkLabel?: string;
+  /** Número de registro MAPA — opcional, vira badge pequeno no rodapé */
+  mapaRegistration?: string;
+  /** Nome do tenant — vira lockup no canto inferior */
+  tenantName: string;
+  /** Logo do tenant (PNG/SVG via URL absoluta). Se omitido, usa só o nome. */
+  tenantLogoUrl?: string;
+}
+
+export interface BannerOptions {
+  /** Caminho do executável Chromium (CI sem browser instalado) */
+  executablePath?: string;
+}
+
+export interface BannerResult {
+  /** PNG do banner em formato OG/LinkedIn (1200x630px @ 2x = 2400x1260) */
+  png: Buffer;
+  /** HTML renderizado (debug) */
+  html: string;
+}
+
 export type GenerateResult = {
   pdf: Buffer;
   /** HTML renderizado (útil para debug) */
