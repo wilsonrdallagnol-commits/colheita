@@ -26,6 +26,7 @@ import { captureError } from '@colheita/observability';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { recordGeneratedMaterial } from '@/lib/materiais';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,8 +37,9 @@ const MAX_PRODUTOS_POR_CATALOGO = 200;
 export async function GET(_request: NextRequest) {
   const cookieStore = await cookies();
 
+  let user: Awaited<ReturnType<typeof requireAuth>>;
   try {
-    await requireAuth(cookieStore);
+    user = await requireAuth(cookieStore);
   } catch {
     return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
@@ -112,7 +114,23 @@ export async function GET(_request: NextRequest) {
   };
 
   try {
+    const startedAt = Date.now();
     const { pdf } = await generateCatalogo(data);
+    const durationMs = Date.now() - startedAt;
+
+    // Persistencia: snapshot completo dos produtos no momento da geracao + lista
+    // de product_ids pra rastreio reverso ("quais materiais incluiram Xcensis?").
+    // Falha NAO bloqueia o download (recordGeneratedMaterial captura via Sentry).
+    await recordGeneratedMaterial({
+      supabase,
+      templateSlug: 'catalogo-consolidado',
+      inputData: data as unknown as Record<string, unknown>,
+      productIds: produtosCatalogo.map((p) => p.id),
+      durationMs,
+      // 1 capa + 1 sumario + N produtos. Estimativa razoavel.
+      pages: 2 + produtosCatalogo.length,
+      generatedBy: user.id,
+    });
 
     // Filename inclui ano + tenant slug pra facilitar arquivamento manual.
     // Espaços do tenantName viram hífen pra evitar Content-Disposition headache.

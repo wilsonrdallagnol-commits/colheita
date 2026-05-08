@@ -9,6 +9,7 @@ import { generateFichaTecnica } from '@colheita/generator';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { recordGeneratedMaterial } from '@/lib/materiais';
 
 interface RouteContext {
   params: Promise<{ slug: string }>;
@@ -18,20 +19,22 @@ export async function GET(_request: NextRequest, context: RouteContext) {
   const { slug } = await context.params;
   const cookieStore = await cookies();
 
+  let user: Awaited<ReturnType<typeof requireAuth>>;
   try {
-    await requireAuth(cookieStore);
+    user = await requireAuth(cookieStore);
   } catch {
     return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
   const supabase = createServerClient(cookieStore);
 
-  // Busca o produto e dados do tenant em paralelo
+  // Busca o produto + tenant em paralelo. Inclui id do produto para
+  // alimentar product_ids[] em generated_materials (rastreio reverso).
   const [{ data: product }, { data: tenant }] = await Promise.all([
     supabase
       .from('products')
       .select(
-        `name, tagline, description, composition, technical_specs, packaging, applications,
+        `id, name, tagline, description, composition, technical_specs, packaging, applications,
          registrations:regulatory_registrations(registration_no)`,
       )
       .eq('slug', slug)
@@ -54,7 +57,9 @@ export async function GET(_request: NextRequest, context: RouteContext) {
   const packaging = (product.packaging ?? []) as ProductPackaging;
   const applications = (product.applications ?? []) as ProductApplication[];
 
-  const { pdf } = await generateFichaTecnica({
+  // Snapshot do input — se gravado em generated_materials.input_data, permite
+  // re-gerar PDF identico no futuro mesmo que o produto seja editado depois.
+  const fichaInput = {
     productName: product.name,
     tagline: product.tagline ?? undefined,
     description: product.description ?? undefined,
@@ -75,6 +80,22 @@ export async function GET(_request: NextRequest, context: RouteContext) {
     tenantLogoUrl: tenant?.logo_url ?? undefined,
     mapaRegistration: registration?.registration_no ?? undefined,
     year: new Date().getFullYear(),
+  };
+
+  const startedAt = Date.now();
+  const { pdf } = await generateFichaTecnica(fichaInput);
+  const durationMs = Date.now() - startedAt;
+
+  // Persistencia em generated_materials. Falha aqui NAO bloqueia o download.
+  // recordGeneratedMaterial captura erros via Sentry e retorna { materialId: null }.
+  await recordGeneratedMaterial({
+    supabase,
+    templateSlug: 'ficha-tecnica',
+    inputData: fichaInput as Record<string, unknown>,
+    productIds: [product.id as string],
+    durationMs,
+    pages: 1,
+    generatedBy: user.id,
   });
 
   const filename = `ficha-tecnica-${slug}.pdf`;
