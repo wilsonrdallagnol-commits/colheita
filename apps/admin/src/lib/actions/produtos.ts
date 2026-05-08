@@ -136,6 +136,23 @@ export async function updateProduto(
   const packagingRaw = String(formData.get('packaging') ?? '[]').trim() || '[]';
   const applicationsRaw = String(formData.get('applications') ?? '[]').trim() || '[]';
 
+  // hero/packshot asset_ids (Camada 4 DAM). Opcional. Validacao: tem que ser
+  // UUID ou string vazia (caso user limpou). String vazia vira NULL.
+  const heroAssetIdRaw = String(formData.get('hero_asset_id') ?? '').trim();
+  const packshotAssetIdRaw = String(formData.get('packshot_asset_id') ?? '').trim();
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const heroAssetId =
+    heroAssetIdRaw === '' ? null : UUID_REGEX.test(heroAssetIdRaw) ? heroAssetIdRaw : undefined;
+  const packshotAssetId =
+    packshotAssetIdRaw === ''
+      ? null
+      : UUID_REGEX.test(packshotAssetIdRaw)
+        ? packshotAssetIdRaw
+        : undefined;
+  if (heroAssetId === undefined || packshotAssetId === undefined) {
+    return { error: 'ID de asset inválido. Selecione novamente pela galeria.' };
+  }
+
   if (!name) {
     return { fieldErrors: { name: 'Nome é obrigatório.' } };
   }
@@ -184,6 +201,8 @@ export async function updateProduto(
       technical_specs: technicalSpecs,
       packaging,
       applications,
+      hero_asset_id: heroAssetId,
+      packshot_asset_id: packshotAssetId,
       updated_at: new Date().toISOString(),
     })
     .eq('slug', slug)

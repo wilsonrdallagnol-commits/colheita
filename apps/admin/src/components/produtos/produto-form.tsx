@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useActionState, useId } from 'react';
 import type { ProdutoFormState } from '@/lib/actions/produtos';
 import { ApplicationsEditor } from './applications-editor';
+import { AssetPicker, type PickableAsset } from './asset-picker';
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -21,6 +22,12 @@ interface ProdutoFormProps {
   categorias: Categoria[];
   cancelHref: string;
   submitLabel?: string;
+  /**
+   * Assets disponíveis (image type) do tenant — server-loaded e passados pra
+   * popular os AssetPickers de hero/packshot. Lista vazia desativa os pickers
+   * com mensagem "faça upload em /midias".
+   */
+  availableAssets?: PickableAsset[];
   defaultValues?: {
     name?: string;
     tagline?: string | null;
@@ -31,6 +38,8 @@ interface ProdutoFormProps {
     technical_specs?: Record<string, unknown> | null;
     packaging?: unknown[] | null;
     applications?: ProductApplication[] | null;
+    hero_asset_id?: string | null;
+    packshot_asset_id?: string | null;
   };
 }
 
@@ -63,6 +72,7 @@ export function ProdutoForm({
   categorias,
   cancelHref,
   submitLabel = 'Salvar',
+  availableAssets,
   defaultValues = {},
 }: ProdutoFormProps) {
   const [state, formAction, pending] = useActionState(action, null);
@@ -169,6 +179,54 @@ export function ProdutoForm({
           ))}
         </select>
       </div>
+
+      {/* Mídia principal — Camada 4 (DAM): hero + packshot via AssetPicker.
+          Renderizado apenas em modo edicao (createProduto nao recebe availableAssets,
+          assets ficam pra atribuir depois quando o produto ja existe). */}
+      {availableAssets !== undefined && (
+        <div
+          style={{
+            padding: '16px',
+            borderRadius: 'var(--colheita-radius-md)',
+            border: '1px solid var(--colheita-border-subtle)',
+            backgroundColor: 'var(--colheita-surface-elevated)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+          }}
+        >
+          <p
+            style={{
+              fontSize: '0.6875rem',
+              fontWeight: 700,
+              color: 'var(--colheita-text-tertiary)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              margin: 0,
+            }}
+          >
+            Mídia principal
+          </p>
+
+          <AssetPicker
+            name="hero_asset_id"
+            label="Hero (imagem principal)"
+            hint="Imagem grande exibida no topo da ficha técnica e portal. Recomendado: 1600×900 ou superior."
+            defaultValue={defaultValues.hero_asset_id ?? null}
+            availableAssets={availableAssets}
+            disabled={pending}
+          />
+
+          <AssetPicker
+            name="packshot_asset_id"
+            label="Packshot (foto da embalagem)"
+            hint="Imagem da embalagem real do produto. Usada em catálogos e listas."
+            defaultValue={defaultValues.packshot_asset_id ?? null}
+            availableAssets={availableAssets}
+            disabled={pending}
+          />
+        </div>
+      )}
 
       {/* Descrição */}
       <div>
