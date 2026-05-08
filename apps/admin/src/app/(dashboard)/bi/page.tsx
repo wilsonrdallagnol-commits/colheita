@@ -1,0 +1,697 @@
+// apps/admin/src/app/(dashboard)/bi/page.tsx
+//
+// Camada 8 (BI / Inteligência de Mercado) — dashboard de métricas operacionais.
+//
+// Foco: indicadores que destravam decisão por dado (não achismo). Cada card
+// linka pra UI correspondente (drill-down).
+//
+// v1 cobre:
+//   - Pipeline comercial: leads por status + win rate (ganhos / total fechados)
+//   - Materiais gerados: count por template (ficha/catalogo/banner/dossie) + tempo medio
+//   - Pedidos: total + ticket medio + status mix
+//   - Compliance: registros expirados + criticos (link pra page existente)
+//   - Conteúdo: produtos publicados + trilhas/lições da Academia
+//
+// Tudo server-side via supabase queries em paralelo. Sem lib de chart externo
+// (cumulative bar chart custom em SVG inline) — bundle leve.
+
+import { createServerClient, requireAuth } from '@colheita/auth';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@colheita/ui';
+import { cookies } from 'next/headers';
+import Link from 'next/link';
+
+export const metadata = { title: 'Inteligência de Mercado' };
+
+const STATUS_COLOR: Record<string, string> = {
+  novo: '#9ca3af',
+  qualificado: '#3b82f6',
+  proposta: '#d4af37',
+  ganho: '#10b981',
+  perdido: '#ef4444',
+};
+
+const TEMPLATE_CATEGORY_LABEL: Record<string, string> = {
+  datasheet: 'Ficha técnica',
+  catalog: 'Catálogo',
+  banner: 'Banner social',
+  social_post: 'Post social',
+  presentation: 'Apresentação',
+  flyer: 'Flyer',
+  other: 'Outro',
+};
+
+const ORDER_STATUS_LABEL: Record<string, string> = {
+  rascunho: 'Rascunho',
+  confirmado: 'Confirmado',
+  faturado: 'Faturado',
+  entregue: 'Entregue',
+  cancelado: 'Cancelado',
+};
+
+const ORDER_STATUS_COLOR: Record<string, string> = {
+  rascunho: '#9ca3af',
+  confirmado: '#3b82f6',
+  faturado: '#d4af37',
+  entregue: '#10b981',
+  cancelado: '#ef4444',
+};
+
+interface MaterialRow {
+  duration_ms: number | null;
+  template: { category: string } | { category: string }[] | null;
+}
+
+interface OrderRow {
+  status: string;
+  total_liquido: number | string | null;
+}
+
+function formatCurrency(brl: number): string {
+  return brl.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+export default async function BiPage() {
+  const cookieStore = await cookies();
+  await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  // 7 queries em paralelo. Tudo agregado no server pra evitar shipping de
+  // dados brutos pro client.
+  const [
+    leadsResult,
+    materiaisResult,
+    pedidosResult,
+    produtosCount,
+    trilhasCount,
+    licoesCount,
+    regsResult,
+  ] = await Promise.all([
+    supabase.from('leads').select('status, area_hectares').is('deleted_at', null),
+    supabase
+      .from('generated_materials')
+      .select('duration_ms, template:material_templates(category)')
+      .order('generated_at', { ascending: false })
+      .limit(1000),
+    supabase.from('orders').select('status, total_liquido'),
+    supabase
+      .from('products')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'published')
+      .is('deleted_at', null),
+    supabase
+      .from('learning_tracks')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'published'),
+    supabase.from('learning_lessons').select('id', { count: 'exact', head: true }),
+    supabase.from('regulatory_registrations').select('status, expires_at'),
+  ]);
+
+  // ── Leads pipeline ─────────────────────────────────────────────────────────
+  type LeadStatus = 'novo' | 'qualificado' | 'proposta' | 'ganho' | 'perdido';
+  const leadCounts: Record<LeadStatus, number> = {
+    novo: 0,
+    qualificado: 0,
+    proposta: 0,
+    ganho: 0,
+    perdido: 0,
+  };
+  let totalAreaPipeline = 0;
+  for (const l of leadsResult.data ?? []) {
+    const s = l.status as LeadStatus;
+    if (leadCounts[s] !== undefined) leadCounts[s]++;
+    if ((s === 'qualificado' || s === 'proposta') && l.area_hectares) {
+      totalAreaPipeline += Number(l.area_hectares);
+    }
+  }
+  const totalLeads = Object.values(leadCounts).reduce((a, b) => a + b, 0);
+  const totalFechados = leadCounts.ganho + leadCounts.perdido;
+  const winRate = totalFechados > 0 ? (leadCounts.ganho / totalFechados) * 100 : 0;
+  const ativos = leadCounts.novo + leadCounts.qualificado + leadCounts.proposta;
+
+  // ── Materiais ──────────────────────────────────────────────────────────────
+  const materiais = (materiaisResult.data ?? []) as MaterialRow[];
+  const materiaisCounts: Record<string, number> = {};
+  let totalDuration = 0;
+  let durationSamples = 0;
+  for (const m of materiais) {
+    const tpl = Array.isArray(m.template) ? m.template[0] : m.template;
+    const category = (tpl?.category as string) ?? 'other';
+    materiaisCounts[category] = (materiaisCounts[category] ?? 0) + 1;
+    if (m.duration_ms) {
+      totalDuration += m.duration_ms;
+      durationSamples++;
+    }
+  }
+  const avgDurationMs = durationSamples > 0 ? totalDuration / durationSamples : 0;
+  const totalMateriais = materiais.length;
+
+  // ── Pedidos ────────────────────────────────────────────────────────────────
+  const pedidos = (pedidosResult.data ?? []) as OrderRow[];
+  const pedidosCounts: Record<string, number> = {};
+  let totalRevenue = 0;
+  let totalConsiderados = 0;
+  for (const p of pedidos) {
+    const s = p.status;
+    pedidosCounts[s] = (pedidosCounts[s] ?? 0) + 1;
+    if (s === 'confirmado' || s === 'faturado' || s === 'entregue') {
+      const v = typeof p.total_liquido === 'string' ? Number(p.total_liquido) : p.total_liquido;
+      if (typeof v === 'number' && Number.isFinite(v)) {
+        totalRevenue += v;
+        totalConsiderados++;
+      }
+    }
+  }
+  const totalPedidos = pedidos.length;
+  const ticketMedio = totalConsiderados > 0 ? totalRevenue / totalConsiderados : 0;
+
+  // ── Compliance ─────────────────────────────────────────────────────────────
+  const regs = regsResult.data ?? [];
+  let regsExpired = 0;
+  let regsCritical15 = 0;
+  let regsActive = 0;
+  const now = Date.now();
+  for (const r of regs) {
+    if (r.status === 'expired') regsExpired++;
+    if (r.status === 'active') {
+      regsActive++;
+      if (r.expires_at) {
+        const days = Math.ceil(
+          (new Date(r.expires_at as string).getTime() - now) / (1000 * 60 * 60 * 24),
+        );
+        if (days >= 0 && days <= 15) regsCritical15++;
+      }
+    }
+  }
+
+  return (
+    <div style={{ padding: '32px', maxWidth: '1200px' }}>
+      <Breadcrumb style={{ marginBottom: '24px' }}>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <span style={{ color: 'var(--colheita-text-tertiary)', fontSize: '0.8125rem' }}>
+              Argho
+            </span>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage style={{ fontSize: '0.8125rem' }}>
+              Inteligência de Mercado
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
+      <div style={{ marginBottom: '28px' }}>
+        <h1
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: 600,
+            color: 'var(--colheita-text-primary)',
+            letterSpacing: '-0.025em',
+            marginBottom: '4px',
+          }}
+        >
+          Inteligência de Mercado
+        </h1>
+        <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)', margin: 0 }}>
+          Indicadores operacionais consolidados — pipeline, materiais, pedidos, compliance.
+        </p>
+      </div>
+
+      {/* Métricas hero — 4 KPIs principais */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '16px',
+          marginBottom: '32px',
+        }}
+      >
+        <KpiCard
+          label="Win rate"
+          value={`${winRate.toFixed(1)}%`}
+          sub={`${leadCounts.ganho} ganhos de ${totalFechados} fechados`}
+          color={winRate >= 25 ? '#10b981' : winRate >= 10 ? '#d4af37' : '#ef4444'}
+          href="/leads?status=ganho"
+        />
+        <KpiCard
+          label="Pipeline ativo"
+          value={String(ativos)}
+          sub={
+            totalAreaPipeline > 0
+              ? `${totalAreaPipeline.toLocaleString('pt-BR')} ha em qualificação/proposta`
+              : 'leads em aberto'
+          }
+          color="#3b82f6"
+          href="/leads"
+        />
+        <KpiCard
+          label="Receita capturada"
+          value={formatCurrency(totalRevenue)}
+          sub={`ticket médio ${formatCurrency(ticketMedio)} · ${totalConsiderados} pedidos`}
+          color="#10b981"
+          href="/pedidos"
+        />
+        <KpiCard
+          label="Materiais gerados"
+          value={String(totalMateriais)}
+          sub={
+            avgDurationMs > 0
+              ? `tempo médio ${(avgDurationMs / 1000).toFixed(1)}s`
+              : 'tempo médio —'
+          }
+          color="#8b5cf6"
+          href="/materiais/historico"
+        />
+      </div>
+
+      {/* Pipeline funnel + Materiais breakdown — grid 2 cols */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
+          gap: '16px',
+          marginBottom: '24px',
+        }}
+      >
+        {/* Pipeline funnel */}
+        <Section title="Pipeline comercial" subtitle={`${totalLeads} leads totais`}>
+          <FunnelBar
+            label="Novo"
+            count={leadCounts.novo}
+            total={totalLeads}
+            color={STATUS_COLOR.novo ?? '#9ca3af'}
+            href="/leads?status=novo"
+          />
+          <FunnelBar
+            label="Qualificado"
+            count={leadCounts.qualificado}
+            total={totalLeads}
+            color={STATUS_COLOR.qualificado ?? '#3b82f6'}
+            href="/leads?status=qualificado"
+          />
+          <FunnelBar
+            label="Proposta"
+            count={leadCounts.proposta}
+            total={totalLeads}
+            color={STATUS_COLOR.proposta ?? '#d4af37'}
+            href="/leads?status=proposta"
+          />
+          <FunnelBar
+            label="Ganho"
+            count={leadCounts.ganho}
+            total={totalLeads}
+            color={STATUS_COLOR.ganho ?? '#10b981'}
+            href="/leads?status=ganho"
+          />
+          <FunnelBar
+            label="Perdido"
+            count={leadCounts.perdido}
+            total={totalLeads}
+            color={STATUS_COLOR.perdido ?? '#ef4444'}
+            href="/leads?status=perdido"
+          />
+        </Section>
+
+        {/* Materiais por categoria */}
+        <Section title="Materiais por tipo" subtitle={`${totalMateriais} gerações`}>
+          {Object.entries(materiaisCounts).length === 0 ? (
+            <EmptyHint text="Nenhum material gerado ainda. Gere o primeiro na página de produtos." />
+          ) : (
+            Object.entries(materiaisCounts)
+              .sort((a, b) => b[1] - a[1])
+              .map(([cat, count]) => (
+                <FunnelBar
+                  key={cat}
+                  label={TEMPLATE_CATEGORY_LABEL[cat] ?? cat}
+                  count={count}
+                  total={totalMateriais}
+                  color="#8b5cf6"
+                  href="/materiais/historico"
+                />
+              ))
+          )}
+        </Section>
+      </div>
+
+      {/* Pedidos breakdown + Compliance — grid 2 cols */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
+          gap: '16px',
+          marginBottom: '24px',
+        }}
+      >
+        <Section title="Pedidos por status" subtitle={`${totalPedidos} pedidos sincronizados`}>
+          {Object.entries(pedidosCounts).length === 0 ? (
+            <EmptyHint text="Sem pedidos sincronizados. Verifique o webhook Safra." />
+          ) : (
+            Object.entries(pedidosCounts)
+              .sort((a, b) => b[1] - a[1])
+              .map(([s, count]) => (
+                <FunnelBar
+                  key={s}
+                  label={ORDER_STATUS_LABEL[s] ?? s}
+                  count={count}
+                  total={totalPedidos}
+                  color={ORDER_STATUS_COLOR[s] ?? '#9ca3af'}
+                  href={`/pedidos?status=${s}`}
+                />
+              ))
+          )}
+        </Section>
+
+        <Section title="Compliance regulatório" subtitle={`${regsActive + regsExpired} registros`}>
+          <CountRow
+            label="Expirados"
+            value={regsExpired}
+            color="#ef4444"
+            href="/compliance?status=expired"
+          />
+          <CountRow
+            label="Vencendo em ≤15 dias"
+            value={regsCritical15}
+            color="#f97316"
+            href="/compliance?status=active"
+          />
+          <CountRow
+            label="Ativos no total"
+            value={regsActive}
+            color="#10b981"
+            href="/compliance?status=active"
+          />
+        </Section>
+      </div>
+
+      {/* Conteúdo (PIM + Academia) */}
+      <Section title="Conteúdo publicado">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+            gap: '12px',
+          }}
+        >
+          <MiniStat
+            label="Produtos"
+            value={String(produtosCount.count ?? 0)}
+            href="/produtos?status=published"
+          />
+          <MiniStat label="Trilhas" value={String(trilhasCount.count ?? 0)} href="/academia" />
+          <MiniStat label="Lições" value={String(licoesCount.count ?? 0)} href="/academia" />
+        </div>
+      </Section>
+    </div>
+  );
+}
+
+// ── Subcomponents ───────────────────────────────────────────────────────────
+
+function KpiCard({
+  label,
+  value,
+  sub,
+  color,
+  href,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+  color: string;
+  href: string;
+}) {
+  return (
+    <Link
+      href={href}
+      style={{
+        display: 'block',
+        padding: '20px',
+        borderRadius: 'var(--colheita-radius-lg)',
+        border: '1px solid var(--colheita-border)',
+        backgroundColor: 'var(--colheita-surface-elevated)',
+        textDecoration: 'none',
+      }}
+    >
+      <p
+        style={{
+          fontSize: '0.6875rem',
+          fontWeight: 600,
+          color: 'var(--colheita-text-tertiary)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          marginBottom: '8px',
+        }}
+      >
+        {label}
+      </p>
+      <p
+        style={{
+          fontSize: '1.875rem',
+          fontWeight: 700,
+          color,
+          letterSpacing: '-0.03em',
+          margin: '0 0 4px',
+          lineHeight: 1,
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
+        {value}
+      </p>
+      <p
+        style={{
+          fontSize: '0.75rem',
+          color: 'var(--colheita-text-tertiary)',
+          margin: 0,
+        }}
+      >
+        {sub}
+      </p>
+    </Link>
+  );
+}
+
+function Section({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      style={{
+        padding: '20px',
+        borderRadius: 'var(--colheita-radius-lg)',
+        border: '1px solid var(--colheita-border-subtle)',
+        backgroundColor: 'var(--colheita-surface-elevated)',
+      }}
+    >
+      <div style={{ marginBottom: '16px' }}>
+        <p
+          style={{
+            fontSize: '0.6875rem',
+            fontWeight: 700,
+            color: 'var(--colheita-text-tertiary)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            marginBottom: '2px',
+          }}
+        >
+          {title}
+        </p>
+        {subtitle && (
+          <p
+            style={{
+              fontSize: '0.75rem',
+              color: 'var(--colheita-text-tertiary)',
+              margin: 0,
+            }}
+          >
+            {subtitle}
+          </p>
+        )}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>{children}</div>
+    </div>
+  );
+}
+
+function FunnelBar({
+  label,
+  count,
+  total,
+  color,
+  href,
+}: {
+  label: string;
+  count: number;
+  total: number;
+  color: string;
+  href?: string;
+}) {
+  const pct = total > 0 ? (count / total) * 100 : 0;
+  const inner = (
+    <>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          fontSize: '0.8125rem',
+          marginBottom: '4px',
+        }}
+      >
+        <span style={{ color: 'var(--colheita-text-secondary)' }}>{label}</span>
+        <span
+          style={{
+            color: 'var(--colheita-text-primary)',
+            fontWeight: 600,
+            fontVariantNumeric: 'tabular-nums',
+          }}
+        >
+          {count}
+          <span style={{ color: 'var(--colheita-text-tertiary)', fontWeight: 400 }}>
+            {' · '}
+            {pct.toFixed(0)}%
+          </span>
+        </span>
+      </div>
+      <div
+        style={{
+          height: '6px',
+          borderRadius: '3px',
+          backgroundColor: 'var(--colheita-surface-sunken, #f3f4f6)',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            width: `${pct}%`,
+            height: '100%',
+            backgroundColor: color,
+            transition: 'width 200ms',
+          }}
+        />
+      </div>
+    </>
+  );
+
+  if (!href) return <div>{inner}</div>;
+  return (
+    <Link href={href} style={{ textDecoration: 'none', display: 'block' }}>
+      {inner}
+    </Link>
+  );
+}
+
+function CountRow({
+  label,
+  value,
+  color,
+  href,
+}: {
+  label: string;
+  value: number;
+  color: string;
+  href?: string;
+}) {
+  const inner = (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '10px 14px',
+        borderRadius: 'var(--colheita-radius-sm)',
+        backgroundColor: 'color-mix(in srgb, currentColor 6%, transparent)',
+        color,
+      }}
+    >
+      <span
+        style={{
+          fontSize: '0.875rem',
+          color: 'var(--colheita-text-primary)',
+        }}
+      >
+        {label}
+      </span>
+      <span
+        style={{
+          fontSize: '1.125rem',
+          fontWeight: 700,
+          color,
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
+        {value}
+      </span>
+    </div>
+  );
+  if (!href) return inner;
+  return (
+    <Link href={href} style={{ textDecoration: 'none' }}>
+      {inner}
+    </Link>
+  );
+}
+
+function MiniStat({ label, value, href }: { label: string; value: string; href: string }) {
+  return (
+    <Link
+      href={href}
+      style={{
+        display: 'block',
+        padding: '14px 16px',
+        borderRadius: 'var(--colheita-radius-md)',
+        border: '1px solid var(--colheita-border-subtle)',
+        textDecoration: 'none',
+      }}
+    >
+      <p
+        style={{
+          fontSize: '0.6875rem',
+          color: 'var(--colheita-text-tertiary)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          margin: '0 0 4px',
+        }}
+      >
+        {label}
+      </p>
+      <p
+        style={{
+          fontSize: '1.25rem',
+          fontWeight: 700,
+          color: 'var(--colheita-text-primary)',
+          margin: 0,
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
+        {value}
+      </p>
+    </Link>
+  );
+}
+
+function EmptyHint({ text }: { text: string }) {
+  return (
+    <p
+      style={{
+        fontSize: '0.8125rem',
+        color: 'var(--colheita-text-tertiary)',
+        margin: 0,
+        padding: '8px 0',
+      }}
+    >
+      {text}
+    </p>
+  );
+}

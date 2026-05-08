@@ -11,6 +11,7 @@ import {
   SidebarMenuItem,
 } from '@colheita/ui';
 import {
+  BarChart3,
   BookOpen,
   Bot,
   ClipboardList,
@@ -39,6 +40,7 @@ const NAV_ITEMS = [
   { href: '/leads', label: 'Leads', icon: Target, exact: false },
   { href: '/pedidos', label: 'Pedidos', icon: ShoppingCart, exact: false },
   { href: '/compliance', label: 'Compliance', icon: ShieldCheck, exact: false },
+  { href: '/bi', label: 'Inteligência', icon: BarChart3, exact: false },
   { href: '/assistente', label: 'Assistente IA', icon: Bot, exact: false },
   { href: '/auditoria', label: 'Auditoria', icon: ClipboardList, exact: false },
 ];
