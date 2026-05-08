@@ -159,6 +159,73 @@ export interface DossieData {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Proposta Comercial (Camada 7 mov 3 — link CRM ↔ PIM)
+// ---------------------------------------------------------------------------
+
+export interface PropostaItem {
+  /** Nome do produto */
+  productName: string;
+  /** Tagline opcional do produto (vai no subtítulo) */
+  tagline?: string;
+  /** Embalagem/apresentação selecionada (ex: "Tambor 200L") */
+  packaging?: string;
+  /** Dose recomendada (ex: "1.5 L/ha") */
+  dose?: string;
+  /** Quantidade (em unidades — bombonas, sacos, etc) */
+  quantity: number;
+  /** Unidade da quantity (ex: "tambores", "sacos") */
+  unit?: string;
+  /** Preço unitário em BRL */
+  unitPrice: number;
+  /** Composição NPK label (opcional, ex: "10-00-06") */
+  npkLabel?: string;
+  /** Registro MAPA (opcional) */
+  mapaRegistration?: string;
+}
+
+export interface PropostaData {
+  /** Tenant emissor (Argho) */
+  tenantName: string;
+  tenantLogoUrl?: string;
+
+  /** Cliente — vem do lead */
+  clientName: string;
+  clientCompany?: string;
+  clientCpfCnpj?: string;
+  clientCity?: string;
+  clientState?: string;
+
+  /** Cultura/área pra contextualizar a recomendação */
+  cultura?: string;
+  areaHectares?: number;
+
+  /** Itens da proposta (produtos do PIM com qty + preço) */
+  items: PropostaItem[];
+
+  /** Desconto global em % (0-100) opcional. Aplicado sobre subtotal. */
+  discountPercent?: number;
+
+  /** Validade da proposta (ex: "Válida até 30/05/2026") */
+  validUntilLabel?: string;
+
+  /** Termos de pagamento livres (ex: "30/60/90 dias") */
+  paymentTerms?: string;
+
+  /** Observações livres do comercial */
+  notes?: string;
+
+  /** Número da proposta (gerado pelo caller, ex: "PROP-2026-0042") */
+  proposalNumber: string;
+
+  /** Data formatada pt-BR de emissão */
+  issuedAtLabel: string;
+
+  /** Nome do vendedor responsável */
+  salesPersonName?: string;
+  salesPersonEmail?: string;
+}
+
 export type GenerateResult = {
   pdf: Buffer;
   /** HTML renderizado (útil para debug) */

@@ -5,6 +5,7 @@ import { BannerSocial } from './templates/BannerSocial.js';
 import { Catalogo } from './templates/Catalogo.js';
 import { Dossie } from './templates/Dossie.js';
 import { FichaTecnica } from './templates/FichaTecnica.js';
+import { Proposta } from './templates/Proposta.js';
 import type {
   BannerOptions,
   BannerResult,
@@ -14,6 +15,7 @@ import type {
   FichaTecnicaData,
   GenerateOptions,
   GenerateResult,
+  PropostaData,
 } from './types.js';
 
 export { type GenerateFromSpecOptions, generateFromRenderSpec } from './generate-spec.js';
@@ -21,6 +23,7 @@ export { BannerSocial } from './templates/BannerSocial.js';
 export { Catalogo } from './templates/Catalogo.js';
 export { Dossie } from './templates/Dossie.js';
 export { FichaTecnica } from './templates/FichaTecnica.js';
+export { Proposta } from './templates/Proposta.js';
 export { RenderSpecLayout } from './templates/RenderSpecLayout.js';
 export type {
   BannerOptions,
@@ -36,6 +39,8 @@ export type {
   PackagingUnit,
   ProductApplication,
   ProductComposition,
+  PropostaData,
+  PropostaItem,
 } from './types.js';
 
 /**
@@ -149,5 +154,36 @@ export async function generateDossie(
   options?: GenerateOptions,
 ): Promise<GenerateResult> {
   const element = createElement(Dossie, { data });
+  return renderToPdf(element, options);
+}
+
+/**
+ * Gera Proposta Comercial em PDF — link entre CRM (lead) e PIM (produtos).
+ *
+ * Items vem do PIM (selecao no admin /leads/[id]/proposta) com:
+ *   - Quantidade + unit
+ *   - Preço unitário em BRL
+ *   - Dose recomendada por hectare (calculo manual no form)
+ *   - NPK + MAPA do produto (vem de products.composition.macros + registrations)
+ *
+ * @example
+ * ```ts
+ * const { pdf } = await generateProposta({
+ *   tenantName: 'Argho AgriSciences',
+ *   clientName: 'Fazenda Boa Esperança',
+ *   cultura: 'soja',
+ *   areaHectares: 2500,
+ *   items: [...],
+ *   proposalNumber: 'PROP-2026-0042',
+ *   issuedAtLabel: '08/05/2026',
+ *   ...
+ * });
+ * ```
+ */
+export async function generateProposta(
+  data: PropostaData,
+  options?: GenerateOptions,
+): Promise<GenerateResult> {
+  const element = createElement(Proposta, { data });
   return renderToPdf(element, options);
 }

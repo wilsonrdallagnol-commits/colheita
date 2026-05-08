@@ -208,9 +208,14 @@ export default async function LeadDetailPage({ params }: PageProps) {
           )}
         </div>
 
-        <Button asChild variant="outline" size="sm">
-          <Link href={`/leads/${id}/editar`}>Editar</Link>
-        </Button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <Button asChild variant="outline" size="sm">
+            <Link href={`/leads/${id}/editar`}>Editar</Link>
+          </Button>
+          <Button asChild size="sm">
+            <Link href={`/leads/${id}/proposta`}>Gerar proposta</Link>
+          </Button>
+        </div>
       </div>
 
       {/* Status actions */}

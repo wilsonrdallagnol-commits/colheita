@@ -26,7 +26,8 @@ export type MaterialTemplateSlug =
   | 'ficha-tecnica'
   | 'catalogo-consolidado'
   | 'banner-social'
-  | 'dossie-compliance';
+  | 'dossie-compliance'
+  | 'proposta-comercial';
 
 interface RecordParams {
   /** Cliente Supabase ja autenticado (RLS aplicado via tenant_id do JWT) */
