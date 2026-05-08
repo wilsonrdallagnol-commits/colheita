@@ -81,7 +81,10 @@ export default async function BiPage() {
   await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
-  // 7 queries em paralelo. Tudo agregado no server pra evitar shipping de
+  // Janela de 30 dias pra sparklines temporais
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+  // 9 queries em paralelo. Tudo agregado no server pra evitar shipping de
   // dados brutos pro client.
   const [
     leadsResult,
@@ -91,6 +94,8 @@ export default async function BiPage() {
     trilhasCount,
     licoesCount,
     regsResult,
+    leadsTimelineResult,
+    materiaisTimelineResult,
   ] = await Promise.all([
     supabase.from('leads').select('status, area_hectares').is('deleted_at', null),
     supabase
@@ -110,6 +115,18 @@ export default async function BiPage() {
       .eq('status', 'published'),
     supabase.from('learning_lessons').select('id', { count: 'exact', head: true }),
     supabase.from('regulatory_registrations').select('status, expires_at'),
+    // Timeline de 30 dias pra sparklines
+    supabase
+      .from('leads')
+      .select('created_at')
+      .gte('created_at', thirtyDaysAgo)
+      .is('deleted_at', null),
+    supabase
+      .from('generated_materials')
+      .select('generated_at')
+      .gte('generated_at', thirtyDaysAgo)
+      .order('generated_at', { ascending: true })
+      .limit(2000),
   ]);
 
   // ── Leads pipeline ─────────────────────────────────────────────────────────
@@ -169,6 +186,51 @@ export default async function BiPage() {
   }
   const totalPedidos = pedidos.length;
   const ticketMedio = totalConsiderados > 0 ? totalRevenue / totalConsiderados : 0;
+
+  // ── Sparklines temporais (30 dias) ─────────────────────────────────────────
+  // Bucket por dia em ISO YYYY-MM-DD. Array de 30 dias (do mais antigo pro mais
+  // recente) com count de eventos por dia.
+  function bucketDaily(items: Array<{ ts: string }>, days: number): number[] {
+    const buckets = new Array<number>(days).fill(0);
+    const now = Date.now();
+    for (const item of items) {
+      const ts = new Date(item.ts).getTime();
+      const daysAgo = Math.floor((now - ts) / (1000 * 60 * 60 * 24));
+      if (daysAgo >= 0 && daysAgo < days) {
+        const idx = days - 1 - daysAgo; // mais recente no fim do array
+        const cur = buckets[idx] ?? 0;
+        buckets[idx] = cur + 1;
+      }
+    }
+    return buckets;
+  }
+
+  const leadsDaily = bucketDaily(
+    (leadsTimelineResult.data ?? []).map((l) => ({ ts: l.created_at as string })),
+    30,
+  );
+  const materiaisDaily = bucketDaily(
+    (materiaisTimelineResult.data ?? []).map((m) => ({ ts: m.generated_at as string })),
+    30,
+  );
+
+  // Comparativo: ultima metade vs primeira metade da janela (15d vs 15d)
+  function compareHalves(daily: number[]): {
+    delta: number;
+    pct: number;
+    trend: 'up' | 'down' | 'flat';
+  } {
+    const half = Math.floor(daily.length / 2);
+    const recent = daily.slice(half).reduce((a, b) => a + b, 0);
+    const previous = daily.slice(0, half).reduce((a, b) => a + b, 0);
+    const delta = recent - previous;
+    const pct = previous > 0 ? (delta / previous) * 100 : recent > 0 ? 100 : 0;
+    const trend = Math.abs(delta) === 0 ? 'flat' : delta > 0 ? 'up' : 'down';
+    return { delta, pct, trend };
+  }
+
+  const leadsTrend = compareHalves(leadsDaily);
+  const materiaisTrend = compareHalves(materiaisDaily);
 
   // ── Compliance ─────────────────────────────────────────────────────────────
   const regs = regsResult.data ?? [];
@@ -268,6 +330,33 @@ export default async function BiPage() {
           }
           color="#8b5cf6"
           href="/materiais/historico"
+        />
+      </div>
+
+      {/* Sparklines de tendência — 30 dias */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+          gap: '16px',
+          marginBottom: '24px',
+        }}
+      >
+        <SparklineCard
+          label="Leads capturados"
+          subtitle="Últimos 30 dias"
+          daily={leadsDaily}
+          color="#3b82f6"
+          trend={leadsTrend}
+          totalLabel={`${leadsDaily.reduce((a, b) => a + b, 0)} no período`}
+        />
+        <SparklineCard
+          label="Materiais gerados"
+          subtitle="Últimos 30 dias"
+          daily={materiaisDaily}
+          color="#8b5cf6"
+          trend={materiaisTrend}
+          totalLabel={`${materiaisDaily.reduce((a, b) => a + b, 0)} no período`}
         />
       </div>
 
@@ -693,5 +782,141 @@ function EmptyHint({ text }: { text: string }) {
     >
       {text}
     </p>
+  );
+}
+
+// SVG sparkline inline — sem dependencia externa de chart lib.
+// Recebe array de counts diarios e renderiza linha + area com gradient.
+function SparklineCard({
+  label,
+  subtitle,
+  daily,
+  color,
+  trend,
+  totalLabel,
+}: {
+  label: string;
+  subtitle: string;
+  daily: number[];
+  color: string;
+  trend: { delta: number; pct: number; trend: 'up' | 'down' | 'flat' };
+  totalLabel: string;
+}) {
+  const max = Math.max(...daily, 1);
+  const w = 320;
+  const h = 60;
+  const stepX = daily.length > 1 ? w / (daily.length - 1) : w;
+
+  const points = daily.map((value, i) => {
+    const x = i * stepX;
+    const y = h - (value / max) * h;
+    return { x, y };
+  });
+
+  const linePath = points
+    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`)
+    .join(' ');
+
+  const areaPath = `${linePath} L ${w} ${h} L 0 ${h} Z`;
+
+  const trendColor =
+    trend.trend === 'up' ? '#10b981' : trend.trend === 'down' ? '#ef4444' : '#9ca3af';
+  const trendIcon = trend.trend === 'up' ? '↑' : trend.trend === 'down' ? '↓' : '→';
+
+  return (
+    <div
+      style={{
+        padding: '16px 20px',
+        borderRadius: 'var(--colheita-radius-lg)',
+        border: '1px solid var(--colheita-border)',
+        backgroundColor: 'var(--colheita-surface-elevated)',
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+        <div>
+          <p
+            style={{
+              fontSize: '0.6875rem',
+              fontWeight: 600,
+              color: 'var(--colheita-text-tertiary)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              margin: '0 0 4px',
+            }}
+          >
+            {label}
+          </p>
+          <p
+            style={{
+              fontSize: '0.8125rem',
+              color: 'var(--colheita-text-primary)',
+              fontWeight: 600,
+              margin: 0,
+            }}
+          >
+            {totalLabel}
+          </p>
+        </div>
+        <div style={{ textAlign: 'right' as const }}>
+          <span
+            style={{
+              fontSize: '0.875rem',
+              fontWeight: 700,
+              color: trendColor,
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            {trendIcon} {trend.pct >= 0 ? '+' : ''}
+            {trend.pct.toFixed(0)}%
+          </span>
+          <p
+            style={{
+              fontSize: '0.6875rem',
+              color: 'var(--colheita-text-tertiary)',
+              margin: 0,
+            }}
+          >
+            vs 15d anteriores
+          </p>
+        </div>
+      </div>
+
+      <svg
+        viewBox={`0 0 ${w} ${h}`}
+        width="100%"
+        height="60"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        style={{ display: 'block' }}
+      >
+        <title>{`${label} - sparkline ${subtitle}`}</title>
+        <defs>
+          <linearGradient id={`spark-grad-${label.replace(/\s/g, '')}`} x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path d={areaPath} fill={`url(#spark-grad-${label.replace(/\s/g, '')})`} stroke="none" />
+        <path d={linePath} stroke={color} strokeWidth="1.5" fill="none" strokeLinejoin="round" />
+        {/* Marca o ultimo ponto */}
+        {points.length > 0 && (
+          <circle
+            cx={(points[points.length - 1] ?? { x: 0 }).x}
+            cy={(points[points.length - 1] ?? { y: 0 }).y}
+            r="2.5"
+            fill={color}
+          />
+        )}
+      </svg>
+      <p
+        style={{
+          fontSize: '0.6875rem',
+          color: 'var(--colheita-text-tertiary)',
+          margin: '6px 0 0',
+        }}
+      >
+        {subtitle}
+      </p>
+    </div>
   );
 }
