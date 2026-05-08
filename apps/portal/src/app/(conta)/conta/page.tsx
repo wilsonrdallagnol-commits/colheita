@@ -133,23 +133,39 @@ export default async function ContaPage() {
             </p>
           </div>
 
-          <form action={signOut}>
-            <button
-              type="submit"
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <Link
+              href="/conta/materiais"
               style={{
                 padding: '8px 16px',
                 borderRadius: 'var(--colheita-radius-md)',
-                backgroundColor: 'transparent',
-                color: 'var(--colheita-text-secondary)',
+                backgroundColor: 'var(--colheita-brand-primary)',
+                color: '#fff',
                 fontSize: '0.875rem',
                 fontWeight: '500',
-                border: '1px solid var(--colheita-border)',
-                cursor: 'pointer',
+                textDecoration: 'none',
               }}
             >
-              Sair
-            </button>
-          </form>
+              📂 Materiais
+            </Link>
+            <form action={signOut}>
+              <button
+                type="submit"
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: 'var(--colheita-radius-md)',
+                  backgroundColor: 'transparent',
+                  color: 'var(--colheita-text-secondary)',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  border: '1px solid var(--colheita-border)',
+                  cursor: 'pointer',
+                }}
+              >
+                Sair
+              </button>
+            </form>
+          </div>
         </div>
 
         {/* Stats */}
