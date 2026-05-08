@@ -52,6 +52,36 @@ export interface GenerateOptions {
   executablePath?: string;
 }
 
+// ---------------------------------------------------------------------------
+// Catálogo consolidado (Camada 3 — Geração de Materiais)
+// ---------------------------------------------------------------------------
+
+export interface CatalogoProduto {
+  /** ID interno (referência para auditoria em generated_materials) */
+  id: string;
+  slug: string;
+  name: string;
+  tagline?: string;
+  description?: string;
+  categoryName?: string;
+  composition: ProductComposition;
+  packaging: PackagingUnit[];
+  applications: ProductApplication[];
+  mapaRegistration?: string;
+}
+
+export interface CatalogoData {
+  /** Nome do tenant (Argho) — vai no header de toda página */
+  tenantName: string;
+  tenantLogoUrl?: string;
+  /** Lista de produtos publicados a incluir no catálogo */
+  produtos: CatalogoProduto[];
+  /** Ano para o rodapé */
+  year?: number;
+  /** Texto de subtítulo opcional (ex: "Linha completa Argho — Safra 2026") */
+  subtitle?: string;
+}
+
 export type GenerateResult = {
   pdf: Buffer;
   /** HTML renderizado (útil para debug) */

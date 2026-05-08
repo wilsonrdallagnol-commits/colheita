@@ -123,9 +123,22 @@ export default async function ProdutosPage({
           </p>
         </div>
 
-        <Button asChild size="sm">
-          <Link href="/produtos/novo">+ Novo produto</Link>
-        </Button>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          {/*
+            Catálogo consolidado em PDF — gera 1 documento com TODOS os produtos
+            publicados (capa Argho + sumário + 1 página por produto). Usa <a download>
+            em vez de <Link> pra forçar download attachment direto do browser.
+          */}
+          <Button asChild variant="outline" size="sm">
+            <a href="/produtos/catalogo" download>
+              Baixar catálogo (PDF)
+            </a>
+          </Button>
+
+          <Button asChild size="sm">
+            <Link href="/produtos/novo">+ Novo produto</Link>
+          </Button>
+        </div>
       </div>
 
       <div style={{ marginBottom: '28px' }}>
