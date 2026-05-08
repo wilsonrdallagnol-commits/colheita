@@ -21,6 +21,7 @@ import {
   Package,
   ShieldCheck,
   ShoppingCart,
+  Target,
   Users,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -35,6 +36,7 @@ const NAV_ITEMS = [
   { href: '/midias', label: 'Mídias', icon: Images, exact: false },
   { href: '/academia', label: 'Academia', icon: BookOpen, exact: false },
   { href: '/distribuidores', label: 'Distribuidores', icon: Users, exact: false },
+  { href: '/leads', label: 'Leads', icon: Target, exact: false },
   { href: '/pedidos', label: 'Pedidos', icon: ShoppingCart, exact: false },
   { href: '/compliance', label: 'Compliance', icon: ShieldCheck, exact: false },
   { href: '/assistente', label: 'Assistente IA', icon: Bot, exact: false },
