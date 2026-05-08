@@ -4,13 +4,29 @@
 // Padrão fail-open: sem UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN
 // configurados, nenhum limite é aplicado (dev/CI/preview sem Redis).
 // Em produção, ambas as envs DEVEM estar set — sem isso o portal fica
-// exposto a DoS em endpoints como /produtos/:slug/ficha-tecnica.
+// exposto a DoS em endpoints como /produtos/:slug/ficha-tecnica. Por isso
+// emitimos warning explícito no Sentry quando o limiter sai null em prod
+// (defesa em profundidade contra rotação errada de credenciais ou
+// remoção acidental da integração Vercel-Upstash).
 //
 // Espelha o padrão já usado em apps/api/src/app/api/v1/agent/route.ts
 // para manter UMA implementação por monorepo.
 
+import { captureWarning } from '@colheita/observability';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
+
+// Memo por instância do processo: evita spam no Sentry quando múltiplos
+// limiters são construídos na mesma cold start. 1 warning por prefix por
+// instância já é suficiente pra acionar alarme.
+const warnedPrefixes = new Set<string>();
+
+function isProductionRuntime(): boolean {
+  // VERCEL_ENV='production' só aparece em builds da branch main do projeto
+  // colheita-portal. Preview deploys têm VERCEL_ENV='preview' e ficam
+  // legitimamente sem rate limit (intencional).
+  return process.env.NODE_ENV === 'production' && process.env.VERCEL_ENV === 'production';
+}
 
 type WindowDuration = `${number} ${'s' | 'm' | 'h' | 'd'}`;
 
@@ -37,7 +53,22 @@ interface BuildLimiterArgs {
 export function buildRateLimiter(args: BuildLimiterArgs): Ratelimit | null {
   const url = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
-  if (!url || !token) return null;
+  if (!url || !token) {
+    // Em produção, ausência de Upstash regride a proteção do CRITICO C2 da
+    // auditoria 2026-05-07. Acende alarme imediato no Sentry pra cobrir
+    // rotação errada de credenciais ou desinstalação da integração.
+    if (isProductionRuntime() && !warnedPrefixes.has(args.prefix)) {
+      warnedPrefixes.add(args.prefix);
+      captureWarning(`[rate-limit] disabled in production: ${args.prefix}`, {
+        prefix: args.prefix,
+        limit: args.limit,
+        window: args.window,
+        hasUrl: Boolean(url),
+        hasToken: Boolean(token),
+      });
+    }
+    return null;
+  }
 
   const redis = new Redis({ url, token });
   return new Ratelimit({
