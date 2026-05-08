@@ -26,10 +26,17 @@ interface BuildLimiterArgs {
 /**
  * Constroi um Ratelimit do Upstash quando as env vars estão presentes;
  * retorna null caso contrário (caller deve tratar fail-open).
+ *
+ * Aceita duas convenções de naming:
+ *  - UPSTASH_REDIS_REST_URL / _TOKEN (convenção do @upstash/redis e usado em apps/api)
+ *  - KV_REST_API_URL / _TOKEN (auto-injetado pela integração Vercel ↔ Upstash)
+ *
+ * Vercel Marketplace cria automaticamente KV_REST_API_*; manter UPSTASH_*
+ * como fallback evita exigir aliasing manual de env vars no dashboard.
  */
 export function buildRateLimiter(args: BuildLimiterArgs): Ratelimit | null {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  const url = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
   if (!url || !token) return null;
 
   const redis = new Redis({ url, token });
