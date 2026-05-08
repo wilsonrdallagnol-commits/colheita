@@ -400,7 +400,7 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
                         marginBottom: '2px',
                       }}
                     >
-                      {key.replace(/_/g, ' ')}
+                      {translateSpecKey(key)}
                     </p>
                     <p
                       style={{
@@ -557,4 +557,25 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
       </div>
     </div>
   );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tradução de chaves de specs técnicas (vem do JSONB do banco em ingles).
+// Fallback: replace underscores -> spaces.
+const SPEC_LABEL_PT: Record<string, string> = {
+  ph: 'pH',
+  product_type: 'Tipo de produto',
+  compatibility: 'Compatibilidade',
+  raw_materials: 'Matérias-primas',
+  origin_country: 'País de origem',
+  physical_state: 'Estado físico',
+  application_modes: 'Modos de aplicação',
+  density: 'Densidade',
+  shelf_life: 'Validade',
+  storage: 'Armazenamento',
+  classification: 'Classificação',
+};
+
+function translateSpecKey(key: string): string {
+  return SPEC_LABEL_PT[key] ?? key.replace(/_/g, ' ');
 }
