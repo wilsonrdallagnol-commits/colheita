@@ -58,6 +58,14 @@ const AUTH_SETUP_SQL = `
     CREATE ROLE service_role;
   EXCEPTION WHEN duplicate_object THEN NULL;
   END $$;
+
+  -- Role usado pelo Supabase Auth pra invocar o custom_access_token_hook
+  -- (migration 0009_auth_hook.sql faz GRANT EXECUTE/SELECT pra ele).
+  -- Sem este stub, o GRANT falha com 'role does not exist' e a migration aborta.
+  DO $$ BEGIN
+    CREATE ROLE supabase_auth_admin;
+  EXCEPTION WHEN duplicate_object THEN NULL;
+  END $$;
 `;
 
 // ============================================================================
