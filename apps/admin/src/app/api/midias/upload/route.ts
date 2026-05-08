@@ -161,7 +161,32 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 6. Cria registro na tabela assets
+  // 6a. Versionamento (Camada 4 mov 3): se ja existe asset com mesmo
+  // original_name no tenant (nao deletado), criar como nova versao linkada
+  // ao parent (v1) em vez de duplicar como asset independente.
+  //
+  // Logica:
+  //   - Busca asset com original_name match + nao deletado, ordenado por
+  //     version desc -> pega a v atual mais alta
+  //   - Se encontrou: nova row com version = old.version + 1, parent_id =
+  //     old.parent_id ?? old.id (mantem cadeia linkada na v1 raiz)
+  //   - Se nao encontrou: insert normal com version=1, parent_id=null
+  const { data: existingVersion } = await adminClient
+    .from('assets')
+    .select('id, version, parent_id')
+    .eq('tenant_id', tenantId)
+    .eq('original_name', file.name)
+    .is('deleted_at', null)
+    .order('version', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const newVersion = existingVersion ? ((existingVersion.version as number) ?? 1) + 1 : 1;
+  const parentId = existingVersion
+    ? ((existingVersion.parent_id as string | null) ?? (existingVersion.id as string))
+    : null;
+
+  // 6b. Cria registro na tabela assets
   const { data: asset, error: dbError } = await adminClient
     .from('assets')
     .insert({
@@ -172,10 +197,14 @@ export async function POST(request: NextRequest) {
       file_size: file.size,
       storage_path: storagePath,
       type: assetType,
+      version: newVersion,
+      parent_id: parentId,
       ...(imageWidth !== null && { width: imageWidth }),
       ...(imageHeight !== null && { height: imageHeight }),
     })
-    .select('id, filename, original_name, mime_type, file_size, storage_path, type, created_at')
+    .select(
+      'id, filename, original_name, mime_type, file_size, storage_path, type, version, parent_id, created_at',
+    )
     .single();
 
   if (dbError) {

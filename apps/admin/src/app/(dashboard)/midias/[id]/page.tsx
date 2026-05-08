@@ -60,7 +60,8 @@ export default async function AssetDetailPage({ params }: PageProps) {
     .from('assets')
     .select(
       `id, filename, original_name, mime_type, file_size, storage_path, type, title, alt_text,
-       width, height, created_at, tags, license, license_notes, expires_at`,
+       width, height, created_at, tags, license, license_notes, expires_at,
+       version, parent_id`,
     )
     .eq('id', id)
     .is('deleted_at', null)
@@ -77,6 +78,23 @@ export default async function AssetDetailPage({ params }: PageProps) {
 
   const publicUrl = urlData?.publicUrl ?? null;
   const assetType = asset.type as AssetType;
+
+  // Carrega historico de versoes — todas as rows com mesmo parent_id (raiz)
+  // OU id == parentRoot. Ordena por version desc.
+  const versionRootId = (asset.parent_id as string | null) ?? (asset.id as string);
+  const { data: versionRows } = await supabase
+    .from('assets')
+    .select('id, version, created_at, file_size')
+    .or(`id.eq.${versionRootId},parent_id.eq.${versionRootId}`)
+    .is('deleted_at', null)
+    .order('version', { ascending: false });
+  const versions = (versionRows ?? []) as Array<{
+    id: string;
+    version: number;
+    created_at: string;
+    file_size: number;
+  }>;
+  const isCurrent = versions.length > 0 && versions[0]?.id === asset.id;
 
   return (
     <div style={{ padding: '32px', maxWidth: '800px' }}>
@@ -104,6 +122,26 @@ export default async function AssetDetailPage({ params }: PageProps) {
           <BreadcrumbItem>
             <BreadcrumbPage style={{ fontSize: '0.8125rem' }}>
               {(asset.title as string | null) ?? (asset.original_name as string)}
+              {versions.length > 1 && (
+                <span
+                  style={{
+                    marginLeft: '8px',
+                    padding: '1px 8px',
+                    borderRadius: '999px',
+                    fontSize: '0.6875rem',
+                    fontWeight: 600,
+                    backgroundColor: isCurrent
+                      ? 'color-mix(in srgb, var(--colheita-success) 12%, transparent)'
+                      : 'color-mix(in srgb, var(--colheita-warning) 12%, transparent)',
+                    color: isCurrent ? 'var(--colheita-success)' : 'var(--colheita-warning)',
+                    border: `1px solid color-mix(in srgb, currentColor 30%, transparent)`,
+                    verticalAlign: 'middle',
+                  }}
+                >
+                  v{asset.version as number}
+                  {!isCurrent ? ' · superseded' : ''}
+                </span>
+              )}
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
@@ -328,6 +366,119 @@ export default async function AssetDetailPage({ params }: PageProps) {
                   </div>
                 );
               })()}
+            </div>
+          )}
+
+          {/* Historico de versoes — apenas se ha mais de 1 versao */}
+          {versions.length > 1 && (
+            <div style={{ marginTop: '16px' }}>
+              <p
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: '500',
+                  color: 'var(--colheita-text-tertiary)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  marginBottom: '8px',
+                }}
+              >
+                Versões ({versions.length})
+              </p>
+              <ol
+                style={{
+                  listStyle: 'none',
+                  padding: 0,
+                  margin: 0,
+                  border: '1px solid var(--colheita-border-subtle)',
+                  borderRadius: 'var(--colheita-radius-sm)',
+                  overflow: 'hidden',
+                }}
+              >
+                {versions.map((v, idx) => {
+                  const isThis = v.id === asset.id;
+                  const isLatest = idx === 0;
+                  return (
+                    <li
+                      key={v.id}
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '40px 1fr auto',
+                        gap: '10px',
+                        alignItems: 'center',
+                        padding: '8px 12px',
+                        borderBottom:
+                          idx < versions.length - 1
+                            ? '1px solid var(--colheita-border-subtle)'
+                            : 'none',
+                        backgroundColor: isThis
+                          ? 'color-mix(in srgb, var(--colheita-brand-primary) 4%, var(--colheita-surface-elevated))'
+                          : 'transparent',
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          color: isLatest
+                            ? 'var(--colheita-success)'
+                            : 'var(--colheita-text-tertiary)',
+                          fontFamily: 'var(--font-mono)',
+                        }}
+                      >
+                        v{v.version}
+                      </span>
+                      <span
+                        style={{ fontSize: '0.75rem', color: 'var(--colheita-text-secondary)' }}
+                      >
+                        {formatDate(v.created_at)} · {formatFileSize(v.file_size)}
+                        {isLatest && (
+                          <span
+                            style={{
+                              marginLeft: '6px',
+                              fontSize: '0.625rem',
+                              color: 'var(--colheita-success)',
+                              fontWeight: 600,
+                            }}
+                          >
+                            · atual
+                          </span>
+                        )}
+                      </span>
+                      {!isThis && (
+                        <Link
+                          href={`/midias/${v.id}`}
+                          style={{
+                            fontSize: '0.75rem',
+                            color: 'var(--colheita-brand-primary)',
+                            textDecoration: 'none',
+                          }}
+                        >
+                          ver →
+                        </Link>
+                      )}
+                      {isThis && (
+                        <span
+                          style={{
+                            fontSize: '0.6875rem',
+                            color: 'var(--colheita-text-tertiary)',
+                          }}
+                        >
+                          (esta)
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+              <p
+                style={{
+                  fontSize: '0.6875rem',
+                  color: 'var(--colheita-text-tertiary)',
+                  marginTop: '6px',
+                }}
+              >
+                Upload com mesmo nome cria nova versão automaticamente.
+              </p>
             </div>
           )}
 
