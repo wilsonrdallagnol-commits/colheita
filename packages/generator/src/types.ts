@@ -115,6 +115,50 @@ export interface BannerResult {
   html: string;
 }
 
+// ---------------------------------------------------------------------------
+// Dossiê Compliance (Camada 9 — Compliance & Regulatório)
+// ---------------------------------------------------------------------------
+
+export interface DossieRegistration {
+  /** Nome do produto associado */
+  productName: string;
+  productSlug?: string;
+  /** Categoria (ex: "Fertilizante mineral") */
+  productCategory?: string;
+  /** Autoridade emissora — MAPA, ANVISA, IBAMA, STATE, OTHER */
+  authority: 'MAPA' | 'ANVISA' | 'IBAMA' | 'STATE' | 'OTHER';
+  /** Número do registro */
+  registrationNo: string;
+  /** Data de emissão (ISO 8601 ou null) */
+  issuedAt?: string;
+  /** Data de vencimento (ISO 8601 ou null) */
+  expiresAt?: string;
+  /** Status legal: active, expired, pending, revoked */
+  status: 'active' | 'expired' | 'pending' | 'revoked';
+  /** URL do documento original (link no PDF) */
+  documentUrl?: string;
+  /** Observações regulatórias livres */
+  notes?: string;
+}
+
+export interface DossieData {
+  /** Nome do tenant — vai no header de toda página */
+  tenantName: string;
+  tenantLogoUrl?: string;
+  /** Lista completa de registros regulatórios */
+  registrations: DossieRegistration[];
+  /** Data de geração formatada (gerado em DD/MM/YYYY) */
+  generatedAtLabel?: string;
+  /** Stats agregadas calculadas pelo caller (visibilidade rápida na capa) */
+  stats?: {
+    total: number;
+    active: number;
+    expired: number;
+    pending: number;
+    expiringIn30d: number;
+  };
+}
+
 export type GenerateResult = {
   pdf: Buffer;
   /** HTML renderizado (útil para debug) */

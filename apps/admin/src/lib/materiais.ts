@@ -22,7 +22,11 @@ import { captureError } from '@colheita/observability';
 
 type SupabaseClient = ReturnType<typeof createServerClient>;
 
-export type MaterialTemplateSlug = 'ficha-tecnica' | 'catalogo-consolidado' | 'banner-social';
+export type MaterialTemplateSlug =
+  | 'ficha-tecnica'
+  | 'catalogo-consolidado'
+  | 'banner-social'
+  | 'dossie-compliance';
 
 interface RecordParams {
   /** Cliente Supabase ja autenticado (RLS aplicado via tenant_id do JWT) */

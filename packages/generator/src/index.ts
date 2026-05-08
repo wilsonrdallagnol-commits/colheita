@@ -3,12 +3,14 @@ import { createElement } from 'react';
 import { renderToPdf, renderToPng } from './render.js';
 import { BannerSocial } from './templates/BannerSocial.js';
 import { Catalogo } from './templates/Catalogo.js';
+import { Dossie } from './templates/Dossie.js';
 import { FichaTecnica } from './templates/FichaTecnica.js';
 import type {
   BannerOptions,
   BannerResult,
   BannerSocialData,
   CatalogoData,
+  DossieData,
   FichaTecnicaData,
   GenerateOptions,
   GenerateResult,
@@ -17,6 +19,7 @@ import type {
 export { type GenerateFromSpecOptions, generateFromRenderSpec } from './generate-spec.js';
 export { BannerSocial } from './templates/BannerSocial.js';
 export { Catalogo } from './templates/Catalogo.js';
+export { Dossie } from './templates/Dossie.js';
 export { FichaTecnica } from './templates/FichaTecnica.js';
 export { RenderSpecLayout } from './templates/RenderSpecLayout.js';
 export type {
@@ -25,6 +28,8 @@ export type {
   BannerSocialData,
   CatalogoData,
   CatalogoProduto,
+  DossieData,
+  DossieRegistration,
   FichaTecnicaData,
   GenerateOptions,
   GenerateResult,
@@ -116,4 +121,33 @@ export async function generateBannerSocial(
 ): Promise<BannerResult> {
   const element = createElement(BannerSocial, { data });
   return renderToPng(element, { width: 1200, height: 630, deviceScaleFactor: 2 }, options);
+}
+
+/**
+ * Gera o Dossiê de Compliance Regulatório — PDF compilado com TODOS os
+ * registros (MAPA + ANVISA + IBAMA + estaduais + outros) agrupados por
+ * autoridade emissora, com capa institucional + stats + tabela paginada.
+ *
+ * Uso típico (Camada 9):
+ *   - Auditoria MAPA presencial: regulatório imprime e leva à reunião
+ *   - Renovação de processo: comprovação de status do portfólio
+ *   - Diligência B2B grande: comprova compliance contínuo
+ *   - Backup mensal arquivado: snapshot regulatório
+ *
+ * @example
+ * ```ts
+ * const result = await generateDossie({
+ *   tenantName: 'Argho AgriSciences',
+ *   registrations: [...],
+ *   stats: { total: 12, active: 10, expired: 1, pending: 1, expiringIn30d: 2 },
+ * });
+ * await fs.writeFile('dossie-argho.pdf', result.pdf);
+ * ```
+ */
+export async function generateDossie(
+  data: DossieData,
+  options?: GenerateOptions,
+): Promise<GenerateResult> {
+  const element = createElement(Dossie, { data });
+  return renderToPdf(element, options);
 }

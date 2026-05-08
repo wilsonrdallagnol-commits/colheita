@@ -200,21 +200,56 @@ export default async function CompliancePage({ searchParams }: PageProps) {
   return (
     <div style={{ padding: '32px', maxWidth: '1100px' }}>
       {/* Header */}
-      <div style={{ marginBottom: '28px' }}>
-        <h1
+      <div
+        style={{
+          marginBottom: '28px',
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: '16px',
+          flexWrap: 'wrap',
+        }}
+      >
+        <div>
+          <h1
+            style={{
+              fontSize: '1.375rem',
+              fontWeight: '600',
+              color: 'var(--colheita-text-primary)',
+              letterSpacing: '-0.02em',
+              marginBottom: '4px',
+            }}
+          >
+            Compliance Regulatório
+          </h1>
+          <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-tertiary)', margin: 0 }}>
+            Registros MAPA, ANVISA, IBAMA e estaduais — vencimentos e status
+          </p>
+        </div>
+
+        {/* Dossiê PDF compilado pra auditoria externa. <a download> força
+            download attachment direto. Camada 9 — uso típico: auditoria MAPA
+            presencial, renovação de processo, diligência B2B. */}
+        <a
+          href="/compliance/dossie"
+          download
           style={{
-            fontSize: '1.375rem',
+            padding: '10px 18px',
+            borderRadius: 'var(--colheita-radius-md)',
+            border: '1px solid var(--colheita-brand-green)',
+            backgroundColor: 'var(--colheita-brand-green)',
+            color: '#fff',
+            fontSize: '0.875rem',
             fontWeight: '600',
-            color: 'var(--colheita-text-primary)',
-            letterSpacing: '-0.02em',
-            marginBottom: '4px',
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            whiteSpace: 'nowrap',
           }}
         >
-          Compliance Regulatório
-        </h1>
-        <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-tertiary)', margin: 0 }}>
-          Registros MAPA, ANVISA, IBAMA e estaduais — vencimentos e status
-        </p>
+          📄 Baixar dossiê (PDF)
+        </a>
       </div>
 
       {/* Sumário */}
