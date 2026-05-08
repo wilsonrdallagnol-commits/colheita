@@ -298,3 +298,65 @@ export async function softDeleteLead(id: string): Promise<{ error?: string }> {
   revalidatePath('/leads');
   return {};
 }
+
+// ── createLeadActivity ───────────────────────────────────────────────────────
+//
+// Camada 7 mov 2 — append-only timeline. Cada activity vira historico imutavel.
+
+const VALID_ACTIVITY_KINDS = ['call', 'email', 'whatsapp', 'meeting', 'note', 'other'] as const;
+export type LeadActivityKind = (typeof VALID_ACTIVITY_KINDS)[number];
+
+export type CreateActivityState = {
+  error?: string;
+  fieldErrors?: { kind?: string; body?: string };
+} | null;
+
+export async function createLeadActivity(
+  leadId: string,
+  _prev: CreateActivityState,
+  formData: FormData,
+): Promise<CreateActivityState> {
+  const cookieStore = await cookies();
+  const user = await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  const kindRaw = formData.get('kind');
+  const bodyRaw = formData.get('body');
+
+  const kind =
+    typeof kindRaw === 'string' && (VALID_ACTIVITY_KINDS as readonly string[]).includes(kindRaw)
+      ? (kindRaw as LeadActivityKind)
+      : null;
+  if (!kind) return { fieldErrors: { kind: 'Tipo de atividade inválido.' } };
+
+  const body = typeof bodyRaw === 'string' ? bodyRaw.trim() : '';
+  if (body.length === 0) return { fieldErrors: { body: 'Descreva a atividade.' } };
+  if (body.length > 5000) {
+    return { fieldErrors: { body: 'Máximo 5000 caracteres.' } };
+  }
+
+  // Resolve tenant_id da sessao pra preencher RLS check
+  const { data: userRow } = await supabase
+    .from('users')
+    .select('tenant_id')
+    .eq('id', user.id)
+    .maybeSingle();
+  const tenantId = userRow?.tenant_id as string | undefined;
+  if (!tenantId) return { error: 'Sessão sem tenant. Refaça login.' };
+
+  const { error } = await supabase.from('lead_activities').insert({
+    tenant_id: tenantId,
+    lead_id: leadId,
+    kind,
+    body,
+    created_by: user.id,
+  });
+
+  if (error) {
+    captureError(error, { context: 'admin.leads.createActivity', leadId });
+    return { error: 'Erro ao registrar atividade.' };
+  }
+
+  revalidatePath(`/leads/${leadId}`);
+  return {};
+}

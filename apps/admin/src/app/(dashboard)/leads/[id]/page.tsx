@@ -21,8 +21,9 @@ import {
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { LeadActivities } from '@/components/leads/lead-activities';
 import { LeadStatusActions } from '@/components/leads/lead-status-actions';
-import type { LeadStatus } from '@/lib/actions/leads';
+import type { LeadActivityKind, LeadStatus } from '@/lib/actions/leads';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -88,21 +89,44 @@ export default async function LeadDetailPage({ params }: PageProps) {
   await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
-  const { data: lead, error } = await supabase
-    .from('leads')
-    .select(
-      `id, name, company, email, phone, cpf_cnpj, source, status, lost_reason,
-       state, city, cultura, area_hectares, notes,
-       qualified_at, proposal_sent_at, closed_at, next_followup_at,
-       created_at, updated_at`,
-    )
-    .eq('id', id)
-    .is('deleted_at', null)
-    .maybeSingle();
+  // Carrega lead + activities em paralelo. RLS filtra por tenant automaticamente.
+  const [{ data: lead, error }, { data: rawActivities }] = await Promise.all([
+    supabase
+      .from('leads')
+      .select(
+        `id, name, company, email, phone, cpf_cnpj, source, status, lost_reason,
+         state, city, cultura, area_hectares, notes,
+         qualified_at, proposal_sent_at, closed_at, next_followup_at,
+         created_at, updated_at`,
+      )
+      .eq('id', id)
+      .is('deleted_at', null)
+      .maybeSingle(),
+    supabase
+      .from('lead_activities')
+      .select(
+        `id, kind, body, created_at,
+         author:users!created_by(full_name, email)`,
+      )
+      .eq('lead_id', id)
+      .order('created_at', { ascending: false })
+      .limit(100),
+  ]);
 
   if (error || !lead) {
     notFound();
   }
+
+  const activities = (rawActivities ?? []).map((a) => {
+    const author = Array.isArray(a.author) ? a.author[0] : a.author;
+    return {
+      id: a.id as string,
+      kind: a.kind as LeadActivityKind,
+      body: a.body as string,
+      created_at: a.created_at as string,
+      author: (author as { full_name: string | null; email: string | null } | null) ?? null,
+    };
+  });
 
   const status = lead.status as LeadStatus;
   const ssColor = STATUS_COLOR[status] ?? 'var(--colheita-text-tertiary)';
@@ -289,6 +313,13 @@ export default async function LeadDetailPage({ params }: PageProps) {
           </DetailBlock>
         </div>
       )}
+
+      {/* Activities — timeline append-only */}
+      <div style={{ marginTop: '20px' }}>
+        <DetailBlock title={`Atividades (${activities.length})`}>
+          <LeadActivities leadId={id} activities={activities} />
+        </DetailBlock>
+      </div>
     </div>
   );
 }
