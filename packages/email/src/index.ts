@@ -3,8 +3,13 @@ export { _resetResendClient, getResendClient } from './client.js';
 export type {
   SendCertificadoEmitidoParams,
   SendPedidoConfirmadoParams,
+  SendRegulatorioVencimentosParams,
 } from './send.js';
-export { sendCertificadoEmitido, sendPedidoConfirmado } from './send.js';
+export {
+  sendCertificadoEmitido,
+  sendPedidoConfirmado,
+  sendRegulatorioVencimentos,
+} from './send.js';
 export type { CertificadoEmitidoEmailProps } from './templates/certificado-emitido.js';
 export {
   CertificadoEmitidoEmail,
@@ -18,3 +23,11 @@ export {
   getPedidoConfirmadoSubject,
   PedidoConfirmadoEmail,
 } from './templates/pedido-confirmado.js';
+export type {
+  RegulatorioVencimentoItem,
+  RegulatorioVencimentosEmailProps,
+} from './templates/regulatorio-vencimentos.js';
+export {
+  getRegulatorioVencimentosSubject,
+  RegulatorioVencimentosEmail,
+} from './templates/regulatorio-vencimentos.js';

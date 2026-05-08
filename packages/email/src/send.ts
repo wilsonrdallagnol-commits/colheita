@@ -17,6 +17,11 @@ import {
   PedidoConfirmadoEmail,
   type PedidoConfirmadoEmailProps,
 } from './templates/pedido-confirmado.js';
+import {
+  getRegulatorioVencimentosSubject,
+  RegulatorioVencimentosEmail,
+  type RegulatorioVencimentosEmailProps,
+} from './templates/regulatorio-vencimentos.js';
 
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? 'Argho <noreply@argho.com.br>';
 
@@ -65,6 +70,36 @@ export async function sendPedidoConfirmado({
   if (error || !data) {
     throw new Error(
       `[email] Falha ao enviar confirmação de pedido: ${error?.message ?? 'resposta vazia'}`,
+    );
+  }
+
+  return { id: data.id };
+}
+
+// ── sendRegulatorioVencimentos ───────────────────────────────────────────────
+
+export interface SendRegulatorioVencimentosParams extends RegulatorioVencimentosEmailProps {
+  /**
+   * Lista de destinatários — admins do tenant. Resend aceita até 50 endereços
+   * por chamada; o caller deve garantir que a lista não exceda esse limite.
+   */
+  to: string[];
+}
+
+export async function sendRegulatorioVencimentos({
+  to,
+  ...props
+}: SendRegulatorioVencimentosParams): Promise<{ id: string }> {
+  const resend = getResendClient();
+  const { renderToStaticMarkup } = await import('react-dom/server');
+  const html = renderToStaticMarkup(createElement(RegulatorioVencimentosEmail, props));
+  const subject = getRegulatorioVencimentosSubject(props.tenantName, props.counts);
+
+  const { data, error } = await resend.emails.send({ from: FROM_EMAIL, to, subject, html });
+
+  if (error || !data) {
+    throw new Error(
+      `[email] Falha ao enviar alerta regulatório: ${error?.message ?? 'resposta vazia'}`,
     );
   }
 

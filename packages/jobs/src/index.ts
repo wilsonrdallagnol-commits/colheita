@@ -42,6 +42,8 @@ export {
   gerarFichaTecnicaJob,
   gerarFichaTecnicaPayloadSchema,
 } from './jobs/gerar-ficha-tecnica.js';
+// Compliance — alerta diário automatizado de vencimentos regulatórios
+export { regulatorioVencimentosCronJob } from './jobs/regulatorio-vencimentos-cron.js';
 // Safra sync
 export {
   type SafraEventoPayload,
