@@ -164,18 +164,27 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
         }}
       >
         <div>
+          <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
+            Comercial · Leads
+          </p>
           <h1
+            className="argho-display"
             style={{
-              fontSize: '1.5rem',
-              fontWeight: '600',
-              color: 'var(--colheita-text-primary)',
-              letterSpacing: '-0.025em',
-              marginBottom: '4px',
+              fontSize: 'clamp(1.875rem, 2.4vw, 2.375rem)',
+              color: '#0a0a0a',
+              margin: '0 0 8px',
             }}
           >
-            Leads
+            Pipeline comercial
           </h1>
-          <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
+          <p
+            style={{
+              fontSize: '0.9375rem',
+              color: 'var(--colheita-text-secondary)',
+              margin: 0,
+              maxWidth: '60ch',
+            }}
+          >
             {leads.length} {leads.length === 1 ? 'lead' : 'leads'}
             {activeStatus ? ` · ${STATUS_LABEL[activeStatus]}` : ''}
             {q ? ` · busca "${q}"` : ''}

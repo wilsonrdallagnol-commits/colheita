@@ -144,20 +144,29 @@ export default async function DistribuidoresPage({ searchParams }: PageProps) {
         }}
       >
         <div>
+          <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
+            Comercial · Distribuidores
+          </p>
           <h1
+            className="argho-display"
             style={{
-              fontSize: '1.375rem',
-              fontWeight: '600',
-              color: 'var(--colheita-text-primary)',
-              letterSpacing: '-0.02em',
-              marginBottom: '4px',
+              fontSize: 'clamp(1.875rem, 2.4vw, 2.375rem)',
+              color: '#0a0a0a',
+              margin: '0 0 8px',
             }}
           >
-            Distribuidores
+            Rede de distribuidores
           </h1>
-          <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-tertiary)', margin: 0 }}>
+          <p
+            style={{
+              fontSize: '0.9375rem',
+              color: 'var(--colheita-text-secondary)',
+              margin: 0,
+              maxWidth: '60ch',
+            }}
+          >
             {total.toLocaleString('pt-BR')} distribuidor{total !== 1 ? 'es' : ''} cadastrado
-            {total !== 1 ? 's' : ''}
+            {total !== 1 ? 's' : ''} — capilaridade comercial Argho.
           </p>
         </div>
         <InviteDistribuidorForm />

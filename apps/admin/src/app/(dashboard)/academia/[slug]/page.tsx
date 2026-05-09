@@ -1,14 +1,6 @@
 // apps/admin/src/app/(dashboard)/academia/[slug]/page.tsx
 import { createServerClient, requireAuth } from '@colheita/auth';
-import {
-  Badge,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-  Button,
-} from '@colheita/ui';
+import { Badge, Button } from '@colheita/ui';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -62,34 +54,23 @@ export default async function TrilhaDetailPage({ params }: PageProps) {
 
   return (
     <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '900px' }}>
-      <Breadcrumb style={{ marginBottom: '24px' }}>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <span style={{ color: 'var(--colheita-text-tertiary)', fontSize: '0.8125rem' }}>
-              Argho
-            </span>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <Link
-              href="/academia"
-              style={{
-                fontSize: '0.8125rem',
-                color: 'var(--colheita-text-secondary)',
-                textDecoration: 'none',
-              }}
-            >
-              Academia
-            </Link>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage style={{ fontSize: '0.8125rem' }}>{trilha.title}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Link
+        href="/academia"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '6px',
+          fontSize: '0.75rem',
+          fontWeight: 500,
+          color: 'var(--colheita-text-tertiary)',
+          textDecoration: 'none',
+          marginBottom: '20px',
+        }}
+      >
+        ← Academia · Trilhas
+      </Link>
 
-      {/* Header */}
+      {/* Header editorial Argho */}
       <div
         style={{
           display: 'flex',
@@ -97,26 +78,45 @@ export default async function TrilhaDetailPage({ params }: PageProps) {
           alignItems: 'flex-start',
           marginBottom: '32px',
           gap: '16px',
+          flexWrap: 'wrap',
         }}
       >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <h1
-              style={{
-                fontSize: '1.5rem',
-                fontWeight: '600',
-                color: 'var(--colheita-text-primary)',
-                letterSpacing: '-0.025em',
-              }}
-            >
-              {trilha.title}
-            </h1>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '12px',
+              flexWrap: 'wrap',
+            }}
+          >
+            <p className="argho-eyebrow" style={{ display: 'inline-block', margin: 0 }}>
+              Academia · {LEVEL_LABELS[trilha.level] ?? trilha.level}
+            </p>
             <Badge variant={trilha.status === 'published' ? 'default' : 'secondary'}>
               {trilha.status}
             </Badge>
           </div>
+          <h1
+            className="argho-display"
+            style={{
+              fontSize: 'clamp(1.875rem, 2.4vw, 2.375rem)',
+              color: '#0a0a0a',
+              margin: '0 0 8px',
+            }}
+          >
+            {trilha.title}
+          </h1>
           {trilha.subtitle && (
-            <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
+            <p
+              style={{
+                fontSize: '0.9375rem',
+                color: 'var(--colheita-text-secondary)',
+                margin: 0,
+                maxWidth: '60ch',
+              }}
+            >
               {trilha.subtitle}
             </p>
           )}
