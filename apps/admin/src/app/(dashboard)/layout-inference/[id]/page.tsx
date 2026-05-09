@@ -16,6 +16,7 @@ import { ArrowLeft, Brain, Clock, DollarSign } from 'lucide-react';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { BindingsEditor } from '@/components/layout-inference/bindings-editor';
 import { PngExportMenu } from '@/components/layout-inference/png-export-menu';
 import { ReAnalyzeButton } from '@/components/layout-inference/re-analyze-button';
 import { RenderButton } from '@/components/layout-inference/render-button';
@@ -98,35 +99,45 @@ export default async function BlueprintDetailPage({ params }: PageProps) {
   await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
-  // Busca reference + asset + blueprint atual + materiais ja renderizados
-  const [{ data: reference }, { data: blueprint }, { data: renderedMaterials }] = await Promise.all(
-    [
-      supabase
-        .from('layout_references')
-        .select(
-          `id, title, description, source_type, intended_category, tags, created_at,
+  // Busca reference + asset + blueprint atual + materiais ja renderizados + produtos
+  const [
+    { data: reference },
+    { data: blueprint },
+    { data: renderedMaterials },
+    { data: rawProducts },
+  ] = await Promise.all([
+    supabase
+      .from('layout_references')
+      .select(
+        `id, title, description, source_type, intended_category, tags, created_at,
          asset:assets!inner(id, storage_path, width, height, mime_type, file_size, original_name)`,
-        )
-        .eq('id', id)
-        .is('deleted_at', null)
-        .maybeSingle(),
-      supabase
-        .from('layout_blueprints')
-        .select(
-          `id, status, blueprint, raw_analysis, version, model_used, tokens_input, tokens_output,
+      )
+      .eq('id', id)
+      .is('deleted_at', null)
+      .maybeSingle(),
+    supabase
+      .from('layout_blueprints')
+      .select(
+        `id, status, blueprint, raw_analysis, version, model_used, tokens_input, tokens_output,
          duration_ms, cost_usd, created_at, reviewed_at, review_notes`,
-        )
-        .eq('reference_id', id)
-        .eq('is_current', true)
-        .maybeSingle(),
-      supabase
-        .from('generated_materials')
-        .select('id, output_url, duration_ms, generated_at, input_data')
-        .filter('input_data->>reference_id', 'eq', id)
-        .order('generated_at', { ascending: false })
-        .limit(10),
-    ],
-  );
+      )
+      .eq('reference_id', id)
+      .eq('is_current', true)
+      .maybeSingle(),
+    supabase
+      .from('generated_materials')
+      .select('id, output_url, duration_ms, generated_at, input_data')
+      .filter('input_data->>reference_id', 'eq', id)
+      .order('generated_at', { ascending: false })
+      .limit(10),
+    supabase
+      .from('products')
+      .select('id, name, slug')
+      .eq('status', 'published')
+      .is('deleted_at', null)
+      .order('name')
+      .limit(200),
+  ]);
 
   if (!reference) notFound();
 
@@ -410,6 +421,24 @@ export default async function BlueprintDetailPage({ params }: PageProps) {
           )}
         </div>
       </div>
+
+      {/* Editor de bindings — atrelar produtos do PIM a regions */}
+      {blueprint && bp ? (
+        <BindingsEditor
+          blueprintId={blueprint.id as string}
+          regions={regions.map((r) => ({ id: r.id, type: r.type }))}
+          products={(rawProducts ?? []).map((p) => ({
+            id: p.id as string,
+            name: p.name as string,
+            slug: p.slug as string,
+          }))}
+          initial={
+            (blueprint.raw_analysis as { bindings?: Record<string, unknown> } | null)?.bindings as
+              | undefined
+              | Parameters<typeof BindingsEditor>[0]['initial']
+          }
+        />
+      ) : null}
 
       {/* Render com identidade Argho — fecha o ciclo do Layout Inference */}
       {blueprint && status !== 'archived' ? (

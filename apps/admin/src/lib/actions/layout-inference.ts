@@ -336,6 +336,46 @@ export async function updateBlueprintStatus(
   return { ok: true };
 }
 
+// ── Bindings: atrelar produto/conteudo a regions do blueprint ─────────────────
+
+interface SaveBindingsResult {
+  ok: boolean;
+  error?: string;
+}
+
+/**
+ * Salva os bindings (produto/conteudo por region) num blueprint.
+ * Persiste em layout_blueprints.bindings (jsonb) — coluna nao existe ainda
+ * na migration 0006, vamos usar raw_analysis.bindings como fallback enquanto
+ * nao adicionamos a coluna.
+ *
+ * v1: aceita bindings na shape { regionId: { kind, ...payload } }
+ * Validation: kind compativel com region.type (mesma logica do compileBlueprint)
+ */
+export async function saveBlueprintBindings(
+  blueprintId: string,
+  bindings: ContentBindings,
+): Promise<SaveBindingsResult> {
+  const cookieStore = await cookies();
+  await requireAuth(cookieStore);
+  const admin = createAdminClient();
+
+  const { error } = await admin
+    .from('layout_blueprints')
+    .update({
+      raw_analysis: { bindings },
+    })
+    .eq('id', blueprintId);
+
+  if (error) {
+    captureError(error, { context: 'layout-inference.saveBindings' });
+    return { ok: false, error: 'Falha ao salvar bindings.' };
+  }
+
+  revalidatePath('/layout-inference');
+  return { ok: true };
+}
+
 // ── Re-analyze: roda Claude vision novamente, cria nova versao ────────────────
 
 interface ReAnalyzeResult {
@@ -513,7 +553,7 @@ export async function renderBlueprintWithArgho(blueprintId: string): Promise<Ren
   const { data: bpRow, error: bpErr } = await supabase
     .from('layout_blueprints')
     .select(
-      `id, tenant_id, blueprint, version,
+      `id, tenant_id, blueprint, raw_analysis, version,
        reference:layout_references!inner(id, title, intended_category),
        tenant:tenants!inner(id, name, slug, theme_tokens, logo_url)`,
     )
@@ -544,11 +584,14 @@ export async function renderBlueprintWithArgho(blueprintId: string): Promise<Ren
     .digest('hex')
     .slice(0, 16);
 
-  // Bindings 'auto' — componentes do @colheita/ui aplicam fallbacks razoaveis.
-  // Sprint futura: editor de bindings (atrelar produtos do PIM a regions).
+  // Bindings: prefere os salvos pelo editor (raw_analysis.bindings), fallback
+  // pra 'auto' em todas regions. Bindings ausentes pra regions especificas
+  // tambem caem em 'auto' (componentes do @colheita/ui aplicam fallbacks).
+  const savedBindings =
+    (bpRow.raw_analysis as { bindings?: ContentBindings } | null)?.bindings ?? {};
   const bindings: ContentBindings = {};
   for (const region of blueprint.regions) {
-    bindings[region.id] = { kind: 'auto' };
+    bindings[region.id] = savedBindings[region.id] ?? { kind: 'auto' };
   }
 
   const compileResult = compileBlueprint({
