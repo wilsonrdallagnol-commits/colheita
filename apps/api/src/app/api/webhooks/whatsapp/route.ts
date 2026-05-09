@@ -26,6 +26,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 import { type NextRequest, NextResponse } from 'next/server';
+import { hashPhone, phoneDigitsOnly } from '@/lib/whatsapp-phone';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -47,16 +48,6 @@ function buildLimiter(): Ratelimit | null {
 }
 
 const limiter = buildLimiter();
-
-// ── PII redaction helpers ────────────────────────────────────────────────────
-//
-// LGPD: telefones E.164 e conteudo de mensagem WhatsApp sao dados pessoais
-// protegidos. Nunca passar pra Sentry/logs em texto plano. Hash de 8 chars
-// e suficiente pra correlacao em incident response sem revelar PII.
-
-function hashPhone(phone: string): string {
-  return crypto.createHash('sha256').update(phone).digest('hex').slice(0, 8);
-}
 
 // ── HMAC validation (X-Hub-Signature-256) ────────────────────────────────────
 //
@@ -175,14 +166,14 @@ async function processIncomingMessage({
   // 1. Tenta achar lead existente pelo telefone.
   // M1 fix 2026-05-09: match por E.164 completo normalizado (phone com/sem '+').
   // Fallback pros ultimos 11 digitos (DDI+DDD+8) reduz colisao vs slice(-9).
-  const phoneDigitsOnly = message.from.replace(/\D/g, '');
-  const phoneSuffix = phoneDigitsOnly.slice(-11);
+  const digits = phoneDigitsOnly(message.from);
+  const phoneSuffix = digits.slice(-11);
   const { data: existing } = await supabase
     .from('leads')
     .select('id, phone')
     .eq('tenant_id', tenantId)
     .is('deleted_at', null)
-    .or(`phone.eq.${phone},phone.eq.${phoneDigitsOnly},phone.ilike.%${phoneSuffix}%`)
+    .or(`phone.eq.${phone},phone.eq.${digits},phone.ilike.%${phoneSuffix}%`)
     .limit(1)
     .maybeSingle();
 
