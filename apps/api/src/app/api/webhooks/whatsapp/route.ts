@@ -172,15 +172,17 @@ async function processIncomingMessage({
       ? message.text.body
       : `[${message.type}] (mensagem nao-textual recebida via WhatsApp)`;
 
-  // 1. Tenta achar lead existente pelo telefone (sem o +)
-  // Match flexivel: phone pode estar com ou sem +, com formatacao variada.
-  const phoneSuffix = message.from.slice(-9); // ultimos 9 digitos = numero local
+  // 1. Tenta achar lead existente pelo telefone.
+  // M1 fix 2026-05-09: match por E.164 completo normalizado (phone com/sem '+').
+  // Fallback pros ultimos 11 digitos (DDI+DDD+8) reduz colisao vs slice(-9).
+  const phoneDigitsOnly = message.from.replace(/\D/g, '');
+  const phoneSuffix = phoneDigitsOnly.slice(-11);
   const { data: existing } = await supabase
     .from('leads')
-    .select('id')
+    .select('id, phone')
     .eq('tenant_id', tenantId)
     .is('deleted_at', null)
-    .ilike('phone', `%${phoneSuffix}%`)
+    .or(`phone.eq.${phone},phone.eq.${phoneDigitsOnly},phone.ilike.%${phoneSuffix}%`)
     .limit(1)
     .maybeSingle();
 

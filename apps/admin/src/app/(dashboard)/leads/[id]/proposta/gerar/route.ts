@@ -92,7 +92,8 @@ function parsePostedItems(formData: FormData): PostedItem[] {
       typeof unitPriceRaw === 'string' ? unitPriceRaw.replace(',', '.') : '0',
     );
     if (!Number.isFinite(quantity) || quantity <= 0) continue;
-    if (!Number.isFinite(unitPrice) || unitPrice < 0) continue;
+    // M3 fix 2026-05-09: rejeita price <= 0 (proposta com linha gratuita = bug).
+    if (!Number.isFinite(unitPrice) || unitPrice <= 0) continue;
 
     items.push({
       productId,
