@@ -4,7 +4,15 @@ import { createClient } from '@supabase/supabase-js';
 import type { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 import { redirect } from 'next/navigation';
 
+// Em Server Components o cookieStore eh ReadonlyRequestCookies (sem .set).
+// Em Server Actions e Route Handlers, `cookies()` retorna um store mutavel.
+// Tipamos como any aqui pra suportar ambos cenarios — set falha silencioso
+// em RSC (try/catch) e funciona em actions (signInWithPassword precisa disso).
+// biome-ignore lint/suspicious/noExplicitAny: cookieStore mutavel em actions
+type AnyCookieStore = any;
+
 export function createServerClient(cookieStore: ReadonlyRequestCookies) {
+  const store = cookieStore as AnyCookieStore;
   return createSupabaseServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL as string,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
@@ -13,9 +21,24 @@ export function createServerClient(cookieStore: ReadonlyRequestCookies) {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll() {
-          // Server Components não podem setar cookies.
-          // O middleware (updateSession) é responsável por renovar a sessão.
+        setAll(
+          cookiesToSet: Array<{ name: string; value: string; options?: Record<string, unknown> }>,
+        ) {
+          // Bug fix 2026-05-09 (loop infinito de login):
+          // Sem isso, signInWithPassword setava session no Supabase mas os
+          // cookies de session nunca chegavam ao browser. Middleware nao via
+          // session → redirecionava pra /login → loop.
+          //
+          // Em Server Components puros (RSC) o store eh readonly e .set lanca.
+          // Capturamos pra nao quebrar render — middleware ainda renova a
+          // sessao via updateSession() em cada request.
+          try {
+            for (const { name, value, options } of cookiesToSet) {
+              store.set(name, value, options);
+            }
+          } catch {
+            // RSC com store readonly — esperado, ignora.
+          }
         },
       },
     },
