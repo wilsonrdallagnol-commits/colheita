@@ -33,6 +33,13 @@ export {
   OpenAIEmbeddingProvider,
   VoyageEmbeddingProvider,
 } from './embedding-providers.js';
+export type { EvalQueryResult, EvalSuiteResult, GoldenQuery, RunEvalSuiteOpts } from './eval.js';
+// Eval suite
+export {
+  ARGHO_GOLDEN_QUERIES,
+  formatEvalReport,
+  runEvalSuite,
+} from './eval.js';
 export type { GeneratorConfig } from './generator.js';
 // Generator
 export { AiGenerator } from './generator.js';

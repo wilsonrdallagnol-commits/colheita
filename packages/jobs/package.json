@@ -16,7 +16,8 @@
     "dev": "trigger dev",
     "deploy": "trigger deploy",
     "reindex-all": "tsx src/scripts/reindex-all.ts",
-    "backfill-sha256": "tsx src/scripts/backfill-sha256.ts"
+    "backfill-sha256": "tsx src/scripts/backfill-sha256.ts",
+    "rag-eval": "tsx src/scripts/rag-eval.ts"
   },
   "dependencies": {
     "@colheita/ai": "workspace:*",
