@@ -250,3 +250,55 @@ export async function uploadAndAnalyze(formData: FormData): Promise<AnalyzeRespo
     costUsd: result.metrics.costUsd,
   };
 }
+
+// ── Workflow de revisao ──────────────────────────────────────────────────────
+
+type AllowedStatus = 'draft' | 'reviewed' | 'approved' | 'archived';
+
+interface UpdateStatusResult {
+  ok: boolean;
+  error?: string;
+}
+
+/**
+ * Muda o status do blueprint dentro do workflow de revisao.
+ * Transicoes validas:
+ *   draft → reviewed | archived
+ *   reviewed → approved | draft | archived
+ *   approved → archived
+ *   archived → draft (re-abrir)
+ */
+export async function updateBlueprintStatus(
+  blueprintId: string,
+  nextStatus: AllowedStatus,
+  notes?: string,
+): Promise<UpdateStatusResult> {
+  const cookieStore = await cookies();
+  const user = await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  if (!['draft', 'reviewed', 'approved', 'archived'].includes(nextStatus)) {
+    return { ok: false, error: 'Status inválido.' };
+  }
+
+  const updates: Record<string, unknown> = { status: nextStatus };
+  if (nextStatus === 'reviewed' || nextStatus === 'approved') {
+    updates.reviewed_by = user.id;
+    updates.reviewed_at = new Date().toISOString();
+    if (notes) updates.review_notes = notes.slice(0, 1000);
+  }
+
+  const { error } = await supabase.from('layout_blueprints').update(updates).eq('id', blueprintId);
+
+  if (error) {
+    captureError(error, {
+      context: 'layout-inference.updateBlueprintStatus',
+      nextStatus,
+    });
+    return { ok: false, error: 'Falha ao atualizar status.' };
+  }
+
+  revalidatePath('/layout-inference');
+  revalidatePath(`/layout-inference/[id]`, 'page');
+  return { ok: true };
+}
