@@ -6,7 +6,7 @@
 // por kind. Append-only — atividades viram historico imutavel.
 
 import { Button, Textarea } from '@colheita/ui';
-import { useActionState, useId, useRef } from 'react';
+import { useActionState, useEffect, useId, useRef } from 'react';
 import { createLeadActivity, type LeadActivityKind } from '@/lib/actions/leads';
 
 interface ActivityRow {
@@ -65,16 +65,19 @@ export function LeadActivities({ leadId, activities }: LeadActivitiesProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const uid = useId();
 
-  // Reset textarea após submit bem-sucedido (state vazio = sem fieldErrors + sem error)
-  const isSuccess =
-    state !== null &&
-    state !== undefined &&
-    !state.error &&
-    !state.fieldErrors?.kind &&
-    !state.fieldErrors?.body;
-  if (isSuccess && formRef.current) {
-    formRef.current.reset();
-  }
+  // M2 fix 2026-05-09: reset em useEffect, nao durante render (anti-pattern React).
+  // Reset apos submit bem-sucedido (state vazio = sem fieldErrors + sem error).
+  useEffect(() => {
+    const isSuccess =
+      state !== null &&
+      state !== undefined &&
+      !state.error &&
+      !state.fieldErrors?.kind &&
+      !state.fieldErrors?.body;
+    if (isSuccess && formRef.current) {
+      formRef.current.reset();
+    }
+  }, [state]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>

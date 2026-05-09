@@ -162,7 +162,9 @@ async function processTenant(
     };
   }
 
-  // Busca admins do tenant via JOIN users -> user_roles -> roles
+  // M4 fix 2026-05-09: PostgREST nested filter (.in('user_roles.roles.slug',...))
+  // pode falhar silenciosamente. Refactor: trazemos roles aninhadas e filtramos
+  // em JS apos hidratacao — mais previsivel e ja temos cap MAX_ADMINS_PER_TENANT.
   const { data: rawAdmins, error: adminsError } = await supabase
     .from('users')
     .select(
@@ -171,8 +173,7 @@ async function processTenant(
     )
     .eq('tenant_id', tenantId)
     .eq('status', 'active')
-    .in('user_roles.roles.slug', ALERT_ROLES as unknown as string[])
-    .limit(MAX_ADMINS_PER_TENANT);
+    .limit(MAX_ADMINS_PER_TENANT * 2); // headroom — filtro de role aplica abaixo
 
   if (adminsError) {
     return {
@@ -183,14 +184,20 @@ async function processTenant(
     };
   }
 
-  // Dedup por email (1 user pode ter 2 roles em ALERT_ROLES via JOIN)
+  const allowedRoles = new Set(ALERT_ROLES as unknown as string[]);
+  // Dedup por email + filtro de role server-side em JS (em vez de PostgREST nested .in)
   const recipientEmails = Array.from(
     new Set(
       (rawAdmins ?? [])
+        .filter((u) => {
+          const ur =
+            (u as { user_roles?: Array<{ roles?: { slug?: string } | null }> }).user_roles ?? [];
+          return ur.some((r) => r?.roles?.slug && allowedRoles.has(r.roles.slug));
+        })
         .map((u) => (typeof u.email === 'string' ? u.email.trim() : ''))
         .filter((e) => e.length > 0 && e.includes('@')),
     ),
-  );
+  ).slice(0, MAX_ADMINS_PER_TENANT);
 
   if (recipientEmails.length === 0) {
     return {
