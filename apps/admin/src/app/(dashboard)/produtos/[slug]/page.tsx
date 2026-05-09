@@ -4,6 +4,7 @@ import type { ProductApplication, ProductComposition, ProductPackaging } from '@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ProductAssetsSection } from '@/components/produtos/product-assets-section';
 import { ProdutoActions } from '@/components/produtos/produto-actions';
 import { ProdutoDetail } from '@/components/produtos/produto-detail';
 
@@ -58,6 +59,15 @@ export default async function ProdutoPage({ params }: PageProps) {
   if (error || !data) {
     notFound();
   }
+
+  // Busca product_assets (MSDS, certificates, photos extras, gallery, video)
+  const { data: productAssetsData } = await supabase
+    .from('product_assets')
+    .select(
+      `role, sort_order, asset:assets!inner(id, storage_path, original_name, mime_type, file_size, type, title)`,
+    )
+    .eq('product_id', data.id)
+    .order('sort_order');
 
   // Busca estoque sincronizado do Safra (se houver mapeamento)
   const { data: stockRows } = data.safra_codigo
@@ -167,6 +177,9 @@ export default async function ProdutoPage({ params }: PageProps) {
           registrationNo: registration?.registration_no ?? null,
         }}
       />
+
+      {/* Documentos & mídias do produto (MSDS, certificates, gallery, etc) */}
+      <ProductAssetsSection assets={productAssetsData ?? []} />
 
       {/* Seção de integração Safra (estoque + código) */}
       <div
