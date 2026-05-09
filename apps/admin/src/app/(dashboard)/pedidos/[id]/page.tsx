@@ -167,22 +167,23 @@ export default async function PedidoDetailPage({ params }: PageProps) {
         <div>
           <p
             style={{
-              fontSize: '0.75rem',
+              fontSize: '0.6875rem',
               fontWeight: '600',
               color: 'var(--colheita-text-tertiary)',
               textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              marginBottom: '6px',
+              letterSpacing: '0.12em',
+              marginBottom: '12px',
             }}
+            className="argho-eyebrow"
           >
-            Pedido Safra
+            Comercial · Pedido Safra
           </p>
           <h1
+            className="argho-display"
             style={{
-              fontSize: '1.75rem',
-              fontWeight: '600',
-              color: 'var(--colheita-text-primary)',
-              letterSpacing: '-0.03em',
+              fontSize: 'clamp(1.875rem, 2.4vw, 2.375rem)',
+              color: '#0a0a0a',
+              margin: 0,
               fontFamily: 'var(--font-mono)',
             }}
           >

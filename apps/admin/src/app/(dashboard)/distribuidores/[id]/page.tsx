@@ -223,13 +223,15 @@ export default async function DistribuidorDetailPage({ params }: PageProps) {
           }}
         >
           <div>
+            <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
+              Comercial · Distribuidor
+            </p>
             <h1
+              className="argho-display"
               style={{
-                fontSize: '1.25rem',
-                fontWeight: '600',
-                color: 'var(--colheita-text-primary)',
-                letterSpacing: '-0.02em',
-                marginBottom: '4px',
+                fontSize: 'clamp(1.625rem, 2vw, 2rem)',
+                color: '#0a0a0a',
+                margin: '0 0 6px',
               }}
             >
               {user.full_name ?? user.email}

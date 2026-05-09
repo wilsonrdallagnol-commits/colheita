@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "dev": "trigger dev",
     "deploy": "trigger deploy",
-    "reindex-all": "tsx src/scripts/reindex-all.ts"
+    "reindex-all": "tsx src/scripts/reindex-all.ts",
+    "backfill-sha256": "tsx src/scripts/backfill-sha256.ts"
   },
   "dependencies": {
     "@colheita/ai": "workspace:*",

@@ -218,12 +218,28 @@ export async function uploadAndAnalyze(formData: FormData): Promise<AnalyzeRespo
   const { data: publicUrlData } = admin.storage.from('assets').getPublicUrl(storagePath);
   const publicUrl = publicUrlData.publicUrl;
 
-  // ── 7. Vision analysis ──────────────────────────────────────────────────
+  // ── 7. Vision analysis (com cost ceiling acumulado por tenant) ────────────
+  // Soma cost_usd dos blueprints do tenant nas ultimas 24h.
+  // Default ceiling: $20 USD/dia por tenant. Override via env LAYOUT_INFERENCE_DAILY_USD.
+  const dailyCeiling = Number(process.env.LAYOUT_INFERENCE_DAILY_CEILING_USD ?? '20') || 20;
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const { data: usage } = await admin
+    .from('layout_blueprints')
+    .select('cost_usd')
+    .eq('tenant_id', tenantId)
+    .gte('created_at', since);
+  const consumedCostUsd = (usage ?? []).reduce(
+    (sum, row) => sum + Number((row as { cost_usd: number | null }).cost_usd ?? 0),
+    0,
+  );
+
   const startedAt = Date.now();
   const result = await analyzeLayout({
     input: { kind: 'url', url: publicUrl, mimeType: file.type },
     timeoutMs: 60_000,
     maxRetries: 2,
+    maxCostUsd: dailyCeiling,
+    consumedCostUsd,
   });
 
   if (!result.ok) {
@@ -442,11 +458,25 @@ export async function reAnalyzeBlueprint(referenceId: string): Promise<ReAnalyze
     .getPublicUrl(asset.storage_path as string);
   const publicUrl = publicUrlData.publicUrl;
 
-  // 3. Vision analysis
+  // 3. Vision analysis com cost ceiling acumulado tenant
+  const dailyCeiling = Number(process.env.LAYOUT_INFERENCE_DAILY_CEILING_USD ?? '20') || 20;
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const { data: usage } = await admin
+    .from('layout_blueprints')
+    .select('cost_usd')
+    .eq('tenant_id', tenantId)
+    .gte('created_at', since);
+  const consumedCostUsd = (usage ?? []).reduce(
+    (sum, row) => sum + Number((row as { cost_usd: number | null }).cost_usd ?? 0),
+    0,
+  );
+
   const result = await analyzeLayout({
     input: { kind: 'url', url: publicUrl, mimeType: asset.mime_type as string },
     timeoutMs: 60_000,
     maxRetries: 2,
+    maxCostUsd: dailyCeiling,
+    consumedCostUsd,
   });
 
   if (!result.ok) {

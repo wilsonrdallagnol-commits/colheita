@@ -166,18 +166,18 @@ export default async function LeadDetailPage({ params }: PageProps) {
         }}
       >
         <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
-            <h1
-              style={{
-                fontSize: '1.5rem',
-                fontWeight: '600',
-                color: 'var(--colheita-text-primary)',
-                letterSpacing: '-0.025em',
-                margin: 0,
-              }}
-            >
-              {lead.name as string}
-            </h1>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              marginBottom: '12px',
+              flexWrap: 'wrap',
+            }}
+          >
+            <p className="argho-eyebrow" style={{ display: 'inline-block', margin: 0 }}>
+              Comercial · Lead
+            </p>
             <span
               style={{
                 display: 'inline-block',
@@ -193,6 +193,16 @@ export default async function LeadDetailPage({ params }: PageProps) {
               {STATUS_LABEL[status] ?? status}
             </span>
           </div>
+          <h1
+            className="argho-display"
+            style={{
+              fontSize: 'clamp(1.875rem, 2.4vw, 2.375rem)',
+              color: '#0a0a0a',
+              margin: '0 0 4px',
+            }}
+          >
+            {lead.name as string}
+          </h1>
           {lead.company && (
             <p
               style={{
