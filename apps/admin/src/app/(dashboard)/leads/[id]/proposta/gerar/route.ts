@@ -24,6 +24,7 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { recordGeneratedMaterial } from '@/lib/materiais';
+import { buildRateLimiter, checkRateLimit, rateLimitHeaders } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,6 +33,35 @@ interface RouteContext {
 }
 
 const MAX_ITEMS = 20;
+const PDF_TIMEOUT_MS = 30_000;
+
+// Rate limit: 5 propostas/min/user. Comercial num form com bug nao derruba host.
+const propostaRateLimiter = buildRateLimiter({
+  prefix: '@colheita/admin/proposta',
+  limit: 5,
+  window: '1 m',
+});
+
+/**
+ * Wrappa Promise com timeout. Se vencer, rejeita com Error('timeout');
+ * Promise original continua mas resultado descartado (Playwright fecha browser
+ * via finally interno). Evita HTTP request pendurando indefinidamente.
+ */
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`${label} timeout after ${ms}ms`)), ms);
+    promise.then(
+      (v) => {
+        clearTimeout(timer);
+        resolve(v);
+      },
+      (e) => {
+        clearTimeout(timer);
+        reject(e);
+      },
+    );
+  });
+}
 
 interface PostedItem {
   productId: string;
@@ -43,10 +73,12 @@ interface PostedItem {
 
 function parsePostedItems(formData: FormData): PostedItem[] {
   // Form data esperado: items[0][productId], items[0][quantity], etc.
+  // A4 fix: usa `continue` em vez de `break` quando productId vazio — items
+  // intercalados (gaps no index após user remover linha do meio) sao aceitos.
   const items: PostedItem[] = [];
   for (let i = 0; i < MAX_ITEMS; i++) {
     const productId = formData.get(`items[${i}][productId]`);
-    if (typeof productId !== 'string' || !productId) break;
+    if (typeof productId !== 'string' || !productId) continue;
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId))
       continue;
 
@@ -102,6 +134,16 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     user = await requireAuth(cookieStore);
   } catch {
     return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
+  }
+
+  // A3: Rate limit por user (Playwright = ~3-8s + ~250MB RAM por chamada).
+  // Sem isso, comercial num form com bug derruba host pra todos os tenants.
+  const rate = await checkRateLimit(propostaRateLimiter, `proposta:${user.id}`);
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: 'Limite de propostas excedido. Tente novamente em alguns minutos.' },
+      { status: 429, headers: rateLimitHeaders(rate) },
+    );
   }
 
   const supabase = createServerClient(cookieStore);
@@ -211,7 +253,11 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
 
   try {
     const startedAt = Date.now();
-    const { pdf } = await generateProposta(propostaInput);
+    const { pdf } = await withTimeout(
+      generateProposta(propostaInput),
+      PDF_TIMEOUT_MS,
+      'generateProposta',
+    );
     const durationMs = Date.now() - startedAt;
 
     // Persistencia em generated_materials

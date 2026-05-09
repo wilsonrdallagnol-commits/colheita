@@ -48,6 +48,16 @@ function buildLimiter(): Ratelimit | null {
 
 const limiter = buildLimiter();
 
+// ── PII redaction helpers ────────────────────────────────────────────────────
+//
+// LGPD: telefones E.164 e conteudo de mensagem WhatsApp sao dados pessoais
+// protegidos. Nunca passar pra Sentry/logs em texto plano. Hash de 8 chars
+// e suficiente pra correlacao em incident response sem revelar PII.
+
+function hashPhone(phone: string): string {
+  return crypto.createHash('sha256').update(phone).digest('hex').slice(0, 8);
+}
+
 // ── HMAC validation (X-Hub-Signature-256) ────────────────────────────────────
 //
 // Meta assina o body com sha256 do APP_SECRET. Header chega como:
@@ -199,8 +209,12 @@ async function processIncomingMessage({
     createdNew = true;
   }
 
-  // 2. Registra activity em ambos os casos
-  await supabase.from('lead_activities').insert({
+  // 2. Registra activity (idempotente).
+  // metadata NAO inclui contact_name pra reduzir PII em logs.
+  // C1 (idempotencia): migration cria UNIQUE index em (metadata->>'message_id')
+  // WHERE kind='whatsapp'. Postgres rejeita INSERT duplicado com codigo 23505.
+  // Aqui tratamos 23505 como sucesso silencioso — retry do Meta nao duplica.
+  const { error: insertErr } = await supabase.from('lead_activities').insert({
     tenant_id: tenantId,
     lead_id: leadId,
     kind: 'whatsapp',
@@ -209,9 +223,13 @@ async function processIncomingMessage({
       message_id: message.id,
       message_type: message.type,
       timestamp: message.timestamp,
-      contact_name: contactName,
     },
   });
+
+  if (insertErr && insertErr.code !== '23505') {
+    // 23505 = unique_violation (Meta retry — esperado). Outros erros: propaga.
+    throw new Error(`failed to insert lead_activity: ${insertErr.message}`);
+  }
 
   return { leadId, createdNew };
 }
@@ -283,11 +301,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           processed++;
           if (result.createdNew) createdNew++;
         } catch (err) {
-          // Falha em 1 mensagem NAO derruba o webhook — Meta vai retry se 5xx
+          // Falha em 1 mensagem NAO derruba o webhook — Meta vai retry se 5xx.
+          // PII (telefone) e hashed antes de ir pro Sentry (LGPD).
           captureError(err, {
             context: 'webhook.whatsapp.processMessage',
             messageId: message.id,
-            from: message.from,
+            phoneHash: hashPhone(message.from),
+            messageType: message.type,
           });
         }
       }
