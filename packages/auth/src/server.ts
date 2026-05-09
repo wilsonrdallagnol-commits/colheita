@@ -5,14 +5,15 @@ import type { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension
 import { redirect } from 'next/navigation';
 
 // Em Server Components o cookieStore eh ReadonlyRequestCookies (sem .set).
-// Em Server Actions e Route Handlers, `cookies()` retorna um store mutavel.
-// Tipamos como any aqui pra suportar ambos cenarios — set falha silencioso
-// em RSC (try/catch) e funciona em actions (signInWithPassword precisa disso).
-// biome-ignore lint/suspicious/noExplicitAny: cookieStore mutavel em actions
-type AnyCookieStore = any;
+// Em Server Actions e Route Handlers, `cookies()` retorna um store mutavel
+// que TAMBEM aceita .set(name, value, options) — mesmo runtime, tipo diferente.
+// Tipamos a versao mutavel como interseccao explicita (sem `any`) e checamos
+// `typeof set === 'function'` em runtime pra suportar ambos cenarios.
+type CookieSetter = (name: string, value: string, options?: Record<string, unknown>) => void;
+type MutableCookieStore = ReadonlyRequestCookies & { set?: CookieSetter };
 
 export function createServerClient(cookieStore: ReadonlyRequestCookies) {
-  const store = cookieStore as AnyCookieStore;
+  const store = cookieStore as MutableCookieStore;
   return createSupabaseServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL as string,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
@@ -32,12 +33,17 @@ export function createServerClient(cookieStore: ReadonlyRequestCookies) {
           // Em Server Components puros (RSC) o store eh readonly e .set lanca.
           // Capturamos pra nao quebrar render — middleware ainda renova a
           // sessao via updateSession() em cada request.
+          // Em RSC store.set eh undefined — checagem evita crash sem try/catch.
+          // Em Server Actions/Route Handlers, store.set existe e funciona.
+          if (typeof store.set !== 'function') return;
           try {
             for (const { name, value, options } of cookiesToSet) {
               store.set(name, value, options);
             }
           } catch {
-            // RSC com store readonly — esperado, ignora.
+            // Defesa em profundidade: alguns paths podem ainda lancar
+            // (e.g. headers ja enviados). Erro nao bloqueia render — middleware
+            // (updateSession) renova a sessao em request subsequente.
           }
         },
       },

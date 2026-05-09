@@ -33,7 +33,22 @@ export default function RecoverPage() {
       if (data.session) setStatus('ready');
     });
 
-    return () => sub.subscription.unsubscribe();
+    // Timeout: se em 10s o evento PASSWORD_RECOVERY nao chegou (link expirado,
+    // hash invalido, env vars ausentes), surfaceia erro em vez de spinner eterno.
+    const timeout = setTimeout(() => {
+      setStatus((current) => {
+        if (current === 'awaiting') {
+          setError('Link de recuperação inválido ou expirado. Solicite um novo.');
+          return 'error';
+        }
+        return current;
+      });
+    }, 10_000);
+
+    return () => {
+      sub.subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   async function onSubmit(e: React.FormEvent) {
