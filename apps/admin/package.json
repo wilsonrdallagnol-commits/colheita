@@ -12,6 +12,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@colheita/ai": "workspace:*",
     "@colheita/auth": "workspace:*",
     "@colheita/jobs": "workspace:*",
     "@colheita/layout-inference": "workspace:*",

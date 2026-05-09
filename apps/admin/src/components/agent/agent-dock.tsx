@@ -18,10 +18,11 @@
 //  - Input ativo: chat real consultando packages/ai (RAG ja existe)
 //  - Acoes inline: gerar proposta, agendar follow-up, etc — sem deixar a pagina
 
-import { Send, Sparkles, X } from 'lucide-react';
+import { Sparkles, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
+import { AgentChat } from './agent-chat';
 
 interface Suggestion {
   label: string;
@@ -115,6 +116,8 @@ function suggestionsFor(pathname: string): { context: string; items: Suggestion[
 export function AgentDock() {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
+  const [initialQuery, setInitialQuery] = useState<string | undefined>(undefined);
+  const [chatActive, setChatActive] = useState(false);
   const { context, items } = suggestionsFor(pathname);
 
   // ESC fecha o dock
@@ -271,141 +274,111 @@ export function AgentDock() {
           </button>
         </div>
 
-        {/* Sugestões — chips clicaveis */}
-        <div
-          style={{
-            padding: '16px 18px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-            overflowY: 'auto',
-          }}
-        >
-          <p
+        {chatActive ? (
+          // Chat real ativo — RAG via /api/agent/ask SSE
+          <AgentChat contextPath={pathname} initialQuery={initialQuery} />
+        ) : (
+          /* Sugestões — chips clicaveis. Click vira initialQuery do chat. */
+          <div
             style={{
-              fontSize: '0.6875rem',
-              fontWeight: 500,
-              color: 'var(--colheita-text-tertiary)',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              margin: '0 0 4px',
-            }}
-          >
-            Sugestões
-          </p>
-          {items.map((item) => {
-            const inner = (
-              <span style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span style={{ fontSize: '0.875rem', letterSpacing: '-0.005em' }}>
-                  {item.label}
-                </span>
-                {item.hint ? (
-                  <span
-                    style={{
-                      fontSize: '0.75rem',
-                      color: 'var(--colheita-text-tertiary)',
-                    }}
-                  >
-                    {item.hint}
-                  </span>
-                ) : null}
-              </span>
-            );
-
-            const baseStyle: React.CSSProperties = {
-              display: 'block',
-              padding: '10px 14px',
-              borderRadius: '10px',
-              boxShadow: 'inset 0 0 0 1px var(--colheita-border-subtle)',
-              backgroundColor: 'transparent',
-              color: 'var(--colheita-text-primary)',
-              textDecoration: 'none',
-              cursor: 'pointer',
-              textAlign: 'left',
-              fontFamily: 'inherit',
-              border: 'none',
-              width: '100%',
-              transition: 'box-shadow 150ms ease, background-color 150ms ease',
-            };
-
-            if (item.href) {
-              return (
-                <Link key={item.label} href={item.href} style={baseStyle}>
-                  {inner}
-                </Link>
-              );
-            }
-
-            return (
-              <button
-                key={item.label}
-                type="button"
-                disabled
-                aria-disabled="true"
-                title="Disponível em breve"
-                style={{
-                  ...baseStyle,
-                  cursor: 'not-allowed',
-                  opacity: 0.7,
-                }}
-              >
-                {inner}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Input desabilitado — sinaliza onde a conversa real entra */}
-        <form
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '12px 14px',
-            boxShadow: 'inset 0 1px 0 0 var(--colheita-border-subtle)',
-            backgroundColor: 'var(--colheita-surface-card)',
-          }}
-          onSubmit={(e) => e.preventDefault()}
-        >
-          <input
-            type="text"
-            placeholder="Conversa em construção — peça as sugestões acima"
-            disabled
-            aria-label="Mensagem para o agente"
-            style={{
-              flex: 1,
-              padding: '8px 12px',
-              borderRadius: '8px',
-              border: 'none',
-              backgroundColor: 'var(--colheita-surface-elevated)',
-              color: 'var(--colheita-text-primary)',
-              fontSize: '0.8125rem',
-              fontFamily: 'inherit',
-              boxShadow: 'inset 0 0 0 1px var(--colheita-border-subtle)',
-              outline: 'none',
-            }}
-          />
-          <button
-            type="submit"
-            disabled
-            aria-label="Enviar"
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '8px',
-              border: 'none',
-              backgroundColor: 'var(--colheita-surface-elevated)',
-              color: 'var(--colheita-text-tertiary)',
-              cursor: 'not-allowed',
+              padding: '16px 18px',
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              opacity: 0.5,
+              flexDirection: 'column',
+              gap: '8px',
+              overflowY: 'auto',
             }}
           >
-            <Send size={14} strokeWidth={1.5} />
-          </button>
-        </form>
+            <p
+              style={{
+                fontSize: '0.6875rem',
+                fontWeight: 500,
+                color: 'var(--colheita-text-tertiary)',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                margin: '0 0 4px',
+              }}
+            >
+              Sugestões
+            </p>
+            {items.map((item) => {
+              const inner = (
+                <span style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <span style={{ fontSize: '0.875rem', letterSpacing: '-0.005em' }}>
+                    {item.label}
+                  </span>
+                  {item.hint ? (
+                    <span
+                      style={{
+                        fontSize: '0.75rem',
+                        color: 'var(--colheita-text-tertiary)',
+                      }}
+                    >
+                      {item.hint}
+                    </span>
+                  ) : null}
+                </span>
+              );
+
+              const baseStyle: React.CSSProperties = {
+                display: 'block',
+                padding: '10px 14px',
+                borderRadius: '10px',
+                boxShadow: 'inset 0 0 0 1px var(--colheita-border-subtle)',
+                backgroundColor: 'transparent',
+                color: 'var(--colheita-text-primary)',
+                textDecoration: 'none',
+                cursor: 'pointer',
+                textAlign: 'left',
+                fontFamily: 'inherit',
+                border: 'none',
+                width: '100%',
+                transition: 'box-shadow 150ms ease, background-color 150ms ease',
+              };
+
+              if (item.href) {
+                return (
+                  <Link key={item.label} href={item.href} style={baseStyle}>
+                    {inner}
+                  </Link>
+                );
+              }
+
+              return (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={() => {
+                    setInitialQuery(item.label);
+                    setChatActive(true);
+                  }}
+                  style={baseStyle}
+                >
+                  {inner}
+                </button>
+              );
+            })}
+
+            <button
+              type="button"
+              onClick={() => setChatActive(true)}
+              style={{
+                marginTop: '8px',
+                padding: '10px 14px',
+                borderRadius: '10px',
+                border: 'none',
+                backgroundColor: 'var(--colheita-brand-primary)',
+                color: '#ffffff',
+                fontSize: '0.8125rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                width: '100%',
+                letterSpacing: '-0.005em',
+              }}
+            >
+              Abrir chat com agente
+            </button>
+          </div>
+        )}
       </aside>
 
       <style>{`
