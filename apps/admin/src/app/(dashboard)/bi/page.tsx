@@ -298,29 +298,29 @@ export default async function BiPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div style={{ marginBottom: '40px' }}>
+      <div style={{ marginBottom: '36px' }}>
+        <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
+          Inteligência de Mercado
+        </p>
         <h1
+          className="argho-display"
           style={{
-            fontSize: 'clamp(1.875rem, 2.4vw, 2.375rem)', // 30-38px fluido editorial
-            fontWeight: 500, // 500 = ferramenta sofisticada; 600+ = site institucional
-            color: 'var(--colheita-text-primary)',
-            letterSpacing: '-0.035em', // -0.025 era timido pra editorial
-            lineHeight: 1.05,
-            marginBottom: '10px',
+            fontSize: 'clamp(1.875rem, 2.4vw, 2.375rem)',
+            color: '#0a0a0a',
+            margin: '0 0 8px',
           }}
         >
-          Inteligência de Mercado
+          Visão consolidada do programa
         </h1>
         <p
           style={{
             fontSize: '0.9375rem',
             color: 'var(--colheita-text-secondary)',
-            letterSpacing: '-0.005em',
-            maxWidth: '64ch', // line-length editorial — legibilidade
+            maxWidth: '64ch',
             margin: 0,
           }}
         >
-          Indicadores operacionais consolidados — pipeline, materiais, pedidos, compliance.
+          Pipeline, materiais, pedidos, compliance — todos sob o mesmo painel.
         </p>
       </div>
 
@@ -566,17 +566,17 @@ function KpiCard({
       style={{
         display: 'block',
         padding: '24px',
-        borderRadius: '12px',
-        // Linear-style stacked shadow em vez de border cinza padrao SaaS.
-        // box-shadow inset cria a "borda" sem custo de pixel no focus state.
-        boxShadow: 'var(--admin-shadow-card)',
-        backgroundColor: 'var(--colheita-surface-elevated)',
+        borderRadius: 'var(--colheita-radius-lg)',
+        border: '1px solid var(--colheita-border)',
+        backgroundColor: '#ffffff',
         textDecoration: 'none',
         position: 'relative',
         overflow: 'hidden',
+        boxShadow: 'var(--shadow-card)',
+        transition: 'box-shadow 200ms ease, border-color 200ms ease',
       }}
     >
-      {/* Indicador de cor categorico — barra fina vertical na borda esquerda */}
+      {/* Indicador categorico — barra fina vertical (estilo ficha tecnica Argho) */}
       <span
         aria-hidden="true"
         style={{
@@ -584,28 +584,27 @@ function KpiCard({
           left: 0,
           top: 0,
           bottom: 0,
-          width: '2px',
+          width: '3px',
           backgroundColor: color,
         }}
       />
       <p
         style={{
           fontSize: '0.6875rem',
-          fontWeight: 500,
+          fontWeight: 600,
           color: 'var(--colheita-text-tertiary)',
           textTransform: 'uppercase',
-          letterSpacing: '0.08em',
-          marginBottom: '12px',
+          letterSpacing: '0.12em',
+          marginBottom: '14px',
         }}
       >
         {label}
       </p>
       <p
+        className="argho-display"
         style={{
           fontSize: '2rem',
-          fontWeight: 500, // 500 editorial; 700 era bold demais pra dashboard tool
-          color: 'var(--colheita-text-primary)',
-          letterSpacing: '-0.04em', // tracking mais agressivo em numeros grandes
+          color: '#0a0a0a',
           margin: '0 0 6px',
           lineHeight: 1,
           fontVariantNumeric: 'tabular-nums',
@@ -617,7 +616,6 @@ function KpiCard({
         style={{
           fontSize: '0.8125rem',
           color: 'var(--colheita-text-tertiary)',
-          letterSpacing: '-0.005em',
           margin: 0,
         }}
       >
@@ -640,19 +638,20 @@ function Section({
     <div
       style={{
         padding: '24px',
-        borderRadius: '12px',
-        boxShadow: 'var(--admin-shadow-card)',
-        backgroundColor: 'var(--colheita-surface-elevated)',
+        borderRadius: 'var(--colheita-radius-lg)',
+        border: '1px solid var(--colheita-border)',
+        backgroundColor: '#ffffff',
+        boxShadow: 'var(--shadow-card)',
       }}
     >
       <div style={{ marginBottom: '20px' }}>
         <p
           style={{
             fontSize: '0.6875rem',
-            fontWeight: 500,
-            color: 'var(--colheita-text-tertiary)',
+            fontWeight: 600,
+            color: 'var(--colheita-brand-primary)',
             textTransform: 'uppercase',
-            letterSpacing: '0.08em',
+            letterSpacing: '0.12em',
             marginBottom: '4px',
           }}
         >

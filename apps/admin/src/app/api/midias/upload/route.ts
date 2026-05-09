@@ -8,6 +8,7 @@
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { createAdminClient, createServerClient, requireAuth } from '@colheita/auth';
+import { captureError } from '@colheita/observability';
 import { cookies } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 import sharp from 'sharp';
@@ -141,7 +142,7 @@ export async function POST(request: NextRequest) {
     });
 
   if (storageError) {
-    console.error('[upload] storage error:', storageError);
+    captureError(storageError, { context: 'admin.midias.upload.storage' });
     // Tenta dar uma mensagem útil para o caso mais comum (bucket não existe)
     if (
       storageError.message?.includes('Bucket not found') ||
@@ -210,7 +211,7 @@ export async function POST(request: NextRequest) {
   if (dbError) {
     // Rollback: remove o arquivo do storage se o insert falhou
     await adminClient.storage.from('assets').remove([storagePath]);
-    console.error('[upload] db error:', dbError);
+    captureError(dbError, { context: 'admin.midias.upload.db' });
     return NextResponse.json({ error: 'Erro ao registrar asset no banco.' }, { status: 500 });
   }
 

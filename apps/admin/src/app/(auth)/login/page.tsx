@@ -1,16 +1,10 @@
 // apps/admin/src/app/(auth)/login/page.tsx
 'use client';
 
-// Login com email + senha. Substitui magic link (loop infinito reportado pelo
-// fundador 2026-05-09). Visual aplicando /hm-designer:
-//  - Sem caixa cinza padrao SaaS — split editorial brand/form
-//  - Tipografia editorial (clamp, tracking -0.035em, weight 500)
-//  - Tokens OKLCH, zero hex hardcoded
-//  - Lucide icons strokeWidth 1.5
-//  - Empty/feedback states desenhados
+// Login alinhado com identidade Argho oficial (white-first editorial,
+// blue/green, Geist 700, sem dark/Linear). Email + senha em vez de magic link.
 
 import { Button, Input } from '@colheita/ui';
-import { ArrowLeft, CheckCircle2, KeyRound, Mail, Sparkles } from 'lucide-react';
 import { useActionState, useId, useState } from 'react';
 import { requestPasswordReset, signInWithPassword } from './actions.js';
 
@@ -20,146 +14,70 @@ export default function LoginPage() {
   const [mode, setMode] = useState<Mode>('signin');
   const [signinState, signinAction, signinPending] = useActionState(signInWithPassword, null);
   const [resetState, resetAction, resetPending] = useActionState(requestPasswordReset, null);
-  const emailId = useId();
-  const passwordId = useId();
-  const resetEmailId = useId();
 
-  const error = mode === 'signin' ? signinState?.error : resetState?.error;
   const resetSent = resetState?.resetSent === true;
 
   return (
     <div
       style={{
         minHeight: '100vh',
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
-        backgroundColor: 'var(--colheita-surface-background)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#ffffff',
+        padding: '24px',
+        backgroundImage:
+          'radial-gradient(ellipse at top, rgba(24, 48, 144, 0.04), transparent 60%)',
       }}
     >
-      {/* Lado esquerdo — brand editorial Argho */}
-      <aside
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          padding: 'clamp(32px, 4vw, 64px)',
-          backgroundColor: 'var(--colheita-surface-card)',
-          backgroundImage:
-            'radial-gradient(ellipse at top right, color-mix(in srgb, var(--colheita-brand-primary) 14%, transparent), transparent 60%)',
-          position: 'relative',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '8px',
-              backgroundColor: 'var(--colheita-brand-primary)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Sparkles size={16} strokeWidth={1.5} color="var(--colheita-text-inverse)" />
-          </div>
-          <span
-            style={{
-              fontSize: '0.9375rem',
-              fontWeight: 500,
-              color: 'var(--colheita-text-primary)',
-              letterSpacing: '-0.005em',
-            }}
-          >
-            Argho
-          </span>
-        </div>
-
-        <div style={{ maxWidth: '480px' }}>
-          <p
-            style={{
-              fontSize: '0.6875rem',
-              fontWeight: 500,
-              color: 'var(--colheita-text-tertiary)',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              margin: '0 0 16px',
-            }}
-          >
-            Painel administrativo
+      <div style={{ width: '100%', maxWidth: '380px' }}>
+        {/* Marca Argho — header simples editorial */}
+        <header style={{ marginBottom: '40px', textAlign: 'center' }}>
+          <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
+            Argho · Painel
           </p>
-          <h2
+          <h1
+            className="argho-display"
             style={{
-              fontSize: 'clamp(2rem, 3vw, 3rem)',
-              fontWeight: 500,
-              color: 'var(--colheita-text-primary)',
-              letterSpacing: '-0.045em',
-              lineHeight: 1.05,
-              margin: '0 0 20px',
-            }}
-          >
-            Catálogo, propostas e compliance —{' '}
-            <span style={{ color: 'var(--colheita-brand-primary)' }}>em um lugar só.</span>
-          </h2>
-          <p
-            style={{
-              fontSize: '0.9375rem',
-              color: 'var(--colheita-text-secondary)',
-              letterSpacing: '-0.005em',
-              maxWidth: '52ch',
+              fontSize: 'clamp(1.75rem, 2.4vw, 2.25rem)',
+              color: '#0a0a0a',
               margin: 0,
-              lineHeight: 1.6,
             }}
           >
-            A Colheita orquestra o ciclo comercial agro: do registro MAPA ao pedido faturado. Cada
-            lead, cada material, cada decisão — auditável e contextual.
-          </p>
-        </div>
+            Programa <span style={{ color: 'var(--colheita-brand-primary)' }}>Colheita</span>
+          </h1>
+        </header>
+
+        {mode === 'reset' && resetSent ? (
+          <ResetSentState onBack={() => setMode('signin')} />
+        ) : mode === 'reset' ? (
+          <ResetForm
+            action={resetAction}
+            pending={resetPending}
+            error={resetState?.error}
+            onBack={() => setMode('signin')}
+          />
+        ) : (
+          <SignInForm
+            action={signinAction}
+            pending={signinPending}
+            error={signinState?.error}
+            onForgot={() => setMode('reset')}
+          />
+        )}
 
         <p
           style={{
+            marginTop: '32px',
+            textAlign: 'center',
             fontSize: '0.75rem',
             color: 'var(--colheita-text-tertiary)',
-            letterSpacing: '-0.005em',
-            margin: 0,
           }}
         >
           © Argho AgriSciences · {new Date().getFullYear()}
         </p>
-      </aside>
-
-      {/* Lado direito — form */}
-      <section
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 'clamp(24px, 4vw, 48px)',
-        }}
-      >
-        <div style={{ width: '100%', maxWidth: '380px' }}>
-          {mode === 'reset' && resetSent ? (
-            <ResetSentState onBack={() => setMode('signin')} />
-          ) : mode === 'reset' ? (
-            <ResetForm
-              emailId={resetEmailId}
-              action={resetAction}
-              pending={resetPending}
-              error={resetState?.error}
-              onBack={() => setMode('signin')}
-            />
-          ) : (
-            <SignInForm
-              emailId={emailId}
-              passwordId={passwordId}
-              action={signinAction}
-              pending={signinPending}
-              error={error}
-              onForgot={() => setMode('reset')}
-            />
-          )}
-        </div>
-      </section>
+      </div>
     </div>
   );
 }
@@ -167,49 +85,44 @@ export default function LoginPage() {
 // ── Sign in form ─────────────────────────────────────────────────────────────
 
 function SignInForm({
-  emailId,
-  passwordId,
   action,
   pending,
   error,
   onForgot,
 }: {
-  emailId: string;
-  passwordId: string;
   action: (payload: FormData) => void;
   pending: boolean;
   error?: string;
   onForgot: () => void;
 }) {
-  return (
-    <>
-      <div style={{ marginBottom: '32px' }}>
-        <h1
-          style={{
-            fontSize: 'clamp(1.5rem, 2.2vw, 2rem)',
-            fontWeight: 500,
-            color: 'var(--colheita-text-primary)',
-            letterSpacing: '-0.035em',
-            lineHeight: 1.1,
-            margin: '0 0 8px',
-          }}
-        >
-          Bem-vindo de volta
-        </h1>
-        <p
-          style={{
-            fontSize: '0.9375rem',
-            color: 'var(--colheita-text-secondary)',
-            letterSpacing: '-0.005em',
-            margin: 0,
-          }}
-        >
-          Acesse com seu email corporativo e senha.
-        </p>
-      </div>
+  const emailId = useId();
+  const passwordId = useId();
 
-      <form action={action} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <FieldGroup id={emailId} label="Email" icon={<Mail size={14} strokeWidth={1.5} />}>
+  return (
+    <Card>
+      <h2
+        style={{
+          fontSize: '1.125rem',
+          fontWeight: 600,
+          color: '#0a0a0a',
+          letterSpacing: '-0.015em',
+          margin: '0 0 4px',
+        }}
+      >
+        Entrar
+      </h2>
+      <p
+        style={{
+          fontSize: '0.875rem',
+          color: 'var(--colheita-text-secondary)',
+          margin: '0 0 24px',
+        }}
+      >
+        Acesse com seu email corporativo e senha.
+      </p>
+
+      <form action={action} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <Field id={emailId} label="Email">
           <Input
             id={emailId}
             name="email"
@@ -219,12 +132,11 @@ function SignInForm({
             required
             disabled={pending}
           />
-        </FieldGroup>
+        </Field>
 
-        <FieldGroup
+        <Field
           id={passwordId}
           label="Senha"
-          icon={<KeyRound size={14} strokeWidth={1.5} />}
           rightAction={
             <button
               type="button"
@@ -232,12 +144,11 @@ function SignInForm({
               style={{
                 fontSize: '0.75rem',
                 fontWeight: 500,
-                color: 'var(--colheita-text-tertiary)',
+                color: 'var(--colheita-brand-primary)',
                 background: 'transparent',
                 border: 'none',
                 padding: 0,
                 cursor: 'pointer',
-                letterSpacing: '-0.005em',
               }}
             >
               Esqueci a senha
@@ -248,48 +159,45 @@ function SignInForm({
             id={passwordId}
             name="password"
             type="password"
-            placeholder="•••••••••"
+            placeholder="••••••••"
             autoComplete="current-password"
             required
             minLength={6}
             disabled={pending}
           />
-        </FieldGroup>
+        </Field>
 
         {error ? <ErrorMessage>{error}</ErrorMessage> : null}
 
-        <Button type="submit" disabled={pending} style={{ marginTop: '4px' }}>
+        <Button type="submit" disabled={pending} style={{ marginTop: '6px' }}>
           {pending ? 'Entrando…' : 'Entrar'}
         </Button>
       </form>
-    </>
+    </Card>
   );
 }
 
 // ── Reset form ───────────────────────────────────────────────────────────────
 
 function ResetForm({
-  emailId,
   action,
   pending,
   error,
   onBack,
 }: {
-  emailId: string;
   action: (payload: FormData) => void;
   pending: boolean;
   error?: string;
   onBack: () => void;
 }) {
+  const emailId = useId();
+
   return (
-    <>
+    <Card>
       <button
         type="button"
         onClick={onBack}
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '6px',
           fontSize: '0.75rem',
           fontWeight: 500,
           color: 'var(--colheita-text-tertiary)',
@@ -297,41 +205,35 @@ function ResetForm({
           border: 'none',
           padding: 0,
           cursor: 'pointer',
-          marginBottom: '24px',
-          letterSpacing: '-0.005em',
+          marginBottom: '20px',
         }}
       >
-        <ArrowLeft size={12} strokeWidth={1.5} />
-        Voltar
+        ← Voltar
       </button>
 
-      <div style={{ marginBottom: '32px' }}>
-        <h1
-          style={{
-            fontSize: 'clamp(1.5rem, 2.2vw, 2rem)',
-            fontWeight: 500,
-            color: 'var(--colheita-text-primary)',
-            letterSpacing: '-0.035em',
-            lineHeight: 1.1,
-            margin: '0 0 8px',
-          }}
-        >
-          Redefinir senha
-        </h1>
-        <p
-          style={{
-            fontSize: '0.9375rem',
-            color: 'var(--colheita-text-secondary)',
-            letterSpacing: '-0.005em',
-            margin: 0,
-          }}
-        >
-          Enviaremos um link pra você criar uma senha nova.
-        </p>
-      </div>
+      <h2
+        style={{
+          fontSize: '1.125rem',
+          fontWeight: 600,
+          color: '#0a0a0a',
+          letterSpacing: '-0.015em',
+          margin: '0 0 4px',
+        }}
+      >
+        Redefinir senha
+      </h2>
+      <p
+        style={{
+          fontSize: '0.875rem',
+          color: 'var(--colheita-text-secondary)',
+          margin: '0 0 24px',
+        }}
+      >
+        Enviaremos um link pra você criar uma senha nova.
+      </p>
 
-      <form action={action} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <FieldGroup id={emailId} label="Email" icon={<Mail size={14} strokeWidth={1.5} />}>
+      <form action={action} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <Field id={emailId} label="Email">
           <Input
             id={emailId}
             name="email"
@@ -341,15 +243,15 @@ function ResetForm({
             required
             disabled={pending}
           />
-        </FieldGroup>
+        </Field>
 
         {error ? <ErrorMessage>{error}</ErrorMessage> : null}
 
-        <Button type="submit" disabled={pending} style={{ marginTop: '4px' }}>
+        <Button type="submit" disabled={pending} style={{ marginTop: '6px' }}>
           {pending ? 'Enviando…' : 'Enviar link de redefinição'}
         </Button>
       </form>
-    </>
+    </Card>
   );
 }
 
@@ -357,41 +259,53 @@ function ResetForm({
 
 function ResetSentState({ onBack }: { onBack: () => void }) {
   return (
-    <div style={{ textAlign: 'center' }}>
+    <Card>
       <div
         style={{
-          width: '48px',
-          height: '48px',
-          borderRadius: '12px',
-          backgroundColor: `color-mix(in srgb, var(--admin-positive) 18%, transparent)`,
-          color: 'var(--admin-positive)',
+          width: '40px',
+          height: '40px',
+          borderRadius: '999px',
+          backgroundColor: 'var(--colheita-brand-secondary-soft)',
+          color: 'var(--colheita-brand-secondary)',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          margin: '0 auto 24px',
+          marginBottom: '16px',
         }}
+        aria-hidden="true"
       >
-        <CheckCircle2 size={22} strokeWidth={1.5} />
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          role="img"
+          aria-label="Sucesso"
+        >
+          <title>Sucesso</title>
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
       </div>
-      <h1
+      <h2
         style={{
-          fontSize: 'clamp(1.5rem, 2.2vw, 2rem)',
-          fontWeight: 500,
-          color: 'var(--colheita-text-primary)',
-          letterSpacing: '-0.035em',
-          lineHeight: 1.1,
-          margin: '0 0 12px',
+          fontSize: '1.125rem',
+          fontWeight: 600,
+          color: '#0a0a0a',
+          letterSpacing: '-0.015em',
+          margin: '0 0 6px',
         }}
       >
         Link enviado
-      </h1>
+      </h2>
       <p
         style={{
-          fontSize: '0.9375rem',
+          fontSize: '0.875rem',
           color: 'var(--colheita-text-secondary)',
-          letterSpacing: '-0.005em',
-          maxWidth: '34ch',
-          margin: '0 auto 28px',
+          margin: '0 0 20px',
           lineHeight: 1.55,
         }}
       >
@@ -401,9 +315,6 @@ function ResetSentState({ onBack }: { onBack: () => void }) {
         type="button"
         onClick={onBack}
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '6px',
           fontSize: '0.8125rem',
           fontWeight: 500,
           color: 'var(--colheita-brand-primary)',
@@ -411,28 +322,40 @@ function ResetSentState({ onBack }: { onBack: () => void }) {
           border: 'none',
           padding: 0,
           cursor: 'pointer',
-          letterSpacing: '-0.005em',
         }}
       >
-        <ArrowLeft size={13} strokeWidth={1.5} />
-        Voltar pro login
+        ← Voltar pro login
       </button>
-    </div>
+    </Card>
   );
 }
 
 // ── Building blocks ──────────────────────────────────────────────────────────
 
-function FieldGroup({
+function Card({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        backgroundColor: '#ffffff',
+        border: '1px solid var(--colheita-border)',
+        borderRadius: 'var(--colheita-radius-lg)',
+        padding: '28px',
+        boxShadow: 'var(--shadow-card)',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function Field({
   id,
   label,
-  icon,
   rightAction,
   children,
 }: {
   id: string;
   label: string;
-  icon: React.ReactNode;
   rightAction?: React.ReactNode;
   children: React.ReactNode;
 }) {
@@ -449,19 +372,11 @@ function FieldGroup({
         <label
           htmlFor={id}
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            fontSize: '0.75rem',
+            fontSize: '0.8125rem',
             fontWeight: 500,
             color: 'var(--colheita-text-secondary)',
-            letterSpacing: '0.02em',
-            textTransform: 'uppercase',
           }}
         >
-          <span aria-hidden="true" style={{ color: 'var(--colheita-text-tertiary)' }}>
-            {icon}
-          </span>
           {label}
         </label>
         {rightAction}
@@ -477,13 +392,12 @@ function ErrorMessage({ children }: { children: React.ReactNode }) {
       role="alert"
       style={{
         fontSize: '0.8125rem',
-        color: 'var(--admin-critical)',
-        letterSpacing: '-0.005em',
+        color: 'var(--colheita-danger)',
         margin: 0,
         padding: '10px 12px',
         borderRadius: '8px',
-        backgroundColor: `color-mix(in srgb, var(--admin-critical) 10%, transparent)`,
-        boxShadow: `inset 0 0 0 1px color-mix(in srgb, var(--admin-critical) 24%, transparent)`,
+        backgroundColor: '#fef2f2',
+        border: '1px solid #fecaca',
       }}
     >
       {children}

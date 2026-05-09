@@ -99,8 +99,9 @@ export function LeadActivities({ leadId, activities }: LeadActivitiesProps) {
         style={{
           padding: '18px',
           borderRadius: '12px',
-          boxShadow: 'var(--admin-shadow-card)',
-          backgroundColor: 'var(--colheita-surface-elevated)',
+          border: '1px solid var(--colheita-border)',
+          boxShadow: 'var(--shadow-card)',
+          backgroundColor: '#ffffff',
           display: 'flex',
           flexDirection: 'column',
           gap: '14px',
@@ -214,14 +215,14 @@ export function LeadActivities({ leadId, activities }: LeadActivitiesProps) {
         </div>
       </form>
 
-      {/* Timeline — empty state desenhado, nao texto generico centralizado */}
+      {/* Timeline — empty state desenhado */}
       {activities.length === 0 ? (
         <div
           style={{
             padding: '40px 24px',
-            borderRadius: '12px',
-            boxShadow: 'inset 0 0 0 1px var(--colheita-border-subtle)',
-            backgroundColor: 'transparent',
+            borderRadius: 'var(--colheita-radius-lg)',
+            border: '1px dashed var(--colheita-border)',
+            backgroundColor: 'var(--colheita-surface-muted)',
             textAlign: 'center',
             display: 'flex',
             flexDirection: 'column',

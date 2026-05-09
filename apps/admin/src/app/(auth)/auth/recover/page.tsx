@@ -1,15 +1,12 @@
 // apps/admin/src/app/(auth)/auth/recover/page.tsx
 //
-// Pagina pra setar senha nova via link enviado por resetPasswordForEmail.
-// Quando o user clica no email, Supabase recovery hash sai na URL — que é
-// trocada por session ja autenticada pelo client-side handler abaixo. A partir
-// dai o user pode chamar updateUser({ password }).
+// Pagina pra setar senha nova via link de recovery do Supabase.
+// Visual alinhado com identidade Argho (white-first editorial).
 
 'use client';
 
 import { createBrowserClient } from '@colheita/auth';
 import { Button, Input } from '@colheita/ui';
-import { CheckCircle2, KeyRound, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useId, useState } from 'react';
 
@@ -24,9 +21,6 @@ export default function RecoverPage() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
 
-  // Supabase entrega o hash de recovery via URL fragment quando user vem do email.
-  // O client SDK detecta automaticamente em onAuthStateChange. Esperamos o evento
-  // PASSWORD_RECOVERY pra liberar o form.
   useEffect(() => {
     const supabase = createBrowserClient();
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
@@ -35,8 +29,6 @@ export default function RecoverPage() {
       }
     });
 
-    // Fallback: se ja temos session, libera. Cobre caso de evento ja ter fired
-    // antes do listener montar.
     void supabase.auth.getSession().then(({ data }) => {
       if (data.session) setStatus('ready');
     });
@@ -76,215 +68,181 @@ export default function RecoverPage() {
       style={{
         minHeight: '100vh',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'var(--colheita-surface-background)',
-        padding: 'clamp(24px, 4vw, 48px)',
+        backgroundColor: '#ffffff',
+        padding: '24px',
+        backgroundImage:
+          'radial-gradient(ellipse at top, rgba(24, 48, 144, 0.04), transparent 60%)',
       }}
     >
-      <div style={{ width: '100%', maxWidth: '420px' }}>
+      <div style={{ width: '100%', maxWidth: '380px' }}>
+        <header style={{ marginBottom: '32px', textAlign: 'center' }}>
+          <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
+            Argho · Painel
+          </p>
+          <h1
+            className="argho-display"
+            style={{
+              fontSize: 'clamp(1.5rem, 2vw, 1.875rem)',
+              color: '#0a0a0a',
+              margin: 0,
+            }}
+          >
+            {status === 'done' ? 'Senha atualizada' : 'Definir nova senha'}
+          </h1>
+        </header>
+
         <div
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '10px',
-            marginBottom: '32px',
+            backgroundColor: '#ffffff',
+            border: '1px solid var(--colheita-border)',
+            borderRadius: 'var(--colheita-radius-lg)',
+            padding: '28px',
+            boxShadow: 'var(--shadow-card)',
           }}
         >
-          <div
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '8px',
-              backgroundColor: 'var(--colheita-brand-primary)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Sparkles size={16} strokeWidth={1.5} color="var(--colheita-text-inverse)" />
-          </div>
-          <span
-            style={{
-              fontSize: '0.9375rem',
-              fontWeight: 500,
-              color: 'var(--colheita-text-primary)',
-              letterSpacing: '-0.005em',
-            }}
-          >
-            Argho · Painel
-          </span>
-        </div>
-
-        {status === 'done' ? (
-          <Done />
-        ) : (
-          <>
-            <div style={{ marginBottom: '32px' }}>
-              <h1
+          {status === 'done' ? (
+            <div style={{ textAlign: 'center', padding: '8px 0' }}>
+              <div
                 style={{
-                  fontSize: 'clamp(1.5rem, 2.2vw, 2rem)',
-                  fontWeight: 500,
-                  color: 'var(--colheita-text-primary)',
-                  letterSpacing: '-0.035em',
-                  lineHeight: 1.1,
-                  margin: '0 0 8px',
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '999px',
+                  backgroundColor: 'var(--colheita-brand-secondary-soft)',
+                  color: 'var(--colheita-brand-secondary)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '12px',
                 }}
               >
-                Definir nova senha
-              </h1>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  role="img"
+                  aria-label="Sucesso"
+                >
+                  <title>Sucesso</title>
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
               <p
                 style={{
-                  fontSize: '0.9375rem',
+                  fontSize: '0.875rem',
                   color: 'var(--colheita-text-secondary)',
-                  letterSpacing: '-0.005em',
                   margin: 0,
+                }}
+              >
+                Redirecionando pro painel…
+              </p>
+            </div>
+          ) : (
+            <>
+              <p
+                style={{
+                  fontSize: '0.875rem',
+                  color: 'var(--colheita-text-secondary)',
+                  margin: '0 0 20px',
                 }}
               >
                 {status === 'awaiting'
                   ? 'Validando link de recuperação…'
                   : 'Escolha uma senha com no mínimo 8 caracteres.'}
               </p>
-            </div>
 
-            <form
-              onSubmit={onSubmit}
-              style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-            >
-              <FieldGroup id={passwordId} label="Nova senha">
-                <Input
-                  id={passwordId}
-                  type="password"
-                  placeholder="•••••••••"
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={status !== 'ready' && status !== 'error'}
-                  required
-                  minLength={8}
-                />
-              </FieldGroup>
-
-              <FieldGroup id={confirmId} label="Confirme a senha">
-                <Input
-                  id={confirmId}
-                  type="password"
-                  placeholder="•••••••••"
-                  autoComplete="new-password"
-                  value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
-                  disabled={status !== 'ready' && status !== 'error'}
-                  required
-                  minLength={8}
-                />
-              </FieldGroup>
-
-              {error ? (
-                <p
-                  role="alert"
-                  style={{
-                    fontSize: '0.8125rem',
-                    color: 'var(--admin-critical)',
-                    letterSpacing: '-0.005em',
-                    margin: 0,
-                    padding: '10px 12px',
-                    borderRadius: '8px',
-                    backgroundColor: `color-mix(in srgb, var(--admin-critical) 10%, transparent)`,
-                    boxShadow: `inset 0 0 0 1px color-mix(in srgb, var(--admin-critical) 24%, transparent)`,
-                  }}
-                >
-                  {error}
-                </p>
-              ) : null}
-
-              <Button
-                type="submit"
-                disabled={status === 'submitting' || status === 'awaiting'}
-                style={{ marginTop: '4px' }}
+              <form
+                onSubmit={onSubmit}
+                style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}
               >
-                {status === 'submitting' ? 'Salvando…' : 'Atualizar senha'}
-              </Button>
-            </form>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
+                <div>
+                  <label
+                    htmlFor={passwordId}
+                    style={{
+                      display: 'block',
+                      fontSize: '0.8125rem',
+                      fontWeight: 500,
+                      color: 'var(--colheita-text-secondary)',
+                      marginBottom: '6px',
+                    }}
+                  >
+                    Nova senha
+                  </label>
+                  <Input
+                    id={passwordId}
+                    type="password"
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={status !== 'ready' && status !== 'error'}
+                    required
+                    minLength={8}
+                  />
+                </div>
 
-function Done() {
-  return (
-    <div style={{ textAlign: 'center', paddingTop: '40px' }}>
-      <div
-        style={{
-          width: '48px',
-          height: '48px',
-          borderRadius: '12px',
-          backgroundColor: `color-mix(in srgb, var(--admin-positive) 18%, transparent)`,
-          color: 'var(--admin-positive)',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 24px',
-        }}
-      >
-        <CheckCircle2 size={22} strokeWidth={1.5} />
-      </div>
-      <h1
-        style={{
-          fontSize: 'clamp(1.5rem, 2.2vw, 2rem)',
-          fontWeight: 500,
-          color: 'var(--colheita-text-primary)',
-          letterSpacing: '-0.035em',
-          lineHeight: 1.1,
-          margin: '0 0 12px',
-        }}
-      >
-        Senha atualizada
-      </h1>
-      <p
-        style={{
-          fontSize: '0.9375rem',
-          color: 'var(--colheita-text-secondary)',
-          letterSpacing: '-0.005em',
-          margin: 0,
-        }}
-      >
-        Redirecionando pro painel…
-      </p>
-    </div>
-  );
-}
+                <div>
+                  <label
+                    htmlFor={confirmId}
+                    style={{
+                      display: 'block',
+                      fontSize: '0.8125rem',
+                      fontWeight: 500,
+                      color: 'var(--colheita-text-secondary)',
+                      marginBottom: '6px',
+                    }}
+                  >
+                    Confirme a senha
+                  </label>
+                  <Input
+                    id={confirmId}
+                    type="password"
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
+                    disabled={status !== 'ready' && status !== 'error'}
+                    required
+                    minLength={8}
+                  />
+                </div>
 
-function FieldGroup({
-  id,
-  label,
-  children,
-}: {
-  id: string;
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <label
-        htmlFor={id}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '6px',
-          fontSize: '0.75rem',
-          fontWeight: 500,
-          color: 'var(--colheita-text-secondary)',
-          letterSpacing: '0.02em',
-          textTransform: 'uppercase',
-          marginBottom: '6px',
-        }}
-      >
-        <KeyRound size={12} strokeWidth={1.5} color="var(--colheita-text-tertiary)" />
-        {label}
-      </label>
-      {children}
+                {error ? (
+                  <p
+                    role="alert"
+                    style={{
+                      fontSize: '0.8125rem',
+                      color: 'var(--colheita-danger)',
+                      margin: 0,
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      backgroundColor: '#fef2f2',
+                      border: '1px solid #fecaca',
+                    }}
+                  >
+                    {error}
+                  </p>
+                ) : null}
+
+                <Button
+                  type="submit"
+                  disabled={status === 'submitting' || status === 'awaiting'}
+                  style={{ marginTop: '6px' }}
+                >
+                  {status === 'submitting' ? 'Salvando…' : 'Atualizar senha'}
+                </Button>
+              </form>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -145,19 +145,17 @@ export function AgentDock() {
           gap: '8px',
           padding: '10px 16px',
           borderRadius: '999px',
-          border: 'none',
-          backgroundColor: 'var(--colheita-surface-elevated)',
+          border: '1px solid var(--colheita-border)',
+          backgroundColor: '#ffffff',
           color: 'var(--colheita-text-primary)',
           fontSize: '0.8125rem',
           fontWeight: 500,
-          letterSpacing: '-0.005em',
           cursor: 'pointer',
-          boxShadow:
-            '0 0 0 1px var(--colheita-border), 0 12px 32px -8px oklch(0 0 0 / 0.5), 0 0 0 4px color-mix(in srgb, var(--colheita-brand-primary) 8%, transparent)',
+          boxShadow: 'var(--shadow-blue-glow), var(--shadow-card)',
           transition: 'transform 200ms ease, box-shadow 200ms ease',
         }}
       >
-        <Sparkles size={14} strokeWidth={1.5} color="var(--colheita-brand-primary)" />
+        <Sparkles size={14} strokeWidth={1.75} color="var(--colheita-brand-primary)" />
         Pergunte ao agente
       </button>
     );
@@ -174,7 +172,7 @@ export function AgentDock() {
           position: 'fixed',
           inset: 0,
           zIndex: 49,
-          backgroundColor: 'oklch(0 0 0 / 0.2)',
+          backgroundColor: 'rgba(15, 23, 42, 0.16)',
           backdropFilter: 'blur(2px)',
           border: 'none',
           padding: 0,
@@ -195,8 +193,9 @@ export function AgentDock() {
           display: 'flex',
           flexDirection: 'column',
           borderRadius: '16px',
-          backgroundColor: 'var(--colheita-surface-elevated)',
-          boxShadow: '0 0 0 1px var(--colheita-border), 0 24px 64px -16px oklch(0 0 0 / 0.6)',
+          backgroundColor: '#ffffff',
+          border: '1px solid var(--colheita-border)',
+          boxShadow: '0 24px 64px -16px rgba(15, 23, 42, 0.18)',
           overflow: 'hidden',
           animation: 'agentDockIn 200ms ease',
         }}
@@ -217,14 +216,14 @@ export function AgentDock() {
                 width: '28px',
                 height: '28px',
                 borderRadius: '8px',
-                backgroundColor: `color-mix(in srgb, var(--colheita-brand-primary) 16%, transparent)`,
+                backgroundColor: 'var(--colheita-brand-primary-soft)',
                 color: 'var(--colheita-brand-primary)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <Sparkles size={14} strokeWidth={1.5} />
+              <Sparkles size={14} strokeWidth={1.75} />
             </div>
             <div>
               <p
