@@ -1,84 +1,168 @@
 // apps/admin/src/app/(dashboard)/page.tsx
+//
+// Visao geral — home do admin Colheita.
+// Estrutura por camadas Fase 1 do Programa Colheita (vide MEMORY.md):
+// PIM (catalogo) · DAM (midias) · Generator (materiais) · Academia · Compliance.
+// Identidade visual Argho oficial — eyebrows editoriais, .argho-display,
+// paleta blue/green, nomes de produto em CAPS preto.
+
 import { createServerClient, requireAuth } from '@colheita/auth';
+import {
+  AlertTriangle,
+  ArrowUpRight,
+  BookOpen,
+  Boxes,
+  FileWarning,
+  Image as ImageIcon,
+  Layers,
+  Package,
+  ShieldAlert,
+  Sparkles,
+  Tag,
+} from 'lucide-react';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 
 export const metadata = { title: 'Visão geral' };
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Subcomponents ────────────────────────────────────────────────────────────
 
-function StatCard({
-  label,
-  value,
-  href,
-  accent,
-}: {
+interface KpiCardProps {
   label: string;
   value: number;
   href: string;
-  accent: string;
-}) {
+  accent?: string;
+  hint?: string;
+}
+
+function KpiCard({ label, value, href, accent, hint }: KpiCardProps) {
   return (
     <Link
       href={href}
       style={{
         display: 'block',
-        padding: '20px 24px',
+        padding: '20px 22px',
         borderRadius: 'var(--colheita-radius-lg)',
         border: '1px solid var(--colheita-border)',
-        backgroundColor: 'var(--colheita-surface-elevated)',
+        backgroundColor: '#ffffff',
         textDecoration: 'none',
-        transition: 'border-color 0.15s, background-color 0.15s',
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: 'var(--shadow-card)',
+        transition: 'box-shadow 200ms ease, border-color 200ms ease',
       }}
     >
+      <span
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: '3px',
+          backgroundColor: accent ?? 'var(--colheita-brand-primary)',
+        }}
+      />
       <p
         style={{
-          fontSize: '0.75rem',
-          fontWeight: '500',
+          fontSize: '0.6875rem',
+          fontWeight: 600,
           color: 'var(--colheita-text-tertiary)',
           textTransform: 'uppercase',
-          letterSpacing: '0.06em',
-          marginBottom: '8px',
+          letterSpacing: '0.12em',
+          margin: '0 0 12px',
         }}
       >
         {label}
       </p>
       <p
+        className="argho-display"
         style={{
           fontSize: '2rem',
-          fontWeight: '600',
-          color: accent,
-          letterSpacing: '-0.03em',
+          color: '#0a0a0a',
+          margin: '0 0 4px',
           lineHeight: 1,
+          fontVariantNumeric: 'tabular-nums',
         }}
       >
         {value}
       </p>
+      {hint ? (
+        <p
+          style={{
+            fontSize: '0.75rem',
+            color: 'var(--colheita-text-tertiary)',
+            margin: 0,
+          }}
+        >
+          {hint}
+        </p>
+      ) : null}
     </Link>
   );
 }
 
-// ── Page ──────────────────────────────────────────────────────────────────────
+interface SectionProps {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}
+
+function Section({ eyebrow, title, description, children }: SectionProps) {
+  return (
+    <section style={{ marginBottom: '40px' }}>
+      <div style={{ marginBottom: '16px' }}>
+        <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '8px' }}>
+          {eyebrow}
+        </p>
+        <h2
+          style={{
+            fontSize: '1.125rem',
+            fontWeight: 700,
+            color: '#0a0a0a',
+            letterSpacing: '-0.02em',
+            margin: 0,
+          }}
+        >
+          {title}
+        </h2>
+        {description ? (
+          <p
+            style={{
+              fontSize: '0.875rem',
+              color: 'var(--colheita-text-secondary)',
+              margin: '4px 0 0',
+              maxWidth: '64ch',
+            }}
+          >
+            {description}
+          </p>
+        ) : null}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+// ── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
   await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
-  // Busca contagens em paralelo
   const [
     { count: totalProdutos },
     { count: publicados },
     { count: rascunhos },
-    { count: arquivados },
     { count: totalCategorias },
+    { count: totalAssets },
+    { count: totalMateriais },
     { count: totalTrilhas },
     { count: trilhasPublicadas },
     { count: totalLicoes },
-    { count: totalDistribuidores },
     { data: expiringRegs },
-    { count: totalPedidos },
-    { count: pedidosPendentes },
   ] = await Promise.all([
     supabase.from('products').select('id', { count: 'exact', head: true }).is('deleted_at', null),
     supabase
@@ -91,22 +175,15 @@ export default async function DashboardPage() {
       .select('id', { count: 'exact', head: true })
       .eq('status', 'draft')
       .is('deleted_at', null),
-    supabase
-      .from('products')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'archived')
-      .is('deleted_at', null),
     supabase.from('product_categories').select('id', { count: 'exact', head: true }),
+    supabase.from('assets').select('id', { count: 'exact', head: true }).is('deleted_at', null),
+    supabase.from('generated_materials').select('id', { count: 'exact', head: true }),
     supabase.from('learning_tracks').select('id', { count: 'exact', head: true }),
     supabase
       .from('learning_tracks')
       .select('id', { count: 'exact', head: true })
       .eq('status', 'published'),
     supabase.from('learning_lessons').select('id', { count: 'exact', head: true }),
-    supabase.from('users').select('id', { count: 'exact', head: true }).eq('status', 'active'),
-    // Registros regulatórios ativos com vencimento nos próximos 60 dias.
-    // Stratificamos no client-side em 4 buckets: expirado, <=15d, <=30d, <=60d.
-    // Pega 60d numa query só pra evitar N requests; volume baixo (Argho tem ~12 regs).
     supabase
       .from('regulatory_registrations')
       .select('id, expires_at, registration_no, authority, products!inner(name, slug)')
@@ -118,18 +195,8 @@ export default async function DashboardPage() {
       )
       .order('expires_at', { ascending: true })
       .limit(50),
-    supabase.from('orders').select('id', { count: 'exact', head: true }),
-    supabase
-      .from('orders')
-      .select('id', { count: 'exact', head: true })
-      .in('status', ['confirmado', 'faturado']),
   ]);
 
-  // Stratifica registros regulatorios em buckets de criticidade.
-  // expired: ja venceu (urgencia maxima — risco de multa MAPA)
-  // critical: vence em <=15 dias (sem tempo pra renovar via canal normal)
-  // warning: vence em <=30 dias (janela de renovacao curta)
-  // notice: vence em <=60 dias (tempo pra acionar regulatorio com folga)
   const now = Date.now();
   const expired: typeof expiringRegs = [];
   const critical15d: typeof expiringRegs = [];
@@ -147,10 +214,9 @@ export default async function DashboardPage() {
     else if (daysLeft <= 60) notice60d.push(reg);
   }
 
-  // Top 3 mais urgentes pra mostrar no banner (se houver expirado/critico).
   const topUrgent = [...expired, ...critical15d].slice(0, 3);
+  const hasUrgentReg = expired.length > 0 || critical15d.length > 0;
 
-  // Busca produtos recentes
   const { data: recentes } = await supabase
     .from('products')
     .select('slug, name, status, updated_at')
@@ -164,73 +230,98 @@ export default async function DashboardPage() {
     archived: 'Arquivado',
   };
 
-  const statusColor: Record<string, string> = {
-    draft: 'var(--colheita-text-tertiary)',
-    published: 'var(--colheita-success)',
-    archived: 'var(--colheita-warning)',
-  };
-
   return (
-    <div style={{ padding: '32px', maxWidth: '860px' }}>
-      {/* Header */}
-      <div style={{ marginBottom: '24px' }}>
+    <div
+      style={{
+        padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)',
+      }}
+    >
+      {/* Header editorial Argho */}
+      <header style={{ marginBottom: '40px' }}>
+        <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
+          Argho · Painel de gestão
+        </p>
         <h1
+          className="argho-display"
           style={{
-            fontSize: '1.5rem',
-            fontWeight: '600',
-            color: 'var(--colheita-text-primary)',
-            letterSpacing: '-0.025em',
-            marginBottom: '4px',
+            fontSize: 'clamp(2rem, 2.8vw, 2.75rem)',
+            color: '#0a0a0a',
+            margin: '0 0 10px',
           }}
         >
-          Visão geral
+          Programa <span style={{ color: 'var(--colheita-brand-primary)' }}>Colheita</span>
         </h1>
-        <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
-          Argho Agrosciences — painel de gestão
-        </p>
-      </div>
-
-      {/* Banner de alerta regulatorio — so aparece quando ha expirados OU criticos.
-          Camada 9 (Compliance): visibilidade #1 ao abrir o admin. Sem isto, fundador
-          descobre vencimento por multa do MAPA. */}
-      {(expired.length > 0 || critical15d.length > 0) && (
-        <div
+        <p
           style={{
-            marginBottom: '32px',
+            fontSize: '1rem',
+            color: 'var(--colheita-text-secondary)',
+            margin: 0,
+            maxWidth: '64ch',
+          }}
+        >
+          Catálogo, geração de materiais, biblioteca de mídia e Academia — sob a identidade visual
+          blindada da Argho AgriSciences.
+        </p>
+      </header>
+
+      {/* Banner regulatorio — so quando ha urgencia, alta prioridade visual */}
+      {hasUrgentReg ? (
+        <aside
+          role="alert"
+          style={{
+            marginBottom: '40px',
             padding: '20px 24px',
             borderRadius: 'var(--colheita-radius-lg)',
-            backgroundColor: expired.length > 0 ? 'rgba(239,68,68,0.08)' : 'rgba(249,115,22,0.08)',
-            border: `1px solid ${
-              expired.length > 0 ? 'rgba(239,68,68,0.3)' : 'rgba(249,115,22,0.3)'
-            }`,
+            backgroundColor: expired.length > 0 ? '#fef2f2' : '#fffbeb',
+            border: `1px solid ${expired.length > 0 ? '#fecaca' : '#fde68a'}`,
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-            <span
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
+            <div
               style={{
-                fontSize: '1.5rem',
-                lineHeight: 1,
+                width: '36px',
+                height: '36px',
+                borderRadius: 'var(--colheita-radius-md)',
+                backgroundColor: expired.length > 0 ? '#fecaca' : '#fde68a',
+                color: expired.length > 0 ? 'var(--colheita-danger)' : '#b45309',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 flexShrink: 0,
               }}
-              aria-hidden="true"
             >
-              {expired.length > 0 ? '🛑' : '⚠️'}
-            </span>
-            <div style={{ flex: 1 }}>
+              {expired.length > 0 ? (
+                <ShieldAlert size={18} strokeWidth={1.75} />
+              ) : (
+                <AlertTriangle size={18} strokeWidth={1.75} />
+              )}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <p
                 style={{
-                  fontSize: '0.875rem',
-                  fontWeight: '700',
-                  color: expired.length > 0 ? '#ef4444' : '#f97316',
+                  fontSize: '0.6875rem',
+                  fontWeight: 700,
+                  color: expired.length > 0 ? 'var(--colheita-danger)' : '#b45309',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  marginBottom: '6px',
+                  letterSpacing: '0.12em',
+                  margin: '0 0 6px',
+                }}
+              >
+                Compliance regulatório
+              </p>
+              <p
+                style={{
+                  fontSize: '0.9375rem',
+                  fontWeight: 600,
+                  color: '#0a0a0a',
+                  margin: '0 0 4px',
+                  letterSpacing: '-0.01em',
                 }}
               >
                 {expired.length > 0
-                  ? `${expired.length} registro${expired.length === 1 ? '' : 's'} regulatório${
-                      expired.length === 1 ? '' : 's'
-                    } EXPIRADO${expired.length === 1 ? '' : 'S'}`
+                  ? `${expired.length} registro${expired.length === 1 ? '' : 's'} EXPIRADO${
+                      expired.length === 1 ? '' : 'S'
+                    }`
                   : `${critical15d.length} registro${critical15d.length === 1 ? '' : 's'} crítico${
                       critical15d.length === 1 ? '' : 's'
                     } — vence${critical15d.length === 1 ? '' : 'm'} em ≤15 dias`}
@@ -239,8 +330,8 @@ export default async function DashboardPage() {
                 style={{
                   fontSize: '0.875rem',
                   color: 'var(--colheita-text-secondary)',
-                  lineHeight: 1.5,
-                  marginBottom: '12px',
+                  lineHeight: 1.55,
+                  margin: '0 0 12px',
                 }}
               >
                 {expired.length > 0
@@ -248,15 +339,14 @@ export default async function DashboardPage() {
                   : 'Janela curta de renovação. Acione o regulatório agora pra evitar interrupção de comercialização.'}
               </p>
 
-              {/* Lista compacta dos top 3 mais urgentes */}
               <ul
                 style={{
                   listStyle: 'none',
                   padding: 0,
-                  margin: '0 0 12px',
+                  margin: '0 0 14px',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '4px',
+                  gap: '6px',
                 }}
               >
                 {topUrgent.map((reg) => {
@@ -271,18 +361,23 @@ export default async function DashboardPage() {
                     <li
                       key={reg.id}
                       style={{
+                        display: 'flex',
+                        alignItems: 'baseline',
+                        gap: '8px',
+                        flexWrap: 'wrap',
                         fontSize: '0.8125rem',
-                        color: 'var(--colheita-text-primary)',
-                        fontFamily: 'var(--font-mono)',
                       }}
                     >
-                      <span style={{ fontWeight: 600 }}>
+                      <span className="argho-product-name" style={{ fontSize: '0.8125rem' }}>
                         {(product as { name?: string } | null)?.name ?? '—'}
                       </span>
-                      <span style={{ color: 'var(--colheita-text-tertiary)' }}>
-                        {' · '}
-                        {reg.authority} {reg.registration_no}
-                        {' · '}
+                      <span
+                        style={{
+                          color: 'var(--colheita-text-tertiary)',
+                          fontFamily: 'var(--font-mono)',
+                        }}
+                      >
+                        {reg.authority} {reg.registration_no} ·{' '}
                         {daysLeft !== null && daysLeft < 0
                           ? `vencido há ${Math.abs(daysLeft)}d`
                           : daysLeft !== null
@@ -297,139 +392,183 @@ export default async function DashboardPage() {
               <Link
                 href="/compliance"
                 style={{
-                  display: 'inline-block',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
                   fontSize: '0.8125rem',
-                  fontWeight: '600',
-                  color: expired.length > 0 ? '#ef4444' : '#f97316',
+                  fontWeight: 600,
+                  color: expired.length > 0 ? 'var(--colheita-danger)' : '#b45309',
                   textDecoration: 'none',
                 }}
               >
-                Ver compliance →
+                Ver compliance
+                <ArrowUpRight size={13} strokeWidth={2} />
               </Link>
             </div>
           </div>
-        </div>
-      )}
+        </aside>
+      ) : null}
 
-      {/* Cards de stats */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-          gap: '16px',
-          marginBottom: '40px',
-        }}
+      {/* PIM — Catalogo de Produtos */}
+      <Section
+        eyebrow="PIM · Catálogo"
+        title="Single source of truth dos produtos Argho"
+        description="Composição NPK, dosagem, registros MAPA, hero shots — tudo num lugar só."
       >
-        <StatCard
-          label="Total produtos"
-          value={totalProdutos ?? 0}
-          href="/produtos"
-          accent="var(--colheita-text-primary)"
-        />
-        <StatCard
-          label="Publicados"
-          value={publicados ?? 0}
-          href="/produtos"
-          accent="var(--colheita-success)"
-        />
-        <StatCard
-          label="Rascunhos"
-          value={rascunhos ?? 0}
-          href="/produtos"
-          accent="var(--colheita-brand-primary)"
-        />
-        <StatCard
-          label="Arquivados"
-          value={arquivados ?? 0}
-          href="/produtos"
-          accent="var(--colheita-text-tertiary)"
-        />
-        <StatCard
-          label="Categorias"
-          value={totalCategorias ?? 0}
-          href="/categorias"
-          accent="var(--colheita-text-primary)"
-        />
-        <StatCard
-          label="Trilhas"
-          value={totalTrilhas ?? 0}
-          href="/academia"
-          accent="var(--colheita-text-primary)"
-        />
-        <StatCard
-          label="Trilhas publicadas"
-          value={trilhasPublicadas ?? 0}
-          href="/academia"
-          accent="var(--colheita-success)"
-        />
-        <StatCard
-          label="Lições"
-          value={totalLicoes ?? 0}
-          href="/academia"
-          accent="var(--colheita-text-primary)"
-        />
-        <StatCard
-          label="Distribuidores"
-          value={totalDistribuidores ?? 0}
-          href="/distribuidores"
-          accent="var(--colheita-brand-teal)"
-        />
-        {/* 3 cards stratificados em vez de 1 — visibilidade gradiente da urgencia.
-            Cores seguem semaforo: laranja (warning), amarelo (notice), cinza (none). */}
-        <StatCard
-          label="Reg. vencem ≤15d"
-          value={critical15d.length}
-          href="/compliance?status=active"
-          accent={critical15d.length > 0 ? '#ef4444' : 'var(--colheita-text-tertiary)'}
-        />
-        <StatCard
-          label="Reg. vencem ≤30d"
-          value={warning30d.length}
-          href="/compliance?status=active"
-          accent={warning30d.length > 0 ? '#f97316' : 'var(--colheita-text-tertiary)'}
-        />
-        <StatCard
-          label="Reg. vencem ≤60d"
-          value={notice60d.length}
-          href="/compliance?status=active"
-          accent={
-            notice60d.length > 0 ? 'var(--colheita-brand-gold)' : 'var(--colheita-text-tertiary)'
-          }
-        />
-        <StatCard
-          label="Pedidos"
-          value={totalPedidos ?? 0}
-          href="/pedidos"
-          accent="var(--colheita-text-primary)"
-        />
-        <StatCard
-          label="Confirmados/Faturados"
-          value={pedidosPendentes ?? 0}
-          href="/pedidos?status=confirmado"
-          accent="var(--colheita-brand-primary)"
-        />
-      </div>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: '14px',
+          }}
+        >
+          <KpiCard
+            label="Total produtos"
+            value={totalProdutos ?? 0}
+            href="/produtos"
+            accent="var(--colheita-brand-primary)"
+            hint="todas as fichas no PIM"
+          />
+          <KpiCard
+            label="Publicados"
+            value={publicados ?? 0}
+            href="/produtos?status=published"
+            accent="var(--colheita-brand-secondary)"
+            hint="visíveis no portal"
+          />
+          <KpiCard
+            label="Rascunhos"
+            value={rascunhos ?? 0}
+            href="/produtos?status=draft"
+            accent="var(--colheita-text-tertiary)"
+            hint="em construção"
+          />
+          <KpiCard
+            label="Categorias"
+            value={totalCategorias ?? 0}
+            href="/categorias"
+            accent="var(--colheita-brand-primary)"
+            hint="taxonomia do catálogo"
+          />
+          <KpiCard
+            label="Reg. ≤15d"
+            value={critical15d.length}
+            href="/compliance?status=active"
+            accent={
+              critical15d.length > 0 ? 'var(--colheita-danger)' : 'var(--colheita-text-tertiary)'
+            }
+            hint="vencimento crítico"
+          />
+          <KpiCard
+            label="Reg. ≤30d"
+            value={warning30d.length}
+            href="/compliance?status=active"
+            accent={warning30d.length > 0 ? '#b45309' : 'var(--colheita-text-tertiary)'}
+            hint="janela curta"
+          />
+          <KpiCard
+            label="Reg. ≤60d"
+            value={notice60d.length}
+            href="/compliance?status=active"
+            accent={
+              notice60d.length > 0
+                ? 'var(--colheita-brand-secondary)'
+                : 'var(--colheita-text-tertiary)'
+            }
+            hint="acompanhar"
+          />
+        </div>
+      </Section>
 
-      {/* Atividade recente */}
-      {recentes && recentes.length > 0 && (
-        <div>
-          <p
-            style={{
-              fontSize: '0.75rem',
-              fontWeight: '500',
-              color: 'var(--colheita-text-tertiary)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              marginBottom: '12px',
-            }}
-          >
-            Atualizados recentemente
-          </p>
+      {/* DAM + Generator + Academia em uma linha de KPIs secundarios */}
+      <Section
+        eyebrow="Operação"
+        title="Mídia, geração de materiais e Academia"
+        description="DAM versionado, materiais gerados em segundos com identidade Argho e LMS interno."
+      >
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '14px',
+          }}
+        >
+          <KpiCard
+            label="Biblioteca DAM"
+            value={totalAssets ?? 0}
+            href="/midias"
+            accent="var(--colheita-brand-primary)"
+            hint="imagens · vídeos · docs"
+          />
+          <KpiCard
+            label="Materiais gerados"
+            value={totalMateriais ?? 0}
+            href="/materiais"
+            accent="var(--colheita-brand-secondary)"
+            hint="ficha · banner · catálogo"
+          />
+          <KpiCard
+            label="Trilhas Academia"
+            value={totalTrilhas ?? 0}
+            href="/academia"
+            accent="var(--colheita-brand-primary)"
+            hint={`${trilhasPublicadas ?? 0} publicadas`}
+          />
+          <KpiCard
+            label="Lições"
+            value={totalLicoes ?? 0}
+            href="/academia"
+            accent="var(--colheita-brand-secondary)"
+            hint="conteúdo da Academia"
+          />
+        </div>
+      </Section>
+
+      {/* Atalhos rapidos pelas camadas */}
+      <Section eyebrow="Atalhos" title="Camadas Fase 1">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '12px',
+          }}
+        >
+          <ShortcutTile href="/produtos" icon={Package} title="Catálogo de produtos" sub="PIM" />
+          <ShortcutTile href="/midias" icon={ImageIcon} title="Biblioteca de mídia" sub="DAM" />
+          <ShortcutTile
+            href="/materiais"
+            icon={Sparkles}
+            title="Materiais gerados"
+            sub="Generator"
+          />
+          <ShortcutTile
+            href="/assistente"
+            icon={Layers}
+            title="Layout Inference"
+            sub="Refs → Argho"
+          />
+          <ShortcutTile href="/academia" icon={BookOpen} title="Academia" sub="LMS" />
+          <ShortcutTile href="/categorias" icon={Tag} title="Categorias" sub="Taxonomia" />
+          <ShortcutTile
+            href="/compliance"
+            icon={FileWarning}
+            title="Compliance"
+            sub="MAPA · ANVISA · IBAMA"
+          />
+          <ShortcutTile href="/auditoria" icon={Boxes} title="Auditoria" sub="Identity & Access" />
+        </div>
+      </Section>
+
+      {/* Atualizados recentemente */}
+      {recentes && recentes.length > 0 ? (
+        <Section eyebrow="Atividade" title="Atualizados recentemente">
           <div
             style={{
               border: '1px solid var(--colheita-border)',
               borderRadius: 'var(--colheita-radius-lg)',
+              backgroundColor: '#ffffff',
               overflow: 'hidden',
+              boxShadow: 'var(--shadow-card)',
             }}
           >
             {recentes.map((p, i) => (
@@ -440,35 +579,129 @@ export default async function DashboardPage() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: '14px 20px',
+                  gap: '12px',
+                  padding: '16px 20px',
                   borderBottom:
                     i < recentes.length - 1 ? '1px solid var(--colheita-border-subtle)' : 'none',
                   textDecoration: 'none',
-                  transition: 'background-color 0.1s',
+                  transition: 'background-color 0.15s',
                 }}
               >
                 <span
-                  style={{
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    color: 'var(--colheita-text-primary)',
-                  }}
+                  className="argho-product-name"
+                  style={{ fontSize: '0.875rem', flex: 1, minWidth: 0 }}
                 >
                   {p.name}
                 </span>
-                <span
-                  style={{
-                    fontSize: '0.75rem',
-                    color: statusColor[p.status] ?? 'var(--colheita-text-tertiary)',
-                  }}
-                >
-                  {statusLabel[p.status] ?? p.status}
-                </span>
+                <StatusPill status={p.status} label={statusLabel[p.status] ?? p.status} />
               </Link>
             ))}
           </div>
-        </div>
-      )}
+        </Section>
+      ) : null}
     </div>
+  );
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function ShortcutTile({
+  href,
+  icon: Icon,
+  title,
+  sub,
+}: {
+  href: string;
+  icon: typeof Package;
+  title: string;
+  sub: string;
+}) {
+  return (
+    <Link
+      href={href}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '14px',
+        padding: '16px 18px',
+        borderRadius: 'var(--colheita-radius-lg)',
+        border: '1px solid var(--colheita-border)',
+        backgroundColor: '#ffffff',
+        textDecoration: 'none',
+        boxShadow: 'var(--shadow-card)',
+        transition: 'border-color 200ms ease, box-shadow 200ms ease',
+      }}
+    >
+      <div
+        style={{
+          width: '36px',
+          height: '36px',
+          borderRadius: 'var(--colheita-radius-md)',
+          backgroundColor: 'var(--colheita-brand-primary-soft)',
+          color: 'var(--colheita-brand-primary)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+        }}
+      >
+        <Icon size={16} strokeWidth={1.75} />
+      </div>
+      <div style={{ minWidth: 0 }}>
+        <p
+          style={{
+            fontSize: '0.875rem',
+            fontWeight: 600,
+            color: '#0a0a0a',
+            margin: 0,
+            letterSpacing: '-0.01em',
+          }}
+        >
+          {title}
+        </p>
+        <p
+          style={{
+            fontSize: '0.6875rem',
+            fontWeight: 600,
+            color: 'var(--colheita-brand-primary)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            margin: '2px 0 0',
+          }}
+        >
+          {sub}
+        </p>
+      </div>
+    </Link>
+  );
+}
+
+function StatusPill({ status, label }: { status: string; label: string }) {
+  const map: Record<string, { bg: string; fg: string }> = {
+    published: {
+      bg: 'var(--colheita-brand-secondary-soft)',
+      fg: 'var(--colheita-brand-secondary)',
+    },
+    draft: { bg: 'var(--colheita-surface-muted)', fg: 'var(--colheita-text-secondary)' },
+    archived: { bg: '#fef3c7', fg: '#b45309' },
+  };
+  const tone = map[status] ?? map.draft;
+  if (!tone) return null;
+  return (
+    <span
+      style={{
+        flexShrink: 0,
+        fontSize: '0.6875rem',
+        fontWeight: 600,
+        padding: '4px 10px',
+        borderRadius: 'var(--colheita-radius-full)',
+        backgroundColor: tone.bg,
+        color: tone.fg,
+        textTransform: 'uppercase',
+        letterSpacing: '0.06em',
+      }}
+    >
+      {label}
+    </span>
   );
 }

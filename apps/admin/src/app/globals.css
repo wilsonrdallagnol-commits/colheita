@@ -5,6 +5,11 @@
 
 @import "tailwindcss";
 
+/* Tailwind 4 nao auto-detecta arquivos em packages workspace.
+   Sem @source, classes usadas dentro de @colheita/ui (Sidebar, Card, Badge,
+   Breadcrumb) ficam fora do CSS final — sidebar quebra em prod. */
+@source "../../../../packages/ui/src/**/*.{ts,tsx}";
+
 :root {
   /* Surfaces (white-first editorial) */
   --colheita-surface-background: #ffffff;
