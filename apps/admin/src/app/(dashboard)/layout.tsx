@@ -2,6 +2,7 @@
 import { requireAuth } from '@colheita/auth';
 import { SidebarProvider } from '@colheita/ui';
 import { cookies } from 'next/headers';
+import { AgentDock } from '@/components/agent/agent-dock';
 import { AppSidebar } from '@/components/nav/app-sidebar';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -14,6 +15,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <AppSidebar userEmail={user.email} />
         <main style={{ flex: 1, overflow: 'auto' }}>{children}</main>
       </div>
+      {/* Agent dock onipresente — agent-first arquitetural (vide /hm-designer).
+          Sugestoes contextuais por rota; chat real em sprint dedicado. */}
+      <AgentDock />
     </SidebarProvider>
   );
 }
