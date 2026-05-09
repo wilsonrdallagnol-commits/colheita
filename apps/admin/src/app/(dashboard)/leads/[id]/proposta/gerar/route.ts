@@ -43,24 +43,32 @@ const propostaRateLimiter = buildRateLimiter({
 });
 
 /**
- * Wrappa Promise com timeout. Se vencer, rejeita com Error('timeout');
- * Promise original continua mas resultado descartado (Playwright fecha browser
- * via finally interno). Evita HTTP request pendurando indefinidamente.
+ * Executa fn com AbortController atado a um timeout. Quando vencer, sinaliza
+ * abort — fn precisa propagar o signal pro Playwright pra fechar o browser
+ * imediatamente. Sem isso, Promise continua rodando e processo Chromium vaza
+ * RAM (~250MB/timeout) ate Vercel function morrer por OOM.
  */
-function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`${label} timeout after ${ms}ms`)), ms);
-    promise.then(
-      (v) => {
-        clearTimeout(timer);
-        resolve(v);
-      },
-      (e) => {
-        clearTimeout(timer);
-        reject(e);
-      },
-    );
-  });
+async function withTimeout<T>(
+  fn: (signal: AbortSignal) => Promise<T>,
+  ms: number,
+  label: string,
+): Promise<T> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  try {
+    const result = await fn(ctrl.signal);
+    if (ctrl.signal.aborted) {
+      throw new Error(`${label} timeout after ${ms}ms`);
+    }
+    return result;
+  } catch (err) {
+    if (ctrl.signal.aborted) {
+      throw new Error(`${label} timeout after ${ms}ms`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 interface PostedItem {
@@ -255,7 +263,7 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
   try {
     const startedAt = Date.now();
     const { pdf } = await withTimeout(
-      generateProposta(propostaInput),
+      (signal) => generateProposta(propostaInput, { signal }),
       PDF_TIMEOUT_MS,
       'generateProposta',
     );

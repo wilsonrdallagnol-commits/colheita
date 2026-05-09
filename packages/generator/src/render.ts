@@ -38,7 +38,21 @@ export async function renderToPdf(
     launchOptions.executablePath = options.executablePath;
   }
 
+  // Se signal ja abortou antes do launch, evita custo do Chromium spin-up
+  if (options.signal?.aborted) {
+    throw new Error('renderToPdf aborted before browser launch');
+  }
+
   const browser = await chromium.launch(launchOptions);
+
+  // Abort handler — fecha o browser imediatamente, sem aguardar pdf().
+  // Previne vazamento de processo Chromium em timeouts upstream.
+  const onAbort = () => {
+    void browser.close().catch(() => {
+      // browser ja pode estar fechando; ignora
+    });
+  };
+  options.signal?.addEventListener('abort', onAbort, { once: true });
 
   try {
     const page = await browser.newPage();
@@ -53,9 +67,16 @@ export async function renderToPdf(
       margin: { top: '0', right: '0', bottom: '0', left: '0' },
     });
 
+    if (options.signal?.aborted) {
+      throw new Error('renderToPdf aborted during render');
+    }
+
     return { pdf: Buffer.from(pdfBuffer), html };
   } finally {
-    await browser.close();
+    options.signal?.removeEventListener('abort', onAbort);
+    await browser.close().catch(() => {
+      // ja fechado pelo abort handler
+    });
   }
 }
 

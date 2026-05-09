@@ -164,16 +164,21 @@ async function processIncomingMessage({
       : `[${message.type}] (mensagem nao-textual recebida via WhatsApp)`;
 
   // 1. Tenta achar lead existente pelo telefone.
-  // M1 fix 2026-05-09: match por E.164 completo normalizado (phone com/sem '+').
-  // Fallback pros ultimos 11 digitos (DDI+DDD+8) reduz colisao vs slice(-9).
+  // M1 fix 2026-05-09: match por E.164 normalizado.
+  // SEC fix 2026-05-09: usa SO `digits` (regex /^\d+$/ via phoneDigitsOnly) no
+  // filter PostgREST. Concatenar `phone` raw permitia OR injection — payload
+  // Meta com vírgula/parêntese quebrava o or() e injetava filtros adicionais.
   const digits = phoneDigitsOnly(message.from);
+  if (!digits || !/^\d+$/.test(digits)) {
+    throw new Error('invalid phone digits in webhook payload');
+  }
   const phoneSuffix = digits.slice(-11);
   const { data: existing } = await supabase
     .from('leads')
     .select('id, phone')
     .eq('tenant_id', tenantId)
     .is('deleted_at', null)
-    .or(`phone.eq.${phone},phone.eq.${digits},phone.ilike.%${phoneSuffix}%`)
+    .or(`phone.eq.+${digits},phone.eq.${digits},phone.ilike.%${phoneSuffix}%`)
     .limit(1)
     .maybeSingle();
 

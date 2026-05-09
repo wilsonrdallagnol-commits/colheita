@@ -50,6 +50,12 @@ export interface GenerateOptions {
   landscape?: boolean;
   /** Caminho do executável Chromium (para ambientes CI sem browser instalado) */
   executablePath?: string;
+  /**
+   * AbortSignal para cancelamento. Quando abortado, fecha o browser Playwright
+   * imediatamente e rejeita a Promise — previne vazamento de processo Chromium
+   * em timeouts upstream.
+   */
+  signal?: AbortSignal;
 }
 
 // ---------------------------------------------------------------------------
