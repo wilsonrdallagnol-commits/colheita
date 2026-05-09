@@ -10,6 +10,7 @@ import { Button } from '@colheita/ui';
 import { Boxes, CheckCircle2, Save } from 'lucide-react';
 import { useCallback, useState, useTransition } from 'react';
 import { saveBlueprintBindings } from '@/lib/actions/layout-inference';
+import { sanitizeBindings } from '@/lib/layout-inference/bindings-validator';
 
 interface ProductOption {
   id: string;
@@ -96,23 +97,8 @@ export function BindingsEditor({
 
   const handleSave = useCallback(() => {
     startTransition(async () => {
-      // Filtra bindings vazios (product_ref sem productId, headline com linhas vazias)
-      const valid: BindingsState = {};
-      for (const [regionId, binding] of Object.entries(bindings)) {
-        if (binding.kind === 'auto') {
-          valid[regionId] = binding;
-        } else if (binding.kind === 'product_ref' && binding.productId) {
-          valid[regionId] = binding;
-        } else if (binding.kind === 'headline' && binding.lines.some((l) => l.trim() !== '')) {
-          valid[regionId] = {
-            kind: 'headline',
-            lines: binding.lines.filter((l) => l.trim() !== ''),
-          };
-        } else {
-          valid[regionId] = { kind: 'auto' };
-        }
-      }
-
+      // sanitizeBindings: helper testado isoladamente (20 testes vitest)
+      const valid = sanitizeBindings(bindings);
       const result = await saveBlueprintBindings(blueprintId, valid);
       if (result.ok) {
         setSaved(true);
