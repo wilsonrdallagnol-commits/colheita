@@ -198,11 +198,10 @@ export default async function CompliancePage({ searchParams }: PageProps) {
   const hasFilters = Boolean(status || authority);
 
   return (
-    <div style={{ padding: '32px', maxWidth: '1100px' }}>
-      {/* Header */}
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)' }}>
       <div
         style={{
-          marginBottom: '28px',
+          marginBottom: '32px',
           display: 'flex',
           alignItems: 'flex-start',
           justifyContent: 'space-between',
@@ -211,19 +210,28 @@ export default async function CompliancePage({ searchParams }: PageProps) {
         }}
       >
         <div>
+          <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
+            PIM · Compliance regulatório
+          </p>
           <h1
+            className="argho-display"
             style={{
-              fontSize: '1.375rem',
-              fontWeight: '600',
-              color: 'var(--colheita-text-primary)',
-              letterSpacing: '-0.02em',
-              marginBottom: '4px',
+              fontSize: 'clamp(1.875rem, 2.4vw, 2.375rem)',
+              color: '#0a0a0a',
+              margin: '0 0 8px',
             }}
           >
-            Compliance Regulatório
+            Registros MAPA, ANVISA, IBAMA
           </h1>
-          <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-tertiary)', margin: 0 }}>
-            Registros MAPA, ANVISA, IBAMA e estaduais — vencimentos e status
+          <p
+            style={{
+              fontSize: '0.9375rem',
+              color: 'var(--colheita-text-secondary)',
+              margin: 0,
+              maxWidth: '60ch',
+            }}
+          >
+            Vencimentos, status e dossiê auditável — sem registro válido, sem comercialização.
           </p>
         </div>
 

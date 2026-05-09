@@ -1,13 +1,6 @@
 // apps/admin/src/app/(dashboard)/midias/page.tsx
 import { createAdminClient, createServerClient, requireAuth } from '@colheita/auth';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-  Button,
-} from '@colheita/ui';
+import { Button } from '@colheita/ui';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { AssetGrid } from '@/components/midias/asset-grid';
@@ -112,25 +105,11 @@ export default async function MidiasPage({
   const activeTab = activeType ?? 'all';
 
   return (
-    <div style={{ padding: '32px' }}>
-      <Breadcrumb style={{ marginBottom: '24px' }}>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <span style={{ color: 'var(--colheita-text-tertiary)', fontSize: '0.8125rem' }}>
-              Argho
-            </span>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage style={{ fontSize: '0.8125rem' }}>Mídias</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      {/* Header */}
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)' }}>
+      {/* Header editorial */}
       <div
         style={{
-          marginBottom: '28px',
+          marginBottom: '32px',
           display: 'flex',
           alignItems: 'flex-start',
           justifyContent: 'space-between',
@@ -139,18 +118,27 @@ export default async function MidiasPage({
         }}
       >
         <div>
+          <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
+            DAM · Biblioteca
+          </p>
           <h1
+            className="argho-display"
             style={{
-              fontSize: '1.5rem',
-              fontWeight: '600',
-              color: 'var(--colheita-text-primary)',
-              letterSpacing: '-0.025em',
-              marginBottom: '4px',
+              fontSize: 'clamp(1.875rem, 2.4vw, 2.375rem)',
+              color: '#0a0a0a',
+              margin: '0 0 8px',
             }}
           >
-            Mídias
+            Mídias da Argho
           </h1>
-          <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
+          <p
+            style={{
+              fontSize: '0.9375rem',
+              color: 'var(--colheita-text-secondary)',
+              margin: 0,
+              maxWidth: '60ch',
+            }}
+          >
             {assets.length} {assets.length === 1 ? 'arquivo' : 'arquivos'}
             {activeType ? ` · ${activeType}` : ''}
             {activeTag ? (

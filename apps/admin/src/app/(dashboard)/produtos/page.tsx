@@ -1,13 +1,6 @@
 // apps/admin/src/app/(dashboard)/produtos/page.tsx
 import { createServerClient } from '@colheita/auth';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-  Button,
-} from '@colheita/ui';
+import { Button } from '@colheita/ui';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { ProdutoFilters } from '@/components/produtos/produto-filters';
@@ -82,21 +75,7 @@ export default async function ProdutosPage({
   const { categorias, produtos } = await fetchProdutos(supabase, q, categoria, status);
 
   return (
-    <div style={{ padding: '32px' }}>
-      <Breadcrumb style={{ marginBottom: '24px' }}>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <span style={{ color: 'var(--colheita-text-tertiary)', fontSize: '0.8125rem' }}>
-              Argho
-            </span>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage style={{ fontSize: '0.8125rem' }}>Produtos</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)' }}>
       <div
         style={{
           marginBottom: '32px',
@@ -104,22 +83,33 @@ export default async function ProdutosPage({
           alignItems: 'flex-start',
           justifyContent: 'space-between',
           gap: '16px',
+          flexWrap: 'wrap',
         }}
       >
         <div>
+          <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
+            PIM · Catálogo
+          </p>
           <h1
+            className="argho-display"
             style={{
-              fontSize: '1.5rem',
-              fontWeight: '600',
-              color: 'var(--colheita-text-primary)',
-              letterSpacing: '-0.025em',
-              marginBottom: '4px',
+              fontSize: 'clamp(1.875rem, 2.4vw, 2.375rem)',
+              color: '#0a0a0a',
+              margin: '0 0 8px',
             }}
           >
-            Produtos
+            Produtos Argho
           </h1>
-          <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
-            {produtos.length} {produtos.length === 1 ? 'produto' : 'produtos'}
+          <p
+            style={{
+              fontSize: '0.9375rem',
+              color: 'var(--colheita-text-secondary)',
+              margin: 0,
+              maxWidth: '60ch',
+            }}
+          >
+            {produtos.length} {produtos.length === 1 ? 'produto' : 'produtos'} no catálogo —
+            composição, dosagem, registros e mídias num lugar só.
           </p>
         </div>
 

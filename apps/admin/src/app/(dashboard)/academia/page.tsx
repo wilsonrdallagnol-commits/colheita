@@ -1,14 +1,6 @@
 // apps/admin/src/app/(dashboard)/academia/page.tsx
 import { createServerClient, requireAuth } from '@colheita/auth';
-import {
-  Badge,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-  Button,
-} from '@colheita/ui';
+import { Badge, Button } from '@colheita/ui';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 
@@ -49,21 +41,7 @@ export default async function AcademiaPage() {
   }));
 
   return (
-    <div style={{ padding: '32px' }}>
-      <Breadcrumb style={{ marginBottom: '24px' }}>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <span style={{ color: 'var(--colheita-text-tertiary)', fontSize: '0.8125rem' }}>
-              Argho
-            </span>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage style={{ fontSize: '0.8125rem' }}>Academia</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)' }}>
       <div
         style={{
           marginBottom: '32px',
@@ -71,22 +49,33 @@ export default async function AcademiaPage() {
           alignItems: 'flex-start',
           justifyContent: 'space-between',
           gap: '16px',
+          flexWrap: 'wrap',
         }}
       >
         <div>
+          <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
+            Academia · LMS
+          </p>
           <h1
+            className="argho-display"
             style={{
-              fontSize: '1.5rem',
-              fontWeight: '600',
-              color: 'var(--colheita-text-primary)',
-              letterSpacing: '-0.025em',
-              marginBottom: '4px',
+              fontSize: 'clamp(1.875rem, 2.4vw, 2.375rem)',
+              color: '#0a0a0a',
+              margin: '0 0 8px',
             }}
           >
-            Academia
+            Trilhas de aprendizado
           </h1>
-          <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
-            {trilhasList.length} {trilhasList.length === 1 ? 'trilha' : 'trilhas'} de aprendizado
+          <p
+            style={{
+              fontSize: '0.9375rem',
+              color: 'var(--colheita-text-secondary)',
+              margin: 0,
+              maxWidth: '60ch',
+            }}
+          >
+            {trilhasList.length} {trilhasList.length === 1 ? 'trilha' : 'trilhas'} — padrão técnico
+            uniforme pra vendedores, distribuidores e equipe Argho.
           </p>
         </div>
 

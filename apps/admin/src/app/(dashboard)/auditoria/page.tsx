@@ -118,23 +118,31 @@ export default async function AuditoriaPage({ searchParams }: PageProps) {
   }
 
   return (
-    <div style={{ padding: '32px', maxWidth: '1200px' }}>
-      {/* Header */}
-      <div style={{ marginBottom: '24px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)' }}>
+      <div style={{ marginBottom: '32px' }}>
+        <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
+          Identity & Access
+        </p>
         <h1
+          className="argho-display"
           style={{
-            fontSize: '1.375rem',
-            fontWeight: '600',
-            color: 'var(--colheita-text-primary)',
-            letterSpacing: '-0.02em',
-            marginBottom: '4px',
+            fontSize: 'clamp(1.875rem, 2.4vw, 2.375rem)',
+            color: '#0a0a0a',
+            margin: '0 0 8px',
           }}
         >
-          Log de Auditoria
+          Log de auditoria
         </h1>
-        <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-tertiary)', margin: 0 }}>
+        <p
+          style={{
+            fontSize: '0.9375rem',
+            color: 'var(--colheita-text-secondary)',
+            margin: 0,
+            maxWidth: '60ch',
+          }}
+        >
           {totalEvents.toLocaleString('pt-BR')} evento{totalEvents !== 1 ? 's' : ''} registrado
-          {totalEvents !== 1 ? 's' : ''}
+          {totalEvents !== 1 ? 's' : ''} — trilha imutável de toda ação sensível.
         </p>
       </div>
 

@@ -13,13 +13,6 @@
 // "regerar com mesmo input" usa esse snapshot pra reproduzir PDF identico.
 
 import { createServerClient, requireAuth } from '@colheita/auth';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@colheita/ui';
 import { cookies } from 'next/headers';
 
 export const metadata = { title: 'Histórico de Materiais' };
@@ -111,43 +104,32 @@ export default async function HistoricoPage() {
   }));
 
   return (
-    <div style={{ padding: '32px' }}>
-      <Breadcrumb style={{ marginBottom: '24px' }}>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <span style={{ color: 'var(--colheita-text-tertiary)', fontSize: '0.8125rem' }}>
-              Argho
-            </span>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <span style={{ color: 'var(--colheita-text-tertiary)', fontSize: '0.8125rem' }}>
-              Materiais
-            </span>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage style={{ fontSize: '0.8125rem' }}>Histórico</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)' }}>
       <div style={{ marginBottom: '32px' }}>
+        <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
+          Geração · Materiais
+        </p>
         <h1
+          className="argho-display"
           style={{
-            fontSize: '1.5rem',
-            fontWeight: '600',
-            color: 'var(--colheita-text-primary)',
-            letterSpacing: '-0.025em',
-            marginBottom: '4px',
+            fontSize: 'clamp(1.875rem, 2.4vw, 2.375rem)',
+            color: '#0a0a0a',
+            margin: '0 0 8px',
           }}
         >
-          Histórico de Materiais
+          Histórico de gerações
         </h1>
-        <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
+        <p
+          style={{
+            fontSize: '0.9375rem',
+            color: 'var(--colheita-text-secondary)',
+            margin: 0,
+            maxWidth: '60ch',
+          }}
+        >
           {materiais.length === 0
-            ? 'Nenhum material gerado ainda. Baixe uma ficha técnica ou o catálogo para começar.'
-            : `${materiais.length} última${materiais.length === 1 ? '' : 's'} geração${materiais.length === 1 ? '' : 'ões'} (limite: ${HISTORICO_LIMIT})`}
+            ? 'Nenhum material gerado ainda. Baixe uma ficha técnica ou o catálogo pra começar.'
+            : `${materiais.length} última${materiais.length === 1 ? '' : 's'} geração${materiais.length === 1 ? '' : 'ões'} — input snapshot preservado pra reprodutibilidade.`}
         </p>
       </div>
 
