@@ -95,7 +95,7 @@ export function PropostaForm({ leadId, products, cancelHref }: PropostaFormProps
   return (
     <form
       method="POST"
-      action={`/leads/${leadId}/proposta`}
+      action={`/leads/${leadId}/proposta/gerar`}
       style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
     >
       {/* Lista de produtos com checkbox + inputs inline pros selecionados */}
