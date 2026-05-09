@@ -6,6 +6,16 @@
 // por kind. Append-only — atividades viram historico imutavel.
 
 import { Button, Textarea } from '@colheita/ui';
+import {
+  Circle,
+  FileText,
+  type LucideIcon,
+  Mail,
+  MessageCircle,
+  Phone,
+  Sparkles,
+  Users,
+} from 'lucide-react';
 import { useActionState, useEffect, useId, useRef } from 'react';
 import { createLeadActivity, type LeadActivityKind } from '@/lib/actions/leads';
 
@@ -22,23 +32,24 @@ interface LeadActivitiesProps {
   activities: ActivityRow[];
 }
 
-const KIND_OPTIONS: Array<{ value: LeadActivityKind; label: string; icon: string }> = [
-  { value: 'call', label: 'Ligação', icon: '📞' },
-  { value: 'whatsapp', label: 'WhatsApp', icon: '💬' },
-  { value: 'email', label: 'Email', icon: '✉️' },
-  { value: 'meeting', label: 'Reunião', icon: '🤝' },
-  { value: 'note', label: 'Anotação', icon: '📝' },
-  { value: 'other', label: 'Outro', icon: '·' },
-];
+// Icones Lucide com strokeWidth 1.5 (Linear-style editorial), nao emoji.
+// Emoji renderiza diferente em Win/Mac/iOS/Android — quebra craft cross-platform.
+interface KindMeta {
+  label: string;
+  Icon: LucideIcon;
+  color: string;
+}
 
-const KIND_LABEL: Record<LeadActivityKind, { label: string; icon: string; color: string }> = {
-  call: { label: 'Ligação', icon: '📞', color: 'var(--colheita-brand-primary)' },
-  whatsapp: { label: 'WhatsApp', icon: '💬', color: 'var(--colheita-success)' },
-  email: { label: 'Email', icon: '✉️', color: 'var(--colheita-brand-primary)' },
-  meeting: { label: 'Reunião', icon: '🤝', color: 'var(--colheita-brand-gold)' },
-  note: { label: 'Anotação', icon: '📝', color: 'var(--colheita-text-tertiary)' },
-  other: { label: 'Outro', icon: '·', color: 'var(--colheita-text-tertiary)' },
+const KIND_META: Record<LeadActivityKind, KindMeta> = {
+  call: { label: 'Ligação', Icon: Phone, color: 'var(--admin-pipeline)' },
+  whatsapp: { label: 'WhatsApp', Icon: MessageCircle, color: 'var(--admin-positive)' },
+  email: { label: 'Email', Icon: Mail, color: 'var(--admin-pipeline)' },
+  meeting: { label: 'Reunião', Icon: Users, color: 'var(--admin-attention)' },
+  note: { label: 'Anotação', Icon: FileText, color: 'var(--admin-neutral)' },
+  other: { label: 'Outro', Icon: Circle, color: 'var(--admin-neutral)' },
 };
+
+const KIND_OPTIONS: LeadActivityKind[] = ['call', 'whatsapp', 'email', 'meeting', 'note', 'other'];
 
 function formatRelative(iso: string): string {
   const now = Date.now();
@@ -86,13 +97,13 @@ export function LeadActivities({ leadId, activities }: LeadActivitiesProps) {
         ref={formRef}
         action={formAction}
         style={{
-          padding: '14px',
-          borderRadius: 'var(--colheita-radius-md)',
-          border: '1px solid var(--colheita-border-subtle)',
+          padding: '18px',
+          borderRadius: '12px',
+          boxShadow: 'var(--admin-shadow-card)',
           backgroundColor: 'var(--colheita-surface-elevated)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '12px',
+          gap: '14px',
         }}
       >
         {/* Kind selector — pills horizontais */}
@@ -110,15 +121,17 @@ export function LeadActivities({ leadId, activities }: LeadActivitiesProps) {
             Tipo
           </p>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-            {KIND_OPTIONS.map((opt, idx) => {
-              const id = `${uid}-kind-${opt.value}`;
+            {KIND_OPTIONS.map((kind, idx) => {
+              const meta = KIND_META[kind];
+              const Icon = meta.Icon;
+              const id = `${uid}-kind-${kind}`;
               return (
-                <span key={opt.value}>
+                <span key={kind}>
                   <input
                     type="radio"
                     id={id}
                     name="kind"
-                    value={opt.value}
+                    value={kind}
                     defaultChecked={idx === 0}
                     style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
                     disabled={pending}
@@ -128,18 +141,20 @@ export function LeadActivities({ leadId, activities }: LeadActivitiesProps) {
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '4px',
-                      padding: '4px 10px',
+                      gap: '6px',
+                      padding: '6px 12px',
                       borderRadius: '999px',
-                      border: '1px solid var(--colheita-border)',
+                      boxShadow: 'inset 0 0 0 1px var(--colheita-border-subtle)',
                       fontSize: '0.75rem',
+                      letterSpacing: '-0.005em',
                       cursor: pending ? 'not-allowed' : 'pointer',
-                      backgroundColor: 'var(--colheita-surface-sunken, #fff)',
+                      backgroundColor: 'var(--colheita-surface-elevated)',
                       color: 'var(--colheita-text-secondary)',
+                      transition: 'box-shadow 150ms ease, color 150ms ease',
                     }}
                   >
-                    <span aria-hidden="true">{opt.icon}</span>
-                    {opt.label}
+                    <Icon size={13} strokeWidth={1.5} aria-hidden="true" />
+                    {meta.label}
                   </label>
                 </span>
               );
@@ -199,19 +214,51 @@ export function LeadActivities({ leadId, activities }: LeadActivitiesProps) {
         </div>
       </form>
 
-      {/* Timeline */}
+      {/* Timeline — empty state desenhado, nao texto generico centralizado */}
       {activities.length === 0 ? (
-        <p
+        <div
           style={{
-            fontSize: '0.8125rem',
-            color: 'var(--colheita-text-tertiary)',
+            padding: '40px 24px',
+            borderRadius: '12px',
+            boxShadow: 'inset 0 0 0 1px var(--colheita-border-subtle)',
+            backgroundColor: 'transparent',
             textAlign: 'center',
-            padding: '16px',
-            margin: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '10px',
           }}
         >
-          Nenhuma atividade ainda. Registre o primeiro contato acima.
-        </p>
+          <Sparkles
+            size={20}
+            strokeWidth={1.5}
+            color="var(--colheita-text-tertiary)"
+            style={{ opacity: 0.6 }}
+            aria-hidden="true"
+          />
+          <p
+            style={{
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              color: 'var(--colheita-text-secondary)',
+              letterSpacing: '-0.005em',
+              margin: 0,
+            }}
+          >
+            Sem histórico ainda
+          </p>
+          <p
+            style={{
+              fontSize: '0.8125rem',
+              color: 'var(--colheita-text-tertiary)',
+              maxWidth: '36ch',
+              margin: 0,
+              lineHeight: 1.5,
+            }}
+          >
+            Registre a primeira ligação ou peça pro agente capturar o último contato do WhatsApp.
+          </p>
+        </div>
       ) : (
         <ol
           style={{
@@ -224,7 +271,8 @@ export function LeadActivities({ leadId, activities }: LeadActivitiesProps) {
           }}
         >
           {activities.map((activity) => {
-            const meta = KIND_LABEL[activity.kind];
+            const meta = KIND_META[activity.kind] ?? KIND_META.other;
+            const Icon = meta.Icon;
             const author = activity.author?.full_name ?? activity.author?.email ?? '—';
             return (
               <li
@@ -232,10 +280,10 @@ export function LeadActivities({ leadId, activities }: LeadActivitiesProps) {
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '32px 1fr',
-                  gap: '12px',
-                  padding: '12px 14px',
-                  borderRadius: 'var(--colheita-radius-md)',
-                  border: '1px solid var(--colheita-border-subtle)',
+                  gap: '14px',
+                  padding: '14px 16px',
+                  borderRadius: '10px',
+                  boxShadow: 'var(--admin-shadow-card)',
                   backgroundColor: 'var(--colheita-surface-elevated)',
                 }}
               >
@@ -244,16 +292,15 @@ export function LeadActivities({ leadId, activities }: LeadActivitiesProps) {
                     width: '32px',
                     height: '32px',
                     borderRadius: '50%',
-                    backgroundColor: 'color-mix(in srgb, currentColor 8%, transparent)',
+                    backgroundColor: `color-mix(in srgb, ${meta.color} 12%, transparent)`,
                     color: meta.color,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '1rem',
                   }}
                   aria-hidden="true"
                 >
-                  {meta.icon}
+                  <Icon size={14} strokeWidth={1.5} />
                 </div>
                 <div style={{ minWidth: 0 }}>
                   <div
@@ -266,11 +313,11 @@ export function LeadActivities({ leadId, activities }: LeadActivitiesProps) {
                   >
                     <span
                       style={{
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
+                        fontSize: '0.6875rem',
+                        fontWeight: 500,
                         color: meta.color,
                         textTransform: 'uppercase',
-                        letterSpacing: '0.04em',
+                        letterSpacing: '0.08em',
                       }}
                     >
                       {meta.label}
@@ -279,6 +326,7 @@ export function LeadActivities({ leadId, activities }: LeadActivitiesProps) {
                       style={{
                         fontSize: '0.6875rem',
                         color: 'var(--colheita-text-tertiary)',
+                        letterSpacing: '-0.005em',
                       }}
                     >
                       {formatRelative(activity.created_at)} · {author}
@@ -288,7 +336,8 @@ export function LeadActivities({ leadId, activities }: LeadActivitiesProps) {
                     style={{
                       fontSize: '0.875rem',
                       color: 'var(--colheita-text-primary)',
-                      lineHeight: 1.5,
+                      lineHeight: 1.55,
+                      letterSpacing: '-0.005em',
                       whiteSpace: 'pre-wrap' as const,
                       margin: 0,
                       wordBreak: 'break-word',

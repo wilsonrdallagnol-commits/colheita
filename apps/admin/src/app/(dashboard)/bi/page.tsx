@@ -28,12 +28,15 @@ import Link from 'next/link';
 
 export const metadata = { title: 'Inteligência de Mercado' };
 
+// Tokens semanticos editoriais — definidos em globals.css (--admin-*).
+// Substituem hex Tailwind defaults (#3b82f6, #10b981, etc) que davam energia
+// de SaaS template sem identidade Argho.
 const STATUS_COLOR: Record<string, string> = {
-  novo: '#9ca3af',
-  qualificado: '#3b82f6',
-  proposta: '#d4af37',
-  ganho: '#10b981',
-  perdido: '#ef4444',
+  novo: 'var(--admin-neutral)',
+  qualificado: 'var(--admin-pipeline)',
+  proposta: 'var(--admin-attention)',
+  ganho: 'var(--admin-positive)',
+  perdido: 'var(--admin-critical)',
 };
 
 const TEMPLATE_CATEGORY_LABEL: Record<string, string> = {
@@ -55,11 +58,11 @@ const ORDER_STATUS_LABEL: Record<string, string> = {
 };
 
 const ORDER_STATUS_COLOR: Record<string, string> = {
-  rascunho: '#9ca3af',
-  confirmado: '#3b82f6',
-  faturado: '#d4af37',
-  entregue: '#10b981',
-  cancelado: '#ef4444',
+  rascunho: 'var(--admin-neutral)',
+  confirmado: 'var(--admin-pipeline)',
+  faturado: 'var(--admin-attention)',
+  entregue: 'var(--admin-positive)',
+  cancelado: 'var(--admin-critical)',
 };
 
 interface MaterialRow {
@@ -259,36 +262,64 @@ export default async function BiPage() {
   }
 
   return (
-    <div style={{ padding: '32px', maxWidth: '1200px' }}>
-      <Breadcrumb style={{ marginBottom: '24px' }}>
+    <div
+      style={{
+        padding: 'clamp(24px, 3vw, 48px) clamp(24px, 4vw, 72px)',
+        // Sem maxWidth — full-width by default. Caixa centralizada de 1200px
+        // deixa barras vazias em telas grandes (anti-pattern hm-designer).
+      }}
+    >
+      <Breadcrumb style={{ marginBottom: '32px' }}>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <span style={{ color: 'var(--colheita-text-tertiary)', fontSize: '0.8125rem' }}>
+            <span
+              style={{
+                color: 'var(--colheita-text-tertiary)',
+                fontSize: '0.75rem',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+              }}
+            >
               Argho
             </span>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage style={{ fontSize: '0.8125rem' }}>
+            <BreadcrumbPage
+              style={{
+                fontSize: '0.75rem',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+              }}
+            >
               Inteligência de Mercado
             </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div style={{ marginBottom: '28px' }}>
+      <div style={{ marginBottom: '40px' }}>
         <h1
           style={{
-            fontSize: '1.5rem',
-            fontWeight: 600,
+            fontSize: 'clamp(1.875rem, 2.4vw, 2.375rem)', // 30-38px fluido editorial
+            fontWeight: 500, // 500 = ferramenta sofisticada; 600+ = site institucional
             color: 'var(--colheita-text-primary)',
-            letterSpacing: '-0.025em',
-            marginBottom: '4px',
+            letterSpacing: '-0.035em', // -0.025 era timido pra editorial
+            lineHeight: 1.05,
+            marginBottom: '10px',
           }}
         >
           Inteligência de Mercado
         </h1>
-        <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)', margin: 0 }}>
+        <p
+          style={{
+            fontSize: '0.9375rem',
+            color: 'var(--colheita-text-secondary)',
+            letterSpacing: '-0.005em',
+            maxWidth: '64ch', // line-length editorial — legibilidade
+            margin: 0,
+          }}
+        >
           Indicadores operacionais consolidados — pipeline, materiais, pedidos, compliance.
         </p>
       </div>
@@ -306,7 +337,13 @@ export default async function BiPage() {
           label="Win rate"
           value={`${winRate.toFixed(1)}%`}
           sub={`${leadCounts.ganho} ganhos de ${totalFechados} fechados`}
-          color={winRate >= 25 ? '#10b981' : winRate >= 10 ? '#d4af37' : '#ef4444'}
+          color={
+            winRate >= 25
+              ? 'var(--admin-positive)'
+              : winRate >= 10
+                ? 'var(--admin-attention)'
+                : 'var(--admin-critical)'
+          }
           href="/leads?status=ganho"
         />
         <KpiCard
@@ -317,14 +354,14 @@ export default async function BiPage() {
               ? `${totalAreaPipeline.toLocaleString('pt-BR')} ha em qualificação/proposta`
               : 'leads em aberto'
           }
-          color="#3b82f6"
+          color="var(--admin-pipeline)"
           href="/leads"
         />
         <KpiCard
           label="Receita capturada"
           value={formatCurrency(totalRevenue)}
           sub={`ticket médio ${formatCurrency(ticketMedio)} · ${totalConsiderados} pedidos`}
-          color="#10b981"
+          color="var(--admin-positive)"
           href="/pedidos"
         />
         <KpiCard
@@ -335,7 +372,7 @@ export default async function BiPage() {
               ? `tempo médio ${(avgDurationMs / 1000).toFixed(1)}s`
               : 'tempo médio —'
           }
-          color="#8b5cf6"
+          color="var(--admin-knowledge)"
           href="/materiais/historico"
         />
       </div>
@@ -353,7 +390,7 @@ export default async function BiPage() {
           label="Leads capturados"
           subtitle="Últimos 30 dias"
           daily={leadsDaily}
-          color="#3b82f6"
+          color="var(--admin-pipeline)"
           trend={leadsTrend}
           totalLabel={`${leadsDaily.reduce((a, b) => a + b, 0)} no período`}
         />
@@ -361,7 +398,7 @@ export default async function BiPage() {
           label="Materiais gerados"
           subtitle="Últimos 30 dias"
           daily={materiaisDaily}
-          color="#8b5cf6"
+          color="var(--admin-knowledge)"
           trend={materiaisTrend}
           totalLabel={`${materiaisDaily.reduce((a, b) => a + b, 0)} no período`}
         />
@@ -382,35 +419,35 @@ export default async function BiPage() {
             label="Novo"
             count={leadCounts.novo}
             total={totalLeads}
-            color={STATUS_COLOR.novo ?? '#9ca3af'}
+            color={STATUS_COLOR.novo ?? 'var(--admin-neutral)'}
             href="/leads?status=novo"
           />
           <FunnelBar
             label="Qualificado"
             count={leadCounts.qualificado}
             total={totalLeads}
-            color={STATUS_COLOR.qualificado ?? '#3b82f6'}
+            color={STATUS_COLOR.qualificado ?? 'var(--admin-pipeline)'}
             href="/leads?status=qualificado"
           />
           <FunnelBar
             label="Proposta"
             count={leadCounts.proposta}
             total={totalLeads}
-            color={STATUS_COLOR.proposta ?? '#d4af37'}
+            color={STATUS_COLOR.proposta ?? 'var(--admin-attention)'}
             href="/leads?status=proposta"
           />
           <FunnelBar
             label="Ganho"
             count={leadCounts.ganho}
             total={totalLeads}
-            color={STATUS_COLOR.ganho ?? '#10b981'}
+            color={STATUS_COLOR.ganho ?? 'var(--admin-positive)'}
             href="/leads?status=ganho"
           />
           <FunnelBar
             label="Perdido"
             count={leadCounts.perdido}
             total={totalLeads}
-            color={STATUS_COLOR.perdido ?? '#ef4444'}
+            color={STATUS_COLOR.perdido ?? 'var(--admin-critical)'}
             href="/leads?status=perdido"
           />
         </Section>
@@ -428,7 +465,7 @@ export default async function BiPage() {
                   label={TEMPLATE_CATEGORY_LABEL[cat] ?? cat}
                   count={count}
                   total={totalMateriais}
-                  color="#8b5cf6"
+                  color="var(--admin-knowledge)"
                   href="/materiais/historico"
                 />
               ))
@@ -457,7 +494,7 @@ export default async function BiPage() {
                   label={ORDER_STATUS_LABEL[s] ?? s}
                   count={count}
                   total={totalPedidos}
-                  color={ORDER_STATUS_COLOR[s] ?? '#9ca3af'}
+                  color={ORDER_STATUS_COLOR[s] ?? 'var(--admin-neutral)'}
                   href={`/pedidos?status=${s}`}
                 />
               ))
@@ -468,19 +505,19 @@ export default async function BiPage() {
           <CountRow
             label="Expirados"
             value={regsExpired}
-            color="#ef4444"
+            color="var(--admin-critical)"
             href="/compliance?status=expired"
           />
           <CountRow
             label="Vencendo em ≤15 dias"
             value={regsCritical15}
-            color="#f97316"
+            color="var(--admin-attention)"
             href="/compliance?status=active"
           />
           <CountRow
             label="Ativos no total"
             value={regsActive}
-            color="#10b981"
+            color="var(--admin-positive)"
             href="/compliance?status=active"
           />
         </Section>
@@ -528,32 +565,48 @@ function KpiCard({
       href={href}
       style={{
         display: 'block',
-        padding: '20px',
-        borderRadius: 'var(--colheita-radius-lg)',
-        border: '1px solid var(--colheita-border)',
+        padding: '24px',
+        borderRadius: '12px',
+        // Linear-style stacked shadow em vez de border cinza padrao SaaS.
+        // box-shadow inset cria a "borda" sem custo de pixel no focus state.
+        boxShadow: 'var(--admin-shadow-card)',
         backgroundColor: 'var(--colheita-surface-elevated)',
         textDecoration: 'none',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
+      {/* Indicador de cor categorico — barra fina vertical na borda esquerda */}
+      <span
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: '2px',
+          backgroundColor: color,
+        }}
+      />
       <p
         style={{
           fontSize: '0.6875rem',
-          fontWeight: 600,
+          fontWeight: 500,
           color: 'var(--colheita-text-tertiary)',
           textTransform: 'uppercase',
-          letterSpacing: '0.06em',
-          marginBottom: '8px',
+          letterSpacing: '0.08em',
+          marginBottom: '12px',
         }}
       >
         {label}
       </p>
       <p
         style={{
-          fontSize: '1.875rem',
-          fontWeight: 700,
-          color,
-          letterSpacing: '-0.03em',
-          margin: '0 0 4px',
+          fontSize: '2rem',
+          fontWeight: 500, // 500 editorial; 700 era bold demais pra dashboard tool
+          color: 'var(--colheita-text-primary)',
+          letterSpacing: '-0.04em', // tracking mais agressivo em numeros grandes
+          margin: '0 0 6px',
           lineHeight: 1,
           fontVariantNumeric: 'tabular-nums',
         }}
@@ -562,8 +615,9 @@ function KpiCard({
       </p>
       <p
         style={{
-          fontSize: '0.75rem',
+          fontSize: '0.8125rem',
           color: 'var(--colheita-text-tertiary)',
+          letterSpacing: '-0.005em',
           margin: 0,
         }}
       >
@@ -585,21 +639,21 @@ function Section({
   return (
     <div
       style={{
-        padding: '20px',
-        borderRadius: 'var(--colheita-radius-lg)',
-        border: '1px solid var(--colheita-border-subtle)',
+        padding: '24px',
+        borderRadius: '12px',
+        boxShadow: 'var(--admin-shadow-card)',
         backgroundColor: 'var(--colheita-surface-elevated)',
       }}
     >
-      <div style={{ marginBottom: '16px' }}>
+      <div style={{ marginBottom: '20px' }}>
         <p
           style={{
             fontSize: '0.6875rem',
-            fontWeight: 700,
+            fontWeight: 500,
             color: 'var(--colheita-text-tertiary)',
             textTransform: 'uppercase',
             letterSpacing: '0.08em',
-            marginBottom: '2px',
+            marginBottom: '4px',
           }}
         >
           {title}
