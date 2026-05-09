@@ -16,7 +16,13 @@
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { createAdminClient, createServerClient, requireAuth } from '@colheita/auth';
-import { analyzeLayout } from '@colheita/layout-inference';
+import { generateFromRenderSpec } from '@colheita/generator';
+import {
+  analyzeLayout,
+  type ContentBindings,
+  compileBlueprint,
+  type LayoutBlueprint,
+} from '@colheita/layout-inference';
 import { captureError } from '@colheita/observability';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
@@ -301,4 +307,220 @@ export async function updateBlueprintStatus(
   revalidatePath('/layout-inference');
   revalidatePath(`/layout-inference/[id]`, 'page');
   return { ok: true };
+}
+
+// ── Render real: blueprint + theme Argho → PDF ───────────────────────────────
+
+interface RenderResult {
+  ok: true;
+  materialId: string;
+  pdfUrl: string;
+  durationMs: number;
+}
+
+interface RenderError {
+  ok: false;
+  error: string;
+}
+
+export type RenderResponse = RenderResult | RenderError;
+
+/**
+ * Renderiza um blueprint com a identidade visual Argho.
+ *
+ * Pipeline:
+ *  1. Carrega blueprint + reference + tenant
+ *  2. compileBlueprint(blueprint, themeArgho, bindings='auto') → RenderSpec
+ *  3. generateFromRenderSpec(spec) → PDF buffer (Playwright)
+ *  4. Upload PDF pra Storage
+ *  5. INSERT em generated_materials (linkado ao blueprint via input_data)
+ *
+ * v1: bindings sempre 'auto' (componentes do @colheita/ui usam fallbacks).
+ * Sprint futura: editor de bindings (atrelar produtos do PIM a regiões).
+ */
+export async function renderBlueprintWithArgho(blueprintId: string): Promise<RenderResponse> {
+  const cookieStore = await cookies();
+  const user = await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+  const admin = createAdminClient();
+
+  // 1. Carrega blueprint + tenant
+  const { data: bpRow, error: bpErr } = await supabase
+    .from('layout_blueprints')
+    .select(
+      `id, tenant_id, blueprint, version,
+       reference:layout_references!inner(id, title, intended_category),
+       tenant:tenants!inner(id, name, slug, theme_tokens, logo_url)`,
+    )
+    .eq('id', blueprintId)
+    .maybeSingle();
+
+  if (bpErr || !bpRow) {
+    captureError(bpErr ?? new Error('blueprint not found'), {
+      context: 'layout-inference.render.fetchBlueprint',
+    });
+    return { ok: false, error: 'Blueprint não encontrado.' };
+  }
+
+  const blueprint = bpRow.blueprint as unknown as LayoutBlueprint;
+  const tenantId = bpRow.tenant_id as string;
+  const reference = Array.isArray(bpRow.reference) ? bpRow.reference[0] : bpRow.reference;
+  const tenant = Array.isArray(bpRow.tenant) ? bpRow.tenant[0] : bpRow.tenant;
+
+  if (!reference || !tenant) {
+    return { ok: false, error: 'Dados de referência ou tenant ausentes.' };
+  }
+
+  // 2. Compile com tema Argho
+  // Hash do blueprint pra audit trail de reproducibilidade
+  const blueprintHash = crypto
+    .createHash('sha256')
+    .update(JSON.stringify(blueprint))
+    .digest('hex')
+    .slice(0, 16);
+
+  // Bindings 'auto' — componentes do @colheita/ui aplicam fallbacks razoaveis.
+  // Sprint futura: editor de bindings (atrelar produtos do PIM a regions).
+  const bindings: ContentBindings = {};
+  for (const region of blueprint.regions) {
+    bindings[region.id] = { kind: 'auto' };
+  }
+
+  const compileResult = compileBlueprint({
+    blueprint,
+    theme: {
+      tenantId,
+      tokensVersion: '1',
+      themeRef: tenant.slug as string,
+    },
+    bindings,
+    blueprintHash,
+  });
+
+  if (!compileResult.ok) {
+    captureError(new Error(`compile failed: ${compileResult.errors.length} errors`), {
+      context: 'layout-inference.render.compile',
+      errors: compileResult.errors,
+    });
+    return {
+      ok: false,
+      error: `Compile falhou: ${compileResult.errors[0]?.details ?? 'erro desconhecido'}`,
+    };
+  }
+
+  // 3. Tema visual passado pros compiler blocks (CompilerTheme)
+  // Tokens Argho oficiais (alinhados com globals.css):
+  //   --colheita-brand-primary: #183090 (Argho blue)
+  //   --colheita-brand-secondary: #489030 (Argho green)
+  const tenantThemeTokens = tenant.theme_tokens as {
+    brandColor?: string;
+    accentColor?: string;
+  } | null;
+  const compilerTheme = {
+    brandColor: tenantThemeTokens?.brandColor ?? '#183090',
+    accentColor: tenantThemeTokens?.accentColor ?? '#489030',
+    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+    tenantName: (tenant.name as string) ?? 'Argho AgriSciences',
+    logoUrl: (tenant.logo_url as string | null) ?? undefined,
+  };
+
+  // 4. Render PDF via Playwright
+  const startedAt = Date.now();
+  let pdfBuffer: Buffer;
+  try {
+    const result = await generateFromRenderSpec(compileResult.spec, {
+      compilerTheme,
+      title: `${reference.title} — ${tenant.name}`,
+      format: blueprint.format?.orientation === 'landscape' ? 'A4' : 'A4',
+      landscape: blueprint.format?.orientation === 'landscape',
+    });
+    pdfBuffer = result.pdf;
+  } catch (err) {
+    captureError(err instanceof Error ? err : new Error(String(err)), {
+      context: 'layout-inference.render.playwright',
+    });
+    return { ok: false, error: 'Falha no render do PDF (Playwright).' };
+  }
+
+  const durationMs = Date.now() - startedAt;
+
+  // 5. Upload PDF pra Storage
+  const slug = (reference.title as string)
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, '-')
+    .slice(0, 60)
+    .replace(/^-+|-+$/g, '');
+  const pdfFilename = `${Date.now()}-${slug}-v${bpRow.version ?? 1}.pdf`;
+  const pdfPath = `${tenantId}/layout-inference-renders/${pdfFilename}`;
+
+  const { error: uploadErr } = await admin.storage.from('assets').upload(pdfPath, pdfBuffer, {
+    contentType: 'application/pdf',
+    cacheControl: 'public, max-age=31536000',
+    upsert: false,
+  });
+
+  if (uploadErr) {
+    captureError(uploadErr, { context: 'layout-inference.render.upload' });
+    return { ok: false, error: 'Falha ao salvar PDF no storage.' };
+  }
+
+  const { data: publicUrlData } = admin.storage.from('assets').getPublicUrl(pdfPath);
+  const pdfUrl = publicUrlData.publicUrl;
+
+  // 6. INSERT em generated_materials
+  // Resolve template_id pra 'render-spec-generic' (criar se nao existir? Por
+  // enquanto, busca por slug). Se nao houver, deixa null.
+  const { data: tmpl } = await admin
+    .from('material_templates')
+    .select('id')
+    .eq('slug', 'layout-inference-render')
+    .maybeSingle();
+
+  const generatedInsert: Record<string, unknown> = {
+    tenant_id: tenantId,
+    template_id: tmpl?.id ?? null,
+    output_url: pdfUrl,
+    output_storage_path: pdfPath,
+    pages: 1,
+    duration_ms: durationMs,
+    input_data: {
+      blueprint_id: blueprintId,
+      blueprint_hash: blueprintHash,
+      reference_id: reference.id,
+      reference_title: reference.title,
+      blueprint_version: bpRow.version,
+    },
+    product_ids: [],
+    generated_by: user.id,
+  };
+
+  const { data: material, error: matErr } = await admin
+    .from('generated_materials')
+    .insert(generatedInsert)
+    .select('id')
+    .single();
+
+  if (matErr || !material) {
+    captureError(matErr ?? new Error('material insert returned no data'), {
+      context: 'layout-inference.render.materialInsert',
+    });
+    // PDF ja foi salvo — registra warning mas nao falha
+    return {
+      ok: true,
+      materialId: '',
+      pdfUrl,
+      durationMs,
+    };
+  }
+
+  revalidatePath('/layout-inference');
+  revalidatePath(`/layout-inference/${reference.id}`);
+  revalidatePath('/materiais/historico');
+
+  return {
+    ok: true,
+    materialId: material.id as string,
+    pdfUrl,
+    durationMs,
+  };
 }

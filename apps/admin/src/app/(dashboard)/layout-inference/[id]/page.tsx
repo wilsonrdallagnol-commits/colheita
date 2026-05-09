@@ -16,6 +16,7 @@ import { ArrowLeft, Brain, Clock, DollarSign } from 'lucide-react';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { RenderButton } from '@/components/layout-inference/render-button';
 import { ReviewActions } from '@/components/layout-inference/review-actions';
 
 interface PageProps {
@@ -95,27 +96,35 @@ export default async function BlueprintDetailPage({ params }: PageProps) {
   await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
-  // Busca reference + asset + blueprint atual em queries paralelas
-  const [{ data: reference }, { data: blueprint }] = await Promise.all([
-    supabase
-      .from('layout_references')
-      .select(
-        `id, title, description, source_type, intended_category, tags, created_at,
+  // Busca reference + asset + blueprint atual + materiais ja renderizados
+  const [{ data: reference }, { data: blueprint }, { data: renderedMaterials }] = await Promise.all(
+    [
+      supabase
+        .from('layout_references')
+        .select(
+          `id, title, description, source_type, intended_category, tags, created_at,
          asset:assets!inner(id, storage_path, width, height, mime_type, file_size, original_name)`,
-      )
-      .eq('id', id)
-      .is('deleted_at', null)
-      .maybeSingle(),
-    supabase
-      .from('layout_blueprints')
-      .select(
-        `id, status, blueprint, raw_analysis, version, model_used, tokens_input, tokens_output,
+        )
+        .eq('id', id)
+        .is('deleted_at', null)
+        .maybeSingle(),
+      supabase
+        .from('layout_blueprints')
+        .select(
+          `id, status, blueprint, raw_analysis, version, model_used, tokens_input, tokens_output,
          duration_ms, cost_usd, created_at, reviewed_at, review_notes`,
-      )
-      .eq('reference_id', id)
-      .eq('is_current', true)
-      .maybeSingle(),
-  ]);
+        )
+        .eq('reference_id', id)
+        .eq('is_current', true)
+        .maybeSingle(),
+      supabase
+        .from('generated_materials')
+        .select('id, output_url, duration_ms, generated_at, input_data')
+        .filter('input_data->>reference_id', 'eq', id)
+        .order('generated_at', { ascending: false })
+        .limit(10),
+    ],
+  );
 
   if (!reference) notFound();
 
@@ -399,6 +408,168 @@ export default async function BlueprintDetailPage({ params }: PageProps) {
           )}
         </div>
       </div>
+
+      {/* Render com identidade Argho — fecha o ciclo do Layout Inference */}
+      {blueprint && status !== 'archived' ? (
+        <section
+          style={{
+            padding: '24px 28px',
+            marginBottom: '32px',
+            borderRadius: 'var(--colheita-radius-lg)',
+            border: '1px solid var(--colheita-brand-primary-line)',
+            backgroundColor: 'var(--colheita-brand-primary-soft)',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              gap: '20px',
+              flexWrap: 'wrap',
+            }}
+          >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p className="argho-eyebrow" style={{ display: 'inline-block', margin: '0 0 8px' }}>
+                Render Argho
+              </p>
+              <h2
+                className="argho-display"
+                style={{
+                  fontSize: '1.25rem',
+                  color: '#0a0a0a',
+                  margin: '0 0 6px',
+                }}
+              >
+                Aplicar identidade visual blindada
+              </h2>
+              <p
+                style={{
+                  fontSize: '0.875rem',
+                  color: 'var(--colheita-text-secondary)',
+                  margin: 0,
+                  maxWidth: '54ch',
+                  lineHeight: 1.55,
+                }}
+              >
+                Compila o blueprint com tokens Argho (azul #183090, verde #489030, Geist) e
+                renderiza o PDF print-ready via Playwright. O resultado vai pro histórico de
+                materiais.
+              </p>
+            </div>
+            <RenderButton blueprintId={blueprint.id as string} />
+          </div>
+        </section>
+      ) : null}
+
+      {/* Materiais ja renderizados */}
+      {renderedMaterials && renderedMaterials.length > 0 ? (
+        <section style={{ marginBottom: '40px' }}>
+          <p
+            style={{
+              fontSize: '0.6875rem',
+              fontWeight: 600,
+              color: 'var(--colheita-text-tertiary)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              margin: '0 0 14px',
+            }}
+          >
+            Renders Argho · {renderedMaterials.length}
+          </p>
+          <ol
+            style={{
+              listStyle: 'none',
+              margin: 0,
+              padding: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+            }}
+          >
+            {renderedMaterials.map((m) => {
+              const inputData = m.input_data as {
+                blueprint_version?: number;
+                blueprint_hash?: string;
+              } | null;
+              const generatedAt = new Date(m.generated_at as string);
+              const duration = (Number(m.duration_ms) / 1000).toFixed(1);
+              return (
+                <li
+                  key={m.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '12px 16px',
+                    borderRadius: 'var(--colheita-radius-md)',
+                    border: '1px solid var(--colheita-border)',
+                    backgroundColor: '#ffffff',
+                    boxShadow: 'var(--shadow-card)',
+                    gap: '12px',
+                  }}
+                >
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <p
+                      style={{
+                        fontSize: '0.875rem',
+                        fontWeight: 600,
+                        color: '#0a0a0a',
+                        margin: '0 0 2px',
+                        letterSpacing: '-0.005em',
+                      }}
+                    >
+                      Render v{inputData?.blueprint_version ?? '—'} ·{' '}
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontWeight: 500,
+                          color: 'var(--colheita-text-tertiary)',
+                          fontSize: '0.75rem',
+                        }}
+                      >
+                        {inputData?.blueprint_hash ?? ''}
+                      </span>
+                    </p>
+                    <p
+                      style={{
+                        fontSize: '0.75rem',
+                        color: 'var(--colheita-text-tertiary)',
+                        margin: 0,
+                      }}
+                    >
+                      {generatedAt.toLocaleString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}{' '}
+                      · {duration}s
+                    </p>
+                  </div>
+                  {m.output_url ? (
+                    <a
+                      href={m.output_url as string}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        fontSize: '0.8125rem',
+                        fontWeight: 600,
+                        color: 'var(--colheita-brand-primary)',
+                        textDecoration: 'none',
+                        flexShrink: 0,
+                      }}
+                    >
+                      Abrir PDF →
+                    </a>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      ) : null}
 
       {/* Metricas */}
       {blueprint ? (
