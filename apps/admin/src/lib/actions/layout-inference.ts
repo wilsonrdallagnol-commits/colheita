@@ -16,7 +16,11 @@
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { createAdminClient, createServerClient, requireAuth } from '@colheita/auth';
-import { generateFromRenderSpec } from '@colheita/generator';
+import {
+  generateFromRenderSpec,
+  generatePngFromRenderSpec,
+  type PngPreset,
+} from '@colheita/generator';
 import {
   analyzeLayout,
   type ContentBindings,
@@ -106,61 +110,82 @@ export async function uploadAndAnalyze(formData: FormData): Promise<AnalyzeRespo
     return { ok: false, error: 'Tenant não associado ao usuário.' };
   }
 
-  // ── 3. Upload pra Storage (bucket assets) ───────────────────────────────
+  // ── 3. Hash de conteudo + dedup check (A2 sha256) ───────────────────────
   const buffer = Buffer.from(await file.arrayBuffer());
-  const ext = (path.extname(file.name) || '').toLowerCase();
-  const safeBase = path
-    .basename(file.name, ext)
-    .replace(/[^a-z0-9-_]/gi, '-')
-    .slice(0, 60);
-  const storagePath = `${tenantId}/layout-references/${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${safeBase}${ext}`;
+  const sha256 = crypto.createHash('sha256').update(buffer).digest('hex');
 
-  const { error: uploadErr } = await admin.storage.from('assets').upload(storagePath, buffer, {
-    contentType: file.type,
-    cacheControl: 'public, max-age=31536000',
-    upsert: false,
-  });
-
-  if (uploadErr) {
-    captureError(uploadErr, { context: 'layout-inference.upload', mimeType: file.type });
-    return { ok: false, error: 'Falha ao subir o arquivo. Tente novamente.' };
-  }
-
-  // ── 4. INSERT em assets (DAM) ────────────────────────────────────────────
-  const assetType: 'image' | 'document' = file.type === 'application/pdf' ? 'document' : 'image';
-  const { data: asset, error: assetErr } = await admin
+  // Se o tenant ja subiu este arquivo, reusa o asset (dedup por conteudo)
+  const { data: existingAsset } = await admin
     .from('assets')
-    .insert({
-      tenant_id: tenantId,
-      filename: path.basename(storagePath),
-      original_name: file.name,
-      mime_type: file.type,
-      file_size: file.size,
-      storage_path: storagePath,
-      type: assetType,
-      title,
-      tags: ['layout-reference'],
-      created_by: user.id,
-    })
-    .select('id')
-    .single();
+    .select('id, storage_path, original_name')
+    .eq('tenant_id', tenantId)
+    .eq('sha256', sha256)
+    .is('deleted_at', null)
+    .maybeSingle();
 
-  if (assetErr || !asset) {
-    captureError(assetErr ?? new Error('asset insert returned no data'), {
-      context: 'layout-inference.assetInsert',
+  let assetId: string;
+  let storagePath: string;
+
+  if (existingAsset) {
+    assetId = existingAsset.id as string;
+    storagePath = existingAsset.storage_path as string;
+  } else {
+    const ext = (path.extname(file.name) || '').toLowerCase();
+    const safeBase = path
+      .basename(file.name, ext)
+      .replace(/[^a-z0-9-_]/gi, '-')
+      .slice(0, 60);
+    storagePath = `${tenantId}/layout-references/${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${safeBase}${ext}`;
+
+    const { error: uploadErr } = await admin.storage.from('assets').upload(storagePath, buffer, {
+      contentType: file.type,
+      cacheControl: 'public, max-age=31536000',
+      upsert: false,
     });
-    // Rollback storage
-    await admin.storage
+
+    if (uploadErr) {
+      captureError(uploadErr, { context: 'layout-inference.upload', mimeType: file.type });
+      return { ok: false, error: 'Falha ao subir o arquivo. Tente novamente.' };
+    }
+
+    // ── 4. INSERT em assets (DAM) ────────────────────────────────────────────
+    const assetType: 'image' | 'document' = file.type === 'application/pdf' ? 'document' : 'image';
+    const { data: asset, error: assetErr } = await admin
       .from('assets')
-      .remove([storagePath])
-      .catch(() => undefined);
-    return { ok: false, error: 'Falha ao registrar mídia. Tente novamente.' };
+      .insert({
+        tenant_id: tenantId,
+        filename: path.basename(storagePath),
+        original_name: file.name,
+        mime_type: file.type,
+        file_size: file.size,
+        storage_path: storagePath,
+        sha256,
+        type: assetType,
+        title,
+        tags: ['layout-reference'],
+        created_by: user.id,
+      })
+      .select('id')
+      .single();
+
+    if (assetErr || !asset) {
+      captureError(assetErr ?? new Error('asset insert returned no data'), {
+        context: 'layout-inference.assetInsert',
+      });
+      // Rollback storage
+      await admin.storage
+        .from('assets')
+        .remove([storagePath])
+        .catch(() => undefined);
+      return { ok: false, error: 'Falha ao registrar mídia. Tente novamente.' };
+    }
+    assetId = asset.id as string;
   }
 
   // ── 5. INSERT em layout_references ──────────────────────────────────────
   const referenceInsert: Record<string, unknown> = {
     tenant_id: tenantId,
-    asset_id: asset.id,
+    asset_id: assetId,
     title,
     source_type: sourceType,
     tags: [],
@@ -178,12 +203,14 @@ export async function uploadAndAnalyze(formData: FormData): Promise<AnalyzeRespo
     captureError(refErr ?? new Error('reference insert returned no data'), {
       context: 'layout-inference.referenceInsert',
     });
-    // Rollback storage + asset
-    await admin.from('assets').delete().eq('id', asset.id);
-    await admin.storage
-      .from('assets')
-      .remove([storagePath])
-      .catch(() => undefined);
+    // Rollback so do asset/storage se NAO foi reuso de dedup
+    if (!existingAsset) {
+      await admin.from('assets').delete().eq('id', assetId);
+      await admin.storage
+        .from('assets')
+        .remove([storagePath])
+        .catch(() => undefined);
+    }
     return { ok: false, error: 'Falha ao registrar referência. Tente novamente.' };
   }
 
@@ -307,6 +334,144 @@ export async function updateBlueprintStatus(
   revalidatePath('/layout-inference');
   revalidatePath(`/layout-inference/[id]`, 'page');
   return { ok: true };
+}
+
+// ── Re-analyze: roda Claude vision novamente, cria nova versao ────────────────
+
+interface ReAnalyzeResult {
+  ok: true;
+  blueprintId: string;
+  version: number;
+  costUsd: number;
+}
+
+interface ReAnalyzeError {
+  ok: false;
+  error: string;
+}
+
+export type ReAnalyzeResponse = ReAnalyzeResult | ReAnalyzeError;
+
+/**
+ * Re-roda a analise vision na referencia. Marca o blueprint atual como
+ * is_current=false e cria um novo com version=N+1 e is_current=true.
+ *
+ * Util quando:
+ *  - Modelo melhorou (nova versao do prompt)
+ *  - Primeiro blueprint saiu invalido/incompleto
+ *  - User quer comparar interpretacoes diferentes
+ */
+export async function reAnalyzeBlueprint(referenceId: string): Promise<ReAnalyzeResponse> {
+  const cookieStore = await cookies();
+  const user = await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+  const admin = createAdminClient();
+
+  // 1. Carrega reference + asset + blueprint atual
+  const { data: refRow } = await supabase
+    .from('layout_references')
+    .select(
+      `id, tenant_id, asset:assets!inner(storage_path, mime_type),
+       blueprints:layout_blueprints(version, is_current)`,
+    )
+    .eq('id', referenceId)
+    .is('deleted_at', null)
+    .maybeSingle();
+
+  if (!refRow) {
+    return { ok: false, error: 'Referência não encontrada.' };
+  }
+
+  const tenantId = refRow.tenant_id as string;
+  const asset = Array.isArray(refRow.asset) ? refRow.asset[0] : refRow.asset;
+  const blueprintsList = (refRow.blueprints ?? []) as Array<{
+    version: number;
+    is_current: boolean;
+  }>;
+
+  if (!asset?.storage_path || !asset.mime_type) {
+    return { ok: false, error: 'Asset da referência indisponível.' };
+  }
+
+  const maxVersion = blueprintsList.reduce((max, b) => Math.max(max, b.version ?? 0), 0);
+  const currentBlueprint = blueprintsList.find((b) => b.is_current);
+
+  // 2. URL publica
+  const { data: publicUrlData } = admin.storage
+    .from('assets')
+    .getPublicUrl(asset.storage_path as string);
+  const publicUrl = publicUrlData.publicUrl;
+
+  // 3. Vision analysis
+  const result = await analyzeLayout({
+    input: { kind: 'url', url: publicUrl, mimeType: asset.mime_type as string },
+    timeoutMs: 60_000,
+    maxRetries: 2,
+  });
+
+  if (!result.ok) {
+    captureError(new Error(`re-analyze failed: ${result.error}`), {
+      context: 'layout-inference.reAnalyze',
+      details: result.details,
+    });
+    return {
+      ok: false,
+      error:
+        result.error === 'invalid_blueprint'
+          ? 'A análise voltou inválida.'
+          : result.error === 'timeout'
+            ? 'A análise demorou demais.'
+            : 'Falha ao analisar.',
+    };
+  }
+
+  // 4. Marca blueprint atual como is_current=false (UNIQUE index garante 1 current/ref)
+  if (currentBlueprint) {
+    await admin
+      .from('layout_blueprints')
+      .update({ is_current: false })
+      .eq('reference_id', referenceId)
+      .eq('is_current', true);
+  }
+
+  // 5. INSERT novo blueprint com version+1
+  const newVersion = maxVersion + 1;
+  const { data: blueprint, error: bpErr } = await admin
+    .from('layout_blueprints')
+    .insert({
+      tenant_id: tenantId,
+      reference_id: referenceId,
+      version: newVersion,
+      is_current: true,
+      blueprint: result.blueprint as unknown as Record<string, unknown>,
+      raw_analysis: { rawText: result.raw.rawText },
+      status: 'draft',
+      model_used: result.metrics.modelUsed,
+      tokens_input: result.metrics.tokensInput,
+      tokens_output: result.metrics.tokensOutput,
+      duration_ms: result.metrics.durationMs,
+      cost_usd: result.metrics.costUsd,
+      created_by: user.id,
+    })
+    .select('id')
+    .single();
+
+  if (bpErr || !blueprint) {
+    captureError(bpErr ?? new Error('blueprint insert returned no data'), {
+      context: 'layout-inference.reAnalyze.insert',
+    });
+    return { ok: false, error: 'Análise feita mas falha ao salvar nova versão.' };
+  }
+
+  revalidatePath('/layout-inference');
+  revalidatePath(`/layout-inference/${referenceId}`);
+
+  return {
+    ok: true,
+    blueprintId: blueprint.id as string,
+    version: newVersion,
+    costUsd: result.metrics.costUsd,
+  };
 }
 
 // ── Render real: blueprint + theme Argho → PDF ───────────────────────────────
@@ -521,6 +686,179 @@ export async function renderBlueprintWithArgho(blueprintId: string): Promise<Ren
     ok: true,
     materialId: material.id as string,
     pdfUrl,
+    durationMs,
+  };
+}
+
+// ── PNG render multi-format (social) ─────────────────────────────────────────
+
+interface PngRenderResult {
+  ok: true;
+  materialId: string;
+  pngUrl: string;
+  preset: PngPreset;
+  durationMs: number;
+}
+
+interface PngRenderError {
+  ok: false;
+  error: string;
+}
+
+export type PngRenderResponse = PngRenderResult | PngRenderError;
+
+/**
+ * Renderiza um blueprint como PNG retina pra redes sociais.
+ * Mesmo pipeline do PDF mas com viewport configurável e renderToPng.
+ */
+export async function renderBlueprintAsPng(
+  blueprintId: string,
+  preset: PngPreset = 'social_landscape',
+): Promise<PngRenderResponse> {
+  const cookieStore = await cookies();
+  const user = await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+  const admin = createAdminClient();
+
+  const { data: bpRow, error: bpErr } = await supabase
+    .from('layout_blueprints')
+    .select(
+      `id, tenant_id, blueprint, version,
+       reference:layout_references!inner(id, title, intended_category),
+       tenant:tenants!inner(id, name, slug, theme_tokens, logo_url)`,
+    )
+    .eq('id', blueprintId)
+    .maybeSingle();
+
+  if (bpErr || !bpRow) {
+    return { ok: false, error: 'Blueprint não encontrado.' };
+  }
+
+  const blueprint = bpRow.blueprint as unknown as LayoutBlueprint;
+  const tenantId = bpRow.tenant_id as string;
+  const reference = Array.isArray(bpRow.reference) ? bpRow.reference[0] : bpRow.reference;
+  const tenant = Array.isArray(bpRow.tenant) ? bpRow.tenant[0] : bpRow.tenant;
+
+  if (!reference || !tenant) {
+    return { ok: false, error: 'Dados de referência ou tenant ausentes.' };
+  }
+
+  const blueprintHash = crypto
+    .createHash('sha256')
+    .update(JSON.stringify(blueprint))
+    .digest('hex')
+    .slice(0, 16);
+
+  const bindings: ContentBindings = {};
+  for (const region of blueprint.regions) {
+    bindings[region.id] = { kind: 'auto' };
+  }
+
+  const compileResult = compileBlueprint({
+    blueprint,
+    theme: { tenantId, tokensVersion: '1', themeRef: tenant.slug as string },
+    bindings,
+    blueprintHash,
+  });
+
+  if (!compileResult.ok) {
+    return {
+      ok: false,
+      error: `Compile falhou: ${compileResult.errors[0]?.details ?? 'erro'}`,
+    };
+  }
+
+  const tenantThemeTokens = tenant.theme_tokens as {
+    brandColor?: string;
+    accentColor?: string;
+  } | null;
+  const compilerTheme = {
+    brandColor: tenantThemeTokens?.brandColor ?? '#183090',
+    accentColor: tenantThemeTokens?.accentColor ?? '#489030',
+    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+    tenantName: (tenant.name as string) ?? 'Argho AgriSciences',
+    logoUrl: (tenant.logo_url as string | null) ?? undefined,
+  };
+
+  const startedAt = Date.now();
+  let pngBuffer: Buffer;
+  try {
+    const result = await generatePngFromRenderSpec(compileResult.spec, {
+      compilerTheme,
+      title: `${reference.title} — ${tenant.name}`,
+      preset,
+    });
+    pngBuffer = result.png;
+  } catch (err) {
+    captureError(err instanceof Error ? err : new Error(String(err)), {
+      context: 'layout-inference.renderPng.playwright',
+      preset,
+    });
+    return { ok: false, error: 'Falha no render do PNG.' };
+  }
+
+  const durationMs = Date.now() - startedAt;
+
+  const slug = (reference.title as string)
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, '-')
+    .slice(0, 60)
+    .replace(/^-+|-+$/g, '');
+  const pngFilename = `${Date.now()}-${slug}-v${bpRow.version ?? 1}-${preset}.png`;
+  const pngPath = `${tenantId}/layout-inference-renders/${pngFilename}`;
+
+  const { error: uploadErr } = await admin.storage.from('assets').upload(pngPath, pngBuffer, {
+    contentType: 'image/png',
+    cacheControl: 'public, max-age=31536000',
+    upsert: false,
+  });
+
+  if (uploadErr) {
+    captureError(uploadErr, { context: 'layout-inference.renderPng.upload', preset });
+    return { ok: false, error: 'Falha ao salvar PNG no storage.' };
+  }
+
+  const { data: publicUrlData } = admin.storage.from('assets').getPublicUrl(pngPath);
+  const pngUrl = publicUrlData.publicUrl;
+
+  const { data: tmpl } = await admin
+    .from('material_templates')
+    .select('id')
+    .eq('slug', 'layout-inference-render')
+    .maybeSingle();
+
+  const { data: material } = await admin
+    .from('generated_materials')
+    .insert({
+      tenant_id: tenantId,
+      template_id: tmpl?.id ?? null,
+      output_url: pngUrl,
+      output_storage_path: pngPath,
+      pages: 1,
+      duration_ms: durationMs,
+      input_data: {
+        blueprint_id: blueprintId,
+        blueprint_hash: blueprintHash,
+        reference_id: reference.id,
+        reference_title: reference.title,
+        blueprint_version: bpRow.version,
+        format: 'png',
+        preset,
+      },
+      product_ids: [],
+      generated_by: user.id,
+    })
+    .select('id')
+    .single();
+
+  revalidatePath('/layout-inference');
+  revalidatePath(`/layout-inference/${reference.id}`);
+
+  return {
+    ok: true,
+    materialId: (material?.id as string) ?? '',
+    pngUrl,
+    preset,
     durationMs,
   };
 }

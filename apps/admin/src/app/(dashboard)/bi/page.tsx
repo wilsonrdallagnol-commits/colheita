@@ -100,19 +100,25 @@ export default async function BiPage() {
     leadsTimelineResult,
     materiaisTimelineResult,
   ] = await Promise.all([
-    // A1 fix 2026-05-09: limit explicito pra evitar full table scan em escala.
-    // 10k leads cobre ~5 anos de operacao por tenant; alem disso virar RPC.
+    // A1 fix 2026-05-09: limit + ORDER BY explicito pra evitar full table scan
+    // em escala E garantir que truncamento priorize leads recentes (nao aleatorio).
+    // 10k cobre ~5 anos de operacao por tenant; alem disso virar RPC agregadora.
     supabase
       .from('leads')
       .select('status, area_hectares')
       .is('deleted_at', null)
+      .order('created_at', { ascending: false })
       .limit(10000),
     supabase
       .from('generated_materials')
       .select('duration_ms, template:material_templates(category)')
       .order('generated_at', { ascending: false })
       .limit(1000),
-    supabase.from('orders').select('status, total_liquido').limit(10000),
+    supabase
+      .from('orders')
+      .select('status, total_liquido')
+      .order('created_at', { ascending: false })
+      .limit(10000),
     supabase
       .from('products')
       .select('id', { count: 'exact', head: true })
@@ -123,13 +129,18 @@ export default async function BiPage() {
       .select('id', { count: 'exact', head: true })
       .eq('status', 'published'),
     supabase.from('learning_lessons').select('id', { count: 'exact', head: true }),
-    supabase.from('regulatory_registrations').select('status, expires_at').limit(5000),
+    supabase
+      .from('regulatory_registrations')
+      .select('status, expires_at')
+      .order('expires_at', { ascending: true, nullsFirst: false })
+      .limit(5000),
     // Timeline de 30 dias pra sparklines
     supabase
       .from('leads')
       .select('created_at')
       .gte('created_at', thirtyDaysAgo)
       .is('deleted_at', null)
+      .order('created_at', { ascending: true })
       .limit(5000),
     supabase
       .from('generated_materials')

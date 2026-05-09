@@ -121,6 +121,23 @@ export async function POST(request: NextRequest) {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
+  // A2 fix complement: hash de conteudo + dedup por (tenant, sha256)
+  const sha256 = crypto.createHash('sha256').update(buffer).digest('hex');
+  const { data: existingByHash } = await adminClient
+    .from('assets')
+    .select(
+      'id, filename, original_name, mime_type, file_size, storage_path, type, version, parent_id, created_at',
+    )
+    .eq('tenant_id', tenantId)
+    .eq('sha256', sha256)
+    .is('deleted_at', null)
+    .maybeSingle();
+
+  if (existingByHash) {
+    // Conteudo identico ja existe — retorna sem upload nem novo INSERT
+    return NextResponse.json({ asset: existingByHash, deduped: true }, { status: 200 });
+  }
+
   // 5a. Extrai dimensões para imagens raster (exclui SVG — sharp não processa)
   let imageWidth: number | null = null;
   let imageHeight: number | null = null;
@@ -197,6 +214,7 @@ export async function POST(request: NextRequest) {
       mime_type: mimeType,
       file_size: file.size,
       storage_path: storagePath,
+      sha256,
       type: assetType,
       version: newVersion,
       parent_id: parentId,

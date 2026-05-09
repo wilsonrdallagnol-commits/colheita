@@ -16,6 +16,8 @@ import { ArrowLeft, Brain, Clock, DollarSign } from 'lucide-react';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { PngExportMenu } from '@/components/layout-inference/png-export-menu';
+import { ReAnalyzeButton } from '@/components/layout-inference/re-analyze-button';
 import { RenderButton } from '@/components/layout-inference/render-button';
 import { ReviewActions } from '@/components/layout-inference/review-actions';
 
@@ -457,7 +459,13 @@ export default async function BlueprintDetailPage({ params }: PageProps) {
                 materiais.
               </p>
             </div>
-            <RenderButton blueprintId={blueprint.id as string} />
+            <div
+              style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'flex-start' }}
+            >
+              <RenderButton blueprintId={blueprint.id as string} />
+              <PngExportMenu blueprintId={blueprint.id as string} />
+              <ReAnalyzeButton referenceId={id} />
+            </div>
           </div>
         </section>
       ) : null}

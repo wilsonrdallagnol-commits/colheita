@@ -18,7 +18,14 @@ import type {
   PropostaData,
 } from './types.js';
 
-export { type GenerateFromSpecOptions, generateFromRenderSpec } from './generate-spec.js';
+export {
+  type GenerateFromSpecOptions,
+  type GeneratePngFromSpecOptions,
+  generateFromRenderSpec,
+  generatePngFromRenderSpec,
+  PNG_PRESETS,
+  type PngPreset,
+} from './generate-spec.js';
 export { BannerSocial } from './templates/BannerSocial.js';
 export { Catalogo } from './templates/Catalogo.js';
 export { Dossie } from './templates/Dossie.js';
