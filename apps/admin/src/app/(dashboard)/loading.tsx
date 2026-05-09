@@ -1,7 +1,7 @@
 // apps/admin/src/app/(dashboard)/loading.tsx
 export default function DashboardLoading() {
   return (
-    <div style={{ padding: '32px', maxWidth: '860px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '860px' }}>
       {/* Header */}
       <div style={{ marginBottom: '36px' }}>
         <div

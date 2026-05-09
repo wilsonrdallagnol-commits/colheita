@@ -1,7 +1,7 @@
 // apps/admin/src/app/(dashboard)/distribuidores/loading.tsx
 export default function DistribuidoresLoading() {
   return (
-    <div style={{ padding: '32px', maxWidth: '1100px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '1100px' }}>
       {/* Header skeleton */}
       <div style={{ marginBottom: '24px' }}>
         <div

@@ -1,15 +1,8 @@
 // apps/admin/src/app/(dashboard)/produtos/[slug]/page.tsx
 import { createServerClient, requireAuth } from '@colheita/auth';
 import type { ProductApplication, ProductComposition, ProductPackaging } from '@colheita/db';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@colheita/ui';
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ProdutoActions } from '@/components/produtos/produto-actions';
 import { ProdutoDetail } from '@/components/produtos/produto-detail';
@@ -82,26 +75,52 @@ export default async function ProdutoPage({ params }: PageProps) {
     : (data.category ?? null);
 
   return (
-    <div style={{ padding: '32px' }}>
-      <Breadcrumb style={{ marginBottom: '28px' }}>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <span style={{ color: 'var(--colheita-text-tertiary)', fontSize: '0.8125rem' }}>
-              Argho
-            </span>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/produtos" style={{ fontSize: '0.8125rem' }}>
-              Produtos
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage style={{ fontSize: '0.8125rem' }}>{data.name}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)' }}>
+      <Link
+        href="/produtos"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '6px',
+          fontSize: '0.75rem',
+          fontWeight: 500,
+          color: 'var(--colheita-text-tertiary)',
+          textDecoration: 'none',
+          marginBottom: '20px',
+        }}
+      >
+        ← Catálogo de produtos
+      </Link>
+
+      <header style={{ marginBottom: '28px' }}>
+        <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
+          PIM · {category?.name ?? 'Produto'}
+        </p>
+        <h1
+          className="argho-product-name"
+          style={{
+            fontSize: 'clamp(1.875rem, 2.6vw, 2.5rem)',
+            margin: '0 0 8px',
+            lineHeight: 1.05,
+            letterSpacing: '-0.025em',
+          }}
+        >
+          {data.name}
+        </h1>
+        {data.tagline ? (
+          <p
+            style={{
+              fontSize: '1rem',
+              color: 'var(--colheita-text-secondary)',
+              margin: 0,
+              maxWidth: '64ch',
+              letterSpacing: '-0.005em',
+            }}
+          >
+            {data.tagline}
+          </p>
+        ) : null}
+      </header>
 
       {/* Barra de ações */}
       <div

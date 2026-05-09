@@ -178,7 +178,7 @@ export default async function DistribuidorDetailPage({ params }: PageProps) {
   const userStyle = userStatusStyle(user.status);
 
   return (
-    <div style={{ padding: '32px', maxWidth: '900px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '900px' }}>
       {/* Breadcrumb */}
       <div style={{ marginBottom: '24px' }}>
         <Breadcrumb>
@@ -339,7 +339,7 @@ export default async function DistribuidorDetailPage({ params }: PageProps) {
         {certs.length === 0 ? (
           <div
             style={{
-              padding: '32px',
+              padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)',
               textAlign: 'center',
               border: '1px dashed var(--colheita-border-subtle)',
               borderRadius: 'var(--colheita-radius-lg)',
@@ -478,7 +478,7 @@ export default async function DistribuidorDetailPage({ params }: PageProps) {
         {auditEvents.length === 0 ? (
           <div
             style={{
-              padding: '32px',
+              padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)',
               textAlign: 'center',
               border: '1px dashed var(--colheita-border-subtle)',
               borderRadius: 'var(--colheita-radius-lg)',

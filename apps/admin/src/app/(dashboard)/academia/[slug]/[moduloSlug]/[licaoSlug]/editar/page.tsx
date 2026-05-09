@@ -63,7 +63,7 @@ export default async function EditarLicaoPage({ params }: PageProps) {
   const cancelHref = `/academia/${slug}/${moduloSlug}`;
 
   return (
-    <div style={{ padding: '32px', maxWidth: '800px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '800px' }}>
       <Breadcrumb style={{ marginBottom: '24px' }}>
         <BreadcrumbList>
           <BreadcrumbItem>

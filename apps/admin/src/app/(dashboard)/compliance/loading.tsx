@@ -3,7 +3,7 @@ export default function ComplianceLoading() {
   const rows = ['r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9'] as const;
 
   return (
-    <div style={{ padding: '32px', maxWidth: '1100px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '1100px' }}>
       {/* Header skeleton */}
       <div style={{ marginBottom: '28px' }}>
         <div

@@ -1,7 +1,7 @@
 // apps/admin/src/app/(dashboard)/midias/[id]/loading.tsx
 export default function AssetDetailLoading() {
   return (
-    <div style={{ padding: '32px', maxWidth: '800px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '800px' }}>
       {/* Breadcrumb skeleton */}
       <div
         style={{

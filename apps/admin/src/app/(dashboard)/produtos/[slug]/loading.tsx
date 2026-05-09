@@ -3,7 +3,7 @@ import { Skeleton } from '@colheita/ui';
 
 export default function ProdutoLoading() {
   return (
-    <div style={{ padding: '32px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)' }}>
       <Skeleton style={{ height: '16px', width: '200px', marginBottom: '32px' }} />
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '40px' }}>
         <div>

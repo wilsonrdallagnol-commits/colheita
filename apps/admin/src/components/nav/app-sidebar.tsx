@@ -75,7 +75,7 @@ const NAV_GROUPS: NavGroup[] = [
     label: 'Geração',
     items: [
       { href: '/materiais/historico', label: 'Materiais gerados', icon: Sparkles },
-      { href: '/assistente', label: 'Layout Inference', icon: LayoutTemplate },
+      { href: '/layout-inference', label: 'Layout Inference', icon: LayoutTemplate },
     ],
   },
   {

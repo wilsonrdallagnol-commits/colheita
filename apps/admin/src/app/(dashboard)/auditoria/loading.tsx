@@ -1,7 +1,7 @@
 // apps/admin/src/app/(dashboard)/auditoria/loading.tsx
 export default function AuditoriaLoading() {
   return (
-    <div style={{ padding: '32px', maxWidth: '1200px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '1200px' }}>
       {/* Header skeleton */}
       <div style={{ marginBottom: '24px' }}>
         <div

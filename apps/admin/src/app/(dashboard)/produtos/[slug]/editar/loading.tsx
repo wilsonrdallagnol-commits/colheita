@@ -3,7 +3,7 @@ import { Skeleton } from '@colheita/ui';
 
 export default function EditarProdutoLoading() {
   return (
-    <div style={{ padding: '32px', maxWidth: '720px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '720px' }}>
       {/* Breadcrumb */}
       <Skeleton style={{ height: '16px', width: '320px', marginBottom: '24px' }} />
 

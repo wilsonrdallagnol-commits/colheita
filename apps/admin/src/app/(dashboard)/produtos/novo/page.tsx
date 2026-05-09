@@ -25,7 +25,7 @@ export default async function NovoProdutoPage() {
     .order('name');
 
   return (
-    <div style={{ padding: '32px', maxWidth: '720px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '720px' }}>
       <Breadcrumb style={{ marginBottom: '24px' }}>
         <BreadcrumbList>
           <BreadcrumbItem>

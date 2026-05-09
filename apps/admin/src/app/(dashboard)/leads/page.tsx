@@ -137,7 +137,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
   const totalAtivos = (counts.novo ?? 0) + (counts.qualificado ?? 0) + (counts.proposta ?? 0);
 
   return (
-    <div style={{ padding: '32px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)' }}>
       <Breadcrumb style={{ marginBottom: '24px' }}>
         <BreadcrumbList>
           <BreadcrumbItem>

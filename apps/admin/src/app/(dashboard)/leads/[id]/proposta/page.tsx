@@ -90,7 +90,7 @@ export default async function GerarPropostaPage({ params }: PageProps) {
   });
 
   return (
-    <div style={{ padding: '32px', maxWidth: '1100px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '1100px' }}>
       <Breadcrumb style={{ marginBottom: '24px' }}>
         <BreadcrumbList>
           <BreadcrumbItem>

@@ -19,7 +19,7 @@ export default async function NovaCategoriaPage() {
   await requireAuth(cookieStore);
 
   return (
-    <div style={{ padding: '32px', maxWidth: '560px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '560px' }}>
       <Breadcrumb style={{ marginBottom: '24px' }}>
         <BreadcrumbList>
           <BreadcrumbItem>

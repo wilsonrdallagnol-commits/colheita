@@ -179,7 +179,7 @@ export default async function CertificadosPage({ searchParams }: PageProps) {
   const hasFilters = Boolean(track || status);
 
   return (
-    <div style={{ padding: '32px', maxWidth: '1100px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '1100px' }}>
       {/* Breadcrumb */}
       <div style={{ marginBottom: '20px' }}>
         <span style={{ fontSize: '0.875rem' }}>

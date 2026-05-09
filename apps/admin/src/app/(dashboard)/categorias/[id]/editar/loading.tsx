@@ -1,7 +1,7 @@
 // apps/admin/src/app/(dashboard)/categorias/[id]/editar/loading.tsx
 export default function EditarCategoriaLoading() {
   return (
-    <div style={{ padding: '32px', maxWidth: '480px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '480px' }}>
       {/* Breadcrumb skeleton */}
       <div
         style={{

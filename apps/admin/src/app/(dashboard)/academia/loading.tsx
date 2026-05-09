@@ -3,7 +3,7 @@ import { Skeleton } from '@colheita/ui';
 
 export default function AcademiaLoading() {
   return (
-    <div style={{ padding: '32px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)' }}>
       <Skeleton style={{ height: '16px', width: '180px', marginBottom: '24px' }} />
       <div
         style={{

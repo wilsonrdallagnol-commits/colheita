@@ -133,7 +133,7 @@ export default async function LeadDetailPage({ params }: PageProps) {
   const location = [lead.city, lead.state].filter(Boolean).join('/') || '—';
 
   return (
-    <div style={{ padding: '32px', maxWidth: '900px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '900px' }}>
       <Breadcrumb style={{ marginBottom: '24px' }}>
         <BreadcrumbList>
           <BreadcrumbItem>

@@ -3,7 +3,7 @@ import { Skeleton } from '@colheita/ui';
 
 export default function ColecoesLoading() {
   return (
-    <div style={{ padding: '32px' }}>
+    <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)' }}>
       <Skeleton style={{ width: '200px', height: '16px', marginBottom: '24px' }} />
       <div
         style={{
