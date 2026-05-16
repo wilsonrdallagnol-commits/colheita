@@ -157,6 +157,33 @@ export async function POST(request: NextRequest) {
     ? `O usuário está navegando em ${body.contextPath}. Considere isso ao responder.`
     : undefined;
 
+  // Persistencia em conversation_logs — feita via service role pra bypassar
+  // RLS (INSERT). Acumula resposta + sources durante o stream, grava no fim.
+  // Falha de log NUNCA derruba a resposta ao user (best-effort).
+  const adminClient = createAdminClient();
+  const turnStartedAt = Date.now();
+  let accumulatedAnswer = '';
+  let accumulatedSources: unknown[] = [];
+
+  async function persistTurn(status: 'ok' | 'error') {
+    try {
+      await adminClient.from('conversation_logs').insert({
+        tenant_id: tenantId,
+        user_id: user.id,
+        query: body?.query ?? '',
+        answer: accumulatedAnswer.slice(0, 16_000),
+        context_path: body?.contextPath ?? null,
+        sources: accumulatedSources.slice(0, 20),
+        duration_ms: Date.now() - turnStartedAt,
+        status,
+      });
+    } catch (logErr) {
+      captureError(logErr instanceof Error ? logErr : new Error(String(logErr)), {
+        context: 'admin.api.agent.ask.persistTurn',
+      });
+    }
+  }
+
   // Stream response via SSE
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
@@ -171,12 +198,20 @@ export async function POST(request: NextRequest) {
         });
 
         for await (const event of events) {
+          // Acumula pra persistencia (sem alterar o que vai pro client)
+          const ev = event as { type?: string; delta?: string; sources?: unknown[] };
+          if (ev.type === 'text_delta' && typeof ev.delta === 'string') {
+            accumulatedAnswer += ev.delta;
+          } else if (ev.type === 'sources' && Array.isArray(ev.sources)) {
+            accumulatedSources = ev.sources;
+          }
           const payload = `data: ${JSON.stringify(event)}\n\n`;
           controller.enqueue(encoder.encode(payload));
         }
 
         controller.enqueue(encoder.encode('event: end\ndata: {}\n\n'));
         controller.close();
+        await persistTurn('ok');
       } catch (err) {
         captureError(err instanceof Error ? err : new Error(String(err)), {
           context: 'admin.api.agent.ask',
@@ -187,6 +222,7 @@ export async function POST(request: NextRequest) {
         });
         controller.enqueue(encoder.encode(`event: error\ndata: ${errorPayload}\n\n`));
         controller.close();
+        await persistTurn('error');
       }
     },
   });
