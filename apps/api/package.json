@@ -24,6 +24,8 @@
     "@colheita/generator": "workspace:*",
     "@colheita/safra-contracts": "workspace:*",
     "@colheita/tokens": "workspace:*",
+    "@sparticuz/chromium": "^131.0.0",
+    "playwright-core": "1.49.1",
     "next": "15.3.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

@@ -74,7 +74,7 @@ importers:
         version: link:../../packages/config
       '@sentry/nextjs':
         specifier: ^8.0.0
-        version: 8.55.2(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(next@15.3.9(@opentelemetry/api@1.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5)(webpack@5.106.2)
+        version: 8.55.2(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.3.9(@opentelemetry/api@1.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5)(webpack@5.106.2)
       '@tailwindcss/postcss':
         specifier: ^4.1.5
         version: 4.2.4
@@ -123,6 +123,9 @@ importers:
       '@colheita/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@sparticuz/chromium':
+        specifier: ^131.0.0
+        version: 131.0.1
       '@upstash/ratelimit':
         specifier: ^2.0.5
         version: 2.0.5(@upstash/redis@1.34.3)
@@ -138,6 +141,9 @@ importers:
       next:
         specifier: 15.3.9
         version: 15.3.9(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      playwright-core:
+        specifier: 1.49.1
+        version: 1.49.1
       react:
         specifier: ^19.0.0
         version: 19.2.5
@@ -208,6 +214,9 @@ importers:
       '@colheita/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
+      '@sparticuz/chromium':
+        specifier: ^131.0.0
+        version: 131.0.1
       '@supabase/ssr':
         specifier: ^0.5.2
         version: 0.5.2(@supabase/supabase-js@2.104.1)
@@ -223,6 +232,9 @@ importers:
       next:
         specifier: 15.3.9
         version: 15.3.9(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      playwright-core:
+        specifier: 1.49.1
+        version: 1.49.1
       react:
         specifier: ^19.0.0
         version: 19.2.5
@@ -278,6 +290,9 @@ importers:
       '@colheita/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@sparticuz/chromium':
+        specifier: ^131.0.0
+        version: 131.0.1
       '@supabase/ssr':
         specifier: ^0.5.2
         version: 0.5.2(@supabase/supabase-js@2.104.1)
@@ -299,6 +314,9 @@ importers:
       next:
         specifier: 15.3.9
         version: 15.3.9(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      playwright-core:
+        specifier: 1.49.1
+        version: 1.49.1
       react:
         specifier: ^19.0.0
         version: 19.2.5
@@ -616,7 +634,7 @@ importers:
     dependencies:
       '@sentry/nextjs':
         specifier: ^8.0.0
-        version: 8.55.2(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.3.9(@opentelemetry/api@1.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5)(webpack@5.106.2)
+        version: 8.55.2(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.7.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(next@15.3.9(@opentelemetry/api@1.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5)(webpack@5.106.2)
       next-axiom:
         specifier: ^1.5.0
         version: 1.10.0(next@15.3.9(@opentelemetry/api@1.9.0)(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5)
