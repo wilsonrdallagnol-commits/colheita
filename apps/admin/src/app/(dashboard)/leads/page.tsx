@@ -4,14 +4,7 @@
 // Mostra contagens por status no topo + tabela com nome/empresa/origem/contato/follow-up.
 
 import { createServerClient, requireAuth } from '@colheita/auth';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-  Button,
-} from '@colheita/ui';
+import { Button } from '@colheita/ui';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 
@@ -138,20 +131,6 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
 
   return (
     <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)' }}>
-      <Breadcrumb style={{ marginBottom: '24px' }}>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <span style={{ color: 'var(--colheita-text-tertiary)', fontSize: '0.8125rem' }}>
-              Argho
-            </span>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage style={{ fontSize: '0.8125rem' }}>Leads</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
       {/* Header */}
       <div
         style={{

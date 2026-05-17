@@ -10,7 +10,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { InviteDistribuidorForm } from './invite-form';
 
-export const metadata: Metadata = { title: 'Distribuidores | Argho Admin' };
+export const metadata: Metadata = { title: 'Distribuidores' };
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 

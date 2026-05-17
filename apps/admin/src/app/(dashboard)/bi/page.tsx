@@ -16,13 +16,6 @@
 // (cumulative bar chart custom em SVG inline) — bundle leve.
 
 import { createServerClient, requireAuth } from '@colheita/auth';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@colheita/ui';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 
@@ -280,35 +273,6 @@ export default async function BiPage() {
         // deixa barras vazias em telas grandes (anti-pattern hm-designer).
       }}
     >
-      <Breadcrumb style={{ marginBottom: '32px' }}>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <span
-              style={{
-                color: 'var(--colheita-text-tertiary)',
-                fontSize: '0.75rem',
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-              }}
-            >
-              Argho
-            </span>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage
-              style={{
-                fontSize: '0.75rem',
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-              }}
-            >
-              Inteligência de Mercado
-            </BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
       <div style={{ marginBottom: '36px' }}>
         <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
           Inteligência de Mercado

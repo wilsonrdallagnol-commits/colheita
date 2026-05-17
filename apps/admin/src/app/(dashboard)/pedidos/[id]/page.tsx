@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const cookieStore = await cookies();
   const supabase = createServerClient(cookieStore);
   const { data } = await supabase.from('orders').select('numero').eq('id', id).single();
-  return { title: data ? `Pedido ${data.numero} | Argho Admin` : 'Pedido | Argho Admin' };
+  return { title: data ? `Pedido ${data.numero}` : 'Pedido' };
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

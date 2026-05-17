@@ -9,7 +9,7 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 
-export const metadata: Metadata = { title: 'Compliance Regulatório | Argho Admin' };
+export const metadata: Metadata = { title: 'Compliance Regulatório' };
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 

@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { AdminChatPanel } from '@/components/assistente/admin-chat-panel';
 
 export const metadata: Metadata = {
-  title: 'Assistente IA | Argho Admin',
+  title: 'Assistente IA',
 };
 
 export default function AssistentePage() {
