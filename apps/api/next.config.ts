@@ -63,15 +63,28 @@ function securityHeaders(): { key: string; value: string }[] {
   ];
 }
 
+// ── Output file tracing — binário do Chromium serverless ──────────────────────
+// O @vercel/nft não rastreia estaticamente os arquivos brotli do
+// @sparticuz/chromium (path dinâmico `__dirname/../bin`). A rota que gera PDF
+// via @colheita/generator precisa do binário no bundle da função.
+const CHROMIUM_BINARY_GLOB =
+  '../../node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**/*';
+
+const GENERATOR_ROUTES = ['/api/v1/catalog/[slug]/ficha-tecnica'];
+
 // ── Next.js config ────────────────────────────────────────────────────────────
 const nextConfig: NextConfig = {
   serverExternalPackages: [
     'playwright',
     'playwright-core',
     'chromium-bidi',
+    '@sparticuz/chromium',
     '@colheita/generator',
     '@colheita/jobs',
   ],
+  outputFileTracingIncludes: Object.fromEntries(
+    GENERATOR_ROUTES.map((route) => [route, [CHROMIUM_BINARY_GLOB]]),
+  ),
   transpilePackages: [
     '@colheita/auth',
     '@colheita/email',
@@ -90,7 +103,13 @@ const nextConfig: NextConfig = {
         : config.externals
           ? [config.externals]
           : [];
-      config.externals = [...prior, 'playwright', 'playwright-core', 'chromium-bidi'];
+      config.externals = [
+        ...prior,
+        'playwright',
+        'playwright-core',
+        'chromium-bidi',
+        '@sparticuz/chromium',
+      ];
     }
     config.resolve.extensionAlias = {
       '.js': ['.js', '.ts', '.tsx'],

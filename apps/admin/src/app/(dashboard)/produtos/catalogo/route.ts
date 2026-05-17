@@ -12,6 +12,9 @@
 
 // Playwright + react-dom/server requerem Node.js runtime
 export const runtime = 'nodejs';
+// PDF via Chromium serverless — cold start (extrair binário + launch) pode
+// passar de 10s; 60s cobre cold start + render do catálogo completo.
+export const maxDuration = 60;
 
 import { createServerClient, requireAuth } from '@colheita/auth';
 import type {

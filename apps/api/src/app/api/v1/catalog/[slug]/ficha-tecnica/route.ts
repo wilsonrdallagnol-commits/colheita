@@ -5,6 +5,9 @@
 
 // Playwright requer o runtime Node.js (não Edge)
 export const runtime = 'nodejs';
+// PDF via Chromium serverless — cold start (extrair binário + launch) pode
+// passar de 10s; 60s cobre cold start + render com folga.
+export const maxDuration = 60;
 
 //
 // GET /api/v1/catalog/:slug/ficha-tecnica

@@ -14,6 +14,9 @@
 //   - Atualiza lead.next_followup_at = +7 dias se nao tiver follow-up no futuro
 
 export const runtime = 'nodejs';
+// PDF via Chromium serverless — cold start (extrair binário + launch) pode
+// passar de 10s; 60s cobre cold start + render com folga.
+export const maxDuration = 60;
 
 import { createServerClient, requireAuth } from '@colheita/auth';
 import type { ProductComposition, ProductPackaging } from '@colheita/db';
