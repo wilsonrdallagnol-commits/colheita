@@ -40,6 +40,17 @@ async function resolveLaunch(explicitExecutablePath?: string): Promise<ChromiumL
   const isServerless = Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME) || process.env.VERCEL === '1';
 
   if (isServerless) {
+    // O @sparticuz/chromium só extrai os .so de que o Chromium depende
+    // (libnss3, etc.) e configura LD_LIBRARY_PATH quando detecta um runtime
+    // Lambda — e detecta isso via AWS_EXECUTION_ENV / AWS_LAMBDA_JS_RUNTIME.
+    // A Vercel roda em Lambda mas NÃO seta essas vars (abstrai o Lambda), então
+    // a detecção falha, os libs não são extraídos e o Chromium morre com
+    // "libnss3.so: cannot open shared object file" (exit 127).
+    // Setamos o marcador AQUI, antes do import: o setupLambdaEnvironment do
+    // sparticuz roda no load do módulo, e executablePath() extrai al2023.tar.br.
+    // O `20.x` apenas dispara o path AL2023 (libs corretas p/ Node 20/22/24).
+    process.env.AWS_LAMBDA_JS_RUNTIME ??= 'nodejs20.x';
+
     // Dynamic import — @sparticuz/chromium é um pacote nativo (binário brotli)
     // que só deve ser carregado no runtime Node serverless, nunca no bundle RSC.
     const { default: sparticuz } = await import('@sparticuz/chromium');
