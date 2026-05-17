@@ -1,9 +1,5 @@
 // packages/generator/src/render.ts
 
-import { randomUUID } from 'node:crypto';
-import { rm } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
 import type { ReactElement } from 'react';
 import type { BannerOptions, BannerResult, GenerateOptions, GenerateResult } from './types.js';
 
@@ -25,54 +21,38 @@ interface ChromiumLaunchConfig {
   args?: string[];
 }
 
-interface ResolvedLaunch {
-  options: ChromiumLaunchConfig;
-  /** Limpa o `--user-data-dir` efêmero. No-op fora de serverless. */
-  cleanup: () => Promise<void>;
-}
-
 /**
  * Resolve a configuração de launch do Chromium conforme o ambiente.
  *
  * - **Serverless (Vercel / AWS Lambda):** `playwright-core` não embute um
  *   browser — em produção serverless o binário vem do `@sparticuz/chromium`
  *   (Chromium comprimido em brotli, descompactado para `/tmp` no cold start e
- *   cacheado em `/tmp/chromium` para invocações quentes). Cada invocação ganha
- *   um `--user-data-dir` único para evitar corrupção de perfil entre execuções
- *   concorrentes no mesmo container quente; o diretório é removido no `finally`.
+ *   cacheado em `/tmp/chromium` para invocações quentes).
  * - **Local / CI com `executablePath` explícito:** usa o caminho informado.
  * - **Dev local:** usa o Chromium baixado por `npx playwright install chromium`.
+ *
+ * O perfil temporário do Chromium é gerenciado pelo próprio Playwright:
+ * `launch()` cria um user-data-dir efêmero e o remove em `browser.close()`.
+ * NÃO passar `--user-data-dir` em `args` — `launch()` rejeita esse flag e exige
+ * `launchPersistentContext()`; isso quebrava a geração em serverless.
  */
-async function resolveLaunch(explicitExecutablePath?: string): Promise<ResolvedLaunch> {
+async function resolveLaunch(explicitExecutablePath?: string): Promise<ChromiumLaunchConfig> {
   const isServerless = Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME) || process.env.VERCEL === '1';
 
   if (isServerless) {
     // Dynamic import — @sparticuz/chromium é um pacote nativo (binário brotli)
     // que só deve ser carregado no runtime Node serverless, nunca no bundle RSC.
     const { default: sparticuz } = await import('@sparticuz/chromium');
-    const userDataDir = join(tmpdir(), `colheita-pw-${randomUUID()}`);
     return {
-      options: {
-        headless: true,
-        executablePath: await sparticuz.executablePath(),
-        args: [...sparticuz.args, `--user-data-dir=${userDataDir}`],
-      },
-      cleanup: async () => {
-        await rm(userDataDir, { recursive: true, force: true }).catch(() => {
-          // /tmp é efêmero no Lambda; falha de cleanup não é crítica
-        });
-      },
+      headless: true,
+      executablePath: await sparticuz.executablePath(),
+      args: sparticuz.args,
     };
   }
 
-  return {
-    options: explicitExecutablePath
-      ? { headless: true, executablePath: explicitExecutablePath }
-      : { headless: true },
-    cleanup: async () => {
-      // sem user-data-dir efêmero fora de serverless
-    },
-  };
+  return explicitExecutablePath
+    ? { headless: true, executablePath: explicitExecutablePath }
+    : { headless: true };
 }
 
 /**
@@ -99,7 +79,7 @@ export async function renderToPdf(
     throw new Error('renderToPdf aborted before browser launch');
   }
 
-  const { options: launchOptions, cleanup } = await resolveLaunch(options.executablePath);
+  const launchOptions = await resolveLaunch(options.executablePath);
 
   const browser = await chromium.launch(launchOptions);
 
@@ -135,7 +115,6 @@ export async function renderToPdf(
     await browser.close().catch(() => {
       // ja fechado pelo abort handler
     });
-    await cleanup();
   }
 }
 
@@ -159,7 +138,7 @@ export async function renderToPng(
 
   const { chromium } = await import('playwright-core');
 
-  const { options: launchOptions, cleanup } = await resolveLaunch(options.executablePath);
+  const launchOptions = await resolveLaunch(options.executablePath);
 
   const browser = await chromium.launch(launchOptions);
 
@@ -187,6 +166,5 @@ export async function renderToPng(
     await browser.close().catch(() => {
       // ignora — browser pode ja estar fechado
     });
-    await cleanup();
   }
 }
