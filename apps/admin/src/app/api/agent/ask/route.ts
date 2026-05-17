@@ -216,9 +216,12 @@ export async function POST(request: NextRequest) {
         captureError(err instanceof Error ? err : new Error(String(err)), {
           context: 'admin.api.agent.ask',
         });
+        // `detail` traz a mensagem real do erro — admin endpoint, ajuda
+        // diagnóstico em prod. UI usa só `message` (genérica) no display.
         const errorPayload = JSON.stringify({
           type: 'error',
           message: 'Falha ao processar a pergunta. Tente de novo.',
+          detail: err instanceof Error ? err.message : String(err),
         });
         controller.enqueue(encoder.encode(`event: error\ndata: ${errorPayload}\n\n`));
         controller.close();
