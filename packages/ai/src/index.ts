@@ -43,6 +43,9 @@ export {
 export type { GeneratorConfig } from './generator.js';
 // Generator
 export { AiGenerator } from './generator.js';
+export type { LessonRow, ProductRow } from './indexing.js';
+// Indexing — chunk builders pra produtos e lições
+export { buildLessonChunk, buildProductChunks } from './indexing.js';
 export type { AskInput } from './pipeline.js';
 // Pipeline
 export { RagPipeline } from './pipeline.js';
