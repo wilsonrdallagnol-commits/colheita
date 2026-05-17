@@ -36,9 +36,10 @@ export async function POST() {
     return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
-  // Provider de embedding — Voyage tem prioridade, OpenAI fallback
+  // Provider de embedding — Voyage tem prioridade, OpenAI fallback.
+  // Aceita OPENAI_API_KEY (canônico) ou OPENAI (fallback de naming).
   const hasVoyage = Boolean(process.env.VOYAGE_API_KEY);
-  const hasOpenAI = Boolean(process.env.OPENAI_API_KEY);
+  const hasOpenAI = Boolean(process.env.OPENAI_API_KEY ?? process.env.OPENAI);
   if (!hasVoyage && !hasOpenAI) {
     return NextResponse.json(
       {

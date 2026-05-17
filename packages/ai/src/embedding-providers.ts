@@ -156,7 +156,9 @@ export class OpenAIEmbeddingProvider implements EmbeddingProvider {
 
   constructor(config: OpenAIEmbeddingConfig = {}) {
     this.modelId = config.model ?? 'text-embedding-3-small';
-    this.apiKey = config.apiKey ?? process.env.OPENAI_API_KEY ?? '';
+    // Aceita OPENAI_API_KEY (nome canônico) ou OPENAI (fallback — alguns
+    // ambientes nomeiam a env var só como OPENAI). config.apiKey tem prioridade.
+    this.apiKey = config.apiKey ?? process.env.OPENAI_API_KEY ?? process.env.OPENAI ?? '';
     this.maxRetries = config.maxRetries ?? 2;
 
     // Dimensões por modelo

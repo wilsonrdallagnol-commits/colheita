@@ -41,7 +41,7 @@ function buildEmbeddingProvider() {
     console.log('📡  Usando VoyageEmbeddingProvider (voyage-3-lite)');
     return new VoyageEmbeddingProvider();
   }
-  if (process.env.OPENAI_API_KEY) {
+  if (process.env.OPENAI_API_KEY || process.env.OPENAI) {
     console.log('📡  Usando OpenAIEmbeddingProvider (text-embedding-3-small)');
     return new OpenAIEmbeddingProvider();
   }
