@@ -18,6 +18,7 @@
     "@colheita/layout-inference": "workspace:*",
     "@colheita/tokens": "workspace:*",
     "@colheita/ui": "workspace:*",
+    "@sparticuz/chromium": "^131.0.0",
     "playwright-core": "1.49.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

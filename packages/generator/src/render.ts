@@ -1,5 +1,9 @@
 // packages/generator/src/render.ts
 
+import { randomUUID } from 'node:crypto';
+import { rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import type { ReactElement } from 'react';
 import type { BannerOptions, BannerResult, GenerateOptions, GenerateResult } from './types.js';
 
@@ -11,13 +15,72 @@ interface PngViewport {
 }
 
 /**
+ * Subconjunto estrutural de `LaunchOptions` do Playwright. Tipado explicitamente
+ * (sem `any`) para poder ser construído fora do escopo do dynamic import de
+ * `playwright-core` — e ainda assim ser aceito por `chromium.launch()`.
+ */
+interface ChromiumLaunchConfig {
+  headless: boolean;
+  executablePath?: string;
+  args?: string[];
+}
+
+interface ResolvedLaunch {
+  options: ChromiumLaunchConfig;
+  /** Limpa o `--user-data-dir` efêmero. No-op fora de serverless. */
+  cleanup: () => Promise<void>;
+}
+
+/**
+ * Resolve a configuração de launch do Chromium conforme o ambiente.
+ *
+ * - **Serverless (Vercel / AWS Lambda):** `playwright-core` não embute um
+ *   browser — em produção serverless o binário vem do `@sparticuz/chromium`
+ *   (Chromium comprimido em brotli, descompactado para `/tmp` no cold start e
+ *   cacheado em `/tmp/chromium` para invocações quentes). Cada invocação ganha
+ *   um `--user-data-dir` único para evitar corrupção de perfil entre execuções
+ *   concorrentes no mesmo container quente; o diretório é removido no `finally`.
+ * - **Local / CI com `executablePath` explícito:** usa o caminho informado.
+ * - **Dev local:** usa o Chromium baixado por `npx playwright install chromium`.
+ */
+async function resolveLaunch(explicitExecutablePath?: string): Promise<ResolvedLaunch> {
+  const isServerless = Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME) || process.env.VERCEL === '1';
+
+  if (isServerless) {
+    // Dynamic import — @sparticuz/chromium é um pacote nativo (binário brotli)
+    // que só deve ser carregado no runtime Node serverless, nunca no bundle RSC.
+    const { default: sparticuz } = await import('@sparticuz/chromium');
+    const userDataDir = join(tmpdir(), `colheita-pw-${randomUUID()}`);
+    return {
+      options: {
+        headless: true,
+        executablePath: await sparticuz.executablePath(),
+        args: [...sparticuz.args, `--user-data-dir=${userDataDir}`],
+      },
+      cleanup: async () => {
+        await rm(userDataDir, { recursive: true, force: true }).catch(() => {
+          // /tmp é efêmero no Lambda; falha de cleanup não é crítica
+        });
+      },
+    };
+  }
+
+  return {
+    options: explicitExecutablePath
+      ? { headless: true, executablePath: explicitExecutablePath }
+      : { headless: true },
+    cleanup: async () => {
+      // sem user-data-dir efêmero fora de serverless
+    },
+  };
+}
+
+/**
  * Renderiza um ReactElement para PDF usando Playwright Chromium.
  *
- * Requer Chromium instalado no ambiente. Em dev local:
- *   npx playwright install chromium
- *
- * Em CI/produção, defina `options.executablePath` para o binário do sistema,
- * ou certifique-se de que `PLAYWRIGHT_BROWSERS_PATH` está configurado.
+ * Em dev local, requer Chromium instalado: `npx playwright install chromium`.
+ * Em serverless (Vercel/Lambda), usa automaticamente `@sparticuz/chromium`.
+ * `options.executablePath` ainda permite sobrescrever o binário em CI.
  */
 export async function renderToPdf(
   element: ReactElement,
@@ -31,17 +94,12 @@ export async function renderToPdf(
   // Dynamic import to avoid loading playwright at module parse time
   const { chromium } = await import('playwright-core');
 
-  const launchOptions: Parameters<typeof chromium.launch>[0] = {
-    headless: true,
-  };
-  if (options.executablePath) {
-    launchOptions.executablePath = options.executablePath;
-  }
-
   // Se signal ja abortou antes do launch, evita custo do Chromium spin-up
   if (options.signal?.aborted) {
     throw new Error('renderToPdf aborted before browser launch');
   }
+
+  const { options: launchOptions, cleanup } = await resolveLaunch(options.executablePath);
 
   const browser = await chromium.launch(launchOptions);
 
@@ -77,6 +135,7 @@ export async function renderToPdf(
     await browser.close().catch(() => {
       // ja fechado pelo abort handler
     });
+    await cleanup();
   }
 }
 
@@ -100,12 +159,7 @@ export async function renderToPng(
 
   const { chromium } = await import('playwright-core');
 
-  const launchOptions: Parameters<typeof chromium.launch>[0] = {
-    headless: true,
-  };
-  if (options.executablePath) {
-    launchOptions.executablePath = options.executablePath;
-  }
+  const { options: launchOptions, cleanup } = await resolveLaunch(options.executablePath);
 
   const browser = await chromium.launch(launchOptions);
 
@@ -130,6 +184,9 @@ export async function renderToPng(
 
     return { png: Buffer.from(pngBuffer), html };
   } finally {
-    await browser.close();
+    await browser.close().catch(() => {
+      // ignora — browser pode ja estar fechado
+    });
+    await cleanup();
   }
 }

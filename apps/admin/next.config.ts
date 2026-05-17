@@ -63,6 +63,25 @@ function securityHeaders(): { key: string; value: string }[] {
   ];
 }
 
+// ── Output file tracing — binário do Chromium serverless ──────────────────────
+// O @vercel/nft não consegue rastrear estaticamente os arquivos brotli do
+// @sparticuz/chromium (carregados via path dinâmico `__dirname/../bin`). As
+// rotas que geram PDF/PNG via @colheita/generator precisam do binário no bundle
+// da função serverless — daí o force-include abaixo. Caminho relativo a
+// apps/admin alcança o virtual store do pnpm na raiz do monorepo.
+const CHROMIUM_BINARY_GLOB =
+  '../../node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**/*';
+
+const GENERATOR_ROUTES = [
+  '/produtos/[slug]/ficha-tecnica',
+  '/produtos/[slug]/banner',
+  '/produtos/catalogo',
+  '/compliance/dossie',
+  '/leads/[id]/proposta/gerar',
+  '/layout-inference',
+  '/layout-inference/[id]',
+];
+
 // ── Next.js config ────────────────────────────────────────────────────────────
 const nextConfig: NextConfig = {
   // Playwright e dependências nativas não podem ser bundled pelo webpack.
@@ -71,6 +90,7 @@ const nextConfig: NextConfig = {
     'playwright',
     'playwright-core',
     'chromium-bidi',
+    '@sparticuz/chromium',
     '@colheita/generator',
     '@colheita/jobs',
   ],
@@ -81,6 +101,9 @@ const nextConfig: NextConfig = {
     '@colheita/tokens',
     '@colheita/db',
   ],
+  outputFileTracingIncludes: Object.fromEntries(
+    GENERATOR_ROUTES.map((route) => [route, [CHROMIUM_BINARY_GLOB]]),
+  ),
   async headers() {
     return [{ source: '/(.*)', headers: securityHeaders() }];
   },
@@ -93,7 +116,13 @@ const nextConfig: NextConfig = {
         : config.externals
           ? [config.externals]
           : [];
-      config.externals = [...prior, 'playwright', 'playwright-core', 'chromium-bidi'];
+      config.externals = [
+        ...prior,
+        'playwright',
+        'playwright-core',
+        'chromium-bidi',
+        '@sparticuz/chromium',
+      ];
     }
     config.resolve.extensionAlias = {
       '.js': ['.js', '.ts', '.tsx'],
