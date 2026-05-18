@@ -67,10 +67,14 @@ function securityHeaders(): { key: string; value: string }[] {
 // O @vercel/nft não consegue rastrear estaticamente os arquivos brotli do
 // @sparticuz/chromium (carregados via path dinâmico `__dirname/../bin`). As
 // rotas que geram PDF/PNG via @colheita/generator precisam do binário no bundle
-// da função serverless — daí o force-include abaixo. `@sparticuz/chromium` é
-// dep direta deste app, então `node_modules/...` resolve direto — sem acoplar
-// ao layout interno (`.pnpm`) do package manager.
-const CHROMIUM_BINARY_GLOB = 'node_modules/@sparticuz/chromium/bin/**/*';
+// da função serverless — daí o force-include abaixo.
+// IMPORTANTE: apontar para o caminho REAL no virtual store do pnpm (`.pnpm/`),
+// NÃO para `node_modules/@sparticuz/chromium` — esse é um symlink. Rastrear o
+// binário através do symlink faz a Vercel empacotar a função com arquivos em
+// diretório symlinkado e o deploy falha com "invalid deployment package for a
+// Serverless Function". Verificado em prod: o glob via node_modules quebrou.
+const CHROMIUM_BINARY_GLOB =
+  '../../node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**/*';
 
 const GENERATOR_ROUTES = [
   '/produtos/[slug]/ficha-tecnica',

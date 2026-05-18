@@ -67,9 +67,11 @@ function securityHeaders(): { key: string; value: string }[] {
 // O @vercel/nft não rastreia estaticamente os arquivos brotli do
 // @sparticuz/chromium (path dinâmico `__dirname/../bin`). As rotas que geram
 // PDF via @colheita/generator precisam do binário no bundle da função.
-// `@sparticuz/chromium` é dep direta — `node_modules/...` resolve direto, sem
-// acoplar ao layout interno (`.pnpm`) do package manager.
-const CHROMIUM_BINARY_GLOB = 'node_modules/@sparticuz/chromium/bin/**/*';
+// IMPORTANTE: apontar para o caminho REAL no virtual store do pnpm (`.pnpm/`),
+// não para o symlink `node_modules/@sparticuz/chromium` — rastrear via symlink
+// faz a Vercel rejeitar o pacote da função ("invalid deployment package").
+const CHROMIUM_BINARY_GLOB =
+  '../../node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**/*';
 
 const GENERATOR_ROUTES = ['/produtos/[slug]/ficha-tecnica', '/conta/materiais/catalogo'];
 
