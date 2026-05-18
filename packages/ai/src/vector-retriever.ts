@@ -159,7 +159,7 @@ export class SupabaseVectorRetriever implements Retriever {
    * Filtra por `kinds` se especificado; caso contrário busca em ambas as tabelas.
    */
   async retrieve(query: RetrievalQuery): Promise<RetrievalResult[]> {
-    const { query: queryText, kinds, topK = 5, minScore = 0.7 } = query;
+    const { query: queryText, tenantId, kinds, topK = 5, minScore = 0.7 } = query;
 
     // Gera embedding da query uma vez para reutilizar em ambas as buscas
     const queryEmbedding = await this.embeddingProvider.embed(queryText);
@@ -170,10 +170,10 @@ export class SupabaseVectorRetriever implements Retriever {
     const searches: Promise<RetrievalResult[]>[] = [];
 
     if (wantsProducts) {
-      searches.push(this.searchProducts(queryEmbedding, topK, minScore));
+      searches.push(this.searchProducts(queryEmbedding, topK, minScore, tenantId));
     }
     if (wantsLessons) {
-      searches.push(this.searchLessons(queryEmbedding, topK, minScore));
+      searches.push(this.searchLessons(queryEmbedding, topK, minScore, tenantId));
     }
 
     const results = (await Promise.all(searches)).flat();
@@ -187,11 +187,15 @@ export class SupabaseVectorRetriever implements Retriever {
     queryEmbedding: number[],
     topK: number,
     minScore: number,
+    tenantId: string,
   ): Promise<RetrievalResult[]> {
+    // p_tenant_id é obrigatório: a função SQL roda via service_role (sem JWT),
+    // então não pode resolver o tenant por app_tenant_id() — o caller informa.
     const { data, error } = await this.supabase.rpc('match_product_embeddings', {
       query_embedding: queryEmbedding,
       match_count: topK,
       similarity_threshold: minScore,
+      p_tenant_id: tenantId,
     });
 
     if (error) {
@@ -207,7 +211,7 @@ export class SupabaseVectorRetriever implements Retriever {
         chunkIndex: 0,
         text: row.chunk_text,
         metadata: { chunkType: row.chunk_type },
-        tenantId: '', // Não retornado pela função SQL (RLS garante isolamento)
+        tenantId,
       },
     }));
   }
@@ -216,11 +220,13 @@ export class SupabaseVectorRetriever implements Retriever {
     queryEmbedding: number[],
     topK: number,
     minScore: number,
+    tenantId: string,
   ): Promise<RetrievalResult[]> {
     const { data, error } = await this.supabase.rpc('match_lesson_embeddings', {
       query_embedding: queryEmbedding,
       match_count: topK,
       similarity_threshold: minScore,
+      p_tenant_id: tenantId,
     });
 
     if (error) {
@@ -236,7 +242,7 @@ export class SupabaseVectorRetriever implements Retriever {
         chunkIndex: 0,
         text: row.chunk_text,
         metadata: { chunkType: row.chunk_type },
-        tenantId: '',
+        tenantId,
       },
     }));
   }
