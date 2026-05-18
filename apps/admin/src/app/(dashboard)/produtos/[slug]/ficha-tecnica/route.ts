@@ -9,6 +9,7 @@ import { createServerClient, requireAuth } from '@colheita/auth';
 import type { ProductComposition, ProductPackaging } from '@colheita/db';
 import type { ProductApplication } from '@colheita/generator';
 import { generateFichaTecnica } from '@colheita/generator';
+import { captureError } from '@colheita/observability';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
@@ -85,30 +86,56 @@ export async function GET(_request: NextRequest, context: RouteContext) {
     year: new Date().getFullYear(),
   };
 
-  const startedAt = Date.now();
-  const { pdf } = await generateFichaTecnica(fichaInput);
-  const durationMs = Date.now() - startedAt;
+  // Geração via Playwright/Chromium pode falhar (Chromium indisponível,
+  // timeout, render). Sem try/catch o erro vira um 500 cru sem corpo e sem
+  // sinal no Sentry — daí o tratamento gracioso, consistente com catalogo/
+  // banner/dossie.
+  try {
+    const startedAt = Date.now();
+    const { pdf } = await generateFichaTecnica(fichaInput);
+    const durationMs = Date.now() - startedAt;
 
-  // Persistencia em generated_materials. Falha aqui NAO bloqueia o download.
-  // recordGeneratedMaterial captura erros via Sentry e retorna { materialId: null }.
-  await recordGeneratedMaterial({
-    supabase,
-    templateSlug: 'ficha-tecnica',
-    inputData: fichaInput as Record<string, unknown>,
-    productIds: [product.id as string],
-    durationMs,
-    pages: 1,
-    generatedBy: user.id,
-  });
+    // Persistencia em generated_materials. Falha aqui NAO bloqueia o download.
+    // recordGeneratedMaterial captura erros via Sentry e retorna { materialId: null }.
+    await recordGeneratedMaterial({
+      supabase,
+      templateSlug: 'ficha-tecnica',
+      inputData: fichaInput as Record<string, unknown>,
+      productIds: [product.id as string],
+      durationMs,
+      pages: 1,
+      generatedBy: user.id,
+    });
 
-  const filename = `ficha-tecnica-${slug}.pdf`;
+    const filename = `ficha-tecnica-${slug}.pdf`;
 
-  return new NextResponse(pdf, {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="${filename}"`,
-      'Content-Length': String(pdf.length),
-    },
-  });
+    return new NextResponse(pdf, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Length': String(pdf.length),
+      },
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Erro desconhecido.';
+    const isChromiumMissing =
+      message.includes('Executable') || message.includes('chromium') || message.includes('browser');
+
+    captureError(err, {
+      context: 'admin.fichaTecnica.generate',
+      slug,
+      chromiumMissing: isChromiumMissing,
+    });
+
+    return NextResponse.json(
+      {
+        error: isChromiumMissing
+          ? 'Geração de PDF indisponível (Chromium não instalado neste ambiente).'
+          : 'Erro ao gerar a ficha técnica.',
+        details: process.env.NODE_ENV === 'development' ? message : undefined,
+      },
+      { status: 503 },
+    );
+  }
 }

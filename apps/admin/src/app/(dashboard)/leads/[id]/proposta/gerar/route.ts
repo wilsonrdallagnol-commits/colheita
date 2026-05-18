@@ -1,8 +1,8 @@
-// apps/admin/src/app/(dashboard)/leads/[id]/proposta/route.ts
+// apps/admin/src/app/(dashboard)/leads/[id]/proposta/gerar/route.ts
 //
 // Camada 7 mov 3 — gera Proposta Comercial PDF a partir do POST do form.
 //
-// POST /leads/[id]/proposta
+// POST /leads/[id]/proposta/gerar
 //   Body: form data com items[] (productId + qty + unitPrice + dose + unit)
 //        + paymentTerms + notes + discountPercent + validUntilLabel
 //   Resposta: application/pdf (download direto)
