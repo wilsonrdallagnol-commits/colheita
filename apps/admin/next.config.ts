@@ -67,10 +67,10 @@ function securityHeaders(): { key: string; value: string }[] {
 // O @vercel/nft não consegue rastrear estaticamente os arquivos brotli do
 // @sparticuz/chromium (carregados via path dinâmico `__dirname/../bin`). As
 // rotas que geram PDF/PNG via @colheita/generator precisam do binário no bundle
-// da função serverless — daí o force-include abaixo. Caminho relativo a
-// apps/admin alcança o virtual store do pnpm na raiz do monorepo.
-const CHROMIUM_BINARY_GLOB =
-  '../../node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**/*';
+// da função serverless — daí o force-include abaixo. `@sparticuz/chromium` é
+// dep direta deste app, então `node_modules/...` resolve direto — sem acoplar
+// ao layout interno (`.pnpm`) do package manager.
+const CHROMIUM_BINARY_GLOB = 'node_modules/@sparticuz/chromium/bin/**/*';
 
 const GENERATOR_ROUTES = [
   '/produtos/[slug]/ficha-tecnica',
