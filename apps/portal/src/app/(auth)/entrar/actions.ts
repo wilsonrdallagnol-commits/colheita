@@ -4,19 +4,32 @@
 import { createServerClient } from '@colheita/auth';
 import { captureError } from '@colheita/observability';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { isSupabaseConfigured } from '@/lib/portal-config';
 
-export async function signInWithMagicLink(
+// Login via email + senha. O fluxo magic-link foi removido aqui pelo mesmo
+// motivo que foi removido do admin: o OTP era pré-consumido por scanners de
+// email (Outlook/Gmail/gateways corporativos), ou expirava antes do user
+// clicar — e o usuário ficava preso em /entrar?error=missing_code com o
+// erro otp_expired do Supabase no hash. Decisão explícita do fundador
+// (consistente com o admin).
+
+export async function signInWithPassword(
   _prevState: { error?: string } | null,
   formData: FormData,
 ): Promise<{ error?: string }> {
   const email = formData.get('email');
+  const password = formData.get('password');
+
   if (typeof email !== 'string' || !email.includes('@')) {
     return { error: 'Email inválido.' };
   }
+  if (typeof password !== 'string' || password.length === 0) {
+    return { error: 'Informe sua senha.' };
+  }
 
-  // Fallback claro quando Supabase prod ainda nao foi conectado.
-  // UX consistente com PlaceholderHero da home.
+  // Fallback claro quando Supabase prod ainda não foi conectado (mesma UX do
+  // PlaceholderHero da home).
   if (!isSupabaseConfigured(process.env.NEXT_PUBLIC_SUPABASE_URL)) {
     return {
       error:
@@ -24,37 +37,40 @@ export async function signInWithMagicLink(
     };
   }
 
-  // `next` é um path relativo passado pelo formulário (validado na página)
+  // `next` é um path relativo passado pelo formulário (validado na página).
   const nextRaw = formData.get('next');
   const next =
     typeof nextRaw === 'string' && nextRaw.startsWith('/') && !nextRaw.startsWith('//')
       ? nextRaw
-      : null;
+      : '/conta';
 
   const cookieStore = await cookies();
-
-  const baseUrl = process.env.NEXT_PUBLIC_PORTAL_URL ?? '';
-  const callbackUrl = next
-    ? `${baseUrl}/auth/callback?next=${encodeURIComponent(next)}`
-    : `${baseUrl}/auth/callback`;
-
   try {
     const supabase = createServerClient(cookieStore);
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: callbackUrl,
-      },
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      captureError(error, { context: 'portal.signInWithMagicLink', email });
-      return { error: 'Erro ao enviar o link. Tente novamente.' };
+      // "Invalid login credentials" é input do usuário — não vale alertar no
+      // Sentry. Qualquer outro erro vai (sinal de quebra real, não wrong-password).
+      const code = (error as { code?: unknown }).code;
+      const isInvalidCredentials =
+        error.message.toLowerCase().includes('invalid login credentials') ||
+        (typeof code === 'string' && code === 'invalid_credentials');
+
+      if (!isInvalidCredentials) {
+        captureError(error, { context: 'portal.signInWithPassword', email });
+      }
+      return {
+        error: isInvalidCredentials
+          ? 'Email ou senha incorretos.'
+          : 'Erro ao entrar. Tente novamente.',
+      };
     }
   } catch (err) {
-    captureError(err, { context: 'portal.signInWithMagicLink.exception', email });
+    captureError(err, { context: 'portal.signInWithPassword.exception', email });
     return { error: 'Erro inesperado. Tente novamente em alguns instantes.' };
   }
 
-  return {};
+  // redirect() lança NEXT_REDIRECT — Next intercepta. Não retorna.
+  redirect(next);
 }

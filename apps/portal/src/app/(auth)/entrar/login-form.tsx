@@ -3,77 +3,17 @@
 
 import Link from 'next/link';
 import { useActionState, useId } from 'react';
-import { signInWithMagicLink } from './actions';
+import { signInWithPassword } from './actions';
 
 interface LoginFormProps {
   next?: string;
 }
 
 export function LoginForm({ next }: LoginFormProps) {
-  const [state, action, pending] = useActionState(signInWithMagicLink, null);
+  const [state, action, pending] = useActionState(signInWithPassword, null);
   const emailId = useId();
+  const passwordId = useId();
 
-  // ── Sucesso ──────────────────────────────────────────────────────────────
-  if (state !== null && !state.error) {
-    return (
-      <Shell>
-        <div style={{ textAlign: 'center', padding: '24px 0' }}>
-          <div
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: 999,
-              background: '#e9f5e1',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 24px',
-            }}
-          >
-            <svg
-              width={26}
-              height={26}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#489030"
-              strokeWidth={2.5}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-label="Sucesso"
-              role="img"
-            >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </div>
-          <h1
-            style={{
-              fontSize: '1.5rem',
-              fontWeight: 700,
-              color: 'var(--colheita-text-primary)',
-              marginBottom: 8,
-              letterSpacing: '-0.02em',
-            }}
-          >
-            Link enviado
-          </h1>
-          <p
-            style={{
-              fontSize: '0.9375rem',
-              color: 'var(--colheita-text-secondary)',
-              lineHeight: 1.6,
-              maxWidth: 320,
-              margin: '0 auto',
-            }}
-          >
-            Verifique seu email e clique no link para acessar a Plataforma Colheita. O link expira
-            em 1 hora.
-          </p>
-        </div>
-      </Shell>
-    );
-  }
-
-  // ── Formulário ───────────────────────────────────────────────────────────
   return (
     <Shell>
       <div style={{ marginBottom: 28 }}>
@@ -119,7 +59,7 @@ export function LoginForm({ next }: LoginFormProps) {
             lineHeight: 1.6,
           }}
         >
-          Receba um link de acesso seguro no seu email — sem senha.
+          Acesse com seu email e senha.
         </p>
       </div>
 
@@ -144,6 +84,41 @@ export function LoginForm({ next }: LoginFormProps) {
             type="email"
             placeholder="distribuidor@empresa.com.br"
             autoComplete="email"
+            required
+            disabled={pending}
+            style={{
+              width: '100%',
+              height: 48,
+              padding: '0 16px',
+              borderRadius: 8,
+              border: '1px solid #e5e7eb',
+              background: '#fff',
+              color: 'var(--colheita-text-primary)',
+              fontSize: '0.9375rem',
+              outline: 'none',
+              transition: 'border 150ms',
+            }}
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor={passwordId}
+            style={{
+              display: 'block',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+              color: 'var(--colheita-text-primary)',
+              marginBottom: 8,
+            }}
+          >
+            Senha
+          </label>
+          <input
+            id={passwordId}
+            name="password"
+            type="password"
+            autoComplete="current-password"
             required
             disabled={pending}
             style={{
@@ -191,7 +166,7 @@ export function LoginForm({ next }: LoginFormProps) {
             marginTop: 4,
           }}
         >
-          {pending ? 'Enviando link…' : 'Enviar link de acesso'}
+          {pending ? 'Entrando…' : 'Entrar'}
         </button>
       </form>
 
@@ -204,7 +179,7 @@ export function LoginForm({ next }: LoginFormProps) {
           lineHeight: 1.6,
         }}
       >
-        Ainda não é distribuidor Argho?{' '}
+        Esqueceu a senha ou ainda não é distribuidor Argho?{' '}
         <a
           href="https://arghoagrosciences.com/contato"
           style={{
