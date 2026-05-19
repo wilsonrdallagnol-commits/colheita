@@ -95,19 +95,22 @@ export function AgentChat({ contextPath, initialQuery }: AgentChatProps) {
 
             try {
               const payload = JSON.parse(dataLine.slice('data: '.length));
-              if (payload.type === 'text_delta' && typeof payload.delta === 'string') {
+              // Pipeline emite `{type:'delta', text}` e `{type:'done', sources}`
+              // (vide packages/ai/src/types.ts AiStreamEvent). Estes tipos sao
+              // o contrato — qualquer outro nome eh drift e quebra o chat.
+              if (payload.type === 'delta' && typeof payload.text === 'string') {
                 setMessages((prev) => {
                   const next = [...prev];
                   const last = next[next.length - 1];
                   if (last && last.role === 'assistant') {
                     next[next.length - 1] = {
                       ...last,
-                      content: last.content + payload.delta,
+                      content: last.content + payload.text,
                     };
                   }
                   return next;
                 });
-              } else if (payload.type === 'sources' && Array.isArray(payload.sources)) {
+              } else if (payload.type === 'done' && Array.isArray(payload.sources)) {
                 setMessages((prev) => {
                   const next = [...prev];
                   const last = next[next.length - 1];

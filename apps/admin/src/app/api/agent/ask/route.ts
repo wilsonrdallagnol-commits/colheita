@@ -198,11 +198,13 @@ export async function POST(request: NextRequest) {
         });
 
         for await (const event of events) {
-          // Acumula pra persistencia (sem alterar o que vai pro client)
-          const ev = event as { type?: string; delta?: string; sources?: unknown[] };
-          if (ev.type === 'text_delta' && typeof ev.delta === 'string') {
-            accumulatedAnswer += ev.delta;
-          } else if (ev.type === 'sources' && Array.isArray(ev.sources)) {
+          // Acumula pra persistencia (sem alterar o que vai pro client).
+          // Contrato do AiStreamEvent (packages/ai/src/types.ts):
+          //   { type: 'delta', text } | { type: 'done', sources, usage }
+          const ev = event as { type?: string; text?: string; sources?: unknown[] };
+          if (ev.type === 'delta' && typeof ev.text === 'string') {
+            accumulatedAnswer += ev.text;
+          } else if (ev.type === 'done' && Array.isArray(ev.sources)) {
             accumulatedSources = ev.sources;
           }
           const payload = `data: ${JSON.stringify(event)}\n\n`;

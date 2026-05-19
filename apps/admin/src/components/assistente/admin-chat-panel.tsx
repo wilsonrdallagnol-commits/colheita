@@ -26,7 +26,8 @@ interface ConversationTurn {
   content: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
+// Antes apontava para um @colheita/api separado (port 3003) que nao esta
+// deployado. Agora usa o endpoint same-origin /api/agent/ask do proprio admin.
 
 const SUGGESTED_QUERIES = [
   'Quais produtos têm indicação para soja?',
@@ -71,15 +72,17 @@ export function AdminChatPanel() {
     let finalText = '';
 
     try {
-      const res = await fetch(`${API_URL}/api/v1/agent`, {
+      // Contrato AiStreamEvent (packages/ai/src/types.ts):
+      //   { type: 'delta', text }  |  { type: 'done', sources, usage }
+      // Em falha SSE: event: error\ndata: { type:'error', message, detail }.
+      const res = await fetch('/api/agent/ask', {
         method: 'POST',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: text, topK: 5, conversationHistory, stream: true }),
+        body: JSON.stringify({ query: text, history: conversationHistory }),
       });
 
       if (!res.ok || !res.body) {
-        const data = (await res.json()) as AgentResponse;
+        const data = (await res.json().catch(() => ({ error: 'Erro de rede.' }))) as AgentResponse;
         finalText = data.error ?? 'Erro ao processar pergunta.';
         setMessages((prev) =>
           prev.map((m) => (m.id === assistantId ? { ...m, text: finalText } : m)),
@@ -94,19 +97,32 @@ export function AdminChatPanel() {
           if (done) break;
 
           buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() ?? '';
+          // SSE: eventos separados por \n\n; cada bloco pode ter event:/data:.
+          const blocks = buffer.split('\n\n');
+          buffer = blocks.pop() ?? '';
 
-          for (const line of lines) {
-            if (!line.startsWith('data: ')) continue;
+          for (const block of blocks) {
+            const dataLine = block.split('\n').find((l) => l.startsWith('data: '));
+            if (!dataLine) continue;
             try {
-              const event = JSON.parse(line.slice(6)) as { type: string; text?: string };
-              if (event.type === 'delta' && event.text) {
+              const event = JSON.parse(dataLine.slice(6)) as {
+                type?: string;
+                text?: string;
+                message?: string;
+                detail?: string;
+              };
+              if (event.type === 'delta' && typeof event.text === 'string') {
                 finalText += event.text;
                 setMessages((prev) =>
                   prev.map((m) => (m.id === assistantId ? { ...m, text: finalText } : m)),
                 );
+              } else if (event.type === 'error') {
+                finalText = event.message ?? event.detail ?? 'Erro do agente.';
+                setMessages((prev) =>
+                  prev.map((m) => (m.id === assistantId ? { ...m, text: finalText } : m)),
+                );
               }
+              // event 'done' contém sources/usage; AdminChatPanel nao renderiza fontes ainda.
             } catch {
               // linha malformada — ignorar
             }
