@@ -5,6 +5,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { ProdutoFilters } from '@/components/produtos/produto-filters';
 import { ProdutoGrid } from '@/components/produtos/produto-grid';
+import { sanitizeSearchQuery } from '@/lib/search';
 
 type ProdutoStatus = 'draft' | 'published' | 'archived';
 
@@ -48,7 +49,10 @@ async function fetchProdutos(
   }
 
   if (q) {
-    query = query.or(`name.ilike.%${q}%,tagline.ilike.%${q}%`);
+    const term = sanitizeSearchQuery(q);
+    if (term) {
+      query = query.or(`name.ilike.%${term}%,tagline.ilike.%${term}%`);
+    }
   }
 
   const { data: produtos } = await query;

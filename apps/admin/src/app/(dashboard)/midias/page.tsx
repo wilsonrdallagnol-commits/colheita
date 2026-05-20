@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { AssetGrid } from '@/components/midias/asset-grid';
 import { SearchInput } from '@/components/midias/search-input';
 import { UploadButton } from '@/components/midias/upload-button';
+import { sanitizeSearchQuery } from '@/lib/search';
 
 export const metadata = { title: 'Mídias' };
 
@@ -72,7 +73,10 @@ export default async function MidiasPage({
   }
 
   if (q) {
-    query = query.or(`title.ilike.%${q}%,original_name.ilike.%${q}%`);
+    const term = sanitizeSearchQuery(q);
+    if (term) {
+      query = query.or(`title.ilike.%${term}%,original_name.ilike.%${term}%`);
+    }
   }
 
   const { data: rawAssets } = await query;

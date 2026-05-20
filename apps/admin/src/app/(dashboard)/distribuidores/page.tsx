@@ -8,6 +8,7 @@ import { createServerClient, requireAuth } from '@colheita/auth';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import { sanitizeSearchQuery } from '@/lib/search';
 import { InviteDistribuidorForm } from './invite-form';
 
 export const metadata: Metadata = { title: 'Distribuidores' };
@@ -103,7 +104,10 @@ export default async function DistribuidoresPage({ searchParams }: PageProps) {
   }
 
   if (q) {
-    query = query.or(`email.ilike.%${q}%,full_name.ilike.%${q}%`);
+    const term = sanitizeSearchQuery(q);
+    if (term) {
+      query = query.or(`email.ilike.%${term}%,full_name.ilike.%${term}%`);
+    }
   }
 
   const { data: rows, count, error } = await query;

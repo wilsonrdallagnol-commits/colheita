@@ -8,6 +8,7 @@ import { createServerClient, requireAuth } from '@colheita/auth';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import { sanitizeSearchQuery } from '@/lib/search';
 
 export const metadata: Metadata = { title: 'Pedidos' };
 
@@ -123,7 +124,10 @@ export default async function PedidosPage({ searchParams }: PageProps) {
   }
 
   if (q?.trim()) {
-    query = query.or(`numero.ilike.%${q.trim()}%,distribuidor_nome.ilike.%${q.trim()}%`);
+    const term = sanitizeSearchQuery(q.trim());
+    if (term) {
+      query = query.or(`numero.ilike.%${term}%,distribuidor_nome.ilike.%${term}%`);
+    }
   }
 
   const { data: orders, count } = await query;

@@ -7,6 +7,7 @@ import { createServerClient, requireAuth } from '@colheita/auth';
 import { Button } from '@colheita/ui';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import { sanitizeSearchQuery } from '@/lib/search';
 
 export const metadata = { title: 'Leads' };
 
@@ -103,8 +104,10 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
   }
 
   if (q) {
-    const term = q.replace(/[,*()]/g, '').slice(0, 100);
-    query = query.or(`name.ilike.%${term}%,company.ilike.%${term}%,email.ilike.%${term}%`);
+    const term = sanitizeSearchQuery(q);
+    if (term) {
+      query = query.or(`name.ilike.%${term}%,company.ilike.%${term}%,email.ilike.%${term}%`);
+    }
   }
 
   const [{ data: rawLeads }, { data: summaryRows }] = await Promise.all([
