@@ -15,6 +15,7 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { RoleManager } from './role-manager';
 import { StatusActions } from './status-actions';
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
@@ -149,26 +150,33 @@ export default async function DistribuidorDetailPage({ params }: PageProps) {
   const supabase = createServerClient(cookieStore);
 
   // ── Queries paralelas ──────────────────────────────────────────────────────
-  const [{ data: userData }, { data: certsData }, { data: auditData }] = await Promise.all([
-    supabase
-      .from('users')
-      .select('id, email, full_name, status, last_seen_at, created_at')
-      .eq('id', id)
-      .single(),
+  const [{ data: userData }, { data: certsData }, { data: auditData }, { data: userRolesData }] =
+    await Promise.all([
+      supabase
+        .from('users')
+        .select('id, email, full_name, status, last_seen_at, created_at')
+        .eq('id', id)
+        .single(),
 
-    supabase
-      .from('certifications')
-      .select('id, certificate_no, status, issued_at, expires_at, track:learning_tracks(name)')
-      .eq('user_id', id)
-      .order('issued_at', { ascending: false }),
+      supabase
+        .from('certifications')
+        .select('id, certificate_no, status, issued_at, expires_at, track:learning_tracks(name)')
+        .eq('user_id', id)
+        .order('issued_at', { ascending: false }),
 
-    supabase
-      .from('audit_events')
-      .select('id, action, resource, resource_id, created_at')
-      .eq('actor_id', id)
-      .order('created_at', { ascending: false })
-      .limit(20),
-  ]);
+      supabase
+        .from('audit_events')
+        .select('id, action, resource, resource_id, created_at')
+        .eq('actor_id', id)
+        .order('created_at', { ascending: false })
+        .limit(20),
+
+      // Roles atuais do user — usado pelo RoleManager pra inicializar checkboxes
+      supabase
+        .from('user_roles')
+        .select('role:roles(slug)')
+        .eq('user_id', id),
+    ]);
 
   if (!userData) notFound();
 
@@ -176,6 +184,13 @@ export default async function DistribuidorDetailPage({ params }: PageProps) {
   const certs = (certsData ?? []) as CertRow[];
   const auditEvents = (auditData ?? []) as AuditRow[];
   const userStyle = userStatusStyle(user.status);
+
+  const currentRoles = (userRolesData ?? [])
+    .map((ur) => {
+      const r = Array.isArray(ur.role) ? ur.role[0] : ur.role;
+      return (r as { slug?: string } | null)?.slug;
+    })
+    .filter((s): s is string => typeof s === 'string');
 
   return (
     <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '900px' }}>
@@ -322,6 +337,9 @@ export default async function DistribuidorDetailPage({ params }: PageProps) {
           </div>
         </div>
       </div>
+
+      {/* Gerenciamento de roles — checkboxes pra cada permissao */}
+      <RoleManager userId={user.id} currentRoles={currentRoles} userEmail={user.email} />
 
       {/* Certificações */}
       <section style={{ marginBottom: '32px' }}>
