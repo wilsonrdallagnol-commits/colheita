@@ -20,11 +20,34 @@ const DEFAULT_TRACES_SAMPLE_RATE = 0.1; // 10% de requests em prod
 const DEFAULT_REPLAYS_SESSION_RATE = 0.0;
 const DEFAULT_REPLAYS_ERROR_RATE = 1.0; // 100% de sessões com erro
 
+/**
+ * Logs UMA UNICA vez por processo um warn explicito quando Sentry esta
+ * desabilitado em producao. Evita que cliente reporte "erro X" sem o time
+ * conseguir ver no Sentry porque ninguem se ligou que o DSN nao estava setado.
+ *
+ * Em dev/test: silencioso (esperado nao ter DSN).
+ */
+const warnedRuntimes = new Set<string>();
+function warnIfMissingInProd(runtime: 'client' | 'server' | 'edge', service: string): void {
+  if (process.env.NODE_ENV !== 'production') return;
+  const key = `${service}.${runtime}`;
+  if (warnedRuntimes.has(key)) return;
+  warnedRuntimes.add(key);
+  // biome-ignore lint/suspicious/noConsole: aviso operacional intencional
+  console.warn(
+    `[sentry:${service}:${runtime}] SENTRY_DSN ausente — erros nao serao capturados em prod. ` +
+      'Setar SENTRY_DSN (server/edge) e NEXT_PUBLIC_SENTRY_DSN (client) no Vercel.',
+  );
+}
+
 // ── Client ────────────────────────────────────────────────────────────────────
 
 export function initSentryClient(options: SentryInitOptions): void {
   const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN ?? process.env.SENTRY_DSN;
-  if (!dsn) return; // Dev sem Sentry configurado: silencioso
+  if (!dsn) {
+    warnIfMissingInProd('client', options.service);
+    return; // Dev sem Sentry configurado: silencioso
+  }
 
   Sentry.init({
     dsn,
@@ -46,7 +69,10 @@ export function initSentryClient(options: SentryInitOptions): void {
 
 export function initSentryServer(options: SentryInitOptions): void {
   const dsn = process.env.SENTRY_DSN;
-  if (!dsn) return;
+  if (!dsn) {
+    warnIfMissingInProd('server', options.service);
+    return;
+  }
 
   Sentry.init({
     dsn,
@@ -63,7 +89,10 @@ export function initSentryServer(options: SentryInitOptions): void {
 
 export function initSentryEdge(options: SentryInitOptions): void {
   const dsn = process.env.SENTRY_DSN;
-  if (!dsn) return;
+  if (!dsn) {
+    warnIfMissingInProd('edge', options.service);
+    return;
+  }
 
   Sentry.init({
     dsn,
@@ -73,4 +102,12 @@ export function initSentryEdge(options: SentryInitOptions): void {
       tags: { service: options.service },
     },
   });
+}
+
+/**
+ * Retorna true se Sentry esta inicializado (DSN setado).
+ * Util pra healthcheck UIs e pra mostrar status em /configuracoes.
+ */
+export function isSentryEnabled(): boolean {
+  return Boolean(process.env.SENTRY_DSN ?? process.env.NEXT_PUBLIC_SENTRY_DSN);
 }

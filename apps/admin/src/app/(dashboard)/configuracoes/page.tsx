@@ -3,7 +3,8 @@
 // Configurações do tenant + operações de manutenção (reindex RAG).
 
 import { createServerClient, getSession, requireAuth } from '@colheita/auth';
-import { Brain, Plug, ShieldCheck } from 'lucide-react';
+import { isSentryEnabled } from '@colheita/observability/sentry-init';
+import { Activity, Brain, Plug, ShieldCheck } from 'lucide-react';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { ReindexButton } from '@/components/configuracoes/reindex-button';
@@ -48,6 +49,15 @@ export default async function ConfiguracoesPage() {
   const hasRoles = Array.isArray(claims.roles) && (claims.roles as unknown[]).length > 0;
   const hasTenantClaim = typeof claims.tenant_id === 'string';
   const sessionIsStale = !hasRoles || !hasTenantClaim;
+
+  // Status operacional — sinaliza ao admin se observabilidade/rate limiting
+  // estao ativos. Cliente pediu visibilidade dos integrations criticos.
+  const sentryOk = isSentryEnabled();
+  const upstashOk = Boolean(process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL);
+  const anthropicOk = Boolean(process.env.ANTHROPIC_API_KEY);
+  const embeddingsOk = Boolean(
+    process.env.VOYAGE_API_KEY ?? process.env.OPENAI_API_KEY ?? process.env.OPENAI,
+  );
 
   const { data: tenant } = await supabase
     .from('tenants')
@@ -98,6 +108,44 @@ export default async function ConfiguracoesPage() {
                 : 'nenhuma — refaça login pra atualizar'
             }
             mono
+          />
+        </SettingsCard>
+
+        {/* Operacao — status dos integrations criticos */}
+        <SettingsCard
+          icon={Activity}
+          title="Status operacional"
+          description="Integrações críticas. Indicador verde = OK, cinza = não configurado."
+        >
+          <StatusRow
+            label="Sentry (rastreamento de erros)"
+            ok={sentryOk}
+            hint={sentryOk ? 'erros são reportados' : 'erros invisíveis em prod — setar SENTRY_DSN'}
+          />
+          <StatusRow
+            label="Upstash Redis (rate limiting)"
+            ok={upstashOk}
+            hint={
+              upstashOk
+                ? 'limites aplicados'
+                : 'sem limite — agent vulnerável a abuso — setar UPSTASH_REDIS_REST_URL'
+            }
+          />
+          <StatusRow
+            label="Anthropic (IA agente + Layout Inference)"
+            ok={anthropicOk}
+            hint={
+              anthropicOk ? 'agente IA ativo' : 'agente IA indisponível — setar ANTHROPIC_API_KEY'
+            }
+          />
+          <StatusRow
+            label="Embeddings (Voyage ou OpenAI)"
+            ok={embeddingsOk}
+            hint={
+              embeddingsOk
+                ? 'RAG funcional'
+                : 'reindex falha — setar VOYAGE_API_KEY ou OPENAI_API_KEY'
+            }
           />
         </SettingsCard>
 
@@ -200,6 +248,65 @@ function SettingsCard({
       )}
       {children}
     </section>
+  );
+}
+
+function StatusRow({ label, ok, hint }: { label: string; ok: boolean; hint: string }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '10px 0',
+        borderTop: '1px solid var(--colheita-border-subtle)',
+      }}
+    >
+      <span
+        aria-hidden="true"
+        style={{
+          width: '8px',
+          height: '8px',
+          borderRadius: '50%',
+          backgroundColor: ok ? 'var(--colheita-brand-secondary)' : 'var(--colheita-text-tertiary)',
+          flexShrink: 0,
+        }}
+      />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p
+          style={{
+            fontSize: '0.8125rem',
+            fontWeight: 500,
+            color: 'var(--colheita-text-primary)',
+            margin: 0,
+            lineHeight: 1.3,
+          }}
+        >
+          {label}
+        </p>
+        <p
+          style={{
+            fontSize: '0.6875rem',
+            color: 'var(--colheita-text-tertiary)',
+            margin: '2px 0 0',
+            lineHeight: 1.3,
+          }}
+        >
+          {hint}
+        </p>
+      </div>
+      <span
+        style={{
+          fontSize: '0.6875rem',
+          fontWeight: 600,
+          color: ok ? 'var(--colheita-brand-secondary)' : 'var(--colheita-text-tertiary)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+        }}
+      >
+        {ok ? 'OK' : 'OFF'}
+      </span>
+    </div>
   );
 }
 
