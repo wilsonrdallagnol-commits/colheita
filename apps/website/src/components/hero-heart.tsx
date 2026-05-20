@@ -61,7 +61,10 @@ export function HeroHeart() {
     }
   }, []);
 
-  const videoSrc = isMobile ? '/argho-heart-mobile.webm' : '/argho-heart.webm';
+  // Versao com fundo branco (combina com pagina branca do hero). Resolve o bug
+  // do iOS Safari que ignora canal alpha em VP9-alpha. Pra intro (pagina dark)
+  // existe argho-heart-intro.webm com composite sobre #0a0d18.
+  const videoSrc = isMobile ? '/argho-heart-hero-mobile.webm' : '/argho-heart-hero.webm';
 
   return (
     <div
@@ -153,7 +156,7 @@ export function HeroHeart() {
           loop
           muted
           playsInline
-          poster="/argho-heart-poster.png"
+          poster="/argho-heart-poster-hero.png"
           aria-label="Coração digital Argho — tecnologia viva"
           style={{
             width: '100%',

@@ -256,7 +256,7 @@ export function HeartIntro() {
           loop
           muted
           playsInline
-          poster="/argho-heart-poster.png"
+          poster="/argho-heart-poster-intro.png"
           aria-label="Coração digital Argho"
           style={{
             position: 'relative',
@@ -266,7 +266,10 @@ export function HeartIntro() {
             zIndex: 2,
           }}
         >
-          <source src="/argho-heart.webm" type="video/webm" />
+          {/* Versao com composite sobre dark blue (#0a0d18) — combina com a
+              pagina escura da intro. Hero usa argho-heart-hero.webm com fundo
+              branco que combina com a pagina branca. */}
+          <source src="/argho-heart-intro.webm" type="video/webm" />
         </video>
 
         {/* Pontos orbital flutuantes */}
