@@ -77,6 +77,41 @@ jobs:
       # DB tests (que precisam de Postgres) skipam graciosamente sem DATABASE_URL.
       - run: pnpm test
 
+  build:
+    name: Build (Next apps)
+    runs-on: ubuntu-latest
+    # Roda apenas se typecheck passou — economiza CI compute quando ja temos erro de tipo
+    needs: [typecheck]
+    env:
+      # Skips Vercel env injection — build deve passar com env stubs
+      NEXT_PUBLIC_SUPABASE_URL: http://localhost:54321
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-stub-key
+      SUPABASE_URL: http://localhost:54321
+      SUPABASE_SERVICE_ROLE_KEY: ci-stub-key
+      DATABASE_URL: postgres://stub:stub@localhost/stub
+      # Stubs pra evitar warn no Sentry init em CI
+      SENTRY_DSN: ''
+      NEXT_PUBLIC_SENTRY_DSN: ''
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Build dos 4 apps Next em paralelo via turbo. Cataloga erros de
+      # compile time (tipos OK mas import errado, syntax errado em ts->js,
+      # next.config error, etc) que typecheck nao pega.
+      - run: pnpm -r --filter "./apps/*" build
+
   rls:
     name: RLS isolation tests
     runs-on: ubuntu-latest
