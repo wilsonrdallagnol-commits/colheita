@@ -235,29 +235,60 @@ export default async function CompliancePage({ searchParams }: PageProps) {
           </p>
         </div>
 
-        {/* Dossiê PDF compilado pra auditoria externa. <a download> força
-            download attachment direto. Camada 9 — uso típico: auditoria MAPA
-            presencial, renovação de processo, diligência B2B. */}
-        <a
-          href="/compliance/dossie"
-          download
+        <div
           style={{
-            padding: '10px 18px',
-            borderRadius: 'var(--colheita-radius-md)',
-            border: '1px solid var(--colheita-brand-green)',
-            backgroundColor: 'var(--colheita-brand-green)',
-            color: '#fff',
-            fontSize: '0.875rem',
-            fontWeight: '600',
-            textDecoration: 'none',
-            display: 'inline-flex',
-            alignItems: 'center',
+            display: 'flex',
             gap: '8px',
-            whiteSpace: 'nowrap',
+            alignItems: 'center',
+            flexWrap: 'wrap',
           }}
         >
-          📄 Baixar dossiê (PDF)
-        </a>
+          {/* CTA primaria — adicionar registro novo. Cliente do agro precisa
+              cadastrar MAPA/ANVISA novos pelo painel, nao por SQL. */}
+          <Link
+            href="/compliance/novo"
+            style={{
+              padding: '10px 18px',
+              borderRadius: 'var(--colheita-radius-md)',
+              border: '1px solid var(--colheita-brand-primary)',
+              backgroundColor: 'var(--colheita-brand-primary)',
+              color: '#fff',
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            + Novo registro
+          </Link>
+
+          {/* Dossiê PDF compilado pra auditoria externa. <a download> força
+              download attachment direto. Camada 9 — uso típico: auditoria MAPA
+              presencial, renovação de processo, diligência B2B. */}
+          <a
+            href="/compliance/dossie"
+            download
+            style={{
+              padding: '10px 18px',
+              borderRadius: 'var(--colheita-radius-md)',
+              border: '1px solid var(--colheita-brand-green)',
+              backgroundColor: 'var(--colheita-brand-green)',
+              color: '#fff',
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              textDecoration: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            📄 Baixar dossiê (PDF)
+          </a>
+        </div>
       </div>
 
       {/* Sumário */}
@@ -451,9 +482,20 @@ export default async function CompliancePage({ searchParams }: PageProps) {
               : 'Nenhum registro regulatório cadastrado ainda.'}
           </p>
           <p style={{ fontSize: '0.8125rem', color: 'var(--colheita-text-tertiary)', margin: 0 }}>
-            {hasFilters
-              ? 'Tente ajustar os filtros.'
-              : 'Registros aparecerão aqui após serem adicionados via seed ou API.'}
+            {hasFilters ? (
+              'Tente ajustar os filtros.'
+            ) : (
+              <>
+                Cadastre o primeiro em{' '}
+                <Link
+                  href="/compliance/novo"
+                  style={{ color: 'var(--colheita-brand-primary)', textDecoration: 'none' }}
+                >
+                  /compliance/novo
+                </Link>
+                .
+              </>
+            )}
           </p>
         </div>
       ) : (
@@ -481,10 +523,11 @@ export default async function CompliancePage({ searchParams }: PageProps) {
                       'Emissão',
                       'Vencimento',
                       'Status',
+                      '',
                     ] as const
-                  ).map((col) => (
+                  ).map((col, ci) => (
                     <th
-                      key={col}
+                      key={`col-${ci}-${col || 'actions'}`}
                       style={{
                         padding: '10px 16px',
                         textAlign: 'left',
@@ -628,6 +671,21 @@ export default async function CompliancePage({ searchParams }: PageProps) {
                         >
                           {ss.label}
                         </span>
+                      </td>
+
+                      {/* Acoes */}
+                      <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
+                        <Link
+                          href={`/compliance/${reg.id}/editar`}
+                          style={{
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            color: 'var(--colheita-brand-primary)',
+                            textDecoration: 'none',
+                          }}
+                        >
+                          Editar
+                        </Link>
                       </td>
                     </tr>
                   );
