@@ -2,9 +2,16 @@
 'use client';
 
 import { Button } from '@colheita/ui';
+import { Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
-import { archiveProduto, draftProduto, publishProduto } from '@/lib/actions/produtos';
+import {
+  archiveProduto,
+  draftProduto,
+  publishProduto,
+  softDeleteProduto,
+} from '@/lib/actions/produtos';
 
 interface ProdutoActionsProps {
   slug: string;
@@ -12,6 +19,7 @@ interface ProdutoActionsProps {
 }
 
 export function ProdutoActions({ slug, status }: ProdutoActionsProps) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -20,6 +28,25 @@ export function ProdutoActions({ slug, status }: ProdutoActionsProps) {
     startTransition(async () => {
       const result = await fn();
       if (result.error) setActionError(result.error);
+    });
+  }
+
+  function handleDelete() {
+    const ok = window.confirm(
+      `Excluir permanentemente o produto "${slug}"?\n\nO produto some da listagem e do portal. ` +
+        `Não fica reversível pela UI — só via SQL direto.`,
+    );
+    if (!ok) return;
+
+    setActionError(null);
+    startTransition(async () => {
+      const result = await softDeleteProduto(slug);
+      if (result.error) {
+        setActionError(result.error);
+        return;
+      }
+      // Volta pra listagem (o produto nao existe mais)
+      router.push('/produtos');
     });
   }
 
@@ -91,6 +118,18 @@ export function ProdutoActions({ slug, status }: ProdutoActionsProps) {
             {isPending ? 'Reativando...' : 'Reativar como rascunho'}
           </Button>
         )}
+
+        {/* Excluir permanente — soft delete (deleted_at). Confirm modal antes. */}
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={isPending}
+          onClick={handleDelete}
+          style={{ color: 'var(--colheita-danger)', marginLeft: 'auto' }}
+        >
+          <Trash2 size={14} strokeWidth={1.75} style={{ marginRight: 6 }} />
+          {isPending ? 'Excluindo...' : 'Excluir'}
+        </Button>
       </div>
 
       {actionError && (

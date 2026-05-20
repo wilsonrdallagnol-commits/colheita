@@ -7,6 +7,7 @@ import { isSentryEnabled } from '@colheita/observability/sentry-init';
 import { Activity, Brain, Plug, ShieldCheck } from 'lucide-react';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import { ChangePasswordForm } from '@/components/configuracoes/change-password-form';
 import { ReindexButton } from '@/components/configuracoes/reindex-button';
 import { StaleSessionBanner } from '@/components/configuracoes/stale-session-banner';
 
@@ -109,6 +110,15 @@ export default async function ConfiguracoesPage() {
             }
             mono
           />
+          <div
+            style={{
+              paddingTop: '12px',
+              borderTop: '1px solid var(--colheita-border-subtle)',
+              marginTop: '8px',
+            }}
+          >
+            <ChangePasswordForm />
+          </div>
         </SettingsCard>
 
         {/* Operacao — status dos integrations criticos */}

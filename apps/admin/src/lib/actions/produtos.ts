@@ -331,6 +331,46 @@ export async function archiveProduto(slug: string): Promise<{ error?: string }> 
   return {};
 }
 
+// ── softDeleteProduto ─────────────────────────────────────────────────────────
+//
+// Marca o produto como deleted_at = now(). Nao remove a row (preserva audit
+// trail + referencias em outros lugares como regulatory_registrations,
+// product_assets, etc). Produto fica invisivel em /produtos e portal.
+//
+// Reversivel via UPDATE direto no banco (sem UI por design — recuperar
+// produto deletado e raro e exige decisao consciente).
+
+export async function softDeleteProduto(slug: string): Promise<{ error?: string }> {
+  const cookieStore = await cookies();
+  const user = await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  const { data: deleted, error } = await supabase
+    .from('products')
+    .update({ deleted_at: new Date().toISOString() })
+    .eq('slug', slug)
+    .is('deleted_at', null)
+    .select('id, name')
+    .maybeSingle();
+
+  if (error) {
+    captureError(error, { context: 'admin.produtos.softDelete', slug });
+    return { error: 'Erro ao excluir produto.' };
+  }
+
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'archive.product', // reusa archive — softDelete eh archive permanente
+    resource: 'product',
+    resource_id: (deleted?.id as string | undefined) ?? null,
+    payload: { slug, name: deleted?.name, mode: 'soft_delete' },
+  });
+
+  revalidatePath('/produtos');
+  return {};
+}
+
 // ── draftProduto ──────────────────────────────────────────────────────────────
 
 export async function draftProduto(slug: string): Promise<{ error?: string }> {
