@@ -3,7 +3,8 @@
 // apps/admin/src/components/assistente/admin-chat-panel.tsx
 /**
  * Painel de chat do assistente IA para o admin.
- * Chama POST NEXT_PUBLIC_API_URL/api/v1/agent.
+ * Chama POST same-origin /api/agent/ask (SSE stream).
+ * Contrato do evento: { type:'delta', text } | { type:'done', sources, usage }.
  */
 
 import { ChatMarkdown } from '@colheita/ui';

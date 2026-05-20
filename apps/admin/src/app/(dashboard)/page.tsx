@@ -503,7 +503,7 @@ export default async function DashboardPage() {
           <KpiCard
             label="Materiais gerados"
             value={totalMateriais ?? 0}
-            href="/materiais"
+            href="/materiais/historico"
             accent="var(--colheita-brand-secondary)"
             hint="ficha · banner · catálogo"
           />
@@ -536,13 +536,13 @@ export default async function DashboardPage() {
           <ShortcutTile href="/produtos" icon={Package} title="Catálogo de produtos" sub="PIM" />
           <ShortcutTile href="/midias" icon={ImageIcon} title="Biblioteca de mídia" sub="DAM" />
           <ShortcutTile
-            href="/materiais"
+            href="/materiais/historico"
             icon={Sparkles}
             title="Materiais gerados"
             sub="Generator"
           />
           <ShortcutTile
-            href="/assistente"
+            href="/layout-inference"
             icon={Layers}
             title="Layout Inference"
             sub="Refs → Argho"
