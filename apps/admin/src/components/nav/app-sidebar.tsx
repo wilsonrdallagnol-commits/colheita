@@ -37,6 +37,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTransition } from 'react';
 import { signOut } from '@/lib/actions/auth';
+import type { Notification } from '@/lib/notifications';
+import { NotificationsInbox } from './notifications-inbox';
 
 interface NavLeaf {
   href: string;
@@ -104,9 +106,10 @@ const NAV_GROUPS: NavGroup[] = [
 
 interface AppSidebarProps {
   userEmail?: string;
+  notifications?: Notification[];
 }
 
-export function AppSidebar({ userEmail }: AppSidebarProps) {
+export function AppSidebar({ userEmail, notifications = [] }: AppSidebarProps) {
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
@@ -124,56 +127,67 @@ export function AppSidebar({ userEmail }: AppSidebarProps) {
   return (
     <Sidebar>
       <SidebarHeader>
-        <Link
-          href="/"
+        <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '10px',
-            textDecoration: 'none',
+            gap: '8px',
             width: '100%',
           }}
         >
-          <div
+          <Link
+            href="/"
             style={{
-              width: '28px',
-              height: '28px',
-              borderRadius: 'var(--colheita-radius-md)',
-              backgroundColor: 'var(--colheita-brand-primary)',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
+              gap: '10px',
+              textDecoration: 'none',
+              flex: 1,
+              minWidth: 0,
             }}
           >
-            <Sparkles size={14} strokeWidth={1.75} color="#ffffff" />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-            <span
+            <div
               style={{
-                fontSize: '0.6875rem',
-                fontWeight: 600,
-                color: 'var(--colheita-brand-primary)',
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                lineHeight: 1,
+                width: '28px',
+                height: '28px',
+                borderRadius: 'var(--colheita-radius-md)',
+                backgroundColor: 'var(--colheita-brand-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
               }}
             >
-              Argho
-            </span>
-            <span
-              style={{
-                fontSize: '0.875rem',
-                fontWeight: 700,
-                color: '#0a0a0a',
-                letterSpacing: '-0.015em',
-                lineHeight: 1.2,
-              }}
-            >
-              Colheita
-            </span>
-          </div>
-        </Link>
+              <Sparkles size={14} strokeWidth={1.75} color="#ffffff" />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              <span
+                style={{
+                  fontSize: '0.6875rem',
+                  fontWeight: 600,
+                  color: 'var(--colheita-brand-primary)',
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  lineHeight: 1,
+                }}
+              >
+                Argho
+              </span>
+              <span
+                style={{
+                  fontSize: '0.875rem',
+                  fontWeight: 700,
+                  color: '#0a0a0a',
+                  letterSpacing: '-0.015em',
+                  lineHeight: 1.2,
+                }}
+              >
+                Colheita
+              </span>
+            </div>
+          </Link>
+          <NotificationsInbox notifications={notifications} />
+        </div>
       </SidebarHeader>
 
       <SidebarContent>
