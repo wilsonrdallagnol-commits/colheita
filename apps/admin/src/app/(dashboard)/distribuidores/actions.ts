@@ -5,6 +5,7 @@ import { createAdminClient, createServerClient, requireAuth } from '@colheita/au
 import { captureError } from '@colheita/observability';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import { logAuditEvent } from '@/lib/audit';
 
 // ── Convidar distribuidor ─────────────────────────────────────────────────────
 
@@ -13,7 +14,7 @@ export async function inviteDistribuidorAction(
   formData: FormData,
 ): Promise<{ error: string | null; success: boolean }> {
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const caller = await requireAuth(cookieStore);
 
   const email = formData.get('email')?.toString().trim().toLowerCase();
 
@@ -46,6 +47,15 @@ export async function inviteDistribuidorAction(
       .eq('id', data.user.id);
   }
 
+  await logAuditEvent({
+    cookieStore,
+    user: caller,
+    action: 'invite.user',
+    resource: 'user',
+    resource_id: data.user?.id ?? null,
+    payload: { email },
+  });
+
   revalidatePath('/distribuidores');
   return { error: null, success: true };
 }
@@ -54,7 +64,7 @@ export async function inviteDistribuidorAction(
 
 export async function suspendDistribuidorAction(id: string): Promise<{ error: string | null }> {
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const caller = await requireAuth(cookieStore);
 
   const supabase = createServerClient(cookieStore);
   const { error } = await supabase
@@ -64,6 +74,14 @@ export async function suspendDistribuidorAction(id: string): Promise<{ error: st
 
   if (error) return { error: error.message };
 
+  await logAuditEvent({
+    cookieStore,
+    user: caller,
+    action: 'suspend.user',
+    resource: 'user',
+    resource_id: id,
+  });
+
   revalidatePath(`/distribuidores/${id}`);
   revalidatePath('/distribuidores');
   return { error: null };
@@ -71,7 +89,7 @@ export async function suspendDistribuidorAction(id: string): Promise<{ error: st
 
 export async function reactivateDistribuidorAction(id: string): Promise<{ error: string | null }> {
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const caller = await requireAuth(cookieStore);
 
   const supabase = createServerClient(cookieStore);
   const { error } = await supabase
@@ -80,6 +98,14 @@ export async function reactivateDistribuidorAction(id: string): Promise<{ error:
     .eq('id', id);
 
   if (error) return { error: error.message };
+
+  await logAuditEvent({
+    cookieStore,
+    user: caller,
+    action: 'reactivate.user',
+    resource: 'user',
+    resource_id: id,
+  });
 
   revalidatePath(`/distribuidores/${id}`);
   revalidatePath('/distribuidores');
@@ -211,6 +237,15 @@ export async function setUserRoles(
     });
     return { error: 'Erro ao atualizar permissões. Tente novamente.' };
   }
+
+  await logAuditEvent({
+    cookieStore,
+    user: caller,
+    action: 'set.user_roles',
+    resource: 'user_roles',
+    resource_id: userId,
+    payload: { newRoles: validRoles, added: toAdd.length, removed: toRemove.length },
+  });
 
   revalidatePath(`/distribuidores/${userId}`);
   revalidatePath('/distribuidores');

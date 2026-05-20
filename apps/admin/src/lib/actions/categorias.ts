@@ -5,6 +5,7 @@ import { createServerClient, requireAuth } from '@colheita/auth';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { logAuditEvent } from '@/lib/audit';
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -38,7 +39,7 @@ export async function createCategoria(
   formData: FormData,
 ): Promise<CategoriaFormState> {
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const authUser = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
   const name = String(formData.get('name') ?? '').trim();
@@ -53,27 +54,27 @@ export async function createCategoria(
     return { fieldErrors: { name: 'Nome inválido — não gerou um slug válido.' } };
   }
 
-  // Busca o tenant (assumindo tenant único por sessão — o tenant_id vem do JWT)
-  const { data: user } = await supabase.auth.getUser();
-  if (!user.user) return { error: 'Sessão inválida.' };
-
   // Busca o tenant_id do usuário na tabela users (maybeSingle: row pode nao
   // existir se handle_new_auth_user nao rodou; single() loga erro noisy).
   const { data: userData } = await supabase
     .from('users')
     .select('tenant_id')
-    .eq('id', user.user.id)
+    .eq('id', authUser.id)
     .maybeSingle();
 
   if (!userData?.tenant_id) return { error: 'Tenant não encontrado. Refaça login.' };
 
-  const { error } = await supabase.from('product_categories').insert({
-    slug,
-    name,
-    description,
-    tenant_id: userData.tenant_id,
-    sort_order: 0,
-  });
+  const { data: created, error } = await supabase
+    .from('product_categories')
+    .insert({
+      slug,
+      name,
+      description,
+      tenant_id: userData.tenant_id,
+      sort_order: 0,
+    })
+    .select('id')
+    .maybeSingle();
 
   if (error) {
     if (error.code === '23505') {
@@ -81,6 +82,15 @@ export async function createCategoria(
     }
     return { error: 'Erro ao criar categoria. Tente novamente.' };
   }
+
+  await logAuditEvent({
+    cookieStore,
+    user: authUser,
+    action: 'create.category',
+    resource: 'category',
+    resource_id: (created?.id as string | undefined) ?? null,
+    payload: { slug, name },
+  });
 
   revalidatePath('/categorias');
   revalidatePath('/produtos');
@@ -95,7 +105,7 @@ export async function updateCategoria(
   formData: FormData,
 ): Promise<CategoriaFormState> {
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
   const name = String(formData.get('name') ?? '').trim();
@@ -114,6 +124,15 @@ export async function updateCategoria(
     return { error: 'Erro ao salvar categoria.' };
   }
 
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'update.category',
+    resource: 'category',
+    resource_id: id,
+    payload: { name },
+  });
+
   revalidatePath('/categorias');
   revalidatePath('/produtos');
   redirect('/categorias');
@@ -123,7 +142,7 @@ export async function updateCategoria(
 
 export async function deleteCategoria(id: string): Promise<{ error?: string }> {
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
   // Verifica se tem produtos vinculados
@@ -140,6 +159,14 @@ export async function deleteCategoria(id: string): Promise<{ error?: string }> {
   const { error } = await supabase.from('product_categories').delete().eq('id', id);
 
   if (error) return { error: 'Erro ao excluir categoria.' };
+
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'delete.category',
+    resource: 'category',
+    resource_id: id,
+  });
 
   revalidatePath('/categorias');
   revalidatePath('/produtos');

@@ -17,6 +17,7 @@ import { captureError } from '@colheita/observability';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { logAuditEvent } from '@/lib/audit';
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -162,6 +163,15 @@ export async function createLead(_prev: LeadFormState, formData: FormData): Prom
     return { error: 'Erro ao criar lead. Tente novamente.' };
   }
 
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'create.lead',
+    resource: 'lead',
+    resource_id: created.id as string,
+    payload: { name, source, company: insertPayload.company },
+  });
+
   revalidatePath('/leads');
   redirect(`/leads/${created.id}`);
 }
@@ -174,7 +184,7 @@ export async function updateLead(
   formData: FormData,
 ): Promise<LeadFormState> {
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
   const name = String(formData.get('name') ?? '').trim();
@@ -224,6 +234,15 @@ export async function updateLead(
     return { error: 'Erro ao salvar lead.' };
   }
 
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'update.lead',
+    resource: 'lead',
+    resource_id: id,
+    payload: { name, email: updatePayload.email },
+  });
+
   revalidatePath('/leads');
   revalidatePath(`/leads/${id}`);
   redirect(`/leads/${id}`);
@@ -245,7 +264,7 @@ export async function changeLeadStatus(
   }
 
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
   const now = new Date().toISOString();
@@ -272,6 +291,15 @@ export async function changeLeadStatus(
     return { error: 'Erro ao alterar status.' };
   }
 
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'status.lead',
+    resource: 'lead',
+    resource_id: id,
+    payload: { newStatus, lostReason: lostReason ?? null },
+  });
+
   revalidatePath('/leads');
   revalidatePath(`/leads/${id}`);
   return {};
@@ -281,7 +309,7 @@ export async function changeLeadStatus(
 
 export async function softDeleteLead(id: string): Promise<{ error?: string }> {
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
   const { error } = await supabase
@@ -294,6 +322,14 @@ export async function softDeleteLead(id: string): Promise<{ error?: string }> {
     captureError(error, { context: 'admin.leads.softDelete', leadId: id });
     return { error: 'Erro ao excluir lead.' };
   }
+
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'delete.lead',
+    resource: 'lead',
+    resource_id: id,
+  });
 
   revalidatePath('/leads');
   return {};
@@ -344,18 +380,31 @@ export async function createLeadActivity(
   const tenantId = userRow?.tenant_id as string | undefined;
   if (!tenantId) return { error: 'Sessão sem tenant. Refaça login.' };
 
-  const { error } = await supabase.from('lead_activities').insert({
-    tenant_id: tenantId,
-    lead_id: leadId,
-    kind,
-    body,
-    created_by: user.id,
-  });
+  const { data: created, error } = await supabase
+    .from('lead_activities')
+    .insert({
+      tenant_id: tenantId,
+      lead_id: leadId,
+      kind,
+      body,
+      created_by: user.id,
+    })
+    .select('id')
+    .maybeSingle();
 
   if (error) {
     captureError(error, { context: 'admin.leads.createActivity', leadId });
     return { error: 'Erro ao registrar atividade.' };
   }
+
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'create.lead_activity',
+    resource: 'lead_activity',
+    resource_id: (created?.id as string | undefined) ?? null,
+    payload: { leadId, kind, body_length: body.length },
+  });
 
   revalidatePath(`/leads/${leadId}`);
   return {};

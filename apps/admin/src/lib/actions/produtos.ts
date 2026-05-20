@@ -7,6 +7,7 @@ import { captureError } from '@colheita/observability';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { logAuditEvent } from '@/lib/audit';
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -127,6 +128,15 @@ export async function createProduto(
       });
   }
 
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'create.product',
+    resource: 'product',
+    resource_id: data.id as string,
+    payload: { slug: data.slug, name, status: 'draft' },
+  });
+
   revalidatePath('/produtos');
   redirect(`/produtos/${data.slug}/editar?created=1`);
 }
@@ -139,7 +149,7 @@ export async function updateProduto(
   formData: FormData,
 ): Promise<ProdutoFormState> {
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
   const name = String(formData.get('name') ?? '').trim();
@@ -239,6 +249,21 @@ export async function updateProduto(
       });
   }
 
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'update.product',
+    resource: 'product',
+    resource_id: updated?.id as string | undefined,
+    payload: {
+      slug,
+      name,
+      categoryId,
+      hero_asset_id: heroAssetId,
+      packshot_asset_id: packshotAssetId,
+    },
+  });
+
   revalidatePath('/produtos');
   revalidatePath(`/produtos/${slug}`);
   redirect(`/produtos/${slug}`);
@@ -248,16 +273,27 @@ export async function updateProduto(
 
 export async function publishProduto(slug: string): Promise<{ error?: string }> {
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from('products')
     .update({ status: 'published', published_at: new Date().toISOString() })
     .eq('slug', slug)
-    .is('deleted_at', null);
+    .is('deleted_at', null)
+    .select('id')
+    .maybeSingle();
 
   if (error) return { error: 'Erro ao publicar produto.' };
+
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'publish.product',
+    resource: 'product',
+    resource_id: (updated?.id as string | undefined) ?? null,
+    payload: { slug },
+  });
 
   revalidatePath('/produtos');
   revalidatePath(`/produtos/${slug}`);
@@ -268,16 +304,27 @@ export async function publishProduto(slug: string): Promise<{ error?: string }> 
 
 export async function archiveProduto(slug: string): Promise<{ error?: string }> {
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from('products')
     .update({ status: 'archived' })
     .eq('slug', slug)
-    .is('deleted_at', null);
+    .is('deleted_at', null)
+    .select('id')
+    .maybeSingle();
 
   if (error) return { error: 'Erro ao arquivar produto.' };
+
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'archive.product',
+    resource: 'product',
+    resource_id: (updated?.id as string | undefined) ?? null,
+    payload: { slug },
+  });
 
   revalidatePath('/produtos');
   revalidatePath(`/produtos/${slug}`);
@@ -288,16 +335,27 @@ export async function archiveProduto(slug: string): Promise<{ error?: string }> 
 
 export async function draftProduto(slug: string): Promise<{ error?: string }> {
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from('products')
     .update({ status: 'draft' })
     .eq('slug', slug)
-    .is('deleted_at', null);
+    .is('deleted_at', null)
+    .select('id')
+    .maybeSingle();
 
   if (error) return { error: 'Erro ao reverter para rascunho.' };
+
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'draft.product',
+    resource: 'product',
+    resource_id: (updated?.id as string | undefined) ?? null,
+    payload: { slug },
+  });
 
   revalidatePath('/produtos');
   revalidatePath(`/produtos/${slug}`);
@@ -401,6 +459,15 @@ export async function attachProductAsset(
     return { error: 'Erro ao anexar documento. Tente novamente.' };
   }
 
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'attach.product_asset',
+    resource: 'product_asset',
+    resource_id: assetId,
+    payload: { productSlug, productId: product.id, role },
+  });
+
   revalidatePath(`/produtos/${productSlug}`);
   revalidatePath(`/produtos/${productSlug}/editar`);
   return {};
@@ -417,7 +484,7 @@ export async function detachProductAsset(
   role: ProductAssetRole,
 ): Promise<{ error?: string }> {
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
   const { data: product } = await supabase
@@ -441,6 +508,15 @@ export async function detachProductAsset(
     captureError(error, { context: 'admin.produtos.detachAsset', productSlug, role });
     return { error: 'Erro ao remover documento.' };
   }
+
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'detach.product_asset',
+    resource: 'product_asset',
+    resource_id: assetId,
+    payload: { productSlug, productId: product.id, role },
+  });
 
   revalidatePath(`/produtos/${productSlug}`);
   revalidatePath(`/produtos/${productSlug}/editar`);

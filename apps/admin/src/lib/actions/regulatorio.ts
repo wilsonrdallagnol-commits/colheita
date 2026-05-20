@@ -20,6 +20,7 @@ import { captureError } from '@colheita/observability';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { logAuditEvent } from '@/lib/audit';
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -134,6 +135,15 @@ export async function createRegistro(
     return { error: 'Erro ao criar registro. Tente novamente.' };
   }
 
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'create.regulatory',
+    resource: 'regulatory_registration',
+    resource_id: created.id as string,
+    payload: { productId, authority, registrationNo, status },
+  });
+
   revalidatePath('/compliance');
   redirect('/compliance');
 }
@@ -146,7 +156,7 @@ export async function updateRegistro(
   formData: FormData,
 ): Promise<RegistroFormState> {
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
   const authority = parseAuthority(formData.get('authority'));
@@ -182,6 +192,15 @@ export async function updateRegistro(
     return { error: 'Erro ao salvar registro.' };
   }
 
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'update.regulatory',
+    resource: 'regulatory_registration',
+    resource_id: id,
+    payload: { authority, registrationNo, status, expiresAt },
+  });
+
   revalidatePath('/compliance');
   revalidatePath(`/compliance/${id}/editar`);
   redirect('/compliance');
@@ -200,7 +219,7 @@ export async function updateRegistroStatus(
   }
 
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
   const { error } = await supabase
@@ -215,6 +234,15 @@ export async function updateRegistroStatus(
     captureError(error, { context: 'admin.regulatorio.updateStatus', id, newStatus });
     return { error: 'Erro ao alterar status.' };
   }
+
+  await logAuditEvent({
+    cookieStore,
+    user,
+    action: 'status.regulatory',
+    resource: 'regulatory_registration',
+    resource_id: id,
+    payload: { newStatus },
+  });
 
   revalidatePath('/compliance');
   return {};
