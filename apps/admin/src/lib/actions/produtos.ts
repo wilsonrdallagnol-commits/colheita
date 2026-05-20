@@ -3,6 +3,7 @@
 
 import { createServerClient, requireAuth } from '@colheita/auth';
 import { embedProdutoJob } from '@colheita/jobs';
+import { captureError } from '@colheita/observability';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -52,7 +53,7 @@ export async function createProduto(
   formData: FormData,
 ): Promise<ProdutoFormState> {
   const cookieStore = await cookies();
-  await requireAuth(cookieStore);
+  const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
   const name = String(formData.get('name') ?? '').trim();
@@ -78,9 +79,23 @@ export async function createProduto(
     // ignore parse error on create — defaults to []
   }
 
+  // Resolve tenant_id da sessao — RLS check (`tenant_id = app_tenant_id()`)
+  // E o NOT NULL da coluna exigem que esteja preenchido. Sem isso, o insert
+  // sempre falha. Mesma logica usada em createCategoria e createLead.
+  const { data: userRow } = await supabase
+    .from('users')
+    .select('tenant_id')
+    .eq('id', user.id)
+    .maybeSingle();
+  const tenantId = userRow?.tenant_id as string | undefined;
+  if (!tenantId) {
+    return { error: 'Tenant não resolvido na sessão. Refaça login.' };
+  }
+
   const { data, error } = await supabase
     .from('products')
     .insert({
+      tenant_id: tenantId,
       slug,
       name,
       tagline,
@@ -99,6 +114,7 @@ export async function createProduto(
     if (error.code === '23505') {
       return { fieldErrors: { name: 'Já existe um produto com esse nome. Escolha outro.' } };
     }
+    captureError(error, { context: 'admin.produtos.create', slug });
     return { error: 'Erro ao criar produto. Tente novamente.' };
   }
 
