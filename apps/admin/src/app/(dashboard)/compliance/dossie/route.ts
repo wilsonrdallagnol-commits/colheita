@@ -24,12 +24,22 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { recordGeneratedMaterial } from '@/lib/materiais';
+import { buildRateLimiter, checkRateLimit, rateLimitHeaders } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
 // Limite defensivo. Tenant Argho hoje tem ~12 registros. Cap em 500 evita
 // PDF gigante caso seed cresca ou multi-tenant entre.
 const MAX_REGISTROS = 500;
+
+// Rate limit: 3 dossies/min/user. Cada dossie eh PDF Chromium de varias paginas,
+// custa RAM/CPU significativos. Auditor B2B nao precisa gerar 30 dossies em
+// sequencia — 3/min cobre uso legitimo + protege custos.
+const dossieRateLimiter = buildRateLimiter({
+  prefix: '@colheita/admin/dossie',
+  limit: 3,
+  window: '1 m',
+});
 
 export async function GET(_request: NextRequest) {
   const cookieStore = await cookies();
@@ -39,6 +49,14 @@ export async function GET(_request: NextRequest) {
     user = await requireAuth(cookieStore);
   } catch {
     return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
+  }
+
+  const rate = await checkRateLimit(dossieRateLimiter, `dossie:${user.id}`);
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: 'Muitas gerações de dossiê em sequência. Aguarde um minuto.' },
+      { status: 429, headers: rateLimitHeaders(rate) },
+    );
   }
 
   const supabase = createServerClient(cookieStore);

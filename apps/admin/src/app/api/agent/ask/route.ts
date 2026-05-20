@@ -15,30 +15,23 @@ import {
 } from '@colheita/ai';
 import { createAdminClient, createServerClient, requireAuth } from '@colheita/auth';
 import { captureError } from '@colheita/observability';
-import { Ratelimit } from '@upstash/ratelimit';
-import { Redis } from '@upstash/redis';
 import { cookies } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
+import { buildRateLimiter, checkRateLimit, rateLimitHeaders } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// ── Rate limit (5 req/min/user, fail-open sem Upstash) ──────────────────────
+// ── Rate limit (15 req/min/user, fail-open sem Upstash) ─────────────────────
+// Reusa helper compartilhado (warn no Sentry em prod sem Upstash, headers
+// X-RateLimit-* + Retry-After). 15 req/min eh generoso pra chat humano mas
+// barra bot/loop client-side queimando creditos Anthropic.
 
-function buildLimiter(): Ratelimit | null {
-  const url = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
-  if (!url || !token) return null;
-  const redis = new Redis({ url, token });
-  return new Ratelimit({
-    redis,
-    limiter: Ratelimit.slidingWindow(15, '1 m'),
-    analytics: false,
-    prefix: '@colheita/admin/agent',
-  });
-}
-
-const limiter = buildLimiter();
+const agentRateLimiter = buildRateLimiter({
+  prefix: '@colheita/admin/agent',
+  limit: 15,
+  window: '1 m',
+});
 
 // ── Pipeline singleton (cold-start safe) ────────────────────────────────────
 
@@ -114,15 +107,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
   }
 
-  // Rate limit por user (Claude API custa, vision custa mais — protege custos)
-  if (limiter) {
-    const result = await limiter.limit(`agent:${user.id}`);
-    if (!result.success) {
-      return NextResponse.json(
-        { error: 'Muitas perguntas em sequência. Aguarde alguns segundos.' },
-        { status: 429 },
-      );
-    }
+  // Rate limit por user (Claude API custa, vision custa mais — protege custos).
+  // Headers X-RateLimit-* incluidos pra UI mostrar progresso futuramente.
+  const rate = await checkRateLimit(agentRateLimiter, `agent:${user.id}`);
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: 'Muitas perguntas em sequência. Aguarde alguns segundos.' },
+      { status: 429, headers: rateLimitHeaders(rate) },
+    );
   }
 
   const supabase = createServerClient(cookieStore);

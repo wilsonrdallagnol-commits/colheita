@@ -20,6 +20,7 @@ import { createAdminClient, requireAuth } from '@colheita/auth';
 import { captureError } from '@colheita/observability';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { buildRateLimiter, checkRateLimit, rateLimitHeaders } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -27,13 +28,31 @@ export const dynamic = 'force-dynamic';
 // 60s cobre o catálogo Argho atual (~25 chunks) com folga.
 export const maxDuration = 60;
 
+// Rate limit: 2 reindex/5min/user. Embedding eh idempotente mas custa Voyage/
+// OpenAI credits. User clicando "Reindexar" multiplas vezes em sequencia (UI
+// stress) nao queima creditos.
+const reindexRateLimiter = buildRateLimiter({
+  prefix: '@colheita/admin/reindex',
+  limit: 2,
+  window: '5 m',
+});
+
 export async function POST() {
   const cookieStore = await cookies();
 
+  let user: Awaited<ReturnType<typeof requireAuth>>;
   try {
-    await requireAuth(cookieStore);
+    user = await requireAuth(cookieStore);
   } catch {
     return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
+  }
+
+  const rate = await checkRateLimit(reindexRateLimiter, `reindex:${user.id}`);
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: 'Reindexação em cooldown. Aguarde alguns minutos antes de reindexar de novo.' },
+      { status: 429, headers: rateLimitHeaders(rate) },
+    );
   }
 
   // Provider de embedding — Voyage tem prioridade, OpenAI fallback.

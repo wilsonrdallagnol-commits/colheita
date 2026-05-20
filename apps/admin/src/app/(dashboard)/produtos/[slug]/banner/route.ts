@@ -27,8 +27,18 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { recordGeneratedMaterial } from '@/lib/materiais';
+import { buildRateLimiter, checkRateLimit, rateLimitHeaders } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
+
+// Rate limit: 10 banners/min/user. Mais permissivo que catalog/dossie por ser
+// 1 produto so + sem joins pesados. Cobre uso real (gerar varios para social
+// post diferentes) sem deixar abrir caminho pra DoS.
+const bannerRateLimiter = buildRateLimiter({
+  prefix: '@colheita/admin/banner',
+  limit: 10,
+  window: '1 m',
+});
 
 interface RouteContext {
   params: Promise<{ slug: string }>;
@@ -62,6 +72,14 @@ export async function GET(_request: NextRequest, context: RouteContext) {
     user = await requireAuth(cookieStore);
   } catch {
     return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
+  }
+
+  const rate = await checkRateLimit(bannerRateLimiter, `banner:${user.id}`);
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: 'Muitas gerações de banner em sequência. Aguarde alguns segundos.' },
+      { status: 429, headers: rateLimitHeaders(rate) },
+    );
   }
 
   const supabase = createServerClient(cookieStore);

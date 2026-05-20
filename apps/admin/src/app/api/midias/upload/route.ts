@@ -12,11 +12,21 @@ import { captureError } from '@colheita/observability';
 import { cookies } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 import sharp from 'sharp';
+import { buildRateLimiter, checkRateLimit, rateLimitHeaders } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
 // Tamanho máximo: 50 MB
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
+
+// Rate limit: 30 uploads/min/user. Cliente fazendo bulk import de 50 produtos
+// dispara ~50 uploads. 30/min cobre uso legitimo + barra bot/script. Storage
+// Supabase tem limite mensal — abusos derrubam tenant.
+const uploadRateLimiter = buildRateLimiter({
+  prefix: '@colheita/admin/upload',
+  limit: 30,
+  window: '1 m',
+});
 
 const MIME_TO_TYPE: Record<string, 'image' | 'video' | 'document' | 'audio' | 'other'> = {
   // Imagens
@@ -66,10 +76,20 @@ function sanitizeFilename(name: string): string {
 export async function POST(request: NextRequest) {
   // 1. Autenticação
   const cookieStore = await cookies();
+  let user: Awaited<ReturnType<typeof requireAuth>>;
   try {
-    await requireAuth(cookieStore);
+    user = await requireAuth(cookieStore);
   } catch {
     return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
+  }
+
+  // 1b. Rate limit por user (anti-abuso de storage)
+  const rate = await checkRateLimit(uploadRateLimiter, `upload:${user.id}`);
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: 'Muitos uploads em sequência. Aguarde alguns segundos.' },
+      { status: 429, headers: rateLimitHeaders(rate) },
+    );
   }
 
   // 2. Parse do multipart

@@ -30,12 +30,21 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { recordGeneratedMaterial } from '@/lib/materiais';
+import { buildRateLimiter, checkRateLimit, rateLimitHeaders } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
 // Limite de produtos por catálogo. 200 produtos = ~205 páginas A4 = ~30s de render.
 // Argho hoje tem 18; este limite é pra evitar OOM se o seed crescer.
 const MAX_PRODUTOS_POR_CATALOGO = 200;
+
+// Rate limit: 3 catalogos/min/user. PDF de 200 paginas custa ~30s + ~400MB RAM.
+// 1 user fazendo refresh sequencial derruba a funcao serverless.
+const catalogRateLimiter = buildRateLimiter({
+  prefix: '@colheita/admin/catalog',
+  limit: 3,
+  window: '1 m',
+});
 
 export async function GET(_request: NextRequest) {
   const cookieStore = await cookies();
@@ -45,6 +54,14 @@ export async function GET(_request: NextRequest) {
     user = await requireAuth(cookieStore);
   } catch {
     return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
+  }
+
+  const rate = await checkRateLimit(catalogRateLimiter, `catalog:${user.id}`);
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: 'Muitas gerações de catálogo em sequência. Aguarde um minuto.' },
+      { status: 429, headers: rateLimitHeaders(rate) },
+    );
   }
 
   const supabase = createServerClient(cookieStore);

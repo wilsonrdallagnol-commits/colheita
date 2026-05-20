@@ -14,6 +14,14 @@ import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { recordGeneratedMaterial } from '@/lib/materiais';
+import { buildRateLimiter, checkRateLimit, rateLimitHeaders } from '@/lib/rate-limit';
+
+// Rate limit: 10 fichas/min/user. Mesmo dimensionamento do banner.
+const fichaRateLimiter = buildRateLimiter({
+  prefix: '@colheita/admin/ficha',
+  limit: 10,
+  window: '1 m',
+});
 
 interface RouteContext {
   params: Promise<{ slug: string }>;
@@ -28,6 +36,14 @@ export async function GET(_request: NextRequest, context: RouteContext) {
     user = await requireAuth(cookieStore);
   } catch {
     return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
+  }
+
+  const rate = await checkRateLimit(fichaRateLimiter, `ficha:${user.id}`);
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: 'Muitas gerações de ficha técnica em sequência. Aguarde alguns segundos.' },
+      { status: 429, headers: rateLimitHeaders(rate) },
+    );
   }
 
   const supabase = createServerClient(cookieStore);
