@@ -179,7 +179,7 @@ export default async function ProdutoPage({ params }: PageProps) {
       />
 
       {/* Documentos & mídias do produto (MSDS, certificates, gallery, etc) */}
-      <ProductAssetsSection assets={productAssetsData ?? []} />
+      <ProductAssetsSection assets={productAssetsData ?? []} productSlug={slug} />
 
       {/* Seção de integração Safra (estoque + código) */}
       <div

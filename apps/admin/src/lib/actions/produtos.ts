@@ -303,3 +303,146 @@ export async function draftProduto(slug: string): Promise<{ error?: string }> {
   revalidatePath(`/produtos/${slug}`);
   return {};
 }
+
+// ── attachProductAsset ────────────────────────────────────────────────────────
+//
+// Anexa um asset existente (ja na biblioteca DAM) a um produto via
+// product_assets. Usado pelo uploader inline em /produtos/[slug] pra
+// adicionar MSDS, certificados, documentos regulatorios.
+//
+// Upload do arquivo eh feito antes via POST /api/midias/upload (que cria a row
+// em assets). Esta action recebe o asset_id ja criado + product slug + role.
+
+const VALID_PRODUCT_ASSET_ROLES = [
+  'msds',
+  'certificate',
+  'spec_sheet',
+  'datasheet',
+  'gallery',
+  'photo',
+  'video',
+  'document',
+] as const;
+export type ProductAssetRole = (typeof VALID_PRODUCT_ASSET_ROLES)[number];
+
+export async function attachProductAsset(
+  productSlug: string,
+  assetId: string,
+  role: ProductAssetRole,
+): Promise<{ error?: string }> {
+  const cookieStore = await cookies();
+  const user = await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  // Valida role
+  if (!(VALID_PRODUCT_ASSET_ROLES as readonly string[]).includes(role)) {
+    return { error: 'Tipo de documento inválido.' };
+  }
+
+  // Resolve tenant_id da sessao (RLS + NOT NULL precisam)
+  const { data: userRow } = await supabase
+    .from('users')
+    .select('tenant_id')
+    .eq('id', user.id)
+    .maybeSingle();
+  const tenantId = userRow?.tenant_id as string | undefined;
+  if (!tenantId) {
+    return { error: 'Tenant não resolvido na sessão. Refaça login.' };
+  }
+
+  // Busca o produto pra obter o id
+  const { data: product } = await supabase
+    .from('products')
+    .select('id')
+    .eq('slug', productSlug)
+    .is('deleted_at', null)
+    .maybeSingle();
+  if (!product?.id) {
+    return { error: 'Produto não encontrado.' };
+  }
+
+  // Confirma que o asset existe e pertence ao tenant
+  const { data: asset } = await supabase
+    .from('assets')
+    .select('id')
+    .eq('id', assetId)
+    .is('deleted_at', null)
+    .maybeSingle();
+  if (!asset?.id) {
+    return { error: 'Asset não encontrado ou foi removido.' };
+  }
+
+  // Insert com sort_order = max + 1 pra novo asset ficar no fim
+  const { data: maxRow } = await supabase
+    .from('product_assets')
+    .select('sort_order')
+    .eq('product_id', product.id)
+    .eq('role', role)
+    .order('sort_order', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const sortOrder = ((maxRow?.sort_order as number | null) ?? -1) + 1;
+
+  const { error } = await supabase.from('product_assets').insert({
+    tenant_id: tenantId,
+    product_id: product.id,
+    asset_id: assetId,
+    role,
+    sort_order: sortOrder,
+  });
+
+  if (error) {
+    // 23505 = unique violation. PK eh (product_id, asset_id, role) — mesmo
+    // asset ja foi anexado com o mesmo role.
+    if (error.code === '23505') {
+      return { error: 'Esse documento já está anexado a este produto neste papel.' };
+    }
+    captureError(error, { context: 'admin.produtos.attachAsset', productSlug, role });
+    return { error: 'Erro ao anexar documento. Tente novamente.' };
+  }
+
+  revalidatePath(`/produtos/${productSlug}`);
+  revalidatePath(`/produtos/${productSlug}/editar`);
+  return {};
+}
+
+// ── detachProductAsset ────────────────────────────────────────────────────────
+//
+// Remove a associacao asset<->produto (NAO deleta o asset em si, so a row
+// em product_assets). Asset continua disponivel na biblioteca DAM.
+
+export async function detachProductAsset(
+  productSlug: string,
+  assetId: string,
+  role: ProductAssetRole,
+): Promise<{ error?: string }> {
+  const cookieStore = await cookies();
+  await requireAuth(cookieStore);
+  const supabase = createServerClient(cookieStore);
+
+  const { data: product } = await supabase
+    .from('products')
+    .select('id')
+    .eq('slug', productSlug)
+    .is('deleted_at', null)
+    .maybeSingle();
+  if (!product?.id) {
+    return { error: 'Produto não encontrado.' };
+  }
+
+  const { error } = await supabase
+    .from('product_assets')
+    .delete()
+    .eq('product_id', product.id)
+    .eq('asset_id', assetId)
+    .eq('role', role);
+
+  if (error) {
+    captureError(error, { context: 'admin.produtos.detachAsset', productSlug, role });
+    return { error: 'Erro ao remover documento.' };
+  }
+
+  revalidatePath(`/produtos/${productSlug}`);
+  revalidatePath(`/produtos/${productSlug}/editar`);
+  return {};
+}

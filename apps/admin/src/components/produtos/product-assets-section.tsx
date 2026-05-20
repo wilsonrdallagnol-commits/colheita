@@ -1,9 +1,10 @@
 // apps/admin/src/components/produtos/product-assets-section.tsx
 //
 // Mostra MSDS, certificates, photos extras, gallery, video do produto
-// agrupados por role. v1: read-only — upload/edit em sprint dedicada.
+// agrupados por role. Inclui uploader inline pra anexar novos documentos.
 
 import { Award, Camera, FileText, ShieldCheck, Sprout, Video } from 'lucide-react';
+import { ProductAssetUploader } from './product-asset-uploader';
 
 interface ProductAsset {
   role: string;
@@ -32,6 +33,8 @@ interface ProductAsset {
 
 interface ProductAssetsSectionProps {
   assets: ProductAsset[];
+  /** Slug do produto — quando passado, exibe uploader pra anexar novos docs */
+  productSlug?: string;
 }
 
 interface RoleMeta {
@@ -112,12 +115,15 @@ function publicUrl(storagePath: string): string {
   return `${base}/storage/v1/object/public/assets/${storagePath}`;
 }
 
-export function ProductAssetsSection({ assets }: ProductAssetsSectionProps) {
-  if (!assets || assets.length === 0) return null;
+export function ProductAssetsSection({ assets, productSlug }: ProductAssetsSectionProps) {
+  // Empty state: se nao tem assets e tem productSlug, ainda renderiza pro
+  // user ver o uploader. Antes retornava null e o uploader nunca aparecia.
+  const hasAssets = assets && assets.length > 0;
+  if (!hasAssets && !productSlug) return null;
 
   // Agrupa por role
   const grouped: Record<string, ProductAsset[]> = {};
-  for (const a of assets) {
+  for (const a of assets ?? []) {
     if (!grouped[a.role]) grouped[a.role] = [];
     (grouped[a.role] as ProductAsset[]).push(a);
   }
@@ -144,19 +150,46 @@ export function ProductAssetsSection({ assets }: ProductAssetsSectionProps) {
         borderTop: '1px solid var(--colheita-border-subtle)',
       }}
     >
-      <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
-        Documentos & mídias
-      </p>
-      <h2
-        className="argho-display"
+      <div
         style={{
-          fontSize: '1.5rem',
-          color: '#0a0a0a',
-          margin: '0 0 24px',
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: '16px',
+          marginBottom: '24px',
+          flexWrap: 'wrap',
         }}
       >
-        Acervo do produto
-      </h2>
+        <div>
+          <p className="argho-eyebrow" style={{ display: 'inline-block', marginBottom: '12px' }}>
+            Documentos & mídias
+          </p>
+          <h2
+            className="argho-display"
+            style={{
+              fontSize: '1.5rem',
+              color: '#0a0a0a',
+              margin: 0,
+            }}
+          >
+            Acervo do produto
+          </h2>
+        </div>
+        {productSlug ? <ProductAssetUploader productSlug={productSlug} /> : null}
+      </div>
+
+      {!hasAssets ? (
+        <p
+          style={{
+            fontSize: '0.875rem',
+            color: 'var(--colheita-text-tertiary)',
+            padding: '20px 0',
+          }}
+        >
+          Nenhum documento anexado ainda. Use o botão acima pra adicionar FISPQ, certificados ou
+          outros documentos.
+        </p>
+      ) : null}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {sortedRoles.map((role) => {
@@ -283,18 +316,6 @@ export function ProductAssetsSection({ assets }: ProductAssetsSectionProps) {
           );
         })}
       </div>
-
-      <p
-        style={{
-          marginTop: '20px',
-          fontSize: '0.75rem',
-          color: 'var(--colheita-text-tertiary)',
-        }}
-      >
-        Pra adicionar novos arquivos, use a página de mídias e link ao produto via{' '}
-        <code style={{ fontFamily: 'var(--font-mono)' }}>product_assets</code>. UI de upload inline
-        em sprint futura.
-      </p>
     </section>
   );
 }
