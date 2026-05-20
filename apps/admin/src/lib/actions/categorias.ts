@@ -57,14 +57,15 @@ export async function createCategoria(
   const { data: user } = await supabase.auth.getUser();
   if (!user.user) return { error: 'Sessão inválida.' };
 
-  // Busca o tenant_id do usuário na tabela users
+  // Busca o tenant_id do usuário na tabela users (maybeSingle: row pode nao
+  // existir se handle_new_auth_user nao rodou; single() loga erro noisy).
   const { data: userData } = await supabase
     .from('users')
     .select('tenant_id')
     .eq('id', user.user.id)
-    .single();
+    .maybeSingle();
 
-  if (!userData?.tenant_id) return { error: 'Tenant não encontrado.' };
+  if (!userData?.tenant_id) return { error: 'Tenant não encontrado. Refaça login.' };
 
   const { error } = await supabase.from('product_categories').insert({
     slug,

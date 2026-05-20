@@ -42,12 +42,14 @@ function slugify(text: string): string {
 async function getTenantId(supabase: ReturnType<typeof createServerClient>) {
   const { data: userAuth } = await supabase.auth.getUser();
   if (!userAuth.user) return null;
+  // maybeSingle: row pode nao existir (user logado mas sem registro em
+  // public.users — handle_new_auth_user falhou). single() loga erro noisy.
   const { data: userData } = await supabase
     .from('users')
     .select('tenant_id')
     .eq('id', userAuth.user.id)
-    .single();
-  return userData?.tenant_id ?? null;
+    .maybeSingle();
+  return (userData?.tenant_id as string | null) ?? null;
 }
 
 // ── createTrilha ──────────────────────────────────────────────────────────────

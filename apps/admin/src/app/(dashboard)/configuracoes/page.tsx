@@ -2,18 +2,52 @@
 //
 // Configurações do tenant + operações de manutenção (reindex RAG).
 
-import { createServerClient, requireAuth } from '@colheita/auth';
+import { createServerClient, getSession, requireAuth } from '@colheita/auth';
 import { Brain, Plug, ShieldCheck } from 'lucide-react';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { ReindexButton } from '@/components/configuracoes/reindex-button';
+import { StaleSessionBanner } from '@/components/configuracoes/stale-session-banner';
 
 export const metadata = { title: 'Configurações' };
+
+/**
+ * Decodifica o payload de um JWT base64 sem validacao. So usado pra ler
+ * claims customizadas (roles, tenant_id) — a validacao do token em si
+ * eh feita pelo Supabase via supabase.auth.getUser() antes deste call.
+ *
+ * Robusto a JWT malformado: retorna {} em qualquer falha.
+ */
+function decodeJwtClaims(accessToken: string | undefined | null): Record<string, unknown> {
+  if (!accessToken) return {};
+  try {
+    const parts = accessToken.split('.');
+    if (parts.length !== 3) return {};
+    const payload = parts[1];
+    if (!payload) return {};
+    // base64url -> base64 (replace - and _, pad =)
+    const b64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = b64 + '='.repeat((4 - (b64.length % 4)) % 4);
+    const json = Buffer.from(padded, 'base64').toString('utf8');
+    const parsed = JSON.parse(json);
+    return typeof parsed === 'object' && parsed !== null ? (parsed as Record<string, unknown>) : {};
+  } catch {
+    return {};
+  }
+}
 
 export default async function ConfiguracoesPage() {
   const cookieStore = await cookies();
   const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
+  const session = await getSession(cookieStore);
+
+  // Detecta JWT stale: faltam claims customizadas (tenant_id, roles).
+  // Pos-migration 0032 o hook injeta ambas — sessoes velhas precisam refresh.
+  const claims = decodeJwtClaims(session?.access_token);
+  const hasRoles = Array.isArray(claims.roles) && (claims.roles as unknown[]).length > 0;
+  const hasTenantClaim = typeof claims.tenant_id === 'string';
+  const sessionIsStale = !hasRoles || !hasTenantClaim;
 
   const { data: tenant } = await supabase
     .from('tenants')
@@ -48,12 +82,23 @@ export default async function ConfiguracoesPage() {
         </p>
       </header>
 
+      {sessionIsStale ? <StaleSessionBanner /> : null}
+
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {/* Conta */}
         <SettingsCard icon={ShieldCheck} title="Conta">
           <Field label="Email" value={user.email ?? '—'} />
           <Field label="Tenant" value={(tenant?.name as string | undefined) ?? '—'} />
           <Field label="Slug" value={(tenant?.slug as string | undefined) ?? '—'} mono />
+          <Field
+            label="Permissões no JWT"
+            value={
+              hasRoles
+                ? (claims.roles as string[]).join(', ')
+                : 'nenhuma — refaça login pra atualizar'
+            }
+            mono
+          />
         </SettingsCard>
 
         {/* RAG / Knowledge Base */}
