@@ -72,6 +72,16 @@ export function HeroHeart() {
         maxWidth: '560px',
         aspectRatio: '2 / 3',
         margin: '0 auto',
+        // Card dark intencional — o video tem fundo escuro composite (#0a0d18)
+        // que funciona na intro mas destoaria sozinho no hero (pagina branca).
+        // O wrapper escuro com rounded + shadow transforma em "frame" editorial.
+        borderRadius: '24px',
+        overflow: 'hidden',
+        backgroundColor: '#0a0d18',
+        boxShadow:
+          '0 24px 60px -16px oklch(0.30 0.150 266.7 / 0.35),' +
+          ' 0 8px 24px -8px oklch(0.20 0.090 266.7 / 0.40),' +
+          ' inset 0 1px 0 oklch(1 0 0 / 0.06)',
       }}
     >
       {/* Glow ambient — teal/verde por trás */}
