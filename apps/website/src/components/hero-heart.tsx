@@ -64,51 +64,60 @@ export function HeroHeart() {
     ? { webm: '/argho-heart-hero-mobile.webm', mp4: '/argho-heart-hero-mobile.mp4' }
     : { webm: '/argho-heart-hero.webm', mp4: '/argho-heart-hero.mp4' };
 
+  // Nesting necessario: padding-bottom % eh relativo ao pai. Wrapper externo
+  // limita a largura (maxWidth 560), inner aplica padding-bottom 150% relativo
+  // a essa largura -> aspect 2:3 garantido.
   return (
     <div
       ref={wrapRef}
       style={{
-        position: 'relative',
         width: '100%',
         maxWidth: '560px',
-        // padding-bottom hack em vez de aspect-ratio CSS — funciona em qualquer
-        // browser desde 2010, incluindo iOS Safari antigo onde aspect-ratio
-        // pode falhar e colapsar container pra altura 0 (= video invisivel).
-        // 150% = aspect 2/3 (height eh 150% da width).
-        paddingBottom: '150%',
-        height: 0,
         margin: '0 auto',
-        // Poster como background-image garante visibilidade mesmo se video
-        // falhar a carregar em qualquer dispositivo legacy.
-        backgroundImage: 'url(/argho-heart-poster-hero.png)',
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center',
       }}
     >
-      <video
-        ref={videoRef}
-        autoPlay
-        loop
-        muted
-        playsInline
-        poster="/argho-heart-poster-hero.png"
-        aria-label="Coracao digital Argho — tecnologia viva"
+      <div
         style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
+          position: 'relative',
           width: '100%',
-          height: '100%',
-          objectFit: 'contain',
-          transform: `translate3d(${parallax.x}px, ${parallax.y}px, 0)`,
-          transition: 'transform 0.6s var(--ease-out-expo)',
-          willChange: 'transform',
+          // padding-bottom hack em vez de aspect-ratio CSS — funciona em
+          // qualquer browser desde 2010, incluindo iOS Safari antigo onde
+          // aspect-ratio pode falhar e colapsar container pra altura 0.
+          // 150% = aspect 2/3 (height eh 150% da width do wrapper externo).
+          paddingBottom: '150%',
+          height: 0,
+          // Poster como background-image garante visibilidade mesmo se video
+          // falhar a carregar em qualquer dispositivo legacy.
+          backgroundImage: 'url(/argho-heart-poster-hero.png)',
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
         }}
       >
-        <source src={sources.webm} type="video/webm" />
-        <source src={sources.mp4} type="video/mp4" />
-      </video>
+        <video
+          ref={videoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster="/argho-heart-poster-hero.png"
+          aria-label="Coracao digital Argho — tecnologia viva"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            transform: `translate3d(${parallax.x}px, ${parallax.y}px, 0)`,
+            transition: 'transform 0.6s var(--ease-out-expo)',
+            willChange: 'transform',
+          }}
+        >
+          <source src={sources.webm} type="video/webm" />
+          <source src={sources.mp4} type="video/mp4" />
+        </video>
+      </div>
     </div>
   );
 }
