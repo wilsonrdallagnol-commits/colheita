@@ -5,6 +5,68 @@ Versionamento por **data + sprint** (sem semver — projeto interno single-tenan
 
 ---
 
+## Sprint 2026-05-21 — Heart video saga (site institucional)
+
+**Foco**: corrigir display do coracao digital Argho em iPhone Safari. 9
+commits ao longo do dia, cada fix revelando o proximo problema.
+
+### Corrigido
+
+- **Heart video sumindo no iPhone**: a saga em camadas — RESOLVIDO em prod.
+  1. **Bg off-white visivel** (`037d744`, `8d27942`): video tinha bg
+     `RGB(253,253,253)` (uniforme em quadrados grandes que pareciam checker
+     no iPhone vs page `#ffffff`). Pipeline ffmpeg final usa filtro `geq`
+     condicional: pixels grayscale (R=G=B) >= 250 viram 255 puro, pixels
+     coloridos (heart com leve variacao RGB) ficam intactos. Doc em
+     `apps/website/docs/heart-video-pipeline.md`.
+  2. **WebM container ignorado por iOS < 17.4** (`6fbe42c`): root cause real.
+     iOS Safari antigo nao suporta container WebM (mesmo com VP9 dentro) —
+     video element ficava sem source utilizavel. Fix: gerar MP4 H.264
+     Constrained Baseline + yuv420p + faststart como fallback. Adicionado
+     como segundo `<source>` em hero-heart.tsx e heart-intro.tsx.
+  3. **`aspect-ratio` CSS falhando em iOS antigo** (`619a787`): container
+     colapsava pra altura 0 -> video invisivel. Fix: `padding-bottom: 150%`
+     hack (funciona desde 2010 em qualquer browser) + poster como
+     `background-image` no container como fallback ultimo nivel.
+  4. **Nesting do padding-bottom hack** (`e9dd4d9`): bug sutil — `padding-
+     bottom %` eh relativo ao **pai do container**, nao ao container. Como
+     o pai (grid column) podia ser maior que `maxWidth: 560`, aspect ratio
+     quebrava em desktop. Fix: separar em dois divs — externo limita
+     largura, interno aplica padding-bottom.
+  5. **Source order iOS Safari** (`783a5e1`): ultimo bug. Apos todos os
+     fixes acima, video aparecia (poster) mas nao animava no iPhone. Causa:
+     iOS Safari < 17.4 tenta carregar o primeiro `<source>` mesmo quando
+     `type=webm` e ele nao suporta -> falha silenciosa -> fica em error
+     state. Fix: inverter ordem. MP4 H.264 baseline PRIMEIRO, WebM segundo.
+     Bonus: MP4 (2.0MB) eh ate menor que WebM (2.2MB) -> zero perda.
+
+- **Componentes refatorados**:
+  - `hero-heart.tsx`: removido glow ambient + SVG rings + shimmer dots
+    (criavam halo difuso atras do video que aparecia como pattern no iPhone).
+  - `heart-intro.tsx`: tudo branco — bg `#ffffff` + textos azul Argho + logo
+    color + usa mesmo `argho-heart-hero.webm/mp4` do hero.
+  - Hero section page.tsx: grid tecnico decorativo removido.
+
+### Adicionado
+
+- **Cache headers immutable** (`bd08215`) em `.webm`/`.mp4`/poster PNG via
+  `next.config.ts headers()`. `max-age=31536000, immutable` — versionamento
+  manual via filename quando mudar conteudo.
+- **`apps/website/docs/heart-video-pipeline.md`**: documenta pipeline ffmpeg
+  completo + 5 caminhos que NAO funcionaram (VP9-alpha, chromakey, lutrgb)
+  pra nao repetir nas proximas iteracoes.
+
+### Belt-and-suspenders final (3 camadas de fallback)
+
+1. **MP4 H.264 Constrained Baseline** (primeiro `<source>`) — universal Apple
+2. **WebM VP9** (segundo `<source>`) — modernos pra qualidade maxima
+3. **Poster PNG** como `background-image` no container — visivel mesmo se
+   ambos videos falharem completamente
+
+Verificado em prod no iPhone do fundador: heart aparece + anima corretamente.
+
+---
+
 ## Sprint 2026-05-20 — Polishing operacional
 
 **Foco**: 10 itens de melhoria pos-MVP. Tira o admin de "shippable" pra
