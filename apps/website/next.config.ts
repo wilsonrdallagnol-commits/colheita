@@ -13,6 +13,17 @@ const nextConfig: NextConfig = {
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
         ],
       },
+      // Cache agressivo para assets estaticos pesados (videos + imagens).
+      // O nome do asset eh estavel — se mudarmos conteudo, mudamos o nome
+      // (versionamento via filename eh manual). Aceita-se 1 ano de cache.
+      {
+        source: '/:path*.webm',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
+        source: '/argho-heart-poster-:variant*.png',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
     ];
   },
 };
