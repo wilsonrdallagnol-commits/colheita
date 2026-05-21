@@ -49,24 +49,9 @@ export default function Home() {
           overflow: 'hidden',
         }}
       >
-        {/* Grid técnico de fundo (sutilíssimo) */}
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: `
-              linear-gradient(var(--border-subtle) 1px, transparent 1px),
-              linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px)
-            `,
-            backgroundSize: '88px 88px',
-            opacity: 0.6,
-            maskImage: 'radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 80%)',
-            WebkitMaskImage:
-              'radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 80%)',
-            pointerEvents: 'none',
-          }}
-        />
+        {/* Grid tecnico de fundo removido — estava criando padrao checkerboard
+            visivel atras do retangulo do video (que tem fundo branco solido).
+            Decisao editorial: heart limpo > grid decorativo. */}
 
         <div
           style={{

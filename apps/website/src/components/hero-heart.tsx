@@ -162,11 +162,9 @@ export function HeroHeart() {
             width: '100%',
             height: '100%',
             objectFit: 'contain',
-            // multiply: branco puro do bg do video x cor da pagina = cor da pagina
-            // (branco fica invisivel). Cores escuras/cyan do coracao sao preservadas.
-            // Resultado: grid tecnico de fundo da pagina passa atras do video,
-            // sem aparecer retangulo destoante ao redor do heart.
-            mixBlendMode: 'multiply',
+            // Bg branco do video casa com a pagina (que tambem eh branca onde o
+            // grid pattern foi removido pra evitar checker visivel atras).
+            mixBlendMode: 'normal',
           }}
         >
           <source src={videoSrc} type="video/webm" />
