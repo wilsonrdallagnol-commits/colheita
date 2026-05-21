@@ -185,8 +185,10 @@ export function HeartIntro() {
             zIndex: 2,
           }}
         >
-          {/* Mesmo asset do hero — fundo branco puro casa com a pagina branca */}
+          {/* Mesmo asset do hero. WebM pra browsers modernos, MP4 H.264 baseline
+              pra iOS Safari < 17.4 (que nao suporta container WebM mesmo com VP9). */}
           <source src="/argho-heart-hero.webm" type="video/webm" />
+          <source src="/argho-heart-hero.mp4" type="video/mp4" />
         </video>
       </div>
 

@@ -57,7 +57,12 @@ export function HeroHeart() {
     }
   }, []);
 
-  const videoSrc = isMobile ? '/argho-heart-hero-mobile.webm' : '/argho-heart-hero.webm';
+  // Dois sources por device: WebM (Chrome/Firefox/Safari >= iOS 17.4) + MP4
+  // H.264 baseline (iOS Safari < 17.4, qualquer browser legacy). Browser
+  // escolhe o primeiro que suporta — WebM ganha onde possivel (menor).
+  const sources = isMobile
+    ? { webm: '/argho-heart-hero-mobile.webm', mp4: '/argho-heart-hero-mobile.mp4' }
+    : { webm: '/argho-heart-hero.webm', mp4: '/argho-heart-hero.mp4' };
 
   return (
     <div
@@ -87,7 +92,8 @@ export function HeroHeart() {
           willChange: 'transform',
         }}
       >
-        <source src={videoSrc} type="video/webm" />
+        <source src={sources.webm} type="video/webm" />
+        <source src={sources.mp4} type="video/mp4" />
       </video>
     </div>
   );
