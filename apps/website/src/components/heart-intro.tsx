@@ -2,17 +2,18 @@
 
 // apps/website/src/components/heart-intro.tsx
 //
-// Landing intro fullscreen — coração digital ARGHO como gateway do site.
-// Inspiração: resn.co.nz/#!/about (cinematic intro, click-to-enter).
+// Landing intro fullscreen — coracao digital ARGHO como gateway do site.
+// Inspiracao: resn.co.nz/#!/about (cinematic intro, click-to-enter).
 //
 // Comportamento:
-// - Primeira visita: overlay fullscreen black com coração centralizado
-// - Click em qualquer lugar (ou no coração) → fade + scale + reveal do site
-// - sessionStorage guarda flag pra não mostrar de novo na mesma sessão
+// - Primeira visita: overlay fullscreen BRANCO com coracao centralizado
+// - Click em qualquer lugar (ou no coracao) → fade + scale + reveal do site
+// - sessionStorage guarda flag pra nao mostrar de novo na mesma sessao
 // - prefers-reduced-motion: skip direto pro site
 //
-// Hot-swap: quando .glb existir, este componente troca o <video> por <Canvas><HeartGLB />
-// sem mexer na lógica de transição.
+// Decisao editorial 2026-05-21: TUDO BRANCO. Heart com fundo branco no centro
+// de uma pagina branca. Sem dark, sem glow, sem grid, sem SVG ambient — clean
+// total. Textos em azul Argho pra contraste.
 
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -25,14 +26,11 @@ export function HeartIntro() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    // Skip se já viu nesta sessão
     if (sessionStorage.getItem(SESSION_KEY) === '1') return;
-    // Skip se reduced-motion
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       sessionStorage.setItem(SESSION_KEY, '1');
       return;
     }
-    // Bloqueia scroll do body enquanto intro está visível
     document.body.style.overflow = 'hidden';
     setPhase('visible');
     return () => {
@@ -80,12 +78,7 @@ export function HeartIntro() {
         position: 'fixed',
         inset: 0,
         zIndex: 9999,
-        backgroundColor: '#0a0d18',
-        backgroundImage: `
-          radial-gradient(ellipse 55% 65% at 50% 50%, oklch(0.20 0.090 266.7 / 0.45) 0%, transparent 65%),
-          radial-gradient(ellipse 70% 55% at 50% 100%, oklch(0.18 0.075 138.8 / 0.32) 0%, transparent 70%),
-          radial-gradient(ellipse 40% 30% at 50% 0%, oklch(0.14 0.060 266.7 / 0.25) 0%, transparent 70%)
-        `,
+        backgroundColor: '#ffffff',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -95,7 +88,7 @@ export function HeartIntro() {
         overflow: 'hidden',
       }}
     >
-      {/* Click-to-enter — botão invisível cobrindo toda a área (z-index baixo) */}
+      {/* Click-to-enter — botao invisivel cobrindo toda a area */}
       <button
         type="button"
         onClick={handleEnter}
@@ -111,66 +104,6 @@ export function HeartIntro() {
           zIndex: 1,
         }}
       />
-      {/* Grid técnico de fundo */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)
-          `,
-          backgroundSize: '88px 88px',
-          maskImage: 'radial-gradient(ellipse 70% 60% at 50% 50%, black 30%, transparent 80%)',
-          WebkitMaskImage:
-            'radial-gradient(ellipse 70% 60% at 50% 50%, black 30%, transparent 80%)',
-          pointerEvents: 'none',
-        }}
-      />
-
-      {/* SVG anéis ambientes */}
-      <svg
-        aria-hidden="true"
-        role="presentation"
-        style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          pointerEvents: 'none',
-          opacity: 0.4,
-        }}
-        viewBox="0 0 1000 1000"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <title>Anéis ambientes</title>
-        <circle
-          cx="500"
-          cy="500"
-          r="280"
-          fill="none"
-          stroke="oklch(0.58 0.180 266.7 / 0.30)"
-          strokeWidth="0.6"
-        />
-        <circle
-          cx="500"
-          cy="500"
-          r="380"
-          fill="none"
-          stroke="oklch(0.586 0.150 138.8 / 0.20)"
-          strokeWidth="0.5"
-          strokeDasharray="2 4"
-        />
-        <circle
-          cx="500"
-          cy="500"
-          r="460"
-          fill="none"
-          stroke="oklch(0.58 0.180 266.7 / 0.12)"
-          strokeWidth="0.4"
-        />
-      </svg>
 
       {/* Eyebrow superior */}
       <div
@@ -194,7 +127,8 @@ export function HeartIntro() {
             display: 'inline-block',
             width: '40px',
             height: '1px',
-            background: 'oklch(0.58 0.180 266.7 / 0.7)',
+            background: 'var(--argho-blue, #183090)',
+            opacity: 0.6,
           }}
         />
         <span
@@ -203,8 +137,8 @@ export function HeartIntro() {
             fontSize: '0.6875rem',
             letterSpacing: '0.28em',
             textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.7)',
-            fontWeight: 500,
+            color: 'var(--argho-blue, #183090)',
+            fontWeight: 600,
           }}
         >
           Argho Agrosciences · 2026
@@ -214,12 +148,13 @@ export function HeartIntro() {
             display: 'inline-block',
             width: '40px',
             height: '1px',
-            background: 'oklch(0.58 0.180 266.7 / 0.7)',
+            background: 'var(--argho-blue, #183090)',
+            opacity: 0.6,
           }}
         />
       </div>
 
-      {/* Coração no centro — visual decorativo, clique vai para o botão invisível abaixo */}
+      {/* Coracao no centro — video com fundo branco, mesmo do hero */}
       <div
         aria-hidden
         style={{
@@ -234,30 +169,14 @@ export function HeartIntro() {
           zIndex: 2,
         }}
       >
-        {/* Glow ambient atrás */}
-        <div
-          aria-hidden
-          className="anim-glow-pulse"
-          style={{
-            position: 'absolute',
-            inset: '-20%',
-            background: `
-              radial-gradient(ellipse 50% 55% at 50% 45%, oklch(0.45 0.220 266.7 / 0.50) 0%, transparent 60%),
-              radial-gradient(ellipse 35% 40% at 50% 60%, oklch(0.586 0.150 138.8 / 0.32) 0%, transparent 65%)
-            `,
-            filter: 'blur(50px)',
-            pointerEvents: 'none',
-          }}
-        />
-
         <video
           ref={videoRef}
           autoPlay
           loop
           muted
           playsInline
-          poster="/argho-heart-poster-intro.png"
-          aria-label="Coração digital Argho"
+          poster="/argho-heart-poster-hero.png"
+          aria-label="Coracao digital Argho"
           style={{
             position: 'relative',
             width: '100%',
@@ -266,60 +185,9 @@ export function HeartIntro() {
             zIndex: 2,
           }}
         >
-          {/* Versao com composite sobre dark blue (#0a0d18) — combina com a
-              pagina escura da intro. Hero usa argho-heart-hero.webm com fundo
-              branco que combina com a pagina branca. */}
-          <source src="/argho-heart-intro.webm" type="video/webm" />
+          {/* Mesmo asset do hero — fundo branco puro casa com a pagina branca */}
+          <source src="/argho-heart-hero.webm" type="video/webm" />
         </video>
-
-        {/* Pontos orbital flutuantes */}
-        <span
-          aria-hidden
-          className="anim-shimmer"
-          style={{
-            position: 'absolute',
-            top: '15%',
-            right: '-3%',
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: 'oklch(0.58 0.180 266.7)',
-            boxShadow: '0 0 18px oklch(0.58 0.180 266.7)',
-            zIndex: 3,
-          }}
-        />
-        <span
-          aria-hidden
-          className="anim-shimmer"
-          style={{
-            position: 'absolute',
-            bottom: '25%',
-            left: '-2%',
-            width: '6px',
-            height: '6px',
-            borderRadius: '50%',
-            backgroundColor: 'oklch(0.586 0.150 138.8)',
-            boxShadow: '0 0 16px oklch(0.586 0.150 138.8)',
-            zIndex: 3,
-            animationDelay: '1.2s',
-          }}
-        />
-        <span
-          aria-hidden
-          className="anim-shimmer"
-          style={{
-            position: 'absolute',
-            top: '50%',
-            right: '5%',
-            width: '4px',
-            height: '4px',
-            borderRadius: '50%',
-            backgroundColor: 'oklch(0.66 0.130 78)',
-            boxShadow: '0 0 12px oklch(0.66 0.130 78)',
-            zIndex: 3,
-            animationDelay: '2.4s',
-          }}
-        />
       </div>
 
       {/* CTA inferior */}
@@ -340,7 +208,7 @@ export function HeartIntro() {
           zIndex: 2,
         }}
       >
-        {/* Logo Argho oficial (branca para fundo escuro) — discreta */}
+        {/* Logo Argho oficial color (azul + verde) — pagina branca */}
         <div
           className="anim-fade-in-up delay-2"
           style={{
@@ -350,7 +218,7 @@ export function HeartIntro() {
           }}
         >
           <Image
-            src="/argho-logo-white.png"
+            src="/argho-logo-color.png"
             alt="Argho Agrosciences"
             width={140}
             height={52}
@@ -358,7 +226,6 @@ export function HeartIntro() {
             style={{
               width: 'clamp(96px, 9vw, 140px)',
               height: 'auto',
-              opacity: 0.85,
             }}
           />
         </div>
@@ -370,10 +237,11 @@ export function HeartIntro() {
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
-            color: 'rgba(255,255,255,0.55)',
+            color: 'var(--argho-blue, #183090)',
             fontSize: '0.75rem',
             fontFamily: 'var(--font-body)',
             letterSpacing: '-0.005em',
+            opacity: 0.7,
           }}
         >
           <span
@@ -382,14 +250,14 @@ export function HeartIntro() {
               width: '6px',
               height: '6px',
               borderRadius: '50%',
-              backgroundColor: 'oklch(0.586 0.150 138.8)',
+              backgroundColor: 'var(--argho-green, #489030)',
             }}
           />
           <span>Clique para entrar no ecossistema Argho</span>
         </div>
       </div>
 
-      {/* Skip link — z-index acima do botão invisível */}
+      {/* Skip link */}
       <button
         type="button"
         onClick={(e) => {
@@ -401,15 +269,15 @@ export function HeartIntro() {
           top: '6vh',
           right: '40px',
           background: 'transparent',
-          border: '1px solid rgba(255,255,255,0.18)',
-          color: 'rgba(255,255,255,0.55)',
+          border: '1px solid rgba(24, 48, 144, 0.25)',
+          color: 'var(--argho-blue, #183090)',
           padding: '8px 16px',
           borderRadius: '6px',
           fontSize: '0.75rem',
           fontFamily: 'var(--font-body)',
           letterSpacing: '-0.005em',
           cursor: 'pointer',
-          opacity: isExiting ? 0 : 1,
+          opacity: isExiting ? 0 : 0.85,
           transition: 'opacity 0.4s ease, color 0.2s, border-color 0.2s',
           zIndex: 3,
         }}
