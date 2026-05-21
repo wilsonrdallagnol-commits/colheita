@@ -78,7 +78,8 @@ export function HeartIntro() {
         position: 'fixed',
         inset: 0,
         zIndex: 9999,
-        backgroundColor: '#ffffff',
+        // Casa pixel-perfect com bg 0xfdfdfd do video do heart
+        backgroundColor: '#fdfdfd',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

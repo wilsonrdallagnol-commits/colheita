@@ -47,6 +47,10 @@ export default function Home() {
           minHeight: 'calc(100vh - 88px)',
           padding: '40px 48px 80px',
           overflow: 'hidden',
+          // Bg da hero usa MESMA cor exata do bg do video do heart (RGB 253).
+          // O video mp_.mp4 tem bg 0xfdfdfd. Casar pixel-perfect aqui = video
+          // se funde com a pagina sem nenhum retangulo visivel.
+          backgroundColor: '#fdfdfd',
         }}
       >
         {/* Grid tecnico de fundo removido — estava criando padrao checkerboard
