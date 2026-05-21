@@ -154,19 +154,26 @@ export function HeartIntro() {
         />
       </div>
 
-      {/* Coracao no centro — video com fundo branco, mesmo do hero */}
+      {/* Coracao no centro — video com fundo branco, mesmo do hero.
+          Container usa altura fixa + width derivada do aspect 2/3 pra evitar
+          aspect-ratio CSS (que falha em iOS Safari antigo). */}
       <div
         aria-hidden
         style={{
           position: 'relative',
-          height: '70vh',
-          maxHeight: '780px',
-          aspectRatio: '2 / 3',
+          height: 'min(70vh, 780px)',
+          width: 'min(46.67vh, 520px)',
           transform: isExiting ? 'scale(1.18) translateY(-4vh)' : 'scale(1)',
           transition: 'transform 1.2s var(--ease-out-expo)',
           willChange: 'transform',
           pointerEvents: 'none',
           zIndex: 2,
+          // Poster como background pra garantir visibilidade mesmo se video
+          // falhar em algum dispositivo legacy
+          backgroundImage: 'url(/argho-heart-poster-hero.png)',
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
         }}
       >
         <video
@@ -178,7 +185,9 @@ export function HeartIntro() {
           poster="/argho-heart-poster-hero.png"
           aria-label="Coracao digital Argho"
           style={{
-            position: 'relative',
+            position: 'absolute',
+            top: 0,
+            left: 0,
             width: '100%',
             height: '100%',
             objectFit: 'contain',

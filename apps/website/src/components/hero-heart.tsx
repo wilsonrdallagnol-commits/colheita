@@ -71,8 +71,19 @@ export function HeroHeart() {
         position: 'relative',
         width: '100%',
         maxWidth: '560px',
-        aspectRatio: '2 / 3',
+        // padding-bottom hack em vez de aspect-ratio CSS — funciona em qualquer
+        // browser desde 2010, incluindo iOS Safari antigo onde aspect-ratio
+        // pode falhar e colapsar container pra altura 0 (= video invisivel).
+        // 150% = aspect 2/3 (height eh 150% da width).
+        paddingBottom: '150%',
+        height: 0,
         margin: '0 auto',
+        // Poster como background-image garante visibilidade mesmo se video
+        // falhar a carregar em qualquer dispositivo legacy.
+        backgroundImage: 'url(/argho-heart-poster-hero.png)',
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
       }}
     >
       <video
@@ -84,6 +95,9 @@ export function HeroHeart() {
         poster="/argho-heart-poster-hero.png"
         aria-label="Coracao digital Argho — tecnologia viva"
         style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
           width: '100%',
           height: '100%',
           objectFit: 'contain',
