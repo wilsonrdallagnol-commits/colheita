@@ -194,10 +194,11 @@ export function HeartIntro() {
             zIndex: 2,
           }}
         >
-          {/* Mesmo asset do hero. WebM pra browsers modernos, MP4 H.264 baseline
-              pra iOS Safari < 17.4 (que nao suporta container WebM mesmo com VP9). */}
-          <source src="/argho-heart-hero.webm" type="video/webm" />
+          {/* MP4 H.264 baseline PRIMEIRO — iOS Safari falha silencioso quando
+              WebM eh o primeiro source (mesmo com type=webm). Inverter ordem
+              garante que todos browsers peguem MP4 (que funciona universal). */}
           <source src="/argho-heart-hero.mp4" type="video/mp4" />
+          <source src="/argho-heart-hero.webm" type="video/webm" />
         </video>
       </div>
 

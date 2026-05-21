@@ -57,12 +57,14 @@ export function HeroHeart() {
     }
   }, []);
 
-  // Dois sources por device: WebM (Chrome/Firefox/Safari >= iOS 17.4) + MP4
-  // H.264 baseline (iOS Safari < 17.4, qualquer browser legacy). Browser
-  // escolhe o primeiro que suporta — WebM ganha onde possivel (menor).
+  // MP4 H.264 baseline PRIMEIRO: spec diz que browser pula source por type,
+  // mas iOS Safari historicamente tenta carregar WebM mesmo quando type=webm,
+  // falha silenciosa, e nao cai pro fallback. Inverter ordem garante que
+  // todos browsers peguem MP4 (que funciona em qualquer device). Bonus:
+  // nosso MP4 (2.0MB) eh ate MENOR que WebM (2.2MB) — sem perda de tamanho.
   const sources = isMobile
-    ? { webm: '/argho-heart-hero-mobile.webm', mp4: '/argho-heart-hero-mobile.mp4' }
-    : { webm: '/argho-heart-hero.webm', mp4: '/argho-heart-hero.mp4' };
+    ? { mp4: '/argho-heart-hero-mobile.mp4', webm: '/argho-heart-hero-mobile.webm' }
+    : { mp4: '/argho-heart-hero.mp4', webm: '/argho-heart-hero.webm' };
 
   // Nesting necessario: padding-bottom % eh relativo ao pai. Wrapper externo
   // limita a largura (maxWidth 560), inner aplica padding-bottom 150% relativo
@@ -114,8 +116,8 @@ export function HeroHeart() {
             willChange: 'transform',
           }}
         >
-          <source src={sources.webm} type="video/webm" />
           <source src={sources.mp4} type="video/mp4" />
+          <source src={sources.webm} type="video/webm" />
         </video>
       </div>
     </div>
