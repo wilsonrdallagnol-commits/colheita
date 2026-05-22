@@ -10,7 +10,7 @@ import { CATEGORIES, PRODUCTS, type ProductCategory } from '@/lib/products';
 export const metadata: Metadata = {
   title: 'Portfólio',
   description:
-    'Catálogo completo Argho Agrosciences — fertilizantes minerais, organominerais, biológicos e adjuvantes com registro MAPA.',
+    'Catálogo completo Argho Agrosciences — fertilizantes minerais, organominerais, biológicos e adjuvantes desenvolvidos para a agricultura brasileira.',
 };
 
 const CATEGORY_KEYS = Object.keys(CATEGORIES) as ProductCategory[];

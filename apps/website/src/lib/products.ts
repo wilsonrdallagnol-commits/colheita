@@ -45,6 +45,13 @@ export interface Product {
   composition: ProductComposition;
   packaging: ProductPackaging[];
   applications?: ProductApplication[];
+  /**
+   * Diferenciais técnicos da composição (NÃO inclui claim de uso ou eficácia).
+   * Usado em produtos da linha biológica enquadrados como "Complexo microbiológico":
+   * foca em composição declarada + formulação + padrão de qualidade, sem
+   * destinação de uso. Conformidade MAPA — ver doc apps/website/docs/biologicos-compliance.md
+   */
+  technicalDifferentials?: string[];
   featured?: boolean;
 }
 
@@ -64,7 +71,7 @@ export const CATEGORIES: Record<ProductCategory, { label: string; description: s
   biologicos: {
     label: 'Biológicos',
     description:
-      'Consórcios microbianos de alta viabilidade — Trichoderma, Bacillus spp. — para controle biológico, solubilização de nutrientes e promoção de crescimento.',
+      'Complexos microbiológicos de alta complexidade — consórcios multi-espécie de Bacillus, Trichoderma e fungos filamentosos formulados na linha de biotecnologias Argho com foco em diversidade microbiana, estabilidade de formulação e precisão técnica na composição declarada.',
   },
   adjuvantes: {
     label: 'Adjuvantes',
@@ -239,159 +246,138 @@ export const PRODUCTS: Product[] = [
     packaging: [{ type: 'drum', volumeL: 20, sku: 'LIFE-ON-20L' }],
   },
 
-  // BIOLÓGICOS
+  // BIOLÓGICOS — Complexos microbiológicos
+  // Os produtos desta seção seguem o modelo "datasheet de composição":
+  // descrevem a formulação microbiológica declarada, a complexidade do
+  // consórcio e o padrão Argho de qualidade, sem destinação de uso, modo
+  // de aplicação ou claim de eficácia. Ver doc apps/website/docs/biologicos-compliance.md.
   {
     slug: 'troian',
     name: 'Troian',
     category: 'biologicos',
-    tagline: 'Trichoderma + Bacillus multicepa para controle biológico e promoção de crescimento',
+    tagline: 'Complexo microbiológico fungo + bactéria (Trichoderma + Bacillus)',
     description:
-      'Bioinsumo com consórcio de Trichoderma harzianum e Bacillus subtilis de alta viabilidade celular. Atua no controle biológico de fitopatógenos radiculares (Fusarium, Rhizoctonia, Sclerotinia) e na promoção de crescimento via produção de auxinas, citocininas e solubilização de fosfato.',
+      'Troian combina um fungo filamentoso e uma bactéria do solo em uma formulação biotecnológica de composição declarada: Trichoderma harzianum e Bacillus subtilis. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Troian se destaca pela combinação de um agente fúngico com um agente bacteriano em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos mistos. A presença simultânea de dois grupos microbianos distintos confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade microbiana, estabilidade de formulação e precisão técnica na composição declarada.',
     physicalState: 'pó',
     originCountry: 'Brasil',
-    productType: 'Bioinsumo',
-    applicationModes: ['Via Solo', 'Via Fertirrigação'],
+    productType: 'Complexo microbiológico',
+    applicationModes: [],
     composition: { others: { 'Trichoderma harzianum': 1e8, 'Bacillus subtilis': 1e8 } },
     packaging: [
       { type: 'bag', weightKg: 0.5, sku: 'TROIAN-500G' },
       { type: 'bag', weightKg: 1, sku: 'TROIAN-1KG' },
+    ],
+    technicalDifferentials: [
+      'Complexo microbiológico fungo + bactéria',
+      'Formulação biotecnológica de composição declarada',
+      'Composição com duas espécies de grupos microbianos distintos',
+      'Tecnologia biológica desenvolvida para sistemas técnicos controlados',
+      'Padrão Argho de qualidade, rastreabilidade e formulação',
     ],
   },
   {
     slug: 'biovas',
     name: 'Biovas',
     category: 'biologicos',
-    tagline: 'Consórcio de 5 espécies de Bacillus para máxima atividade biológica',
+    tagline: 'Complexo microbiológico multi-Bacillus',
     description:
-      'Bioinsumo com consórcio de 5 espécies de Bacillus (B. subtilis, B. licheniformis, B. amyloliquefaciens, B. pumilus, B. megaterium) selecionadas para ação sinérgica. Produz antibióticos naturais, enzimas quitinolíticas e lipopeptídeos que controlam patógenos e estimulam o crescimento radicular.',
+      'Biovas reúne cinco espécies do gênero Bacillus em uma formulação biotecnológica de alta complexidade microbiológica: Bacillus subtilis, Bacillus amyloliquefaciens, Bacillus licheniformis, Bacillus aryabhattai e Bacillus megaterium. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Biovas se destaca pela combinação de diferentes espécies bacterianas em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos bioinsumos de base microbiana. A presença de múltiplas espécies de Bacillus confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade microbiana, estabilidade de formulação e precisão técnica na composição declarada.',
     physicalState: 'fluido',
     originCountry: 'Espanha',
-    productType: 'Aditivo de Compostagem (isento MAPA)',
-    applicationModes: ['Via Solo', 'Via Fertirrigação'],
-    composition: { others: { 'Consórcio Bacillus spp.': 2e8 } },
+    productType: 'Complexo microbiológico',
+    applicationModes: [],
+    composition: {
+      others: {
+        'Bacillus subtilis': 1,
+        'Bacillus amyloliquefaciens': 1,
+        'Bacillus licheniformis': 1,
+        'Bacillus aryabhattai': 1,
+        'Bacillus megaterium': 1,
+      },
+    },
     packaging: [{ type: 'bottle', volumeL: 1, sku: 'BIOVAS-1L' }],
+    technicalDifferentials: [
+      'Complexo multi-Bacillus',
+      'Formulação microbiológica de alta complexidade',
+      'Composição com cinco espécies bacterianas declaradas',
+      'Tecnologia biológica desenvolvida para sistemas técnicos controlados',
+      'Padrão Argho de qualidade, rastreabilidade e formulação',
+    ],
   },
   {
     slug: 'bovex',
     name: 'Bovex',
     category: 'biologicos',
-    tagline: 'Entomopatogênico com Beauveria, Metarhizium e Cordyceps',
+    tagline: 'Complexo biológico multi-gênero fúngico',
     description:
-      'Bioinsumo entomopatogênico com consórcio de Beauveria bassiana, Metarhizium spp. e Cordyceps spp. (2,5 × 10¹⁰ UFC/mL). Penetra a cutícula dos insetos e os coloniza internamente (micose), produzindo enzimas quitinases e proteases que degradam estruturas do hospedeiro. Indicado para larvas de solo, percevejos, tripes, moscas e demais insetos em fase juvenil — alternativa sustentável a químicos de amplo espectro.',
+      'Bovex reúne três gêneros distintos de fungos em uma formulação biotecnológica de alta complexidade microbiológica: Beauveria bassiana, Metarhizium spp. e Cordyceps spp. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Bovex se destaca pela combinação de três gêneros fúngicos diferentes em uma única matriz biológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos de base fúngica. A presença simultânea de gêneros fúngicos múltiplos confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade microbiana, estabilidade de formulação e precisão técnica na composição declarada.',
     physicalState: 'fluido',
     originCountry: 'Espanha',
-    productType: 'Aditivo de Compostagem (isento MAPA)',
-    applicationModes: ['Via Solo', 'Via Foliar', 'Via Fertirrigação'],
+    productType: 'Complexo microbiológico',
+    applicationModes: [],
     composition: {
-      others: { 'Beauveria bassiana': 8e9, 'Metarhizium spp.': 8e9, 'Cordyceps spp.': 9e9 },
+      others: { 'Beauveria bassiana': 1, 'Metarhizium spp.': 1, 'Cordyceps spp.': 1 },
     },
     packaging: [{ type: 'bottle', volumeL: 1, sku: 'BOVEX-1L' }],
-    applications: [
-      {
-        crop: 'Cereais e grãos',
-        stage: 'Início do ciclo / monitoramento de pragas',
-        dosePerHa: 250,
-        unit: 'mL',
-        notes: 'Volume de calda 150–200 L/ha. Compatível com bioestimulantes.',
-      },
-      {
-        crop: 'Frutíferas',
-        stage: 'Pressão de pragas / preventivo',
-        dosePerHa: 900,
-        unit: 'mL',
-        notes: 'Aplicar via solo, sulco ou fertirrigação em condições de boa umidade.',
-      },
-      {
-        crop: 'Hortaliças',
-        stage: 'Pressão de pragas / preventivo',
-        dosePerHa: 900,
-        unit: 'mL',
-        notes: 'Rotacionar com outros biológicos para evitar resistência.',
-      },
+    technicalDifferentials: [
+      'Complexo multi-gênero fúngico',
+      'Formulação microbiológica de alta complexidade',
+      'Composição com três gêneros fúngicos declarados',
+      'Tecnologia biológica desenvolvida para sistemas técnicos controlados',
+      'Padrão Argho de qualidade, rastreabilidade e formulação',
     ],
   },
   {
     slug: 'controx',
     name: 'Controx',
     category: 'biologicos',
-    tagline: 'Bacillus thuringiensis (BTk + BTi) para supressão de larvas',
+    tagline: 'Complexo microbiológico multivariante de Bacillus thuringiensis',
     description:
-      'Bioinsumo à base de Bacillus thuringiensis var. kurstaki e var. israelensis (concentração total 2,5 × 10⁹ UFC/mL). Produz δ-endotoxinas (cristais proteicos) que, ingeridas pelas larvas, causam paralisia do intestino e morte. Efeito altamente seletivo sobre lepidópteros e dípteros (Spodoptera, Helicoverpa, Aedes, Culex), com baixa toxicidade para humanos, animais e organismos benéficos. Ideal para programas de Manejo Integrado de Pragas (MIP).',
+      'Controx reúne duas variedades distintas de Bacillus thuringiensis em uma formulação biotecnológica de alta complexidade microbiológica: Bacillus thuringiensis var. kurstaki e Bacillus thuringiensis var. israelensis. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Controx se destaca pela combinação de duas variedades distintas dentro da mesma espécie em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos multivariantes. A presença simultânea das variedades kurstaki e israelensis confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade intra-específica, estabilidade de formulação e precisão técnica na composição declarada.',
     physicalState: 'fluido',
     originCountry: 'Espanha',
-    productType: 'Aditivo de Compostagem (isento MAPA)',
-    applicationModes: ['Via Solo', 'Via Foliar', 'Via Fertirrigação'],
+    productType: 'Complexo microbiológico',
+    applicationModes: [],
     composition: {
       others: {
-        'Bacillus thuringiensis kurstaki': 1.25e9,
-        'Bacillus thuringiensis israelensis': 1.25e9,
+        'Bacillus thuringiensis var. kurstaki': 1,
+        'Bacillus thuringiensis var. israelensis': 1,
       },
     },
     packaging: [{ type: 'bottle', volumeL: 1, sku: 'CONTROX-1L' }],
-    applications: [
-      {
-        crop: 'Cereais e grãos',
-        stage: 'Fases iniciais / monitoramento de larvas',
-        dosePerHa: 250,
-        unit: 'mL',
-        notes: 'Aplicar pulverização dirigida ou fertirrigação. Volume de calda 150–200 L/ha.',
-      },
-      {
-        crop: 'Frutíferas',
-        stage: 'Fases vulneráveis ao ataque larval',
-        dosePerHa: 900,
-        unit: 'mL',
-        notes: 'Seletivo — preserva inimigos naturais e organismos não-alvo.',
-      },
-      {
-        crop: 'Hortaliças',
-        stage: 'Conforme diagnóstico técnico',
-        dosePerHa: 900,
-        unit: 'mL',
-      },
+    technicalDifferentials: [
+      'Complexo microbiológico multivariante',
+      'Formulação microbiológica de alta complexidade',
+      'Composição com duas variedades de B. thuringiensis declaradas',
+      'Tecnologia biológica desenvolvida para sistemas técnicos controlados',
+      'Padrão Argho de qualidade, rastreabilidade e formulação',
     ],
   },
   {
     slug: 'nemax',
     name: 'Nemax',
     category: 'biologicos',
-    tagline: 'Trichoderma + Purpureocillium para manejo de nematoides e enraizamento',
+    tagline: 'Complexo microbiológico multi-gênero de fungos filamentosos',
     description:
-      'Bioinsumo com consórcio de Trichoderma harzianum, Trichoderma asperellum e Purpureocillium lilacinum (2,5 × 10¹⁰ UFC/mL). Atua na supressão de nematoides (Meloidogyne, Pratylenchus, Ditylenchus) por parasitismo de ovos e juvenis, colonização competitiva da rizosfera, indução de resistência sistêmica (ISR) e ativação de enzimas líticas. Promove enraizamento, regeneração radicular e redução de doenças de solo (Fusarium, Rhizoctonia, Sclerotinia).',
+      'Nemax reúne três espécies de fungos filamentosos em uma formulação biotecnológica de alta complexidade microbiológica: Trichoderma harzianum, Trichoderma asperellum e Purpureocillium lilacinum. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Nemax se destaca pela combinação de três espécies de fungos filamentosos em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos de base fúngica. A presença simultânea de duas espécies do gênero Trichoderma com Purpureocillium lilacinum confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade microbiana, estabilidade de formulação e precisão técnica na composição declarada.',
     physicalState: 'fluido',
     originCountry: 'Espanha',
-    productType: 'Aditivo de Compostagem (isento MAPA — IN 11/2022 MMA/IBAMA)',
-    applicationModes: ['Via Solo', 'Via Fertirrigação'],
+    productType: 'Complexo microbiológico',
+    applicationModes: [],
     composition: {
       others: {
-        'Trichoderma harzianum': 8e9,
-        'Trichoderma asperellum': 8e9,
-        'Purpureocillium lilacinum': 9e9,
+        'Trichoderma harzianum': 1,
+        'Trichoderma asperellum': 1,
+        'Purpureocillium lilacinum': 1,
       },
     },
     packaging: [{ type: 'bottle', volumeL: 1, sku: 'NEMAX-1L' }],
-    applications: [
-      {
-        crop: 'Cereais',
-        stage: 'Sulco / via solo com umidade',
-        dosePerHa: 400,
-        unit: 'mL',
-        notes: 'Volume de calda 150–200 L/ha. Reentrada após secagem da área.',
-      },
-      {
-        crop: 'Frutíferas',
-        stage: 'Início do ciclo / reaplicações',
-        dosePerHa: 900,
-        unit: 'mL',
-        notes: 'Aplicar em sulco ou fertirrigação. Reduz estresse biótico e melhora absorção.',
-      },
-      {
-        crop: 'Hortaliças',
-        stage: 'Início do ciclo',
-        dosePerHa: 900,
-        unit: 'mL',
-        notes: 'Compatível com bioestimulantes; favorece microbiota equilibrada.',
-      },
+    technicalDifferentials: [
+      'Complexo multi-gênero fúngico',
+      'Formulação microbiológica de alta complexidade',
+      'Composição com três espécies fúngicas declaradas',
+      'Tecnologia biológica desenvolvida para sistemas técnicos controlados',
+      'Padrão Argho de qualidade, rastreabilidade e formulação',
     ],
   },
 

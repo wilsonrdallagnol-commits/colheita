@@ -97,7 +97,14 @@ export default async function ProductPage({ params }: PageProps) {
   const catLabel = CATEGORIES[product.category].label;
   const mockupSrc: string | undefined = PRODUCT_MOCKUP[product.slug];
 
-  // Composition rows with bar gauge data
+  // Produto "complexo microbiologico": modelo neutro (sem valores quantitativos
+  // nem claims). Renderiza so a lista de especies declaradas + diferenciais
+  // tecnicos da composicao. Ver doc apps/website/docs/biologicos-compliance.md.
+  const isMicrobialComplex =
+    !!product.technicalDifferentials && product.technicalDifferentials.length > 0;
+
+  // Composition rows with bar gauge data — populated apenas para produtos
+  // com composicao quantificada (minerais, organominerais, biologico Troian legado).
   const compRows: {
     label: string;
     value: string;
@@ -106,42 +113,49 @@ export default async function ProductPage({ params }: PageProps) {
     type: 'macro' | 'micro' | 'other';
   }[] = [];
 
-  if (product.composition.macros) {
-    for (const [k, v] of Object.entries(product.composition.macros)) {
-      compRows.push({
-        label: k,
-        value: `${v}%`,
-        numValue: v,
-        maxScale: MAX_SCALE.macro,
-        type: 'macro',
-      });
+  if (!isMicrobialComplex) {
+    if (product.composition.macros) {
+      for (const [k, v] of Object.entries(product.composition.macros)) {
+        compRows.push({
+          label: k,
+          value: `${v}%`,
+          numValue: v,
+          maxScale: MAX_SCALE.macro,
+          type: 'macro',
+        });
+      }
+    }
+    if (product.composition.micros) {
+      for (const [k, v] of Object.entries(product.composition.micros)) {
+        compRows.push({
+          label: k,
+          value: `${v}%`,
+          numValue: v,
+          maxScale: MAX_SCALE.micro,
+          type: 'micro',
+        });
+      }
+    }
+    if (product.composition.others) {
+      for (const [k, v] of Object.entries(product.composition.others)) {
+        const isUFC = typeof v === 'number' && v >= 1e7;
+        const numV = isUFC ? 100 : typeof v === 'number' ? v : 0;
+        const fmt = isUFC ? `${(v / 1e8).toFixed(0)}×10⁸ UFC/g` : `${v}%`;
+        compRows.push({
+          label: k,
+          value: fmt,
+          numValue: numV,
+          maxScale: isUFC ? 100 : MAX_SCALE.other,
+          type: 'other',
+        });
+      }
     }
   }
-  if (product.composition.micros) {
-    for (const [k, v] of Object.entries(product.composition.micros)) {
-      compRows.push({
-        label: k,
-        value: `${v}%`,
-        numValue: v,
-        maxScale: MAX_SCALE.micro,
-        type: 'micro',
-      });
-    }
-  }
-  if (product.composition.others) {
-    for (const [k, v] of Object.entries(product.composition.others)) {
-      const isUFC = typeof v === 'number' && v >= 1e7;
-      const numV = isUFC ? 100 : typeof v === 'number' ? v : 0;
-      const fmt = isUFC ? `${(v / 1e8).toFixed(0)}×10⁸ UFC/g` : `${v}%`;
-      compRows.push({
-        label: k,
-        value: fmt,
-        numValue: numV,
-        maxScale: isUFC ? 100 : MAX_SCALE.other,
-        type: 'other',
-      });
-    }
-  }
+
+  // Lista de especies declaradas — usada apenas em produtos "complexo microbiologico".
+  const microbialSpecies: string[] = isMicrobialComplex
+    ? Object.keys(product.composition.others ?? {})
+    : [];
 
   // Related products
   const related = PRODUCTS.filter(
@@ -368,10 +382,15 @@ export default async function ProductPage({ params }: PageProps) {
               {product.tagline}
             </p>
 
-            {/* Application mode chips */}
+            {/* Application mode chips — apenas quando ha modos declarados */}
             <div
               className="anim-fade-in-up delay-3"
-              style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '40px' }}
+              style={{
+                display: product.applicationModes.length > 0 ? 'flex' : 'none',
+                gap: '8px',
+                flexWrap: 'wrap',
+                marginBottom: '40px',
+              }}
             >
               {product.applicationModes.map((mode) => (
                 <span
@@ -458,10 +477,16 @@ export default async function ProductPage({ params }: PageProps) {
               {[
                 { label: 'Origem', value: product.originCountry },
                 { label: 'Estado', value: product.physicalState },
-                {
-                  label: 'Reg. MAPA',
-                  value: product.registrationMapa ? '✓ Ativo' : 'N/A',
-                },
+                // Reg. MAPA: mostra apenas para produtos com registro real OU produtos
+                // que NÃO sao complexo microbiologico (onde MAPA nao se aplica)
+                ...(isMicrobialComplex
+                  ? [{ label: 'Classe', value: 'Complexo microbiológico' }]
+                  : [
+                      {
+                        label: 'Reg. MAPA',
+                        value: product.registrationMapa ? '✓ Ativo' : 'N/A',
+                      },
+                    ]),
               ].map((s) => (
                 <div
                   key={s.label}
@@ -616,7 +641,136 @@ export default async function ProductPage({ params }: PageProps) {
               ))}
             </div>
 
-            {/* ── Composition bar gauges ── */}
+            {/* ── Composição microbiológica (modelo neutro: lista de espécies declaradas) ── */}
+            {isMicrobialComplex && microbialSpecies.length > 0 && (
+              <div>
+                <div
+                  style={{
+                    padding: '14px 24px 10px',
+                    borderTop: '1px solid var(--border-subtle)',
+                    borderBottom: '1px solid var(--border-subtle)',
+                    backgroundColor: 'var(--bg-mist)',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.625rem',
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.16em',
+                      color: 'var(--argho-blue)',
+                    }}
+                  >
+                    Composição microbiológica
+                  </span>
+                </div>
+                <div style={{ padding: '12px 0 8px' }}>
+                  {microbialSpecies.map((sp) => (
+                    <div
+                      key={sp}
+                      style={{
+                        padding: '10px 24px',
+                        borderBottom: '1px solid var(--border-subtle)',
+                        display: 'flex',
+                        alignItems: 'baseline',
+                        gap: '12px',
+                      }}
+                    >
+                      <span
+                        aria-hidden
+                        style={{
+                          display: 'inline-block',
+                          width: '6px',
+                          height: '6px',
+                          borderRadius: '50%',
+                          backgroundColor: catColor,
+                          flexShrink: 0,
+                        }}
+                      />
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-body)',
+                          fontSize: '0.9375rem',
+                          fontStyle: 'italic',
+                          color: 'var(--text-primary)',
+                          letterSpacing: '-0.005em',
+                        }}
+                      >
+                        {sp}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Diferenciais técnicos (apenas para complexo microbiológico) ── */}
+            {isMicrobialComplex && product.technicalDifferentials && (
+              <div>
+                <div
+                  style={{
+                    padding: '14px 24px 10px',
+                    borderTop: '1px solid var(--border-subtle)',
+                    borderBottom: '1px solid var(--border-subtle)',
+                    backgroundColor: 'var(--bg-mist)',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.625rem',
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.16em',
+                      color: 'var(--argho-blue)',
+                    }}
+                  >
+                    Diferenciais técnicos
+                  </span>
+                </div>
+                <div style={{ padding: '12px 24px 16px' }}>
+                  {product.technicalDifferentials.map((diff) => (
+                    <div
+                      key={diff}
+                      style={{
+                        padding: '6px 0',
+                        display: 'flex',
+                        alignItems: 'baseline',
+                        gap: '10px',
+                      }}
+                    >
+                      <span
+                        aria-hidden
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '0.75rem',
+                          color: catColor,
+                          fontWeight: 700,
+                          flexShrink: 0,
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        ·
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-body)',
+                          fontSize: '0.875rem',
+                          color: 'var(--text-secondary)',
+                          letterSpacing: '-0.005em',
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {diff}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Composition bar gauges (apenas para produtos quantificados — minerais/organominerais) ── */}
             {compRows.length > 0 && (
               <div>
                 <div
@@ -784,8 +938,9 @@ export default async function ProductPage({ params }: PageProps) {
                   lineHeight: 1.55,
                 }}
               >
-                Composição conforme Certificado de Análise MAPA.
-                {isBio && ' Produto biológico registrado sob legislação específica (IN MAPA).'}
+                {isMicrobialComplex
+                  ? 'Composição microbiológica declarada conforme padrão Argho de formulação e controle de qualidade.'
+                  : 'Composição conforme Certificado de Análise MAPA.'}
               </p>
             </div>
           </aside>
@@ -1225,11 +1380,19 @@ export default async function ProductPage({ params }: PageProps) {
                 O uso de fertilizantes requer acompanhamento de Engenheiro Agrônomo ou Engenheiro
                 Florestal habilitado, conforme a Lei 5.194/66. Realize teste de compatibilidade
                 antes de misturar com outros produtos.
-                {isBio && (
+                {isBio && !isMicrobialComplex && (
                   <>
                     {' '}
                     Produto biológico registrado no MAPA — consulte a bula oficial para protocolo de
                     armazenamento e viabilidade microbiológica.
+                  </>
+                )}
+                {isMicrobialComplex && (
+                  <>
+                    {' '}
+                    Complexo microbiológico — informações de composição declarada conforme padrão
+                    Argho de formulação. Para condições de armazenamento e manuseio, consulte a
+                    ficha técnica do produto via canal comercial.
                   </>
                 )}
               </p>
