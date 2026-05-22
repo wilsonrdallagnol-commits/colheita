@@ -380,6 +380,69 @@ a {
   .anim-marquee {
     animation-duration: 30s !important;
   }
+
+  /* ---- /produtos/[slug] ---- */
+  /* Hero do detalhe: 2 colunas (info + mockup) -> 1 coluna no mobile */
+  .slug-hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+    min-height: auto !important;
+  }
+
+  /* Showcase grid (2 colunas com painel composicao + galeria) */
+  .slug-showcase-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+
+  /* Grid de aplicacoes (4 colunas: cultura/estagio/dose/notas) */
+  /* No mobile colapsa em cards verticais com label : valor */
+  .slug-app-header {
+    display: none !important; /* esconde cabecalho de tabela no mobile */
+  }
+  .slug-app-grid:not(.slug-app-header) {
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+    padding: 16px 18px !important;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .slug-app-grid:not(.slug-app-header) > * {
+    font-size: 0.875rem !important;
+  }
+
+  /* ---- /sobre ---- */
+  .sobre-hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+    min-height: auto !important;
+  }
+
+  .sobre-hero-right {
+    order: 2;
+  }
+
+  /* 4 metricas viram 2x2 no mobile */
+  .sobre-metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+
+  .sobre-mission-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  /* Valores em 2x2 vira 1 coluna no mobile pra dar leitura */
+  .sobre-values-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* ---- Nav: garantir que nao quebra em scroll horizontal ---- */
+  nav {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
 }
 
 /* ========================================================================
