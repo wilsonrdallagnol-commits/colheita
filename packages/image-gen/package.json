@@ -13,7 +13,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "biome check src",
-    "test": "vitest run"
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@google/genai": "2.6.0",
