@@ -11,6 +11,7 @@ import { getResendClient } from '@colheita/email';
 import { captureError } from '@colheita/observability';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import { escapeHtml } from '@/lib/escape-html';
 import { buildRateLimiter, checkRateLimit } from '@/lib/rate-limit';
 
 // Rate limit: 10 chamados/hora por user (custoso — INSERT + email Resend).
@@ -171,11 +172,3 @@ export async function createSupportTicket(
   return { success: true, ticketId: ticket.id };
 }
 
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
