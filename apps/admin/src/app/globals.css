@@ -267,6 +267,64 @@ body {
   }
 
   /* ---------------------------------------------------------------
+     Pedido detail: items grid (7 colunas '100px 1fr 80px 60px 90px 10px 80px')
+     vira card vertical com label "auto-gerado" via order CSS pra
+     manter contexto de cada celula sem header alinhado.
+     --------------------------------------------------------------- */
+  div[style*='100px 1fr 80px 60px 90px 10px 80px'] {
+    padding: 12px 14px !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--colheita-border-subtle) !important;
+    margin-bottom: 8px;
+  }
+
+  div[style*='100px 1fr 80px 60px 90px 10px 80px'] > span:nth-child(1)::before {
+    content: 'Código: ';
+    font-weight: 600;
+    color: var(--colheita-text-tertiary);
+    margin-right: 4px;
+  }
+  div[style*='100px 1fr 80px 60px 90px 10px 80px'] > span:nth-child(2)::before {
+    content: 'Produto: ';
+    font-weight: 600;
+    color: var(--colheita-text-tertiary);
+    margin-right: 4px;
+  }
+  div[style*='100px 1fr 80px 60px 90px 10px 80px'] > span:nth-child(3)::before {
+    content: 'Qtd: ';
+    font-weight: 600;
+    color: var(--colheita-text-tertiary);
+    margin-right: 4px;
+  }
+  div[style*='100px 1fr 80px 60px 90px 10px 80px'] > span:nth-child(4)::before {
+    content: 'Un: ';
+    font-weight: 600;
+    color: var(--colheita-text-tertiary);
+    margin-right: 4px;
+  }
+  div[style*='100px 1fr 80px 60px 90px 10px 80px'] > span:nth-child(5)::before {
+    content: 'Preço: ';
+    font-weight: 600;
+    color: var(--colheita-text-tertiary);
+    margin-right: 4px;
+  }
+  div[style*='100px 1fr 80px 60px 90px 10px 80px'] > span:nth-child(7)::before {
+    content: 'Total: ';
+    font-weight: 600;
+    color: var(--colheita-brand-primary);
+    margin-right: 4px;
+  }
+  /* Esconde a coluna vazia 6 (era separador visual) */
+  div[style*='100px 1fr 80px 60px 90px 10px 80px'] > span:nth-child(6) {
+    display: none !important;
+  }
+
+  /* Spans alinhamento text-align right perdem o sentido em mobile - reset */
+  div[style*='100px 1fr 80px 60px 90px 10px 80px'] > span {
+    text-align: left !important;
+  }
+
+  /* ---------------------------------------------------------------
      Tables tipo "grid de pixels" (pedidos, distribuidores, midias)
      estouram viewport. Solucao: as proprias linhas viram cards
      verticais empilhados (a regra generica acima ja faz `block` em
