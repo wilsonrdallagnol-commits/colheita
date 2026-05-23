@@ -59,6 +59,14 @@ export default async function ConfiguracoesPage() {
   const embeddingsOk = Boolean(
     process.env.VOYAGE_API_KEY ?? process.env.OPENAI_API_KEY ?? process.env.OPENAI,
   );
+  const geminiOk = Boolean(process.env.GEMINI_API_KEY);
+  const resendOk = Boolean(process.env.RESEND_API_KEY);
+  // Distinção qual provider de embedding está ativo (info pra debug)
+  const embeddingsProvider = process.env.VOYAGE_API_KEY
+    ? 'Voyage'
+    : process.env.OPENAI_API_KEY || process.env.OPENAI
+      ? 'OpenAI'
+      : null;
 
   const { data: tenant } = await supabase
     .from('tenants')
@@ -153,8 +161,26 @@ export default async function ConfiguracoesPage() {
             ok={embeddingsOk}
             hint={
               embeddingsOk
-                ? 'RAG funcional'
+                ? `RAG funcional (provider ativo: ${embeddingsProvider})`
                 : 'reindex falha — setar VOYAGE_API_KEY ou OPENAI_API_KEY'
+            }
+          />
+          <StatusRow
+            label="Gemini Nano Banana (geração de imagens)"
+            ok={geminiOk}
+            hint={
+              geminiOk
+                ? 'endpoint /api/imagens/gerar pronto'
+                : '/imagens não gera — setar GEMINI_API_KEY (aistudio.google.com/apikey)'
+            }
+          />
+          <StatusRow
+            label="Resend (envio de e-mails transacionais)"
+            ok={resendOk}
+            hint={
+              resendOk
+                ? 'emails de certificado/pedido ativos'
+                : 'emails não enviados — setar RESEND_API_KEY'
             }
           />
         </SettingsCard>
