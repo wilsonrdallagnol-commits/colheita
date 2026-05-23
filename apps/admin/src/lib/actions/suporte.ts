@@ -59,7 +59,7 @@ export async function replyToTicket(
   // Busca ticket pra obter tenant_id + email do dono (notification)
   const { data: ticket, error: fetchErr } = await supabase
     .from('support_tickets')
-    .select('id, tenant_id, user_id, subject, status, users:user_id(email)')
+    .select('id, tenant_id, user_id, subject, status, assigned_to, users:user_id(email)')
     .eq('id', ticketId)
     .maybeSingle();
 
@@ -83,6 +83,20 @@ export async function replyToTicket(
   if (insertErr) {
     captureError(insertErr, { context: 'admin.suporte.replyToTicket' });
     return { error: 'Erro ao enviar resposta. Tente novamente.' };
+  }
+
+  // Auto-assign: primeira resposta de staff sem assignee → atribui pra si.
+  // Garante visibilidade clara de quem está cuidando do chamado.
+  if (!ticket.assigned_to) {
+    const { error: assignErr } = await supabase
+      .from('support_tickets')
+      .update({ assigned_to: user.id })
+      .eq('id', ticketId)
+      .is('assigned_to', null); // race-safe: só atualiza se ainda não foi atribuído
+    if (assignErr) {
+      // Não bloqueia o reply — só loga
+      captureError(assignErr, { context: 'admin.suporte.replyToTicket.autoAssign' });
+    }
   }
 
   // Audit

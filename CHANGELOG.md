@@ -5,6 +5,97 @@ Versionamento por **data + sprint** (sem semver — projeto interno single-tenan
 
 ---
 
+## Sprint 2026-05-23 #2 — Plataforma Colheita (portal distribuidor end-to-end)
+
+**Foco**: fechar gaps do portal distribuidor pra rodar ciclo completo sem
+admin Argho. Resultado: 13 commits cobrindo perfil/senha/pedidos/academia
+no portal, suporte humano end-to-end (admin + portal + thread + email +
+notif), inbox unificada, LGPD self-service, histórico IA.
+
+### Adicionado
+
+#### Conta do distribuidor (portal)
+
+- **`/conta/perfil`** + `/conta/senha`: edição de full_name/phone/company
+  (merge em `users.preferences` jsonb) + troca de senha com verificação
+  da posse via `signInWithPassword` (defesa session hijack). Email
+  read-only (chave de login Supabase). (commit `8f67aa7`)
+- **`/conta/academia`**: hub de trilhas + certificações com progresso por
+  trilha calculado de `learning_progress`. Cards linkam pro app Academia
+  externo via `NEXT_PUBLIC_ACADEMIA_URL`. (commit `289ab62`)
+- **`/conta/pedidos`** + `/conta/pedidos/[id]`: lista paginada (20/pg)
+  com filtros status + detalhe completo com itens, subtotal/desconto,
+  observações Safra. RLS + filtro `distribuidor_id` explícito como
+  defesa em profundidade. (commit `58d530e`)
+- **`/conta/assistente/historico`**: distribuidor revisa próprias
+  conversas com IA, filtra por user_id + source=portal + status (OK
+  + no_context). Warning amarelo "fale com agrônomo humano" quando
+  RAG não achou contexto. (commit `0f796f9`)
+- **`/conta/privacidade`** LGPD self-service: exportMyData agrega
+  perfil/orders/academia/tickets/AI/notif em JSON e baixa via Blob
+  URL (art 18 V portabilidade). requestAccountDeletion cria
+  support_ticket categoria platform urgency high — time Argho
+  verifica identidade + anonimiza em 15 dias úteis (art 18 IV).
+  (commit `99ece75`)
+
+#### Suporte humano end-to-end
+
+- **Migration 0036** (`support_tickets.sql`): tabela + 3 enums
+  (status/urgency/category) + 3 RLS policies + trigger updated_at.
+- **Migration 0037** (`support_ticket_messages.sql`): thread de
+  mensagens com `is_internal` (nota privada staff) + `is_from_staff`.
+  Trigger SQL atualiza status pai automático:
+  - user responde ticket waiting_user → vira in_progress
+  - staff envia msg pública → vira waiting_user
+- **`/conta/suporte`** portal: form com 6 categorias, 4 urgências,
+  campo produto opcional (deep-link de `/produtos/[slug]` via
+  `?produto=slug`). Email best-effort pro SUPPORT_INBOX_EMAIL via
+  Resend. Lista 10 últimos chamados. (commit `5352486`)
+- **`/conta/suporte/[id]`** portal: thread com mensagens, badge
+  Argho em respostas staff, reply form que valida ownership e
+  status != closed. (commit `f2d5cef`)
+- **`/suporte`** admin: lista paginada (30/pg) com counters por
+  status, filtros, ordem urgency DESC + created_at DESC. Sidebar
+  ganhou item "Suporte" ícone LifeBuoy. (commit `06371e4`)
+- **`/suporte/[id]`** admin: thread com badge "NOTA INTERNA"
+  tracejado amarelo, status select inline com useTransition, reply
+  form com checkbox is_internal. Email pro distribuidor quando
+  staff responde publicamente. Audit log com 4 novos AuditAction
+  enums. **Auto-assign** na primeira resposta staff sem assignee
+  (race-safe via WHERE `assigned_to IS NULL`). (commit `06371e4`)
+- **CTAs no detalhe do produto**: distribuidor logado vê 3 botões:
+  ↓ Ficha Técnica + ✨ Agrônomo IA + Falar com agrônomo humano
+  (deep-link com produto pre-populado). (commit `1019d66`)
+
+#### Inbox unificada de notificações
+
+- **Migration 0038** (`notifications.sql`): tabela `notifications`
+  + 2 triggers SECURITY DEFINER no Postgres:
+  - `trg_notify_on_ticket_message`: staff publica → notif pro
+    distribuidor; user responde → notif pro assignee
+  - `trg_notify_on_certification_issued`: certification.issued
+    com link `/conta/academia`
+- **Portal**: sino com badge (99+) no TopNav visível em layouts
+  conta+public quando logado. `/conta/notificacoes` separa unread/
+  read + "Marcar todas como lidas". (commit `dc488b4`)
+- **Admin**: `lib/notifications.ts` ganhou kind `personal` que
+  agrega notif do DB. `/notificacoes` inbox pessoal completa.
+  Sidebar mostra intercaladas com operacionais. (commit `345d4f4`)
+
+### Pendências de prod (Wilson — manual)
+
+- Aplicar 5 migrations encadeadas via psql DATABASE_URL_DIRECT:
+  `0034 + 0035 + 0036 + 0037 + 0038`
+  (doc em `apps/admin/docs/aplicar-migration-0034.md`)
+- Reindex RAG: `pnpm --filter @colheita/jobs reindex-all`
+- Env vars Vercel:
+  - `SUPPORT_INBOX_EMAIL` (default `suporte@arghoagrosciences.com`)
+  - `NEXT_PUBLIC_ACADEMIA_URL` (URL do app Academia em prod)
+  - `GEMINI_API_KEY` (admin)
+  - Confirmar `ANTHROPIC_API_KEY` + `RESEND_API_KEY`
+
+---
+
 ## Sprint 2026-05-22/23 — Ciclo de melhoria contínua (Argho + Colheita)
 
 **Foco**: ciclo autônomo pedido pelo fundador "até amanhã 9h, intervalo
