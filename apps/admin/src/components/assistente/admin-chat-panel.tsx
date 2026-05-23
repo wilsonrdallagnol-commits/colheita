@@ -9,6 +9,7 @@
 
 import { ChatMarkdown } from '@colheita/ui';
 import { RotateCcw, Send } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 interface Message {
@@ -31,21 +32,26 @@ interface ConversationTurn {
 // deployado. Agora usa o endpoint same-origin /api/agent/ask do proprio admin.
 
 const SUGGESTED_QUERIES = [
-  'Quais produtos têm indicação para soja?',
-  'Qual a dose de Xcensis para algodão?',
-  'Quais trilhas de aprendizado estão publicadas?',
-  'Quais produtos têm registro MAPA?',
+  'Programa para soja R3-R5 com estresse hídrico moderado',
+  'Diferença técnica entre Stron e Grow MoB+ na pré-florada',
+  'Quando indicar Defon vs cobre tradicional? Janela e dose',
+  'Combinação Lifeon + Biovas: lógica e compatibilidade de calda',
+  'Composição do Biovas e diferenciação técnica',
 ];
 
 const INITIAL_MESSAGES: Message[] = [
   {
     id: '0',
     role: 'assistant',
-    text: 'Olá! Sou o assistente da Argho. Posso responder perguntas sobre produtos do catálogo e trilhas de aprendizado da Academia. O que deseja saber?',
+    text: 'Olá. Sou o **Agrônomo Argho** — consultor técnico-científico com perfil de Doutor em Agronomia (fertilidade de solos, fisiologia vegetal, biológicos). Pergunte sobre janela fenológica, modo de ação, combinações estratégicas do Programa Argho, ou composição declarada dos 20 produtos do portfólio. Quando útil, descreva também cultura, fase fenológica, sintoma observado ou condição de campo — assim posso recomendar com mais precisão.',
   },
 ];
 
 export function AdminChatPanel() {
+  // contextPath usado pra dar awareness da rota ao agente PhD agronomico.
+  // System prompt aceita "O usuário está navegando em X. Considere isso ao
+  // responder." (vide /api/agent/ask/route.ts contextHint).
+  const pathname = usePathname();
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [conversationHistory, setConversationHistory] = useState<ConversationTurn[]>([]);
   const [input, setInput] = useState('');
@@ -79,7 +85,14 @@ export function AdminChatPanel() {
       const res = await fetch('/api/agent/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: text, history: conversationHistory }),
+        body: JSON.stringify({
+          query: text,
+          history: conversationHistory,
+          // contextPath alimenta system prompt do agente PhD agronomico
+          // com awareness da rota - permite respostas contextuais ("voce
+          // esta em /produtos/biovas, posso explicar a composicao...").
+          contextPath: pathname ?? undefined,
+        }),
       });
 
       if (!res.ok || !res.body) {
