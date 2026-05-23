@@ -243,10 +243,27 @@ body {
     font-size: 1.125rem !important;
   }
 
-  /* AgentDock (canto inferior direito) - reduz tamanho */
+  /* AgentDock pill (canto inferior direito) - reduz pra icon-only */
   [data-agent-dock] {
+    bottom: 14px !important;
+    right: 14px !important;
+    padding: 10px !important;
+    border-radius: 999px !important;
+  }
+
+  /* Esconde label "Pergunte ao agente" - so icone visivel */
+  [data-agent-dock-label] {
+    display: none !important;
+  }
+
+  /* AgentDock panel expandido - quase fullscreen no mobile */
+  [data-agent-dock-panel] {
     bottom: 12px !important;
     right: 12px !important;
+    left: 12px !important;
+    width: auto !important;
+    max-height: 80vh !important;
+    border-radius: 14px !important;
   }
 
   /* ---------------------------------------------------------------

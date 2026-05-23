@@ -138,6 +138,7 @@ export function AgentDock() {
         type="button"
         onClick={toggle}
         aria-label="Abrir agente Colheita"
+        data-agent-dock
         style={{
           position: 'fixed',
           bottom: '24px',
@@ -159,7 +160,7 @@ export function AgentDock() {
         }}
       >
         <Sparkles size={14} strokeWidth={1.75} color="var(--colheita-brand-primary)" />
-        Pergunte ao agente
+        <span data-agent-dock-label>Pergunte ao agente</span>
       </button>
     );
   }
@@ -186,6 +187,7 @@ export function AgentDock() {
       <aside
         role="dialog"
         aria-label="Agente Colheita"
+        data-agent-dock-panel
         style={{
           position: 'fixed',
           bottom: '24px',
