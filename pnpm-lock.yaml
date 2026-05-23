@@ -281,6 +281,9 @@ importers:
       '@colheita/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@colheita/email':
+        specifier: workspace:*
+        version: link:../../packages/email
       '@colheita/generator':
         specifier: workspace:*
         version: link:../../packages/generator

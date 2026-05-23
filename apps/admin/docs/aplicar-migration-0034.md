@@ -1,7 +1,7 @@
-# Como aplicar migrations 0034 + 0035 + reindex RAG em prod
+# Como aplicar migrations 0034 + 0035 + 0036 + reindex RAG em prod
 
-> **Atualizado 2026-05-23:** agora são 2 migrations encadeadas. Aplicar
-> ambas e fazer 1 único reindex no final.
+> **Atualizado 2026-05-23:** agora são 3 migrations encadeadas. Aplicar
+> as 3 e fazer 1 único reindex no final.
 
 **Status:** pendente — quando você quiser ativar a IA agronômica com os
 dados das fichas técnicas (Bovex, Controx, Nemax, Titan + Troian corrigido).
@@ -39,6 +39,9 @@ psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0034_fichas_tecnicas_sy
 
 # 0035 — Soft delete algen + grow-sulfur (legacy, Wilson confirmou descontinuar)
 psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0035_remove_legacy_products.sql
+
+# 0036 — Tabela support_tickets (suporte humano no portal distribuidor)
+psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0036_support_tickets.sql
 ```
 
 **Output esperado:**
@@ -47,7 +50,23 @@ NOTICE:  Migration 0034: 4 produtos novos inseridos/atualizados (bovex, controx,
 DO
 NOTICE:  Migration 0035: soft-deleted algen + grow-sulfur e removeu chunks do pgvector.
 DO
+CREATE TYPE
+CREATE TYPE
+CREATE TYPE
+CREATE TABLE
+CREATE INDEX (×3)
+CREATE FUNCTION
+CREATE TRIGGER
+ALTER TABLE
+CREATE POLICY (×3)
+GRANT
+GRANT
+COMMENT
 ```
+
+> A 0036 cria a tabela `support_tickets` (3 enums + tabela + 3 índices +
+> trigger updated_at + 3 RLS policies). Sem dado de seed — produção
+> começa vazia. Distribuidores criam tickets via `/conta/suporte` no portal.
 
 **Se erro `Tenant argho nao existe`** ou `Categoria biologicos nao existe pro tenant argho`:
 - Significa que o seed inicial nunca rodou em prod. Rodar `pnpm db:seed` antes.

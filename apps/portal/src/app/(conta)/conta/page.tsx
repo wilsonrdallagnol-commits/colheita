@@ -576,6 +576,32 @@ export default async function ContaPage() {
               </p>
             </Link>
             <Link
+              href="/conta/suporte"
+              style={{
+                padding: '16px 18px',
+                backgroundColor: 'var(--colheita-surface-card)',
+                border: '1px solid var(--colheita-border-subtle)',
+                borderRadius: 'var(--colheita-radius-lg)',
+                textDecoration: 'none',
+                display: 'block',
+              }}
+            >
+              <p
+                style={{
+                  fontSize: '0.9375rem',
+                  fontWeight: '600',
+                  color: 'var(--colheita-text-primary)',
+                  letterSpacing: '-0.01em',
+                  marginBottom: '4px',
+                }}
+              >
+                Falar com agrônomo
+              </p>
+              <p style={{ fontSize: '0.8125rem', color: 'var(--colheita-text-tertiary)' }}>
+                Suporte humano quando a IA não basta
+              </p>
+            </Link>
+            <Link
               href="/conta/perfil"
               style={{
                 padding: '16px 18px',

@@ -14,6 +14,7 @@
   "dependencies": {
     "@colheita/ai": "workspace:*",
     "@colheita/auth": "workspace:*",
+    "@colheita/email": "workspace:*",
     "@colheita/observability": "workspace:*",
     "@colheita/db": "workspace:*",
     "@colheita/generator": "workspace:*",
