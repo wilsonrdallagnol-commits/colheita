@@ -37,12 +37,14 @@ export default async function AcademiaPage() {
   const supabase = createServerClient(cookieStore);
 
   // Paralelo: trilhas publicadas, progresso, certificações
+  // FIX MÉDIO #13: usa lessons_count materializado (migration 0042)
+  // em vez do triple-nested join. Evita transferir 10k rows pra
+  // calcular um sum em catálogos de academia grandes.
   const [{ data: tracksData }, { data: progressData }, { data: certsData }] = await Promise.all([
     supabase
       .from('learning_tracks')
       .select(
-        `id, slug, title, subtitle, level, estimated_minutes, grants_certification,
-         learning_modules(id, learning_lessons(id))`,
+        'id, slug, title, subtitle, level, estimated_minutes, grants_certification, lessons_count',
       )
       .eq('status', 'published')
       .order('created_at', { ascending: true }),
@@ -86,11 +88,10 @@ export default async function AcademiaPage() {
   }
 
   function trackStats(track: (typeof tracks)[number]) {
-    const modules = track.learning_modules ?? [];
-    const totalLessons = modules.reduce((sum, m) => {
-      const lessons = (m as { learning_lessons?: { id: string }[] }).learning_lessons ?? [];
-      return sum + lessons.length;
-    }, 0);
+    // lessons_count vem direto da coluna materializada (migration 0042).
+    // Fallback ?? 0 cobre track ainda sem trigger rodado (não deveria
+    // acontecer em prod pós-backfill, mas safe).
+    const totalLessons = (track as { lessons_count?: number }).lessons_count ?? 0;
     const p = progressByTrack.get(track.id);
     const completed = p?.completed ?? 0;
     const pct = totalLessons > 0 ? Math.round((completed / totalLessons) * 100) : 0;
