@@ -170,6 +170,18 @@ export async function POST(request: NextRequest) {
   }
 
   const encoder = new TextEncoder();
+  // FIX MÉDIO #9 (auditoria): listen request.signal pra abortar
+  // geração quando cliente desconectar (tab fechada / nav). Sem isso,
+  // Anthropic continuava streamando tokens órfãos = $ desperdiçado +
+  // função Vercel ocupada até maxDuration. Verifica abort no inicio
+  // de cada iteração do generator + cancel() final do ReadableStream
+  // pra cleanup.
+  const aborted = { value: false };
+  const onAbort = () => {
+    aborted.value = true;
+  };
+  request.signal.addEventListener('abort', onAbort, { once: true });
+
   const stream = new ReadableStream({
     async start(controller) {
       try {
@@ -182,6 +194,11 @@ export async function POST(request: NextRequest) {
         });
 
         for await (const event of events) {
+          // Early-exit se cliente desconectou. Próxima chamada do Anthropic
+          // SDK pode continuar 1 iteração, mas paramos de enfileirar e
+          // o GC limpa o generator quando for await sai do escopo.
+          if (aborted.value) break;
+
           const ev = event as { type?: string; text?: string; sources?: unknown[] };
           if (ev.type === 'delta' && typeof ev.text === 'string') {
             accumulatedAnswer += ev.text;
@@ -189,13 +206,28 @@ export async function POST(request: NextRequest) {
             accumulatedSources = ev.sources;
           }
           const payload = `data: ${JSON.stringify(event)}\n\n`;
-          controller.enqueue(encoder.encode(payload));
+          try {
+            controller.enqueue(encoder.encode(payload));
+          } catch {
+            // Controller já fechado — sai do loop limpo
+            aborted.value = true;
+            break;
+          }
         }
 
-        controller.enqueue(encoder.encode('event: end\ndata: {}\n\n'));
+        if (!aborted.value) {
+          controller.enqueue(encoder.encode('event: end\ndata: {}\n\n'));
+        }
         controller.close();
-        await persistTurn('ok');
+        // Persiste mesmo em abort — agronomo vê pergunta parcial nos logs
+        await persistTurn(aborted.value ? 'error' : 'ok');
       } catch (err) {
+        if (aborted.value) {
+          // Erro post-abort é esperado (Anthropic stream interrompida)
+          controller.close();
+          await persistTurn('error');
+          return;
+        }
         captureError(err instanceof Error ? err : new Error(String(err)), {
           context: 'portal.api.agent.ask',
         });
@@ -204,10 +236,21 @@ export async function POST(request: NextRequest) {
           message: 'Falha ao processar a pergunta. Tente de novo.',
           detail: err instanceof Error ? err.message : String(err),
         });
-        controller.enqueue(encoder.encode(`event: error\ndata: ${errorPayload}\n\n`));
+        try {
+          controller.enqueue(encoder.encode(`event: error\ndata: ${errorPayload}\n\n`));
+        } catch {
+          // controller fechado
+        }
         controller.close();
         await persistTurn('error');
+      } finally {
+        request.signal.removeEventListener('abort', onAbort);
       }
+    },
+    cancel() {
+      // ReadableStream cancel (cliente fecha conexão SSE) — marca abort
+      // pra próxima iteração do generator sair do loop.
+      aborted.value = true;
     },
   });
 
