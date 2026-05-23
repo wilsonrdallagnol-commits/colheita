@@ -272,31 +272,6 @@ const PRODUCTS = [
     ],
   },
   {
-    slug: 'algen',
-    name: 'Algen',
-    category: 'fertilizantes-minerais',
-    tagline: 'Extrato de algas com fósforo e potássio para enraizamento e florescimento',
-    description:
-      'Fertilizante mineral misto fluido com extrato de algas marinhas, fósforo (P2O5 14%) e potássio (K2O 21%). O extrato de algas fornece citocininas, auxinas e betaínas que estimulam o enraizamento, a divisão celular e a resistência a estresses abióticos. Indicado em transplantio, florescimento e situações de estresse.',
-    status: 'published' as const,
-    composition: {
-      macros: { P2O5: 14.0, K2O: 21.0 },
-    },
-    technicalSpecs: {
-      registration_mapa: 'PR 002049-4.000002',
-      registration_date: '2023-02-28',
-      physical_state: 'fluido',
-      origin_country: 'Espanha',
-      product_type: 'Fertilizante Mineral Misto',
-      application_modes: ['Via Foliar', 'Via Fertirrigação'],
-      raw_materials: ['Água', 'Extrato de Algas', 'Fosfato Tripotássio', 'Formiato de Potássio'],
-    },
-    packaging: [
-      { type: 'bottle', volumeL: 1, sku: 'ALGEN-1L' },
-      { type: 'drum', volumeL: 20, sku: 'ALGEN-20L' },
-    ],
-  },
-  {
     slug: 'grow-mob',
     name: 'Grow Mob',
     category: 'fertilizantes-minerais',
@@ -347,33 +322,6 @@ const PRODUCTS = [
       },
     ],
   },
-  {
-    slug: 'grow-sulfur',
-    name: 'Grow Sulfur',
-    category: 'fertilizantes-minerais',
-    tagline: 'Enxofre e nitrogênio em solução para manutenção nutricional',
-    description:
-      'Fertilizante mineral simples em solução com nitrogênio amoniacal (2%) e enxofre (2,2%). O enxofre é essencial para a síntese de aminoácidos sulfurados (metionina e cisteína), proteínas e glucosinolatos. Aplicação foliar e fertirrigação em culturas que exigem manutenção contínua de S.',
-    status: 'published' as const,
-    composition: {
-      macros: { N: 2.0 },
-      others: { S: 2.2 },
-    },
-    technicalSpecs: {
-      registration_mapa: 'PR 002049-4.000007',
-      registration_date: '2023-03-01',
-      physical_state: 'fluido',
-      origin_country: 'Espanha',
-      product_type: 'Fertilizante Mineral Simples em Solução',
-      application_modes: ['Via Foliar', 'Via Fertirrigação'],
-      raw_materials: ['Água', 'Sulfato de Amônio'],
-    },
-    packaging: [
-      { type: 'bottle', volumeL: 1, sku: 'GROW-SULFUR-1L' },
-      { type: 'drum', volumeL: 20, sku: 'GROW-SULFUR-20L' },
-    ],
-  },
-
   // ── ORGANOMINERAIS ────────────────────────────────────────────────────────
   {
     slug: 'impuch',

@@ -1,4 +1,7 @@
-# Como aplicar migration 0034 + reindex RAG em prod
+# Como aplicar migrations 0034 + 0035 + reindex RAG em prod
+
+> **Atualizado 2026-05-23:** agora são 2 migrations encadeadas. Aplicar
+> ambas e fazer 1 único reindex no final.
 
 **Status:** pendente — quando você quiser ativar a IA agronômica com os
 dados das fichas técnicas (Bovex, Controx, Nemax, Titan + Troian corrigido).
@@ -26,16 +29,23 @@ DATABASE_URL_DIRECT=postgresql://postgres.<projeto>:<senha>@aws-0-sa-east-1.pool
 > Use **porta 5432** (Supavisor session mode) — porta 6543 (transaction
 > mode) não aceita DO blocks. Padrão Argho documentado em MEMORY.md.
 
-### 2. Aplicar migration
+### 2. Aplicar migrations (encadeadas)
 
 ```sh
 cd /c/Users/Usuario/Desktop/colheita
+
+# 0034 — UPSERT 4 produtos novos + correção composição Troian
 psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0034_fichas_tecnicas_sync.sql
+
+# 0035 — Soft delete algen + grow-sulfur (legacy, Wilson confirmou descontinuar)
+psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0035_remove_legacy_products.sql
 ```
 
 **Output esperado:**
 ```
 NOTICE:  Migration 0034: 4 produtos novos inseridos/atualizados (bovex, controx, nemax, titan) + composição troian corrigida.
+DO
+NOTICE:  Migration 0035: soft-deleted algen + grow-sulfur e removeu chunks do pgvector.
 DO
 ```
 
