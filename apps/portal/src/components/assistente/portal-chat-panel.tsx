@@ -52,12 +52,23 @@ export function PortalChatPanel() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  // AbortController da request SSE em voo — usado pra cancelar
+  // geração ao unmount (user navega pra fora). Match com o
+  // request.signal handler no /api/agent/ask (servidor abortou no fix #9).
+  const abortRef = useRef<AbortController | null>(null);
 
   // Auto-scroll quando nova mensagem
   // biome-ignore lint/correctness/useExhaustiveDependencies: re-scroll quando messages array muda
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Cleanup: aborta SSE em voo quando componente desmonta
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
 
   async function handleSend(query?: string) {
     const text = (query ?? input).trim();
@@ -73,6 +84,12 @@ export function PortalChatPanel() {
 
     let finalText = '';
 
+    // Cria controller pra ESTE turno; abortRef antigo (se houver) é
+    // substituído mas SEU fetch já estará completo ou abortado por
+    // unmount/turno anterior.
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     try {
       const res = await fetch('/api/agent/ask', {
         method: 'POST',
@@ -82,6 +99,7 @@ export function PortalChatPanel() {
           history: conversationHistory,
           contextPath: pathname ?? undefined,
         }),
+        signal: controller.signal,
       });
 
       if (!res.ok || !res.body) {
@@ -139,11 +157,21 @@ export function PortalChatPanel() {
         ].slice(-20),
       );
     } catch (err) {
+      // AbortError (unmount / nova mensagem antes desta terminar) é
+      // esperado — não mostra como erro pro usuário. Mantém o
+      // streaming parcial que ja apareceu.
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
       finalText = err instanceof Error ? err.message : 'Erro inesperado.';
       setMessages((prev) =>
         prev.map((m) => (m.id === assistantId ? { ...m, text: finalText } : m)),
       );
     } finally {
+      // Limpa ref se ainda é o controller desse turno (não substituído)
+      if (abortRef.current === controller) {
+        abortRef.current = null;
+      }
       setLoading(false);
       inputRef.current?.focus();
     }
