@@ -57,7 +57,7 @@ export default function AcademiaLoading() {
         >
           {[0, 1, 2].map((i) => (
             <div
-              key={i}
+              key={`track-${i}`}
               style={{
                 padding: '20px 22px',
                 backgroundColor: 'var(--colheita-surface-card)',

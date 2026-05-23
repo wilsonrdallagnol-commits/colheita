@@ -63,7 +63,7 @@ export default function SuporteLoading() {
         {/* Form fields placeholder */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
           {[0, 1, 2, 3, 4].map((i) => (
-            <div key={i}>
+            <div key={`field-${i}`}>
               <div
                 style={{
                   height: '10px',

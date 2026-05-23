@@ -56,9 +56,9 @@ export default function PedidosLoading() {
 
         {/* Filter pills */}
         <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
-          {[60, 90, 90, 80, 80].map((w, i) => (
+          {[60, 90, 90, 80, 80].map((w) => (
             <div
-              key={i}
+              key={`pill-${w}`}
               style={{
                 height: '28px',
                 width: `${w}px`,
@@ -79,7 +79,7 @@ export default function PedidosLoading() {
         >
           {[0, 1, 2, 3, 4, 5].map((i) => (
             <div
-              key={i}
+              key={`row-${i}`}
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
