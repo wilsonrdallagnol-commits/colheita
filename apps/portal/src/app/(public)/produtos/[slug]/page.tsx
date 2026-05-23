@@ -589,24 +589,63 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
             }}
           >
             {isAuthenticated ? (
-              <a
-                href={`/produtos/${slug}/ficha-tecnica`}
-                style={{
-                  display: 'block',
-                  width: '100%',
-                  padding: '10px 16px',
-                  borderRadius: 'var(--colheita-radius-md)',
-                  backgroundColor: 'var(--colheita-brand-primary)',
-                  color: '#fff',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  textDecoration: 'none',
-                  textAlign: 'center',
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                ↓ Baixar Ficha Técnica (PDF)
-              </a>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <a
+                  href={`/produtos/${slug}/ficha-tecnica`}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    padding: '10px 16px',
+                    borderRadius: 'var(--colheita-radius-md)',
+                    backgroundColor: 'var(--colheita-brand-primary)',
+                    color: '#fff',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    textDecoration: 'none',
+                    textAlign: 'center',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  ↓ Baixar Ficha Técnica (PDF)
+                </a>
+                <Link
+                  href="/conta/assistente"
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    padding: '10px 16px',
+                    borderRadius: 'var(--colheita-radius-md)',
+                    backgroundColor: 'var(--colheita-brand-secondary)',
+                    color: '#fff',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    textDecoration: 'none',
+                    textAlign: 'center',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  ✨ Perguntar ao Agrônomo IA
+                </Link>
+                <Link
+                  href={`/conta/suporte?produto=${slug}`}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    padding: '10px 16px',
+                    borderRadius: 'var(--colheita-radius-md)',
+                    border: '1px solid var(--colheita-border)',
+                    backgroundColor: 'transparent',
+                    color: 'var(--colheita-text-secondary)',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    textDecoration: 'none',
+                    textAlign: 'center',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  Falar com agrônomo humano
+                </Link>
+              </div>
             ) : (
               <Link
                 href={`/entrar?next=/produtos/${slug}`}
