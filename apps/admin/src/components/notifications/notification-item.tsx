@@ -8,6 +8,7 @@
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { markNotificationRead } from '@/lib/actions/notifications';
+import { formatRelativeTime } from '@/lib/format-relative-time';
 
 interface NotificationItemProps {
   id: string;
@@ -114,15 +115,3 @@ export function NotificationItem({
   );
 }
 
-function formatRelativeTime(iso: string): string {
-  const d = new Date(iso);
-  const diff = Date.now() - d.getTime();
-  const min = Math.floor(diff / 60000);
-  if (min < 1) return 'agora';
-  if (min < 60) return `${min}m`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr}h`;
-  const day = Math.floor(hr / 24);
-  if (day < 7) return `${day}d`;
-  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-}
