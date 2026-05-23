@@ -5,6 +5,107 @@ Versionamento por **data + sprint** (sem semver — projeto interno single-tenan
 
 ---
 
+## Sprint 2026-05-22/23 — Ciclo de melhoria contínua (Argho + Colheita)
+
+**Foco**: ciclo autônomo pedido pelo fundador "até amanhã 9h, intervalo
+máx 2min entre ações". Resultado: 20+ commits em 12h cobrindo mobile
+responsivo de 3 apps, IA agronômica PhD, Nano Banana Pro, sync RAG,
+compliance MAPA biológicos. Workflow: ciclos de ~30min via ScheduleWakeup,
+cada ciclo entregando ≥1 commit validado em prod.
+
+### Adicionado
+
+- **Migration 0034 (`fichas_tecnicas_sync.sql`)**: DO block idempotente
+  PostgreSQL pra UPSERT 4 produtos novos (Bovex, Controx, Nemax, Titan) +
+  UPDATE composição correta de Troian (era Trichoderma+Bacillus, é
+  multi-Bacillus subtilis+velezensis+amyloliquefaciens). Resolve gap RAG
+  documentado em `apps/admin/docs/rag-supabase-sync.md`. Aplicação:
+  `psql $DATABASE_URL_DIRECT -f infra/supabase/migrations/0034_fichas_tecnicas_sync.sql`
+  seguido de `pnpm --filter @colheita/jobs reindex-all`. (commits `c5e630c`,
+  `1d6c861`)
+- **`@colheita/image-gen` (Nano Banana Pro)**: package novo com provider
+  Gemini 2.5 Flash Image preview (`@google/genai 2.6.0`). Endpoint admin
+  `/api/imagens/gerar` POST com auth + rate limit 10/min/user + maxDuration
+  60s. UI `/imagens` completa com form (prompt, negative, aspect ratio,
+  num imagens 1-4), 3 templates rápidos, preview inline com download PNG,
+  error handling gracioso (link direto pro AI Studio se key faltando).
+  Sidebar admin ganhou item "Imagens IA · Nano Banana". (commits `fc9ba91`,
+  `bff8b57`)
+- **Status operacional `/configuracoes`** expandido: novos checks pra
+  Gemini Nano Banana + Resend, refinamento Embeddings com provider
+  ativo (Voyage/OpenAI). (commit `81dd9b6`)
+- **ReindexButton com follow-up**: aviso vermelho se provider mock
+  detectado, link "Testar no Assistente IA →" após sucesso. (commit
+  `b27bbc2`)
+
+### Corrigido
+
+- **IA agronômica PhD**: system prompt do `AiGenerator` reescrito como
+  "Agrônomo Argho — Doutor em Fertilidade de Solos, Fisiologia Vegetal
+  e Biológicos". Portfólio Argho memorizado (20 produtos com composição
+  + janela fenológica), combinações estratégicas do Programa Argho
+  (Stron→Impuch, Stron+MoB+, Lifeon+Biovas), restrições regulatórias
+  inegociáveis pros 6 biológicos. AdminChatPanel envia `contextPath`
+  via usePathname → agente tem awareness da rota. INITIAL_MESSAGES +
+  SUGGESTED_QUERIES reescritos pra simular perguntas de campo real.
+  (commits `a2e5820`, `1d6c861`)
+- **Compliance MAPA renderer alternativo** nos 3 lugares (site/admin/
+  portal): detecta `product_type === 'Complexo microbiológico'` e
+  renderiza "Composição microbiológica" como lista de espécies em
+  itálico (sem `1%` inadequado pros 6 biológicos). (commits `16c6ee3`,
+  `d65998a`)
+- **Mobile responsivo profundo** (site institucional, admin, portal):
+  - Site: 15 classes em `apps/website/src/app/globals.css` com `@media
+    max-width:768px` (hero-grid, sidebar-hero-right, sobre-metrics-grid,
+    slug-app-grid etc).
+  - Admin: sidebar fixa 240px vira drawer off-canvas com hamburger
+    trigger + backdrop (packages/ui/sidebar.tsx). Tables com grid
+    inline-style viram cards verticais com labels via `::before content`
+    (`/pedidos/[id]` items, `/materiais/historico`, `/assistente/
+    historico`, `/leads`). AgentDock pill vira icon-only + panel
+    quase-fullscreen.
+  - Portal: TopNav padding reduzido + nav itens com scroll horizontal
+    isolado, headlines redimensionados, grids 2col viram 1col, footer
+    grid vira 1col. (commits `2a6f302`, `15cb15d68`, `f5f46f8`, `d42ed26`,
+    `bca40e4`, `f823daf`, `311d337`, `b72497a`, `74ac3f6`)
+- **products.ts conforme 16 fichas técnicas oficiais Argho**: composições
+  precisas dos 16 produtos atuais (Defon Cu 5,5%+S 2,5%, Grow Calcium
+  Ca 5,5%, Grow MoB+ Mo 7%+B 8%+P2O5 24%, etc), correção composições
+  erradas de Bovex/Controx/Troian, adição de 4 novos (Titan, Grow
+  Filling, Grow NitroP, Up Soil). Portfolio 16→20 produtos. Tagline
+  reescritas usando as frases técnicas de posicionamento das próprias
+  fichas. (commit `db631e2`)
+- **Site institucional bloqueia Plataforma Colheita**: feature flag
+  `FEATURES.colheitaPlatform = false` (lib/features.ts) esconde 6 pontos
+  (nav header, footer link, hero CTA, seção dedicada inteira ~250 linhas,
+  /sobre CTA dupla). Plataforma continua acessível via URL direta, só
+  não exposta publicamente. Reativação trivial: muda flag pra true.
+  (commit `814bf7f`)
+
+### Doc
+
+- `apps/website/docs/biologicos-compliance.md`: referência completa pra
+  futuras edições não regredirem (Lei 6.894/80, Decreto 4.954/04, Lei
+  7.802/89, Lei 15.070/24 marco bioinsumos).
+- `apps/admin/docs/rag-supabase-sync.md`: documenta gap RAG + 2 opções
+  de sync (migration SQL ou script TS) + decisões pendentes.
+- `apps/admin/src/components/produtos/produto-form.tsx`: helper hints
+  inline + exemplos JSON contextuais pra `product_type`.
+
+### Pendências do fundador
+
+- Aplicar migration `0034_fichas_tecnicas_sync.sql` em prod via psql
+  Supavisor session mode + rodar `pnpm --filter @colheita/jobs reindex-all`
+  (custo ~$0,02 Voyage embeddings).
+- Setar `GEMINI_API_KEY` em `apps/admin/.env.local` e Vercel project
+  `colheita-admin` (pega em https://aistudio.google.com/apikey).
+- Confirmar `ANTHROPIC_API_KEY` setado em prod pra IA agronômica
+  responder.
+- Confirmar se "N-Import" é o mesmo produto que Grow NitroP ou outro
+  produto separado (ficha técnica não disponível ainda).
+
+---
+
 ## Sprint 2026-05-21 — Heart video saga (site institucional)
 
 **Foco**: corrigir display do coracao digital Argho em iPhone Safari. 9
