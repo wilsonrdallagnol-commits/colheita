@@ -6,7 +6,8 @@
 // O endpoint usa as credenciais do Vercel (sem chave local).
 
 import { Button } from '@colheita/ui';
-import { CheckCircle2, Database, RefreshCw } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Database, RefreshCw } from 'lucide-react';
+import Link from 'next/link';
 import { useCallback, useState, useTransition } from 'react';
 
 interface ReindexResult {
@@ -68,6 +69,7 @@ export function ReindexButton() {
             display: 'flex',
             alignItems: 'flex-start',
             gap: '10px',
+            flexWrap: 'wrap',
           }}
         >
           <CheckCircle2
@@ -76,7 +78,7 @@ export function ReindexButton() {
             color="var(--colheita-brand-secondary)"
             style={{ flexShrink: 0, marginTop: '1px' }}
           />
-          <div>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <p
               style={{
                 fontSize: '0.8125rem',
@@ -87,10 +89,44 @@ export function ReindexButton() {
             >
               {result.totalChunks} chunks indexados no pgvector
             </p>
-            <p style={{ fontSize: '0.75rem', color: 'var(--colheita-text-secondary)', margin: 0 }}>
+            <p
+              style={{
+                fontSize: '0.75rem',
+                color: 'var(--colheita-text-secondary)',
+                margin: '0 0 8px',
+              }}
+            >
               {result.products} produtos ({result.productChunks} chunks) · {result.lessons} lições (
               {result.lessonChunks} chunks) · provider {result.provider}
             </p>
+            {result.provider === 'MockEmbeddingProvider' && (
+              <p
+                style={{
+                  fontSize: '0.6875rem',
+                  color: 'var(--colheita-danger)',
+                  margin: '0 0 8px',
+                  fontStyle: 'italic',
+                }}
+              >
+                ⚠ Provider mock detectado — RAG não funcional. Configure VOYAGE_API_KEY ou
+                OPENAI_API_KEY na Vercel.
+              </p>
+            )}
+            <Link
+              href="/assistente"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                color: 'var(--colheita-brand-primary)',
+                textDecoration: 'none',
+              }}
+            >
+              Testar no Assistente IA
+              <ArrowRight size={12} strokeWidth={2} />
+            </Link>
           </div>
         </div>
       ) : null}
