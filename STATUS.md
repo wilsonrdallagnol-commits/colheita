@@ -1,9 +1,50 @@
 # STATUS — Programa Colheita Argho
 
-**Última atualização:** 2026-05-07 — **Plataforma Colheita 100% NO AR** com catálogo real ✅
-**Fase atual:** Supabase prod conectado, 18 produtos seedados, login magic link configurado
-**Domínios:** `colheita.arghoagrosciences.com` (200, Plataforma) | `arghoagrosciences.com` + `www` **fora do ar** (decisão fundador)
-**Tests globais:** 437 passing + 25 skipped (416 prévios + 21 novos do portal)
+**Última atualização:** 2026-05-23 — **Ciclo melhoria contínua autônomo concluído** ✅
+**Sprint atual:** 25 commits em 12h (mobile profundo 3 apps + IA agronômica PhD + Nano Banana Pro + sync RAG + compliance MAPA)
+**Domínios:** `arghoagrosciences.com` (site institucional, **online**) | `colheita.arghoagrosciences.com` (Plataforma) | `colheita-admin-evofitia.vercel.app` (admin)
+**Bloqueio temporário:** site institucional **NÃO expõe** Plataforma Colheita (feature flag `FEATURES.colheitaPlatform = false`)
+
+## 📋 Pendências ativas do fundador
+
+Ver consolidado em **[`apps/admin/docs/README.md`](./apps/admin/docs/README.md)** + 2 guias passo-a-passo:
+- 🔴 **[aplicar-migration-0034.md](./apps/admin/docs/aplicar-migration-0034.md)** — destrava IA agronômica (5 min: psql + reindex)
+- 🟡 **[ativar-nano-banana.md](./apps/admin/docs/ativar-nano-banana.md)** — destrava geração de imagens (5 min: GEMINI_API_KEY)
+- 🟢 Confirmar `ANTHROPIC_API_KEY`, `VOYAGE_API_KEY`/`OPENAI_API_KEY` em Vercel admin (ver `/configuracoes` card "Status operacional")
+
+## 🚀 Sprint 2026-05-22/23 — Ciclo melhoria contínua (resumo)
+
+**Tudo deployado em prod automaticamente. Restam 3 ações manuais acima.**
+
+**Site institucional (`arghoagrosciences.com`):**
+- 20 produtos no portfolio (era 16; +Titan, Grow Filling, Grow NitroP, Up Soil)
+- Composições corrigidas: Bovex (Metarhizium anisopliae, Cordyceps fumosorosea), Controx (var. thuringiensis+kurstaki, NÃO israelensis), Troian (multi-Bacillus)
+- Compliance MAPA renderer alternativo pros 6 biológicos
+- Mobile responsivo 100%
+- Plataforma Colheita bloqueada via feature flag
+
+**Admin (`colheita-admin-evofitia.vercel.app`):**
+- Sidebar vira drawer mobile com hamburger
+- AgentDock mobile (pill icon-only + panel quase-fullscreen)
+- IA agronômica PhD com portfólio Argho memorizado
+- AdminChatPanel envia contextPath
+- `/configuracoes` status operacional (6 integrations)
+- ReindexButton com aviso provider mock + link "Testar IA"
+- Tables mobile cards verticais com labels
+- **NOVO:** `/imagens` Nano Banana Pro UI completa
+
+**Portal (`colheita.arghoagrosciences.com`):**
+- TopNav mobile + grids responsivos
+- `/produtos/[slug]` renderer alternativo Complexo microbiológico
+
+**Backend:**
+- `@colheita/image-gen` package (Gemini 2.5 Flash Image)
+- Endpoint `/api/imagens/gerar` (auth + rate limit)
+- Migration `0034_fichas_tecnicas_sync.sql`
+
+**25 commits** validados em prod via 20 ciclos autônomos de ~30min cada.
+
+---
 
 ## 🚀 Sessão 2026-05-07 — Supabase prod conectado, catálogo real no ar
 
