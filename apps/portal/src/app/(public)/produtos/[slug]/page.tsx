@@ -94,6 +94,13 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
   const nutrients = isStructured ? structured : flat;
   const hasNutrients = Object.keys(nutrients).length > 0;
 
+  // Produtos biologicos no modelo neutro (compliance MAPA) - composicao
+  // ja vem com valor placeholder 1 (sem %), so o nome cientifico importa.
+  // Ver apps/website/docs/biologicos-compliance.md.
+  // biome-ignore lint/complexity/useLiteralKeys: snake_case DB field
+  const productType = technicalSpecs['product_type'] as string | undefined;
+  const isMicrobialComplex = productType === 'Complexo microbiológico';
+
   // Technical specs to display (exclude internal fields)
   const specEntries = Object.entries(technicalSpecs).filter(
     ([k]) => !k.startsWith('registration_'),
@@ -209,8 +216,8 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
             </div>
           )}
 
-          {/* Composition */}
-          {hasNutrients && (
+          {/* Composition - renderer padrao (minerais/organominerais com %) */}
+          {hasNutrients && !isMicrobialComplex && (
             <div>
               <h2
                 style={{
@@ -263,6 +270,75 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Composition - renderer alternativo modelo neutro (biologicos) */}
+          {hasNutrients && isMicrobialComplex && (
+            <div>
+              <h2
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  color: 'var(--colheita-text-tertiary)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  marginBottom: '14px',
+                }}
+              >
+                Composição microbiológica
+              </h2>
+              <div
+                style={{
+                  border: '1px solid var(--colheita-border)',
+                  borderRadius: 'var(--colheita-radius-lg)',
+                  overflow: 'hidden',
+                }}
+              >
+                {Object.keys(nutrients).map((species, i, arr) => (
+                  <div
+                    key={species}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      gap: '10px',
+                      padding: '12px 20px',
+                      borderBottom:
+                        i < arr.length - 1 ? '1px solid var(--colheita-border-subtle)' : 'none',
+                    }}
+                  >
+                    <span
+                      aria-hidden
+                      style={{
+                        width: '6px',
+                        height: '6px',
+                        borderRadius: '50%',
+                        backgroundColor: 'var(--colheita-brand-primary)',
+                        flexShrink: 0,
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontSize: '0.9375rem',
+                        fontStyle: 'italic',
+                        color: 'var(--colheita-text-primary)',
+                      }}
+                    >
+                      {species}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <p
+                style={{
+                  marginTop: '10px',
+                  fontSize: '0.6875rem',
+                  color: 'var(--colheita-text-tertiary)',
+                  lineHeight: 1.5,
+                }}
+              >
+                Composição microbiológica declarada conforme padrão Argho de formulação.
+              </p>
             </div>
           )}
           {/* Applications */}
