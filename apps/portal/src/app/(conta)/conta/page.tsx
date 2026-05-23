@@ -443,9 +443,28 @@ export default async function ContaPage() {
         {/* Pedidos recentes */}
         {ordersList.length > 0 && (
           <div style={{ marginTop: '40px' }}>
-            <h2 style={{ ...sectionLabelStyle, marginBottom: '12px' }}>
-              Meus Pedidos ({ordersList.length})
-            </h2>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'baseline',
+                marginBottom: '12px',
+              }}
+            >
+              <h2 style={{ ...sectionLabelStyle, marginBottom: 0 }}>
+                Pedidos recentes ({ordersList.length})
+              </h2>
+              <Link
+                href="/conta/pedidos"
+                style={{
+                  fontSize: '0.8125rem',
+                  color: 'var(--colheita-brand-primary)',
+                  textDecoration: 'none',
+                }}
+              >
+                Ver todos →
+              </Link>
+            </div>
             <div
               style={{
                 border: '1px solid var(--colheita-border-subtle)',
@@ -454,8 +473,9 @@ export default async function ContaPage() {
               }}
             >
               {ordersList.map((order, i) => (
-                <div
+                <Link
                   key={order.id}
+                  href={`/conta/pedidos/${order.id}`}
                   style={{
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -467,6 +487,7 @@ export default async function ContaPage() {
                         : 'none',
                     backgroundColor: 'var(--colheita-surface-elevated)',
                     gap: '12px',
+                    textDecoration: 'none',
                   }}
                 >
                   <div>
@@ -512,7 +533,7 @@ export default async function ContaPage() {
                       {orderStatusLabel(order.status)}
                     </span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -524,10 +545,36 @@ export default async function ContaPage() {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
               gap: '12px',
             }}
           >
+            <Link
+              href="/conta/pedidos"
+              style={{
+                padding: '16px 18px',
+                backgroundColor: 'var(--colheita-surface-card)',
+                border: '1px solid var(--colheita-border-subtle)',
+                borderRadius: 'var(--colheita-radius-lg)',
+                textDecoration: 'none',
+                display: 'block',
+              }}
+            >
+              <p
+                style={{
+                  fontSize: '0.9375rem',
+                  fontWeight: '600',
+                  color: 'var(--colheita-text-primary)',
+                  letterSpacing: '-0.01em',
+                  marginBottom: '4px',
+                }}
+              >
+                Meus pedidos
+              </p>
+              <p style={{ fontSize: '0.8125rem', color: 'var(--colheita-text-tertiary)' }}>
+                Histórico completo + filtros por status
+              </p>
+            </Link>
             <Link
               href="/conta/perfil"
               style={{
