@@ -1,6 +1,6 @@
-# Como aplicar migrations 0034 a 0040 + reindex RAG em prod
+# Como aplicar migrations 0034 a 0041 + reindex RAG em prod
 
-> **Atualizado 2026-05-23:** agora são 7 migrations encadeadas. Aplicar
+> **Atualizado 2026-05-23:** agora são 8 migrations encadeadas. Aplicar
 > todas e fazer 1 único reindex no final.
 >
 > **0039 é fix crítico** (auditoria hm-engineer): adiciona coluna
@@ -63,6 +63,9 @@ psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0039_conversation_logs_
 
 # 0040 — FIX ALTO: REVOKE UPDATE + GRANT UPDATE (read_at) em notifications
 psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0040_notifications_update_whitelist.sql
+
+# 0041 — FIX MÉDIO: SET search_path nas 3 SECURITY DEFINER (hardening)
+psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0041_hardening_security_definer.sql
 ```
 
 **Output esperado:**

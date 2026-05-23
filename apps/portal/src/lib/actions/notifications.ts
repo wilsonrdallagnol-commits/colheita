@@ -25,6 +25,11 @@ export async function markNotificationRead(notificationId: string): Promise<void
     captureError(error, { context: 'portal.notifications.markRead' });
   }
 
+  // FIX MÉDIO #11 (auditoria): badge no TopNav vem do layout SSR.
+  // Sem revalidate layout, bell mostra contagem stale ate proxima
+  // navegacao client-side. revalidatePath('/', 'layout') força
+  // re-render do layout root (cobre /conta + /public).
+  revalidatePath('/', 'layout');
   revalidatePath('/conta/notificacoes');
 }
 
@@ -43,6 +48,7 @@ export async function markAllNotificationsRead(): Promise<void> {
     captureError(error, { context: 'portal.notifications.markAllRead' });
   }
 
+  revalidatePath('/', 'layout');
   revalidatePath('/conta/notificacoes');
   revalidatePath('/conta');
 }

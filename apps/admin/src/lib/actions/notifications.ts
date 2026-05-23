@@ -26,6 +26,9 @@ export async function markNotificationRead(notificationId: string): Promise<void
     captureError(error, { context: 'admin.notifications.markRead' });
   }
 
+  // FIX MÉDIO #11 (auditoria): sidebar bell vem do dashboard layout SSR.
+  // revalidatePath('/', 'layout') força re-render do layout root.
+  revalidatePath('/', 'layout');
   revalidatePath('/notificacoes');
 }
 
@@ -44,5 +47,6 @@ export async function markAllNotificationsRead(): Promise<void> {
     captureError(error, { context: 'admin.notifications.markAllRead' });
   }
 
+  revalidatePath('/', 'layout');
   revalidatePath('/notificacoes');
 }
