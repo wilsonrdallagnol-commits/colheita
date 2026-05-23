@@ -5,6 +5,91 @@ Versionamento por **data + sprint** (sem semver — projeto interno single-tenan
 
 ---
 
+## Sprint 2026-05-23 #3 — Hardening pós-auditoria hm-engineer + perf
+
+**Foco**: aplicar 12 findings da auditoria hm-engineer no portal
+distribuidor (3 críticos, 4 altos, 5 médios) + perceived perf + SEO.
+Resultado: 8 commits + 4 migrations (0039–0042).
+
+### Corrigido — críticos (auditoria)
+
+- **Migration 0039**: ADD COLUMN `source` em `conversation_logs`.
+  Sem ela, todo turno de chat IA do portal falhava persistência em
+  prod silenciosamente e o histórico ficava sempre vazio. Index
+  parcial `user_source_created` pra histórico filtrado. (`d5c96e1`)
+- **`changePassword` sessão hijack**: `signInWithPassword` no client
+  do cookieStore sobrescrevia JWT/refresh_token da sessão atual.
+  Novo `createIsolatedClient()` usa `@supabase/supabase-js` direto
+  com `persistSession=false` — verifica posse sem tocar cookies.
+  (`d5c96e1`)
+- **Rate limit em 6 server actions**: changePassword (5/h),
+  updateProfile (20/h), createSupportTicket (10/h — caro pq dispara
+  email Resend), replyToOwnTicket (30/h), exportMyData (2/h — 9
+  selects paralelos), requestAccountDeletion (1/h — anti-spam LGPD).
+  Reusa `buildRateLimiter` existente (Upstash Redis, fail-open dev).
+  (`d5c96e1`)
+
+### Corrigido — altos (auditoria)
+
+- **`escapeHtml` no email Resend**: user.email, productSlug,
+  CATEGORY_LABEL e URGENCY_LABEL agora escapados antes de
+  interpolar no HTML pro time interno Argho. Defesa contra
+  spear-phishing via campos do form. (`d5c96e1`)
+- **Migration 0040**: REVOKE UPDATE total + GRANT UPDATE (read_at)
+  em notifications. PostgREST direto não pode mais envenenar
+  title/body/link das próprias notif. (`d5c96e1`)
+- **LGPD subject slice**: emails RFC5321 podem ter até 254 chars,
+  estourando CHECK 4-200 do `support_tickets.subject`. Slice
+  defensivo `subject.slice(0, 200)`. (`d5c96e1`)
+- **SELECT join sem email staff**: `/conta/suporte/[id]` embed
+  pega só `full_name` (sem email). Evita leak de emails da equipe
+  Argho via spear-phishing target list. (`d5c96e1`)
+
+### Corrigido — médios (auditoria)
+
+- **Migration 0041**: SET search_path = public, pg_temp nas 3
+  funções SECURITY DEFINER (0037, 0038). Hardening Supabase. (`3bb064b`)
+- **revalidatePath('/', 'layout') em mark-read**: badge bell no
+  TopNav/sidebar vinha do layout SSR — sem revalidate, mostrava
+  contagem stale até próxima nav. (`3bb064b`)
+- **`getUnreadNotifsCount` via `unstable_cache`**: cada page nav
+  fazia query DB extra pro badge. Cache TTL 30s tagged como
+  `notif:${userId}`, invalidado em mark-read via `revalidateTag`.
+  Latência -150ms por nav, custo Supabase auth -10x em sessões
+  navegadas. Espelho admin+portal pra simetria. (`58837a2`)
+- **SSE chat IA com abort signal**: `request.signal` +
+  `ReadableStream.cancel()` marcam flag `aborted` — loop for-await
+  quebra early. Sem isso, fechar aba no meio da geração deixava
+  Anthropic streamando tokens órfãos = $ desperdiçado. (`4a7671f`)
+- **Migration 0042**: materializa `lessons_count` em learning_tracks
+  via trigger AFTER INSERT/DELETE + AFTER UPDATE OF track_id.
+  Substitui join triple-nested no `/conta/academia`. 10k rows → 250
+  em 50 tracks. (`8d1f001`)
+
+### Adicionado
+
+- **`robots.ts` + `sitemap.ts`** portal: SEO Next.js convention.
+  Bloqueia `/conta/*`, `/entrar`, `/auth/*`, `/api/*`. Sitemap
+  dinâmico com até 500 produtos publicados (`lastmod=updated_at`).
+  Fallback resiliente se Supabase indisponível em build. (`b519959`)
+- **`loading.tsx` skeletons granulares** pra `/conta/pedidos`,
+  `/conta/suporte`, `/conta/academia` (mimica layout final pra
+  perceived perf melhor que skeleton global). (`cd7b01d`)
+
+### Pendências de prod (Wilson — manual)
+
+- Aplicar 9 migrations encadeadas via psql DATABASE_URL_DIRECT:
+  `0034 + 0035 + 0036 + 0037 + 0038 + 0039 + 0040 + 0041 + 0042`
+  (doc em `apps/admin/docs/aplicar-migration-0034.md`)
+- Reindex RAG: `pnpm --filter @colheita/jobs reindex-all`
+- Env vars Vercel:
+  - `UPSTASH_REDIS_REST_URL` + `_TOKEN` (rate limit fail-open sem)
+  - `SUPPORT_INBOX_EMAIL`, `NEXT_PUBLIC_ACADEMIA_URL`
+  - `GEMINI_API_KEY` (admin)
+  - Confirmar `ANTHROPIC_API_KEY` + `RESEND_API_KEY`
+
+---
+
 ## Sprint 2026-05-23 #2 — Plataforma Colheita (portal distribuidor end-to-end)
 
 **Foco**: fechar gaps do portal distribuidor pra rodar ciclo completo sem
