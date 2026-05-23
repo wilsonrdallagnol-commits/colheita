@@ -80,6 +80,12 @@ export function ProdutoDetail({ produto }: ProdutoDetailProps) {
   const physicalState = produto.technicalSpecs['physical_state'] as string | undefined;
   // biome-ignore lint/complexity/useLiteralKeys: snake_case key required for DB field access
   const origin = produto.technicalSpecs['origin'] as string | undefined;
+  // biome-ignore lint/complexity/useLiteralKeys: snake_case key required for DB field access
+  const productType = produto.technicalSpecs['product_type'] as string | undefined;
+  // Produtos biologicos no modelo neutro (compliance MAPA) - composicao
+  // ja vem com valor placeholder 1 (sem %), so o nome cientifico importa.
+  // Ver apps/website/docs/biologicos-compliance.md.
+  const isMicrobialComplex = productType === 'Complexo microbiológico';
 
   return (
     <div
@@ -144,7 +150,7 @@ export function ProdutoDetail({ produto }: ProdutoDetailProps) {
           </div>
         )}
 
-        {hasComposition && (
+        {hasComposition && !isMicrobialComplex && (
           <div>
             <h2
               style={{
@@ -174,6 +180,82 @@ export function ProdutoDetail({ produto }: ProdutoDetailProps) {
                 ))}
               </TableBody>
             </Table>
+          </div>
+        )}
+
+        {/* Complexo microbiologico: renderer alternativo - so lista espécies
+            sem coluna de teor (compliance MAPA modelo neutro) */}
+        {hasComposition && isMicrobialComplex && (
+          <div>
+            <h2
+              style={{
+                fontSize: '0.8125rem',
+                fontWeight: '500',
+                color: 'var(--colheita-text-tertiary)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                marginBottom: '12px',
+              }}
+            >
+              Composição microbiológica
+            </h2>
+            <ul
+              style={{
+                margin: 0,
+                padding: 0,
+                listStyle: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+              }}
+            >
+              {Object.keys(allNutrients).map((species) => (
+                <li
+                  key={species}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    gap: '10px',
+                    padding: '10px 14px',
+                    borderRadius: 'var(--colheita-radius-md)',
+                    border: '1px solid var(--colheita-border-subtle)',
+                    backgroundColor: 'var(--colheita-surface)',
+                  }}
+                >
+                  <span
+                    aria-hidden
+                    style={{
+                      width: '6px',
+                      height: '6px',
+                      borderRadius: '50%',
+                      backgroundColor: 'var(--colheita-brand-primary)',
+                      flexShrink: 0,
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontStyle: 'italic',
+                      fontSize: '0.9375rem',
+                      color: 'var(--colheita-text-primary)',
+                    }}
+                  >
+                    {species}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p
+              style={{
+                marginTop: '12px',
+                fontSize: '0.75rem',
+                color: 'var(--colheita-text-tertiary)',
+                lineHeight: 1.5,
+              }}
+            >
+              Composição microbiológica declarada conforme padrão Argho de formulação. Modelo neutro
+              de comunicação — sem destinação de uso ou claim fitossanitário. Ver{' '}
+              <code>apps/website/docs/biologicos-compliance.md</code>.
+            </p>
           </div>
         )}
       </div>
