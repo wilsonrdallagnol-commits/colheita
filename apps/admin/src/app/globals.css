@@ -325,6 +325,59 @@ body {
   }
 
   /* ---------------------------------------------------------------
+     Materiais historico: grid 6-colunas '160px 1fr 200px 80px 80px 90px'
+     (Quando / Template / Por / Produtos / Páginas / Tempo) - mesmo
+     padrão do /pedidos items, mas com children DIV em vez de SPAN.
+     --------------------------------------------------------------- */
+  div[style*='160px 1fr 200px 80px 80px 90px'] {
+    padding: 12px 14px !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--colheita-border-subtle) !important;
+    margin-bottom: 8px;
+  }
+
+  div[style*='160px 1fr 200px 80px 80px 90px'] > div:nth-child(1)::before {
+    content: 'Quando: ';
+    font-weight: 600;
+    color: var(--colheita-text-tertiary);
+    margin-right: 4px;
+  }
+  div[style*='160px 1fr 200px 80px 80px 90px'] > div:nth-child(2)::before {
+    content: 'Template: ';
+    font-weight: 600;
+    color: var(--colheita-text-tertiary);
+    margin-right: 4px;
+  }
+  div[style*='160px 1fr 200px 80px 80px 90px'] > div:nth-child(3)::before {
+    content: 'Por: ';
+    font-weight: 600;
+    color: var(--colheita-text-tertiary);
+    margin-right: 4px;
+  }
+  div[style*='160px 1fr 200px 80px 80px 90px'] > div:nth-child(4)::before {
+    content: 'Produtos: ';
+    font-weight: 600;
+    color: var(--colheita-text-tertiary);
+    margin-right: 4px;
+  }
+  div[style*='160px 1fr 200px 80px 80px 90px'] > div:nth-child(5)::before {
+    content: 'Páginas: ';
+    font-weight: 600;
+    color: var(--colheita-text-tertiary);
+    margin-right: 4px;
+  }
+  div[style*='160px 1fr 200px 80px 80px 90px'] > div:nth-child(6)::before {
+    content: 'Tempo: ';
+    font-weight: 600;
+    color: var(--colheita-text-tertiary);
+    margin-right: 4px;
+  }
+
+  div[style*='160px 1fr 200px 80px 80px 90px'] > div {
+    text-align: left !important;
+  }
+
+  /* ---------------------------------------------------------------
      Tables tipo "grid de pixels" (pedidos, distribuidores, midias)
      estouram viewport. Solucao: as proprias linhas viram cards
      verticais empilhados (a regra generica acima ja faz `block` em
