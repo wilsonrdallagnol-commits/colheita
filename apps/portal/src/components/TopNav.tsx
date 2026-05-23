@@ -75,6 +75,21 @@ export function TopNav({ userEmail }: TopNavProps) {
           <Link href="/" style={{ color: 'var(--colheita-text-primary)', textDecoration: 'none' }}>
             Catálogo
           </Link>
+          {userEmail && (
+            <Link
+              href="/conta/assistente"
+              style={{
+                color: 'var(--colheita-brand-primary)',
+                textDecoration: 'none',
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              ✨ Agrônomo IA
+            </Link>
+          )}
           <Link
             href="/sobre"
             style={{ color: 'var(--colheita-text-secondary)', textDecoration: 'none' }}
