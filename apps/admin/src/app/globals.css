@@ -378,6 +378,30 @@ body {
   }
 
   /* ---------------------------------------------------------------
+     Leads listagem: grid '1fr 200px 140px 120px' (Nome|Contato|Origem|Status)
+     - regra generica grid+px ja vira block, mas paragrafos com
+       whiteSpace:nowrap + textOverflow:ellipsis ficam truncados
+       feio no mobile. Reset pra ler tudo.
+     --------------------------------------------------------------- */
+  div[style*='grid-template-columns'][style*='px'] p[style*='nowrap'],
+  a[style*='grid-template-columns'][style*='px'] p[style*='nowrap'] {
+    white-space: normal !important;
+    text-overflow: clip !important;
+    overflow: visible !important;
+  }
+
+  /* Lead row tem padding 14px e gap 12px - reduz pra render compacto */
+  a[style*='grid-template-columns'][style*='px'] {
+    padding: 12px 14px !important;
+  }
+
+  /* Status pill em mobile alinha left (era right pra coluna 4) */
+  a[style*='1fr 200px 140px 120px'] > div:last-child {
+    text-align: left !important;
+    margin-top: 4px;
+  }
+
+  /* ---------------------------------------------------------------
      Tables tipo "grid de pixels" (pedidos, distribuidores, midias)
      estouram viewport. Solucao: as proprias linhas viram cards
      verticais empilhados (a regra generica acima ja faz `block` em
