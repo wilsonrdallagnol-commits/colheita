@@ -402,6 +402,60 @@ body {
   }
 
   /* ---------------------------------------------------------------
+     Assistente historico (<summary> em <details>):
+     grid '140px 1fr 140px 80px 60px' (Quando|Query|Por|Duração|Status)
+     - summary precisa de regra especifica pq elemento <summary> nao
+       casa com `div[style*=...]` (a regra generica nao pega).
+     --------------------------------------------------------------- */
+  summary[style*='140px 1fr 140px 80px 60px'] {
+    display: block !important;
+    padding: 14px 16px !important;
+    line-height: 1.5;
+  }
+
+  summary[style*='140px 1fr 140px 80px 60px'] > span:nth-child(1)::before {
+    content: 'Quando: ';
+    font-weight: 600;
+    color: var(--colheita-text-tertiary);
+    margin-right: 4px;
+  }
+  summary[style*='140px 1fr 140px 80px 60px'] > span:nth-child(2) {
+    display: block !important;
+    margin-top: 4px;
+    font-weight: 600 !important;
+  }
+  summary[style*='140px 1fr 140px 80px 60px'] > span:nth-child(2)::before {
+    content: 'Pergunta: ';
+    font-weight: 600;
+    color: var(--colheita-text-tertiary);
+    margin-right: 4px;
+  }
+  summary[style*='140px 1fr 140px 80px 60px'] > span:nth-child(3)::before {
+    content: 'Por: ';
+    font-weight: 600;
+    color: var(--colheita-text-tertiary);
+    margin-right: 4px;
+  }
+  summary[style*='140px 1fr 140px 80px 60px'] > span:nth-child(4)::before {
+    content: 'Duração: ';
+    font-weight: 600;
+    color: var(--colheita-text-tertiary);
+    margin-right: 4px;
+  }
+  /* Status pill (5a coluna): alinha left + margin-top */
+  summary[style*='140px 1fr 140px 80px 60px'] > span:nth-child(5) {
+    display: block !important;
+    text-align: left !important;
+    margin-top: 6px;
+  }
+  summary[style*='140px 1fr 140px 80px 60px'] > span {
+    text-align: left !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  /* ---------------------------------------------------------------
      Tables tipo "grid de pixels" (pedidos, distribuidores, midias)
      estouram viewport. Solucao: as proprias linhas viram cards
      verticais empilhados (a regra generica acima ja faz `block` em
