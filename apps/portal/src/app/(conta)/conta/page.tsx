@@ -128,12 +128,34 @@ export default async function ContaPage() {
             >
               Minha Conta
             </h1>
-            <p style={{ fontSize: '0.875rem', color: 'var(--colheita-text-secondary)' }}>
+            <Link
+              href="/conta/perfil"
+              style={{
+                fontSize: '0.875rem',
+                color: 'var(--colheita-text-secondary)',
+                textDecoration: 'none',
+                borderBottom: '1px dashed var(--colheita-border)',
+              }}
+            >
               {user?.email}
-            </p>
+            </Link>
           </div>
 
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <Link
+              href="/conta/assistente"
+              style={{
+                padding: '8px 16px',
+                borderRadius: 'var(--colheita-radius-md)',
+                backgroundColor: 'var(--colheita-brand-secondary)',
+                color: '#fff',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                textDecoration: 'none',
+              }}
+            >
+              ✨ Agrônomo IA
+            </Link>
             <Link
               href="/conta/materiais"
               style={{
@@ -480,6 +502,71 @@ export default async function ContaPage() {
             </div>
           </div>
         )}
+
+        {/* Configurações da conta */}
+        <div style={{ marginTop: '40px' }}>
+          <h2 style={{ ...sectionLabelStyle, marginBottom: '12px' }}>Configurações da conta</h2>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '12px',
+            }}
+          >
+            <Link
+              href="/conta/perfil"
+              style={{
+                padding: '16px 18px',
+                backgroundColor: 'var(--colheita-surface-card)',
+                border: '1px solid var(--colheita-border-subtle)',
+                borderRadius: 'var(--colheita-radius-lg)',
+                textDecoration: 'none',
+                display: 'block',
+              }}
+            >
+              <p
+                style={{
+                  fontSize: '0.9375rem',
+                  fontWeight: '600',
+                  color: 'var(--colheita-text-primary)',
+                  letterSpacing: '-0.01em',
+                  marginBottom: '4px',
+                }}
+              >
+                Meu perfil
+              </p>
+              <p style={{ fontSize: '0.8125rem', color: 'var(--colheita-text-tertiary)' }}>
+                Nome, telefone (WhatsApp), empresa
+              </p>
+            </Link>
+            <Link
+              href="/conta/senha"
+              style={{
+                padding: '16px 18px',
+                backgroundColor: 'var(--colheita-surface-card)',
+                border: '1px solid var(--colheita-border-subtle)',
+                borderRadius: 'var(--colheita-radius-lg)',
+                textDecoration: 'none',
+                display: 'block',
+              }}
+            >
+              <p
+                style={{
+                  fontSize: '0.9375rem',
+                  fontWeight: '600',
+                  color: 'var(--colheita-text-primary)',
+                  letterSpacing: '-0.01em',
+                  marginBottom: '4px',
+                }}
+              >
+                Trocar senha
+              </p>
+              <p style={{ fontSize: '0.8125rem', color: 'var(--colheita-text-tertiary)' }}>
+                Atualizar credencial de acesso
+              </p>
+            </Link>
+          </div>
+        </div>
 
         {/* Soluções disponíveis */}
         {productsList.length > 0 && (
