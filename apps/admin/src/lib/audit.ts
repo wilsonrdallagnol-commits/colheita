@@ -53,7 +53,11 @@ export type AuditAction =
   | 'suspend.user'
   | 'reactivate.user'
   | 'set.user_roles'
-  | 'generate.material';
+  | 'generate.material'
+  | 'reply.support_ticket'
+  | 'internal_note.support_ticket'
+  | 'status.support_ticket'
+  | 'assign.support_ticket';
 
 export type AuditResource =
   | 'product'
@@ -68,7 +72,8 @@ export type AuditResource =
   | 'regulatory_registration'
   | 'user'
   | 'user_roles'
-  | 'material';
+  | 'material'
+  | 'support_ticket';
 
 interface LogAuditEventArgs {
   cookieStore: ReadonlyRequestCookies;
