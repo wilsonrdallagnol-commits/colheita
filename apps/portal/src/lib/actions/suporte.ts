@@ -13,6 +13,13 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { escapeHtml } from '@/lib/escape-html';
 import { buildRateLimiter, checkRateLimit } from '@/lib/rate-limit';
+import {
+  CATEGORY_LABEL,
+  type TicketCategory as Category,
+  type TicketUrgency as Urgency,
+  VALID_CATEGORIES,
+  VALID_URGENCIES,
+} from '@/lib/support-labels';
 
 // Rate limit: 10 chamados/hora por user (custoso — INSERT + email Resend).
 const createTicketLimiter = buildRateLimiter({
@@ -21,29 +28,10 @@ const createTicketLimiter = buildRateLimiter({
   window: '1 h',
 });
 
-type Category = 'agronomic' | 'commercial' | 'product' | 'logistics' | 'platform' | 'other';
-type Urgency = 'low' | 'normal' | 'high' | 'urgent';
-
-const VALID_CATEGORIES: Category[] = [
-  'agronomic',
-  'commercial',
-  'product',
-  'logistics',
-  'platform',
-  'other',
-];
-const VALID_URGENCIES: Urgency[] = ['low', 'normal', 'high', 'urgent'];
-
-const CATEGORY_LABEL: Record<Category, string> = {
-  agronomic: 'Recomendação agronômica',
-  commercial: 'Comercial / pedido',
-  product: 'Produto específico',
-  logistics: 'Logística / entrega',
-  platform: 'Plataforma Colheita',
-  other: 'Outros',
-};
-
-const URGENCY_LABEL: Record<Urgency, string> = {
+// Versão verbosa pro email do time interno Argho (vs. label curto da
+// UI em support-labels.ts). Inclui contexto entre parenteses pra
+// ajudar a triagem.
+const EMAIL_URGENCY_LABEL: Record<Urgency, string> = {
   low: 'Baixa (dúvida geral)',
   normal: 'Normal (~1 dia útil)',
   high: 'Alta (janela do plantio)',
@@ -141,14 +129,14 @@ export async function createSupportTicket(
       const escBody = escapeHtml(body);
       const escEmail = escapeHtml(user.email ?? '');
       const escCategory = escapeHtml(CATEGORY_LABEL[category]);
-      const escUrgency = escapeHtml(URGENCY_LABEL[urgency]);
+      const escUrgency = escapeHtml(EMAIL_URGENCY_LABEL[urgency]);
       const escProduct = productSlug ? escapeHtml(productSlug) : '';
       // ticketUrl é construído a partir de env + uuid — seguro
 
       await resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL ?? 'Argho <noreply@argho.com.br>',
         to: SUPPORT_INBOX,
-        subject: `[${URGENCY_LABEL[urgency]}] ${subject}`,
+        subject: `[${EMAIL_URGENCY_LABEL[urgency]}] ${subject}`,
         html: `
           <h2>Novo chamado de suporte</h2>
           <p><strong>Distribuidor:</strong> ${escEmail}</p>
