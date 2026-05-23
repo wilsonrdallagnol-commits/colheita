@@ -9,7 +9,15 @@
 // Notificacoes vem ja pre-processadas do server (lib/notifications.ts).
 // Sem estado de "lido" persistido — toda navegacao re-buscar do server.
 
-import { Bell, FileWarning, ShieldAlert, ShoppingCart, Sparkles, X } from 'lucide-react';
+import {
+  Bell,
+  FileWarning,
+  MessageSquare,
+  ShieldAlert,
+  ShoppingCart,
+  Sparkles,
+  X,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Notification } from '@/lib/notifications';
@@ -22,6 +30,7 @@ const KIND_META = {
   compliance: { label: 'Compliance', icon: ShieldAlert, color: '#b45309' },
   lead: { label: 'Comercial', icon: ShoppingCart, color: 'var(--colheita-brand-primary)' },
   material: { label: 'Materiais', icon: Sparkles, color: 'var(--colheita-text-secondary)' },
+  personal: { label: 'Pra você', icon: MessageSquare, color: 'var(--colheita-brand-primary)' },
 } as const;
 
 const URGENCY_COLOR = {

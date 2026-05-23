@@ -14,7 +14,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // Carrega notificacoes em paralelo com qualquer render filho.
   // Pode ser lento em tenants grandes (3 queries) — em sprint futura,
   // memoizar via cookie/header com TTL curto. Hoje (~20 produtos) eh trivial.
-  const notifications = await getNotifications(supabase);
+  const notifications = await getNotifications(supabase, user.id);
 
   return (
     <SidebarProvider>

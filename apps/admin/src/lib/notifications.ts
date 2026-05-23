@@ -15,7 +15,7 @@ import type { createServerClient } from '@colheita/auth';
 
 const MAX_PER_KIND = 5;
 
-export type NotificationKind = 'compliance' | 'lead' | 'material';
+export type NotificationKind = 'compliance' | 'lead' | 'material' | 'personal';
 export type NotificationUrgency = 'critical' | 'warning' | 'info';
 
 export interface Notification {
@@ -30,9 +30,37 @@ export interface Notification {
 
 export async function getNotifications(
   supabase: ReturnType<typeof createServerClient>,
+  userId?: string,
 ): Promise<Notification[]> {
   const notifications: Notification[] = [];
   const now = Date.now();
+
+  // ── 0. Personal: notif do DB (support.user_reply, etc) ─────────────────────
+  if (userId) {
+    try {
+      const { data: personal } = await supabase
+        .from('notifications')
+        .select('id, type, title, body, link, read_at, created_at')
+        .eq('user_id', userId)
+        .is('read_at', null)
+        .order('created_at', { ascending: false })
+        .limit(MAX_PER_KIND);
+
+      for (const n of personal ?? []) {
+        notifications.push({
+          id: `personal-${n.id}`,
+          kind: 'personal',
+          urgency: 'info',
+          title: n.title as string,
+          description: (n.body as string | null) ?? '',
+          href: (n.link as string | null) ?? '/notificacoes',
+          timestamp: n.created_at as string,
+        });
+      }
+    } catch {
+      // ignora — RLS ou tabela ainda nao migrada
+    }
+  }
 
   // ── 1. Compliance: vencidos + vencendo em <=15d ────────────────────────────
   try {
