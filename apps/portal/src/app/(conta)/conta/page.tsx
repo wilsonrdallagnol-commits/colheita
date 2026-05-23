@@ -141,7 +141,7 @@ export default async function ContaPage() {
             </Link>
           </div>
 
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
             <Link
               href="/conta/assistente"
               style={{
@@ -155,6 +155,21 @@ export default async function ContaPage() {
               }}
             >
               ✨ Agrônomo IA
+            </Link>
+            <Link
+              href="/conta/academia"
+              style={{
+                padding: '8px 16px',
+                borderRadius: 'var(--colheita-radius-md)',
+                backgroundColor: 'var(--colheita-surface-elevated)',
+                color: 'var(--colheita-text-primary)',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                textDecoration: 'none',
+                border: '1px solid var(--colheita-border)',
+              }}
+            >
+              🎓 Academia
             </Link>
             <Link
               href="/conta/materiais"
