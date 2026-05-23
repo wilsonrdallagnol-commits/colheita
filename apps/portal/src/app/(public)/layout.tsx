@@ -10,11 +10,21 @@ import { TopNav } from '@/components/TopNav';
 
 export default async function PublicLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
-  let user: { email?: string | null } | null = null;
+  let user: { id?: string; email?: string | null } | null = null;
+  let unreadNotifs = 0;
   try {
     const supabase = createServerClient(cookieStore);
     const result = await supabase.auth.getUser();
     user = result.data.user;
+
+    if (user?.id) {
+      const { count } = await supabase
+        .from('notifications')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .is('read_at', null);
+      unreadNotifs = count ?? 0;
+    }
   } catch (err) {
     // Supabase indisponivel (placeholder em deploy de demo) — segue sem user.
     captureError(err, { context: 'portal.publicLayout.getUser' });
@@ -25,7 +35,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
     <div
       style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fff' }}
     >
-      <TopNav userEmail={user?.email ?? null} />
+      <TopNav userEmail={user?.email ?? null} unreadNotifs={unreadNotifs} />
 
       <main style={{ flex: 1 }}>{children}</main>
 

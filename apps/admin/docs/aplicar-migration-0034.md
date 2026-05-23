@@ -1,7 +1,7 @@
-# Como aplicar migrations 0034 + 0035 + 0036 + 0037 + reindex RAG em prod
+# Como aplicar migrations 0034 + 0035 + 0036 + 0037 + 0038 + reindex RAG em prod
 
-> **Atualizado 2026-05-23:** agora são 4 migrations encadeadas. Aplicar
-> as 4 e fazer 1 único reindex no final.
+> **Atualizado 2026-05-23:** agora são 5 migrations encadeadas. Aplicar
+> todas e fazer 1 único reindex no final.
 
 **Status:** pendente — quando você quiser ativar a IA agronômica com os
 dados das fichas técnicas (Bovex, Controx, Nemax, Titan + Troian corrigido).
@@ -45,6 +45,9 @@ psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0036_support_tickets.sq
 
 # 0037 — Thread de mensagens nos tickets (admin responde + distribuidor responde)
 psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0037_support_ticket_messages.sql
+
+# 0038 — Inbox de notificacoes unificada + triggers (support.reply, certification.issued)
+psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0038_notifications.sql
 ```
 
 **Output esperado:**

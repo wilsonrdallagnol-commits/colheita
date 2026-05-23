@@ -1,15 +1,18 @@
 // apps/portal/src/components/TopNav.tsx
 // Nav superior da Plataforma Colheita — identidade Argho.
 
+import { Bell } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 interface TopNavProps {
   /** Quando o usuario esta logado, exibe link para /conta. */
   userEmail?: string | null;
+  /** Quantidade de notificacoes nao lidas (exibe badge no sino). */
+  unreadNotifs?: number;
 }
 
-export function TopNav({ userEmail }: TopNavProps) {
+export function TopNav({ userEmail, unreadNotifs = 0 }: TopNavProps) {
   return (
     <header
       style={{
@@ -107,22 +110,66 @@ export function TopNav({ userEmail }: TopNavProps) {
             arghoagrosciences.com ↗
           </a>
           {userEmail ? (
-            <Link
-              href="/conta"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '8px 16px',
-                borderRadius: 8,
-                background: 'var(--colheita-brand-primary)',
-                color: '#fff',
-                textDecoration: 'none',
-                fontWeight: 500,
-              }}
-            >
-              Minha conta
-            </Link>
+            <>
+              <Link
+                href="/conta/notificacoes"
+                aria-label={
+                  unreadNotifs > 0 ? `${unreadNotifs} notificações não lidas` : 'Notificações'
+                }
+                style={{
+                  position: 'relative',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 36,
+                  height: 36,
+                  borderRadius: '50%',
+                  color: 'var(--colheita-text-secondary)',
+                  textDecoration: 'none',
+                  border: '1px solid var(--colheita-border-subtle, #e5e7eb)',
+                  backgroundColor: 'rgba(255,255,255,0.6)',
+                }}
+              >
+                <Bell size={16} strokeWidth={1.75} />
+                {unreadNotifs > 0 && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: -4,
+                      right: -4,
+                      minWidth: 18,
+                      height: 18,
+                      padding: '0 5px',
+                      borderRadius: 9,
+                      background: 'var(--colheita-brand-primary)',
+                      color: '#fff',
+                      fontSize: '0.625rem',
+                      fontWeight: 700,
+                      lineHeight: '18px',
+                      textAlign: 'center',
+                    }}
+                  >
+                    {unreadNotifs > 99 ? '99+' : unreadNotifs}
+                  </span>
+                )}
+              </Link>
+              <Link
+                href="/conta"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '8px 16px',
+                  borderRadius: 8,
+                  background: 'var(--colheita-brand-primary)',
+                  color: '#fff',
+                  textDecoration: 'none',
+                  fontWeight: 500,
+                }}
+              >
+                Minha conta
+              </Link>
+            </>
           ) : (
             <Link
               href="/entrar"
