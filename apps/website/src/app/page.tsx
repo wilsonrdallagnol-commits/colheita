@@ -8,6 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { HeroHeart } from '@/components/hero-heart';
 import { RootDivider } from '@/components/root-divider';
+import { FEATURES } from '@/lib/features';
 
 export const metadata: Metadata = {
   title: 'Argho Agrosciences — Tecnologia viva para o agro brasileiro',
@@ -179,40 +180,43 @@ export default function Home() {
                 Ver portfólio completo
                 <span style={{ fontSize: '1.1em', lineHeight: 1 }}>→</span>
               </Link>
-              <Link
-                href="https://colheita.arghoagrosciences.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '0.9375rem',
-                  fontWeight: 500,
-                  color: 'var(--text-primary)',
-                  textDecoration: 'none',
-                  padding: '15px 24px',
-                  letterSpacing: '-0.005em',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  borderBottom: '1px solid var(--text-primary)',
-                  paddingLeft: 0,
-                  paddingRight: 0,
-                  marginLeft: '12px',
-                }}
-              >
-                <span
-                  aria-hidden
+              {/* CTA Plataforma Colheita escondido via FEATURES.colheitaPlatform */}
+              {FEATURES.colheitaPlatform && (
+                <Link
+                  href="https://colheita.arghoagrosciences.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{
-                    display: 'inline-block',
-                    width: '6px',
-                    height: '6px',
-                    borderRadius: '50%',
-                    backgroundColor: 'var(--gold)',
-                    boxShadow: '0 0 8px oklch(0.66 0.130 78 / 0.6)',
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.9375rem',
+                    fontWeight: 500,
+                    color: 'var(--text-primary)',
+                    textDecoration: 'none',
+                    padding: '15px 24px',
+                    letterSpacing: '-0.005em',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    borderBottom: '1px solid var(--text-primary)',
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                    marginLeft: '12px',
                   }}
-                />
-                Plataforma Colheita
-              </Link>
+                >
+                  <span
+                    aria-hidden
+                    style={{
+                      display: 'inline-block',
+                      width: '6px',
+                      height: '6px',
+                      borderRadius: '50%',
+                      backgroundColor: 'var(--gold)',
+                      boxShadow: '0 0 8px oklch(0.66 0.130 78 / 0.6)',
+                    }}
+                  />
+                  Plataforma Colheita
+                </Link>
+              )}
             </div>
 
             {/* Métricas inline */}
@@ -1489,250 +1493,261 @@ export default function Home() {
         `}</style>
       </section>
 
-      {/* Divisor — fan azul (eco da nova seção IA) */}
-      <RootDivider variant="fan" accent="var(--argho-blue-soft)" weight={2} />
-
       {/* ═══════════════════════════════════════════════════════════════════
-          PLATAFORMA COLHEITA
+          PLATAFORMA COLHEITA — escondida ate plataforma estar pronta
+          (ver lib/features.ts). Inclui RootDivider + secao inteira.
       ══════════════════════════════════════════════════════════════════════ */}
-      <section
-        style={{
-          borderTop: '1px solid var(--border-subtle)',
-          padding: '120px 48px',
-          backgroundColor: 'var(--bg-soft)',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '1320px',
-            margin: '0 auto',
-            display: 'grid',
-            gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
-            gap: '80px',
-            alignItems: 'center',
-          }}
-          className="platform-grid"
-        >
-          {/* Copy */}
-          <div>
-            <span
-              className="label"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                marginBottom: '24px',
-              }}
-            >
-              <span
-                style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  backgroundColor: 'var(--gold)',
-                  boxShadow: '0 0 0 4px oklch(0.66 0.130 78 / 0.15)',
-                }}
-                className="anim-pulse-ring"
-              />
-              04 / Plataforma · Acesso restrito
-            </span>
-            <h2
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(1.85rem, 3.6vw, 3rem)',
-                fontWeight: 700,
-                color: 'var(--argho-blue)',
-                letterSpacing: '-0.05em',
-                lineHeight: 1.0,
-                margin: '0 0 24px',
-              }}
-            >
-              Colheita: a inteligência
-              <br />
-              da Argho no campo.
-            </h2>
-            <p
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '1rem',
-                color: 'var(--text-secondary)',
-                lineHeight: 1.65,
-                margin: '0 0 36px',
-                maxWidth: '460px',
-                letterSpacing: '-0.005em',
-              }}
-            >
-              Plataforma de gestão agronômica para distribuidores e equipes técnicas Argho.
-              Catálogo, recomendação por cultura, certificação e assistente IA em um único ambiente.
-            </p>
-            <Link
-              href="https://colheita.arghoagrosciences.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.9375rem',
-                fontWeight: 600,
-                color: '#ffffff',
-                backgroundColor: 'var(--gold-deep)',
-                textDecoration: 'none',
-                padding: '14px 28px',
-                borderRadius: '8px',
-                letterSpacing: '-0.005em',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-            >
-              Acessar plataforma
-              <span style={{ fontSize: '1.1em', lineHeight: 1 }}>→</span>
-            </Link>
-          </div>
-
-          {/* Mock card preview */}
-          <div
+      {FEATURES.colheitaPlatform && (
+        <>
+          {/* Divisor — fan azul (eco da nova seção IA) */}
+          <RootDivider variant="fan" accent="var(--argho-blue-soft)" weight={2} />
+          <section
             style={{
-              backgroundColor: 'var(--bg)',
-              border: '1px solid var(--border)',
-              borderRadius: '16px',
-              padding: '32px',
-              boxShadow:
-                '0 24px 60px -20px oklch(0.66 0.130 78 / 0.18), 0 4px 16px -4px rgba(0,0,0,0.04)',
-              position: 'relative',
-              overflow: 'hidden',
+              borderTop: '1px solid var(--border-subtle)',
+              padding: '120px 48px',
+              backgroundColor: 'var(--bg-soft)',
             }}
           >
-            {/* Glow gold */}
-            <div
-              aria-hidden
-              style={{
-                position: 'absolute',
-                top: '-100px',
-                right: '-80px',
-                width: '320px',
-                height: '320px',
-                borderRadius: '50%',
-                background:
-                  'radial-gradient(ellipse, oklch(0.66 0.130 78 / 0.16) 0%, transparent 70%)',
-                pointerEvents: 'none',
-              }}
-            />
-
-            {/* Header card */}
             <div
               style={{
-                display: 'flex',
+                maxWidth: '1320px',
+                margin: '0 auto',
+                display: 'grid',
+                gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+                gap: '80px',
                 alignItems: 'center',
-                gap: '12px',
-                marginBottom: '28px',
-                paddingBottom: '20px',
-                borderBottom: '1px solid var(--border-subtle)',
               }}
+              className="platform-grid"
             >
-              <div
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '10px',
-                  backgroundColor: 'var(--gold-soft)',
-                  border: '1px solid oklch(0.66 0.130 78 / 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <span style={{ fontSize: '15px' }}>🌾</span>
-              </div>
+              {/* Copy */}
               <div>
-                <div
+                <span
+                  className="label"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    marginBottom: '24px',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: 'var(--gold)',
+                      boxShadow: '0 0 0 4px oklch(0.66 0.130 78 / 0.15)',
+                    }}
+                    className="anim-pulse-ring"
+                  />
+                  04 / Plataforma · Acesso restrito
+                </span>
+                <h2
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: 'clamp(1.85rem, 3.6vw, 3rem)',
+                    fontWeight: 700,
+                    color: 'var(--argho-blue)',
+                    letterSpacing: '-0.05em',
+                    lineHeight: 1.0,
+                    margin: '0 0 24px',
+                  }}
+                >
+                  Colheita: a inteligência
+                  <br />
+                  da Argho no campo.
+                </h2>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '1rem',
+                    color: 'var(--text-secondary)',
+                    lineHeight: 1.65,
+                    margin: '0 0 36px',
+                    maxWidth: '460px',
+                    letterSpacing: '-0.005em',
+                  }}
+                >
+                  Plataforma de gestão agronômica para distribuidores e equipes técnicas Argho.
+                  Catálogo, recomendação por cultura, certificação e assistente IA em um único
+                  ambiente.
+                </p>
+                <Link
+                  href="https://colheita.arghoagrosciences.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{
                     fontFamily: 'var(--font-body)',
                     fontSize: '0.9375rem',
                     fontWeight: 600,
-                    color: 'var(--text-primary)',
-                    letterSpacing: '-0.01em',
+                    color: '#ffffff',
+                    backgroundColor: 'var(--gold-deep)',
+                    textDecoration: 'none',
+                    padding: '14px 28px',
+                    borderRadius: '8px',
+                    letterSpacing: '-0.005em',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
                   }}
                 >
-                  Colheita Dashboard
-                </div>
-                <div
-                  className="mono"
-                  style={{
-                    fontSize: '0.6875rem',
-                    color: 'var(--text-tertiary)',
-                  }}
-                >
-                  colheita.arghoagrosciences.com
-                </div>
+                  Acessar plataforma
+                  <span style={{ fontSize: '1.1em', lineHeight: 1 }}>→</span>
+                </Link>
               </div>
-            </div>
 
-            {/* Métricas mock */}
-            {[
-              { label: 'Safra Soja 24/25', value: 'Em andamento', color: 'var(--green)' },
-              { label: 'Último relatório', value: '2 dias atrás', color: 'var(--text-secondary)' },
-              { label: 'Produtos aplicados', value: '4 recomendações', color: 'var(--gold-deep)' },
-            ].map((item, i, arr) => (
+              {/* Mock card preview */}
               <div
-                key={item.label}
                 style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '14px 0',
-                  borderBottom: i < arr.length - 1 ? '1px solid var(--border-subtle)' : 'none',
+                  backgroundColor: 'var(--bg)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '16px',
+                  padding: '32px',
+                  boxShadow:
+                    '0 24px 60px -20px oklch(0.66 0.130 78 / 0.18), 0 4px 16px -4px rgba(0,0,0,0.04)',
+                  position: 'relative',
+                  overflow: 'hidden',
                 }}
               >
-                <span
+                {/* Glow gold */}
+                <div
+                  aria-hidden
                   style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '0.875rem',
-                    color: 'var(--text-tertiary)',
-                    letterSpacing: '-0.005em',
+                    position: 'absolute',
+                    top: '-100px',
+                    right: '-80px',
+                    width: '320px',
+                    height: '320px',
+                    borderRadius: '50%',
+                    background:
+                      'radial-gradient(ellipse, oklch(0.66 0.130 78 / 0.16) 0%, transparent 70%)',
+                    pointerEvents: 'none',
+                  }}
+                />
+
+                {/* Header card */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    marginBottom: '28px',
+                    paddingBottom: '20px',
+                    borderBottom: '1px solid var(--border-subtle)',
                   }}
                 >
-                  {item.label}
-                </span>
-                <span
+                  <div
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '10px',
+                      backgroundColor: 'var(--gold-soft)',
+                      border: '1px solid oklch(0.66 0.130 78 / 0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <span style={{ fontSize: '15px' }}>🌾</span>
+                  </div>
+                  <div>
+                    <div
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '0.9375rem',
+                        fontWeight: 600,
+                        color: 'var(--text-primary)',
+                        letterSpacing: '-0.01em',
+                      }}
+                    >
+                      Colheita Dashboard
+                    </div>
+                    <div
+                      className="mono"
+                      style={{
+                        fontSize: '0.6875rem',
+                        color: 'var(--text-tertiary)',
+                      }}
+                    >
+                      colheita.arghoagrosciences.com
+                    </div>
+                  </div>
+                </div>
+
+                {/* Métricas mock */}
+                {[
+                  { label: 'Safra Soja 24/25', value: 'Em andamento', color: 'var(--green)' },
+                  {
+                    label: 'Último relatório',
+                    value: '2 dias atrás',
+                    color: 'var(--text-secondary)',
+                  },
+                  {
+                    label: 'Produtos aplicados',
+                    value: '4 recomendações',
+                    color: 'var(--gold-deep)',
+                  },
+                ].map((item, i, arr) => (
+                  <div
+                    key={item.label}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '14px 0',
+                      borderBottom: i < arr.length - 1 ? '1px solid var(--border-subtle)' : 'none',
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '0.875rem',
+                        color: 'var(--text-tertiary)',
+                        letterSpacing: '-0.005em',
+                      }}
+                    >
+                      {item.label}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '0.875rem',
+                        fontWeight: 500,
+                        color: item.color,
+                        letterSpacing: '-0.005em',
+                      }}
+                    >
+                      {item.value}
+                    </span>
+                  </div>
+                ))}
+
+                <div
                   style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '0.875rem',
-                    fontWeight: 500,
-                    color: item.color,
-                    letterSpacing: '-0.005em',
+                    marginTop: '20px',
+                    padding: '12px 16px',
+                    backgroundColor: 'var(--gold-soft)',
+                    borderRadius: '8px',
+                    border: '1px solid oklch(0.66 0.130 78 / 0.18)',
                   }}
                 >
-                  {item.value}
-                </span>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.75rem',
+                      color: 'var(--gold-deep)',
+                      margin: 0,
+                      lineHeight: 1.5,
+                      letterSpacing: '-0.005em',
+                    }}
+                  >
+                    🔒 Acesso exclusivo para distribuidores Argho credenciados.
+                  </p>
+                </div>
               </div>
-            ))}
-
-            <div
-              style={{
-                marginTop: '20px',
-                padding: '12px 16px',
-                backgroundColor: 'var(--gold-soft)',
-                borderRadius: '8px',
-                border: '1px solid oklch(0.66 0.130 78 / 0.18)',
-              }}
-            >
-              <p
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '0.75rem',
-                  color: 'var(--gold-deep)',
-                  margin: 0,
-                  lineHeight: 1.5,
-                  letterSpacing: '-0.005em',
-                }}
-              >
-                🔒 Acesso exclusivo para distribuidores Argho credenciados.
-              </p>
             </div>
-          </div>
-        </div>
 
-        <style>{`
+            <style>{`
           @media (max-width: 968px) {
             .platform-grid {
               grid-template-columns: 1fr !important;
@@ -1740,7 +1755,9 @@ export default function Home() {
             }
           }
         `}</style>
-      </section>
+          </section>
+        </>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════════
           MANIFESTO — quote editorial

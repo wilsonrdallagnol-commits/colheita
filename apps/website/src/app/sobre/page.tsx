@@ -7,6 +7,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { RootDivider } from '@/components/root-divider';
+import { FEATURES } from '@/lib/features';
 
 export const metadata: Metadata = {
   title: 'Sobre',
@@ -1523,38 +1524,41 @@ export default function SobrePage() {
               Ver portfólio completo
               <span style={{ fontSize: '1.1em', lineHeight: 1 }}>→</span>
             </Link>
-            <Link
-              href="https://colheita.arghoagrosciences.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.9375rem',
-                fontWeight: 500,
-                color: 'var(--text-primary)',
-                textDecoration: 'none',
-                padding: '15px 0',
-                letterSpacing: '-0.005em',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '10px',
-                borderBottom: '1px solid var(--text-primary)',
-                marginLeft: '12px',
-              }}
-            >
-              <span
-                aria-hidden
+            {/* Link Plataforma Colheita escondido via FEATURES.colheitaPlatform */}
+            {FEATURES.colheitaPlatform && (
+              <Link
+                href="https://colheita.arghoagrosciences.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 style={{
-                  display: 'inline-block',
-                  width: '6px',
-                  height: '6px',
-                  borderRadius: '50%',
-                  backgroundColor: 'var(--gold)',
-                  boxShadow: '0 0 8px oklch(0.66 0.130 78 / 0.6)',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.9375rem',
+                  fontWeight: 500,
+                  color: 'var(--text-primary)',
+                  textDecoration: 'none',
+                  padding: '15px 0',
+                  letterSpacing: '-0.005em',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  borderBottom: '1px solid var(--text-primary)',
+                  marginLeft: '12px',
                 }}
-              />
-              Plataforma Colheita
-            </Link>
+              >
+                <span
+                  aria-hidden
+                  style={{
+                    display: 'inline-block',
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--gold)',
+                    boxShadow: '0 0 8px oklch(0.66 0.130 78 / 0.6)',
+                  }}
+                />
+                Plataforma Colheita
+              </Link>
+            )}
           </div>
         </div>
       </section>

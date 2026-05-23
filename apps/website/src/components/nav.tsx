@@ -3,6 +3,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { FEATURES } from '@/lib/features';
+
 export function Nav() {
   return (
     <nav
@@ -69,49 +71,54 @@ export function Nav() {
           </Link>
         ))}
 
-        {/* Separator */}
-        <div
-          aria-hidden
-          style={{
-            width: '1px',
-            height: '20px',
-            backgroundColor: 'var(--border)',
-            margin: '0 12px',
-          }}
-        />
-
-        {/* Plataforma Colheita — gold ghost, subdomínio dedicado */}
-        <Link
-          href="https://colheita.arghoagrosciences.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: '0.8125rem',
-            fontWeight: 500,
-            color: 'var(--gold-deep)',
-            textDecoration: 'none',
-            padding: '8px 16px',
-            borderRadius: '6px',
-            border: '1px solid oklch(0.66 0.130 78 / 0.30)',
-            letterSpacing: '-0.005em',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-          }}
-        >
-          <span
-            style={{
-              display: 'inline-block',
-              width: '6px',
-              height: '6px',
-              borderRadius: '50%',
-              backgroundColor: 'var(--gold)',
-              boxShadow: '0 0 8px oklch(0.66 0.130 78 / 0.6)',
-            }}
-          />
-          Plataforma
-        </Link>
+        {/* Plataforma Colheita — gold ghost, subdomínio dedicado.
+            Escondido via FEATURES.colheitaPlatform ate plataforma estar
+            pronta para acesso publico (ver lib/features.ts). */}
+        {FEATURES.colheitaPlatform && (
+          <>
+            {/* Separator */}
+            <div
+              aria-hidden
+              style={{
+                width: '1px',
+                height: '20px',
+                backgroundColor: 'var(--border)',
+                margin: '0 12px',
+              }}
+            />
+            <Link
+              href="https://colheita.arghoagrosciences.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.8125rem',
+                fontWeight: 500,
+                color: 'var(--gold-deep)',
+                textDecoration: 'none',
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: '1px solid oklch(0.66 0.130 78 / 0.30)',
+                letterSpacing: '-0.005em',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--gold)',
+                  boxShadow: '0 0 8px oklch(0.66 0.130 78 / 0.6)',
+                }}
+              />
+              Plataforma
+            </Link>
+          </>
+        )}
 
         {/* CTA primary — azul Argho */}
         <Link

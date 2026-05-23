@@ -3,6 +3,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { FEATURES } from '@/lib/features';
+
 export function Footer() {
   return (
     <footer
@@ -103,11 +105,16 @@ export function Footer() {
               { href: '/sobre', label: 'Sobre a Argho' },
               { href: '/sobre#valores', label: 'Valores' },
               { href: '/sobre#expertise', label: 'Nossa expertise' },
-              {
-                href: 'https://colheita.arghoagrosciences.com',
-                label: 'Plataforma Colheita ↗',
-                external: true,
-              },
+              // Plataforma Colheita escondida via FEATURES.colheitaPlatform
+              ...(FEATURES.colheitaPlatform
+                ? [
+                    {
+                      href: 'https://colheita.arghoagrosciences.com',
+                      label: 'Plataforma Colheita ↗',
+                      external: true,
+                    },
+                  ]
+                : []),
             ].map(({ href, label, external }) => (
               <Link
                 key={href}
