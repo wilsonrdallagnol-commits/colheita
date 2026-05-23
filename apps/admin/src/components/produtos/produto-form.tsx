@@ -256,6 +256,28 @@ export function ProdutoForm({
             (JSON)
           </span>
         </label>
+        <p
+          style={{
+            fontSize: '0.75rem',
+            color: 'var(--colheita-text-tertiary)',
+            marginTop: '-4px',
+            marginBottom: '6px',
+            lineHeight: 1.5,
+          }}
+        >
+          Mineral/organomineral:{' '}
+          <code
+            style={{ fontSize: '0.6875rem' }}
+          >{`{"macros": {"K2O": 35.0}, "others": {"Aminoácidos": 6.0}}`}</code>
+          <br />
+          Complexo microbiológico (biológicos):{' '}
+          <code
+            style={{ fontSize: '0.6875rem' }}
+          >{`{"others": {"Bacillus subtilis": 1, "B. velezensis": 1}}`}</code>
+          {
+            ' — valor 1 = presença declarada, sem teor numérico (compliance MAPA, ver docs/biologicos-compliance.md).'
+          }
+        </p>
         <Textarea
           id={compositionId}
           name="composition"
@@ -266,7 +288,9 @@ export function ProdutoForm({
               ? JSON.stringify(defaultValues.composition, null, 2)
               : ''
           }
-          placeholder={'{\n  "Boro": "0,75%",\n  "Manganês": "2,0%"\n}'}
+          placeholder={
+            '{\n  "macros": { "K2O": 35.0, "N": 2.0 },\n  "others": { "Aminoácidos": 6.0 }\n}'
+          }
           style={{ fontFamily: 'monospace', fontSize: '0.8125rem' }}
         />
         {state?.fieldErrors?.composition && (
@@ -284,6 +308,21 @@ export function ProdutoForm({
             (JSON)
           </span>
         </label>
+        <p
+          style={{
+            fontSize: '0.75rem',
+            color: 'var(--colheita-text-tertiary)',
+            marginTop: '-4px',
+            marginBottom: '6px',
+            lineHeight: 1.5,
+          }}
+        >
+          Campos esperados: <code style={{ fontSize: '0.6875rem' }}>physical_state</code> (sólido /
+          fluido / pó), <code style={{ fontSize: '0.6875rem' }}>origin_country</code>,{' '}
+          <code style={{ fontSize: '0.6875rem' }}>product_type</code>. Para biológicos use{' '}
+          <code style={{ fontSize: '0.6875rem' }}>"product_type": "Complexo microbiológico"</code>{' '}
+          (aciona renderer alternativo nas paginas /produtos/[slug] do admin e portal).
+        </p>
         <Textarea
           id={technicalSpecsId}
           name="technical_specs"
@@ -294,7 +333,9 @@ export function ProdutoForm({
               ? JSON.stringify(defaultValues.technical_specs, null, 2)
               : ''
           }
-          placeholder={'{\n  "Densidade": "1,35 g/mL",\n  "pH": "6,0 – 7,0"\n}'}
+          placeholder={
+            '{\n  "physical_state": "fluido",\n  "origin_country": "Espanha",\n  "product_type": "Fertilizante Mineral Misto"\n}'
+          }
           style={{ fontFamily: 'monospace', fontSize: '0.8125rem' }}
         />
         {state?.fieldErrors?.technical_specs && (
