@@ -12,8 +12,38 @@
 
 import { createServerClient, requireAuth } from '@colheita/auth';
 import { captureError } from '@colheita/observability';
+import { createClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import { buildRateLimiter, checkRateLimit } from '@/lib/rate-limit';
+
+/**
+ * Cria cliente Supabase ISOLADO do cookie store atual.
+ * Usado pra verificar posse da senha via signInWithPassword sem
+ * sobrescrever o JWT/refresh_token da sessão ativa do user (defesa
+ * contra race em multi-tab — auditoria hm-engineer 2026-05-23 fix #2).
+ */
+function createIsolatedClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
+    { auth: { autoRefreshToken: false, persistSession: false } },
+  );
+}
+
+// Rate limiters (fail-open quando Redis nao configurado em dev).
+// Singletons por modulo — instancia uma vez por cold start.
+const changePasswordLimiter = buildRateLimiter({
+  prefix: '@colheita/portal/changePassword',
+  limit: 5,
+  window: '1 h',
+});
+
+const updateProfileLimiter = buildRateLimiter({
+  prefix: '@colheita/portal/updateProfile',
+  limit: 20,
+  window: '1 h',
+});
 
 // ── changePassword ───────────────────────────────────────────────────────────
 
@@ -31,6 +61,12 @@ export async function changePassword(
   const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
+  // Rate limit: 5/h por user (proteção contra brute force da senha atual)
+  const rl = await checkRateLimit(changePasswordLimiter, `user:${user.id}`);
+  if (!rl.ok) {
+    return { error: 'Muitas tentativas. Tente novamente em alguns minutos.' };
+  }
+
   const current = String(formData.get('current') ?? '');
   const next = String(formData.get('next') ?? '');
   const confirm = String(formData.get('confirm') ?? '');
@@ -44,8 +80,10 @@ export async function changePassword(
     return { fieldErrors: { confirm: 'Confirmação não bate com a nova senha.' } };
   if (next === current) return { fieldErrors: { next: 'Use uma senha diferente da atual.' } };
 
-  // Confirma posse da senha atual (defesa contra session hijack)
-  const { error: verifyErr } = await supabase.auth.signInWithPassword({
+  // Confirma posse da senha atual via cliente ISOLADO (não escreve
+  // cookies — preserva a sessão atual do user no cookieStore).
+  const isolatedClient = createIsolatedClient();
+  const { error: verifyErr } = await isolatedClient.auth.signInWithPassword({
     email: user.email,
     password: current,
   });
@@ -53,7 +91,8 @@ export async function changePassword(
     return { fieldErrors: { current: 'Senha atual incorreta.' } };
   }
 
-  // Atualiza pra nova
+  // Atualiza pra nova senha — usa supabase do cookieStore (autenticado
+  // como o user atual via JWT/refresh_token preservados).
   const { error: updateErr } = await supabase.auth.updateUser({ password: next });
   if (updateErr) {
     captureError(updateErr, { context: 'portal.conta.changePassword' });
@@ -78,6 +117,12 @@ export async function updateProfile(
   const cookieStore = await cookies();
   const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
+
+  // Rate limit: 20/h por user
+  const rl = await checkRateLimit(updateProfileLimiter, `user:${user.id}`);
+  if (!rl.ok) {
+    return { error: 'Muitas atualizações de perfil. Tente novamente em alguns minutos.' };
+  }
 
   const fullName = String(formData.get('full_name') ?? '').trim();
   const phone = String(formData.get('phone') ?? '').trim();

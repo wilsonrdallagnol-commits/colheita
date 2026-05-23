@@ -1,7 +1,16 @@
-# Como aplicar migrations 0034 + 0035 + 0036 + 0037 + 0038 + reindex RAG em prod
+# Como aplicar migrations 0034 a 0040 + reindex RAG em prod
 
-> **Atualizado 2026-05-23:** agora são 5 migrations encadeadas. Aplicar
+> **Atualizado 2026-05-23:** agora são 7 migrations encadeadas. Aplicar
 > todas e fazer 1 único reindex no final.
+>
+> **0039 é fix crítico** (auditoria hm-engineer): adiciona coluna
+> `source` em `conversation_logs`. Sem ela, todo turno de chat IA do
+> portal falha persistência silenciosamente e o histórico fica vazio.
+>
+> **0040 é fix de segurança** (auditoria hm-engineer): restringe UPDATE
+> em `notifications` apenas à coluna `read_at` (column-level grant).
+> Sem ele, usuário malicioso poderia envenenar próprias notif via
+> PostgREST direto.
 
 **Status:** pendente — quando você quiser ativar a IA agronômica com os
 dados das fichas técnicas (Bovex, Controx, Nemax, Titan + Troian corrigido).
@@ -48,6 +57,12 @@ psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0037_support_ticket_mes
 
 # 0038 — Inbox de notificacoes unificada + triggers (support.reply, certification.issued)
 psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0038_notifications.sql
+
+# 0039 — FIX CRÍTICO: coluna source em conversation_logs (chat IA portal)
+psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0039_conversation_logs_source.sql
+
+# 0040 — FIX ALTO: REVOKE UPDATE + GRANT UPDATE (read_at) em notifications
+psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0040_notifications_update_whitelist.sql
 ```
 
 **Output esperado:**

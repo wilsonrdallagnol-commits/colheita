@@ -15,6 +15,21 @@ import { createServerClient, requireAuth } from '@colheita/auth';
 import { captureError } from '@colheita/observability';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import { buildRateLimiter, checkRateLimit } from '@/lib/rate-limit';
+
+// Rate limit: 2 exports/h por user (9 selects em paralelo — protege DB)
+const exportLimiter = buildRateLimiter({
+  prefix: '@colheita/portal/exportMyData',
+  limit: 2,
+  window: '1 h',
+});
+
+// Rate limit: 1 solicitacao de delecao/h (limite generoso pq via humano de ticket)
+const deletionLimiter = buildRateLimiter({
+  prefix: '@colheita/portal/requestAccountDeletion',
+  limit: 1,
+  window: '1 h',
+});
 
 // ── exportMyData ─────────────────────────────────────────────────────────────
 
@@ -30,6 +45,12 @@ export async function exportMyData(
   const cookieStore = await cookies();
   const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
+
+  // Rate limit: 2/h por user (export agrega 9 selects + serializa JSON)
+  const rl = await checkRateLimit(exportLimiter, `user:${user.id}`);
+  if (!rl.ok) {
+    return { error: 'Export já solicitado recentemente. Tente novamente em uma hora.' };
+  }
 
   try {
     // Tudo em paralelo
@@ -119,6 +140,12 @@ export async function requestAccountDeletion(
   const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
 
+  // Rate limit: 1/h por user (nao queremos spam de ticket LGPD)
+  const rl = await checkRateLimit(deletionLimiter, `user:${user.id}`);
+  if (!rl.ok) {
+    return { error: 'Solicitação já registrada recentemente. Aguarde resposta do time Argho.' };
+  }
+
   const reason = String(formData.get('reason') ?? '').trim();
   if (reason.length < 10) {
     return { fieldErrors: { reason: 'Descreva o motivo (mín 10 caracteres).' } };
@@ -136,7 +163,11 @@ export async function requestAccountDeletion(
     return { error: 'Sessão sem tenant — refaça login.' };
   }
 
-  const subject = `[LGPD] Solicitação de exclusão de conta · ${user.email ?? user.id}`;
+  // FIX ALTO #7 (auditoria): emails RFC5321 podem ter ate 254 chars,
+  // estourando o CHECK BETWEEN 4 AND 200 do support_tickets.subject.
+  // Trunca defensivamente com slice.
+  const rawSubject = `[LGPD] Solicitação de exclusão de conta · ${user.email ?? user.id}`;
+  const subject = rawSubject.slice(0, 200);
   const body = `O distribuidor solicita exclusão da própria conta sob LGPD art 18 IV.
 
 Motivo declarado:

@@ -9,6 +9,15 @@ import { createServerClient, requireAuth } from '@colheita/auth';
 import { captureError } from '@colheita/observability';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import { buildRateLimiter, checkRateLimit } from '@/lib/rate-limit';
+
+// Rate limit: 30 replies/h por user (mais permissivo — replies sao
+// mensagens curtas e nao disparam email).
+const replyLimiter = buildRateLimiter({
+  prefix: '@colheita/portal/replyToOwnTicket',
+  limit: 30,
+  window: '1 h',
+});
 
 export type ReplyTicketState = {
   error?: string;
@@ -24,6 +33,12 @@ export async function replyToOwnTicket(
   const cookieStore = await cookies();
   const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
+
+  // Rate limit: 30 replies/h por user
+  const rl = await checkRateLimit(replyLimiter, `user:${user.id}`);
+  if (!rl.ok) {
+    return { error: 'Muitas respostas rapidas. Aguarde alguns minutos.' };
+  }
 
   const body = String(formData.get('body') ?? '').trim();
 

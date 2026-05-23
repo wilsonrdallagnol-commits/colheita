@@ -11,6 +11,14 @@ import { getResendClient } from '@colheita/email';
 import { captureError } from '@colheita/observability';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
+import { buildRateLimiter, checkRateLimit } from '@/lib/rate-limit';
+
+// Rate limit: 10 chamados/hora por user (custoso — INSERT + email Resend).
+const createTicketLimiter = buildRateLimiter({
+  prefix: '@colheita/portal/createSupportTicket',
+  limit: 10,
+  window: '1 h',
+});
 
 type Category = 'agronomic' | 'commercial' | 'product' | 'logistics' | 'platform' | 'other';
 type Urgency = 'low' | 'normal' | 'high' | 'urgent';
@@ -57,6 +65,12 @@ export async function createSupportTicket(
   const cookieStore = await cookies();
   const user = await requireAuth(cookieStore);
   const supabase = createServerClient(cookieStore);
+
+  // Rate limit: 10 chamados/h por user (defesa contra spam de email Resend)
+  const rl = await checkRateLimit(createTicketLimiter, `user:${user.id}`);
+  if (!rl.ok) {
+    return { error: 'Limite de chamados atingido. Aguarde alguns minutos.' };
+  }
 
   const subject = String(formData.get('subject') ?? '').trim();
   const body = String(formData.get('body') ?? '').trim();
@@ -119,19 +133,30 @@ export async function createSupportTicket(
         process.env.NEXT_PUBLIC_PORTAL_URL ?? 'https://colheita.arghoagrosciences.com';
       const ticketUrl = `${portalUrl}/conta/suporte/${ticket.id}`;
 
+      // FIX ALTO #5 (auditoria): escapar TODOS os campos interpolados.
+      // user.email e productSlug vem do form/JWT — não confiar mesmo
+      // se 'sanitizado por tamanho' (spear-phishing à equipe interna).
+      const escSubject = escapeHtml(subject);
+      const escBody = escapeHtml(body);
+      const escEmail = escapeHtml(user.email ?? '');
+      const escCategory = escapeHtml(CATEGORY_LABEL[category]);
+      const escUrgency = escapeHtml(URGENCY_LABEL[urgency]);
+      const escProduct = productSlug ? escapeHtml(productSlug) : '';
+      // ticketUrl é construído a partir de env + uuid — seguro
+
       await resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL ?? 'Argho <noreply@argho.com.br>',
         to: SUPPORT_INBOX,
         subject: `[${URGENCY_LABEL[urgency]}] ${subject}`,
         html: `
           <h2>Novo chamado de suporte</h2>
-          <p><strong>Distribuidor:</strong> ${user.email}</p>
-          <p><strong>Categoria:</strong> ${CATEGORY_LABEL[category]}</p>
-          <p><strong>Urgência:</strong> ${URGENCY_LABEL[urgency]}</p>
-          ${productSlug ? `<p><strong>Produto:</strong> ${productSlug}</p>` : ''}
+          <p><strong>Distribuidor:</strong> ${escEmail}</p>
+          <p><strong>Categoria:</strong> ${escCategory}</p>
+          <p><strong>Urgência:</strong> ${escUrgency}</p>
+          ${escProduct ? `<p><strong>Produto:</strong> ${escProduct}</p>` : ''}
           <hr/>
-          <h3>${escapeHtml(subject)}</h3>
-          <pre style="white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.5">${escapeHtml(body)}</pre>
+          <h3>${escSubject}</h3>
+          <pre style="white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.5">${escBody}</pre>
           <hr/>
           <p><a href="${ticketUrl}">Abrir chamado no portal →</a></p>
         `,

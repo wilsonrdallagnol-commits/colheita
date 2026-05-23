@@ -74,9 +74,13 @@ export default async function MeuChamadoPage({ params }: PageProps) {
       .eq('id', id)
       .eq('user_id', user.id)
       .maybeSingle(),
+    // FIX ALTO #8 (auditoria): NÃO pegar email do author no embed.
+    // Se RLS de public.users for ampla, vazaria emails da equipe Argho
+    // pro distribuidor (target list pra spear-phishing). Pegamos só
+    // full_name; staff é mostrado com label fixo "Argho — Agrônomo".
     supabase
       .from('support_ticket_messages')
-      .select('id, body, is_from_staff, created_at, author:author_id(email, full_name)')
+      .select('id, body, is_from_staff, created_at, author:author_id(full_name)')
       .eq('ticket_id', id)
       .order('created_at', { ascending: true }),
   ]);
