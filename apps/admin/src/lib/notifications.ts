@@ -36,6 +36,9 @@ export async function getNotifications(
   const now = Date.now();
 
   // ── 0. Personal: notif do DB (support.user_reply, etc) ─────────────────────
+  // Lê direto via cookieStore (RLS filtra). Não cacheamos AQUI porque
+  // queremos as 5 notif mais recentes (não só count) — o cache do badge
+  // bell vive em lib/unread-notifs.ts (apenas count, TTL 30s).
   if (userId) {
     try {
       const { data: personal } = await supabase

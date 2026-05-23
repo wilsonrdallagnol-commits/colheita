@@ -6,8 +6,9 @@
 
 import { createServerClient, requireAuth } from '@colheita/auth';
 import { captureError } from '@colheita/observability';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
+import { notifsTag } from '@/lib/unread-notifs';
 
 export async function markNotificationRead(notificationId: string): Promise<void> {
   const cookieStore = await cookies();
@@ -26,9 +27,9 @@ export async function markNotificationRead(notificationId: string): Promise<void
   }
 
   // FIX MÉDIO #11 (auditoria): badge no TopNav vem do layout SSR.
-  // Sem revalidate layout, bell mostra contagem stale ate proxima
-  // navegacao client-side. revalidatePath('/', 'layout') força
-  // re-render do layout root (cobre /conta + /public).
+  // Sem revalidate, bell mostra contagem stale ate proxima nav.
+  // FIX MÉDIO #12: invalida tag do cache unstable_cache (count notif).
+  revalidateTag(notifsTag(user.id));
   revalidatePath('/', 'layout');
   revalidatePath('/conta/notificacoes');
 }
@@ -48,6 +49,7 @@ export async function markAllNotificationsRead(): Promise<void> {
     captureError(error, { context: 'portal.notifications.markAllRead' });
   }
 
+  revalidateTag(notifsTag(user.id));
   revalidatePath('/', 'layout');
   revalidatePath('/conta/notificacoes');
   revalidatePath('/conta');

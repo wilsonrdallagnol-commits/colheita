@@ -7,6 +7,7 @@ import type { ReactNode } from 'react';
 import { ChatWidget } from '@/components/chat-widget';
 import { Footer } from '@/components/Footer';
 import { TopNav } from '@/components/TopNav';
+import { getUnreadNotifsCount } from '@/lib/unread-notifs';
 
 export default async function PublicLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
@@ -17,13 +18,9 @@ export default async function PublicLayout({ children }: { children: ReactNode }
     const result = await supabase.auth.getUser();
     user = result.data.user;
 
+    // Cached count (TTL 30s) — evita query DB extra a cada page nav.
     if (user?.id) {
-      const { count } = await supabase
-        .from('notifications')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .is('read_at', null);
-      unreadNotifs = count ?? 0;
+      unreadNotifs = await getUnreadNotifsCount(user.id);
     }
   } catch (err) {
     // Supabase indisponivel (placeholder em deploy de demo) — segue sem user.

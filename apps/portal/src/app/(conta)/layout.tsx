@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { Footer } from '@/components/Footer';
 import { TopNav } from '@/components/TopNav';
+import { getUnreadNotifsCount } from '@/lib/unread-notifs';
 
 export default async function ContaLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
@@ -20,15 +21,9 @@ export default async function ContaLayout({ children }: { children: ReactNode })
     const result = await supabase.auth.getUser();
     user = result.data.user;
 
+    // Cached count (TTL 30s) — invalidado em mark-read via revalidateTag.
     if (user?.id) {
-      // Conta notificacoes nao lidas pro badge no bell.
-      // head:true evita transferir os rows (so o count).
-      const { count } = await supabase
-        .from('notifications')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .is('read_at', null);
-      unreadNotifs = count ?? 0;
+      unreadNotifs = await getUnreadNotifsCount(user.id);
     }
   } catch (err) {
     captureError(err, { context: 'portal.contaLayout.getUser' });

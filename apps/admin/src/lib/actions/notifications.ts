@@ -7,8 +7,9 @@
 
 import { createServerClient, requireAuth } from '@colheita/auth';
 import { captureError } from '@colheita/observability';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
+import { notifsTag } from '@/lib/unread-notifs';
 
 export async function markNotificationRead(notificationId: string): Promise<void> {
   const cookieStore = await cookies();
@@ -26,8 +27,8 @@ export async function markNotificationRead(notificationId: string): Promise<void
     captureError(error, { context: 'admin.notifications.markRead' });
   }
 
-  // FIX MÉDIO #11 (auditoria): sidebar bell vem do dashboard layout SSR.
-  // revalidatePath('/', 'layout') força re-render do layout root.
+  // FIX MÉDIO #11 + #12: invalida cache count + força re-render layout
+  revalidateTag(notifsTag(user.id));
   revalidatePath('/', 'layout');
   revalidatePath('/notificacoes');
 }
@@ -47,6 +48,7 @@ export async function markAllNotificationsRead(): Promise<void> {
     captureError(error, { context: 'admin.notifications.markAllRead' });
   }
 
+  revalidateTag(notifsTag(user.id));
   revalidatePath('/', 'layout');
   revalidatePath('/notificacoes');
 }
