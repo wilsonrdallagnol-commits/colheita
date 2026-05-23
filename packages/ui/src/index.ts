@@ -61,6 +61,7 @@ export {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMobileTrigger,
   SidebarProvider,
   useSidebar,
 } from './components/sidebar.js';

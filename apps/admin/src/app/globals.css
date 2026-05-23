@@ -157,3 +157,96 @@ body {
   text-transform: uppercase;
   color: #0a0a0a;
 }
+
+/* ========================================================================
+   RESPONSIVO MOBILE (≤ 768px) - Colheita admin
+   Adicionado 2026-05-22 para corrigir UX mobile reportada pelo fundador.
+   Sidebar fixa de 240px virava 64% do viewport em iPhone — agora vira drawer
+   off-canvas com backdrop e botao hamburger.
+   ======================================================================== */
+
+@media (max-width: 768px) {
+  /* Body: defesa em profundidade contra overflow horizontal */
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* Sidebar vira drawer off-canvas */
+  [data-sidebar] {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    width: 280px !important;
+    height: 100vh;
+    transform: translateX(-100%);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  [data-sidebar][data-mobile-open='true'] {
+    transform: translateX(0);
+  }
+
+  /* Backdrop aparece quando drawer aberto */
+  [data-sidebar-backdrop] {
+    display: block !important;
+  }
+
+  /* Trigger hamburger visivel apenas em mobile */
+  [data-sidebar-mobile-trigger] {
+    display: flex !important;
+  }
+
+  /* Main precisa de padding-top pra nao colidir com hamburger fixed */
+  main {
+    padding-top: 56px;
+  }
+
+  /* Padding lateral das paginas reduzido */
+  main > * {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* Tabelas com scroll horizontal isolado, nao quebra layout */
+  table {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  /* Grids genericos viram 1 coluna */
+  [style*='grid-template-columns'][style*='1fr 1fr'],
+  [style*='gridTemplateColumns'] {
+    display: block !important;
+  }
+
+  /* Headers das paginas: stack vertical com gap menor */
+  header[style*='justify-content: space-between'],
+  header[style*='justifyContent'] {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  /* Botoes muito grandes nao espremem demais */
+  button, a[role='button'] {
+    min-height: 36px;
+  }
+
+  /* Titulos h1 menores no mobile */
+  h1 {
+    font-size: 1.25rem !important;
+  }
+  h2 {
+    font-size: 1.125rem !important;
+  }
+
+  /* AgentDock (canto inferior direito) - reduz tamanho */
+  [data-agent-dock] {
+    bottom: 12px !important;
+    right: 12px !important;
+  }
+}
+

@@ -2,23 +2,69 @@
 'use client';
 
 import { Slot } from '@radix-ui/react-slot';
+import { Menu, X } from 'lucide-react';
 import * as React from 'react';
 import { cn } from '../lib/utils.js';
 
 interface SidebarContextValue {
   collapsed: boolean;
   setCollapsed: (v: boolean) => void;
+  mobileOpen: boolean;
+  setMobileOpen: (v: boolean) => void;
+  toggleMobile: () => void;
 }
 
 const SidebarContext = React.createContext<SidebarContextValue>({
   collapsed: false,
   setCollapsed: () => undefined,
+  mobileOpen: false,
+  setMobileOpen: () => undefined,
+  toggleMobile: () => undefined,
 });
 
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const toggleMobile = React.useCallback(() => setMobileOpen((v) => !v), []);
+
+  // Fecha drawer mobile quando muda viewport pra desktop
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(min-width: 769px)');
+    const handler = (e: MediaQueryListEvent) => {
+      if (e.matches) setMobileOpen(false);
+    };
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  // Bloqueia scroll do body quando drawer aberto
+  React.useEffect(() => {
+    if (typeof document === 'undefined') return;
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
+  // Fecha drawer com tecla Escape
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape' && mobileOpen) setMobileOpen(false);
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [mobileOpen]);
+
   return (
-    <SidebarContext.Provider value={{ collapsed, setCollapsed }}>
+    <SidebarContext.Provider
+      value={{ collapsed, setCollapsed, mobileOpen, setMobileOpen, toggleMobile }}
+    >
       {children}
     </SidebarContext.Provider>
   );
@@ -28,28 +74,83 @@ export function useSidebar() {
   return React.useContext(SidebarContext);
 }
 
-export function Sidebar({ className, children }: React.HTMLAttributes<HTMLElement>) {
-  const { collapsed } = useSidebar();
+/**
+ * Trigger button para abrir o drawer mobile. Renderizado dentro do `<main>`,
+ * fica visível apenas em viewport mobile (CSS controla via data-sidebar-mobile-trigger).
+ * Posicionamento fixed top-left, padding generoso pra touch.
+ */
+export function SidebarMobileTrigger() {
+  const { toggleMobile, mobileOpen } = useSidebar();
   return (
-    <aside
+    <button
+      type="button"
+      onClick={toggleMobile}
+      aria-label={mobileOpen ? 'Fechar menu' : 'Abrir menu'}
+      data-sidebar-mobile-trigger
       style={{
-        width: collapsed ? '60px' : '240px',
+        position: 'fixed',
+        top: '12px',
+        left: '12px',
+        zIndex: 60,
+        width: '40px',
+        height: '40px',
+        display: 'none', // ativado por CSS @media
+        alignItems: 'center',
+        justifyContent: 'center',
         backgroundColor: 'var(--colheita-surface-elevated)',
-        borderRight: '1px solid var(--colheita-border-subtle)',
-        transition: 'width var(--colheita-transition-base)',
-        flexShrink: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        position: 'sticky',
-        top: 0,
-        overflowX: 'hidden',
-        overflowY: 'auto',
+        border: '1px solid var(--colheita-border)',
+        borderRadius: 'var(--colheita-radius-md)',
+        color: 'var(--colheita-text-primary)',
+        cursor: 'pointer',
+        boxShadow: 'var(--colheita-shadow-md, 0 4px 12px rgba(0,0,0,0.08))',
       }}
-      className={cn(className)}
     >
-      {children}
-    </aside>
+      {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+    </button>
+  );
+}
+
+export function Sidebar({ className, children }: React.HTMLAttributes<HTMLElement>) {
+  const { collapsed, mobileOpen, setMobileOpen } = useSidebar();
+  return (
+    <>
+      {/* Backdrop mobile - aparece quando drawer aberto */}
+      {mobileOpen && (
+        <div
+          aria-hidden
+          onClick={() => setMobileOpen(false)}
+          data-sidebar-backdrop
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 49,
+            display: 'none', // ativado por CSS @media
+          }}
+        />
+      )}
+      <aside
+        data-sidebar
+        data-mobile-open={mobileOpen ? 'true' : 'false'}
+        style={{
+          width: collapsed ? '60px' : '240px',
+          backgroundColor: 'var(--colheita-surface-elevated)',
+          borderRight: '1px solid var(--colheita-border-subtle)',
+          transition: 'width var(--colheita-transition-base), transform 0.3s ease',
+          flexShrink: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100vh',
+          position: 'sticky',
+          top: 0,
+          overflowX: 'hidden',
+          overflowY: 'auto',
+        }}
+        className={cn(className)}
+      >
+        {children}
+      </aside>
+    </>
   );
 }
 
@@ -98,7 +199,13 @@ export function SidebarMenuButton({
   children,
   ...props
 }: SidebarMenuButtonProps) {
+  const { setMobileOpen } = useSidebar();
   const Comp = asChild ? Slot : 'button';
+  // Fecha drawer mobile quando usuario clica em item de navegacao
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setMobileOpen(false);
+    props.onClick?.(e);
+  };
   return (
     <Comp
       style={{
@@ -130,6 +237,7 @@ export function SidebarMenuButton({
           e.currentTarget.style.color = 'var(--colheita-text-secondary)';
         }
       }}
+      onClick={handleClick}
       className={cn(className)}
       {...props}
     >
