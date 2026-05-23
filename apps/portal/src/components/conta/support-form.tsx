@@ -6,6 +6,7 @@
 // confirmacao + numero do ticket; em erro, mostra fieldErrors.
 
 import { CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
 import { useActionState, useId } from 'react';
 import { type CreateSupportTicketState, createSupportTicket } from '@/lib/actions/suporte';
 
@@ -96,16 +97,30 @@ export function SupportForm({ defaultProductSlug }: SupportFormProps) {
           acompanhar o status em <strong>Meus chamados</strong>.
         </p>
         {state.ticketId && (
-          <p
-            style={{
-              margin: 0,
-              fontSize: '0.75rem',
-              color: 'var(--colheita-text-tertiary)',
-              fontFamily: 'var(--font-mono)',
-            }}
-          >
-            Protocolo #{state.ticketId.slice(0, 8)}
-          </p>
+          <>
+            <p
+              style={{
+                margin: 0,
+                fontSize: '0.75rem',
+                color: 'var(--colheita-text-tertiary)',
+                fontFamily: 'var(--font-mono)',
+              }}
+            >
+              Protocolo #{state.ticketId.slice(0, 8)}
+            </p>
+            <Link
+              href={`/conta/suporte/${state.ticketId}`}
+              style={{
+                marginTop: '6px',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                color: 'var(--colheita-brand-primary)',
+                textDecoration: 'none',
+              }}
+            >
+              Acompanhar chamado →
+            </Link>
+          </>
         )}
       </output>
     );

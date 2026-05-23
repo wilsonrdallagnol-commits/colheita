@@ -150,8 +150,9 @@ export default async function SuportePage({ searchParams }: PageProps) {
               }}
             >
               {tickets.map((t, i) => (
-                <div
+                <Link
                   key={t.id}
+                  href={`/conta/suporte/${t.id}`}
                   style={{
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -161,6 +162,7 @@ export default async function SuportePage({ searchParams }: PageProps) {
                     borderBottom:
                       i < tickets.length - 1 ? '1px solid var(--colheita-border-subtle)' : 'none',
                     backgroundColor: 'var(--colheita-surface-elevated)',
+                    textDecoration: 'none',
                   }}
                 >
                   <div style={{ minWidth: 0, flex: 1 }}>
@@ -201,7 +203,7 @@ export default async function SuportePage({ searchParams }: PageProps) {
                   >
                     {STATUS_LABEL[t.status] ?? t.status}
                   </span>
-                </div>
+                </Link>
               ))}
             </div>
           </section>
