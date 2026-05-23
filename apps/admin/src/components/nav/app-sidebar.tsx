@@ -78,6 +78,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: '/materiais/historico', label: 'Materiais gerados', icon: Sparkles },
       { href: '/layout-inference', label: 'Layout Inference', icon: LayoutTemplate },
+      { href: '/imagens', label: 'Imagens IA · Nano Banana', icon: ImageIcon },
     ],
   },
   {
