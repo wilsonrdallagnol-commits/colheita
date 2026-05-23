@@ -6,6 +6,7 @@
 import { requireAuth } from '@colheita/auth';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 import { PortalChatPanel } from '@/components/assistente/portal-chat-panel';
 
 export const metadata: Metadata = {
@@ -34,20 +35,43 @@ export default async function AssistentePage() {
           flexShrink: 0,
         }}
       >
-        <p
-          className="argho-eyebrow"
+        <div
           style={{
-            display: 'inline-block',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            gap: '16px',
+            flexWrap: 'wrap',
             marginBottom: '8px',
-            fontSize: '0.6875rem',
-            fontWeight: 600,
-            color: 'var(--colheita-brand-secondary)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.12em',
           }}
         >
-          Suporte técnico · IA
-        </p>
+          <p
+            className="argho-eyebrow"
+            style={{
+              display: 'inline-block',
+              margin: 0,
+              fontSize: '0.6875rem',
+              fontWeight: 600,
+              color: 'var(--colheita-brand-secondary)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+            }}
+          >
+            Suporte técnico · IA
+          </p>
+          <Link
+            href="/conta/assistente/historico"
+            style={{
+              fontSize: '0.75rem',
+              fontWeight: 500,
+              color: 'var(--colheita-text-tertiary)',
+              textDecoration: 'none',
+              borderBottom: '1px dashed var(--colheita-border)',
+            }}
+          >
+            Histórico →
+          </Link>
+        </div>
         <h1
           style={{
             margin: 0,
