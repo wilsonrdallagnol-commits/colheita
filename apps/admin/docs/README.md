@@ -41,10 +41,13 @@
 ### 🔴 CRÍTICO — IA agronômica responder com dados certos
 
 ```sh
-# 1. Aplicar migration (segue guia detalhado em aplicar-migration-0034.md)
+# 1a. Aplicar migration 0034 (UPSERT 4 produtos novos + correção Troian)
 psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0034_fichas_tecnicas_sync.sql
 
-# 2. Re-indexar embeddings no pgvector
+# 1b. Aplicar migration 0035 (soft-delete algen + grow-sulfur legacy)
+psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0035_remove_legacy_products.sql
+
+# 2. Re-indexar embeddings no pgvector (cobre as 2 migrations)
 pnpm --filter @colheita/jobs reindex-all
 
 # 3. Smoke test no /assistente:
@@ -81,17 +84,15 @@ Vê tudo de uma vez em **`/configuracoes`** card "Status operacional".
 
 ## 🤔 Decisões pendentes
 
-### "N-Import"
-Wilson mencionou que queria adicionar produto N-Import junto com Titan,
-mas não enviou ficha técnica. Pode ser:
-- (a) Sinônimo interno do **Grow NitroP** (também "nitrogênio")
-- (b) Produto separado ainda sem documentação
+### N-Import (aguarda materiais)
+Wilson confirmou em 2026-05-23 que **N-Import é produto diferente** do
+Grow NitroP. Não foi adicionado ainda — aguarda envio de ficha técnica
++ mockup pra incluir em `apps/website/src/lib/products.ts` + criar
+migration UPSERT no Supabase.
 
-Por enquanto: não foi adicionado. Aguarda clarificação.
-
-### Produtos legacy `algen` e `grow-sulfur`
-Estão no seed.ts antigo mas não no products.ts atual do site
-institucional. Mantém ou remove? Migration 0034 não toca neles.
+### ~~Algen + Grow Sulfur~~ ✅ RESOLVIDO 2026-05-23
+Wilson confirmou descontinuar. Removidos via migration `0035` (soft delete
+preservando FK de pedidos/leads históricos) + tirados do seed.ts.
 
 ## 📁 Estrutura de docs
 
