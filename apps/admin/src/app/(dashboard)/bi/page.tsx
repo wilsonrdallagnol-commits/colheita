@@ -69,7 +69,6 @@ interface OrderRow {
   total_liquido: number | string | null;
 }
 
-
 export default async function BiPage() {
   const cookieStore = await cookies();
   await requireAuth(cookieStore);

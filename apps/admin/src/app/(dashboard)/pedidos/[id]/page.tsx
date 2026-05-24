@@ -25,7 +25,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return { title: data ? `Pedido ${data.numero}` : 'Pedido' };
 }
 
-
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function PedidoDetailPage({ params }: PageProps) {

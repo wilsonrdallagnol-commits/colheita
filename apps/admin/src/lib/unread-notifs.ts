@@ -3,8 +3,8 @@
 // Cache do count de notificacoes nao lidas (FIX MÉDIO #12 auditoria).
 // Espelha apps/portal/src/lib/unread-notifs.ts pra simetria.
 
-import { unstable_cache } from 'next/cache';
 import { createAdminClient } from '@colheita/auth';
+import { unstable_cache } from 'next/cache';
 
 const TTL_SECONDS = 30;
 

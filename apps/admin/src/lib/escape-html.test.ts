@@ -16,9 +16,7 @@ describe('admin escapeHtml', () => {
   });
 
   it('escapa tags HTML básicas', () => {
-    expect(escapeHtml('<script>alert(1)</script>')).toBe(
-      '&lt;script&gt;alert(1)&lt;/script&gt;',
-    );
+    expect(escapeHtml('<script>alert(1)</script>')).toBe('&lt;script&gt;alert(1)&lt;/script&gt;');
   });
 
   it('escapa quotes (atributo breakout)', () => {

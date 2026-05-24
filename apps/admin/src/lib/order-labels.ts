@@ -4,12 +4,7 @@
 // no color token (admin usa border colorido em alguns badges; portal
 // usa só bg+color).
 
-export type OrderStatus =
-  | 'rascunho'
-  | 'confirmado'
-  | 'faturado'
-  | 'entregue'
-  | 'cancelado';
+export type OrderStatus = 'rascunho' | 'confirmado' | 'faturado' | 'entregue' | 'cancelado';
 
 export const VALID_ORDER_STATUSES: OrderStatus[] = [
   'rascunho',
@@ -63,14 +58,10 @@ export function orderStatusLabel(s: string): string {
   return ORDER_STATUS_LABEL[s as OrderStatus] ?? s;
 }
 
-export function orderStatusColor(
-  s: string,
-): { bg: string; color: string; border: string } {
+export function orderStatusColor(s: string): { bg: string; color: string; border: string } {
   return ORDER_STATUS_COLOR[s as OrderStatus] ?? ORDER_STATUS_COLOR.rascunho;
 }
 
 export function asOrderStatus(s: string | null | undefined): OrderStatus | null {
-  return s && (VALID_ORDER_STATUSES as readonly string[]).includes(s)
-    ? (s as OrderStatus)
-    : null;
+  return s && (VALID_ORDER_STATUSES as readonly string[]).includes(s) ? (s as OrderStatus) : null;
 }

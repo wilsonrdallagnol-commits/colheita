@@ -8,12 +8,7 @@
 //   - portal: 'Aguardando você' (perspectiva distribuidor)
 //   - admin: 'Aguardando user' (perspectiva staff Argho)
 
-export type TicketStatus =
-  | 'open'
-  | 'in_progress'
-  | 'waiting_user'
-  | 'resolved'
-  | 'closed';
+export type TicketStatus = 'open' | 'in_progress' | 'waiting_user' | 'resolved' | 'closed';
 
 export type TicketUrgency = 'low' | 'normal' | 'high' | 'urgent';
 

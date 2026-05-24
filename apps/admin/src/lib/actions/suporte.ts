@@ -16,11 +16,7 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { logAuditEvent } from '@/lib/audit';
 import { escapeHtml } from '@/lib/escape-html';
-import {
-  STATUS_LABEL,
-  type TicketStatus,
-  VALID_STATUSES,
-} from '@/lib/support-labels';
+import { STATUS_LABEL, type TicketStatus, VALID_STATUSES } from '@/lib/support-labels';
 
 // ── replyToTicket ────────────────────────────────────────────────────────────
 
@@ -194,4 +190,3 @@ export async function assignTicket(ticketId: string, assigneeId: string | null):
 
   revalidatePath(`/suporte/${ticketId}`);
 }
-
