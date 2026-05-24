@@ -13,7 +13,7 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-type OrderStatus = 'rascunho' | 'confirmado' | 'faturado' | 'entregue' | 'cancelado';
+import { type OrderStatus, orderStatusColor, orderStatusLabel } from '@/lib/order-labels';
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
@@ -47,42 +47,6 @@ function formatCurrency(value: string | number): string {
   );
 }
 
-function statusLabel(status: OrderStatus): string {
-  const map: Record<OrderStatus, string> = {
-    rascunho: 'Rascunho',
-    confirmado: 'Confirmado',
-    faturado: 'Faturado',
-    entregue: 'Entregue',
-    cancelado: 'Cancelado',
-  };
-  return map[status] ?? status;
-}
-
-function statusColor(status: OrderStatus): { bg: string; color: string } {
-  switch (status) {
-    case 'entregue':
-      return {
-        bg: 'var(--colheita-success-subtle, rgba(16,185,129,0.08))',
-        color: 'var(--colheita-success, rgb(5,150,105))',
-      };
-    case 'confirmado':
-    case 'faturado':
-      return {
-        bg: 'color-mix(in oklch, var(--colheita-brand-primary) 12%, transparent)',
-        color: 'var(--colheita-brand-primary)',
-      };
-    case 'cancelado':
-      return {
-        bg: 'color-mix(in oklch, var(--colheita-warning) 12%, transparent)',
-        color: 'var(--colheita-warning)',
-      };
-    default:
-      return {
-        bg: 'var(--colheita-surface-elevated)',
-        color: 'var(--colheita-text-tertiary)',
-      };
-  }
-}
 
 const labelStyle: React.CSSProperties = {
   fontSize: '0.6875rem',
@@ -128,7 +92,7 @@ export default async function PedidoDetalhePage({ params }: PageProps) {
   if (error || !order) notFound();
 
   const status = order.status as OrderStatus;
-  const colors = statusColor(status);
+  const colors = orderStatusColor(status);
   const items = itemsData ?? [];
 
   return (
@@ -205,7 +169,7 @@ export default async function PedidoDetalhePage({ params }: PageProps) {
               letterSpacing: '0.06em',
             }}
           >
-            {statusLabel(status)}
+            {orderStatusLabel(status)}
           </span>
         </header>
 

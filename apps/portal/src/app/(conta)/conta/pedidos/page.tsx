@@ -9,9 +9,9 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 
-export const metadata: Metadata = { title: 'Meus pedidos' };
+import { type OrderStatus, orderStatusColor, orderStatusLabel } from '@/lib/order-labels';
 
-type OrderStatus = 'rascunho' | 'confirmado' | 'faturado' | 'entregue' | 'cancelado';
+export const metadata: Metadata = { title: 'Meus pedidos' };
 
 const PAGE_SIZE = 20;
 
@@ -27,43 +27,6 @@ function formatCurrency(value: string): string {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
     Number(value),
   );
-}
-
-function statusLabel(status: OrderStatus): string {
-  const map: Record<OrderStatus, string> = {
-    rascunho: 'Rascunho',
-    confirmado: 'Confirmado',
-    faturado: 'Faturado',
-    entregue: 'Entregue',
-    cancelado: 'Cancelado',
-  };
-  return map[status] ?? status;
-}
-
-function statusColor(status: OrderStatus): { bg: string; color: string } {
-  switch (status) {
-    case 'entregue':
-      return {
-        bg: 'var(--colheita-success-subtle, rgba(16,185,129,0.08))',
-        color: 'var(--colheita-success, rgb(5,150,105))',
-      };
-    case 'confirmado':
-    case 'faturado':
-      return {
-        bg: 'color-mix(in oklch, var(--colheita-brand-primary) 12%, transparent)',
-        color: 'var(--colheita-brand-primary)',
-      };
-    case 'cancelado':
-      return {
-        bg: 'color-mix(in oklch, var(--colheita-warning) 12%, transparent)',
-        color: 'var(--colheita-warning)',
-      };
-    default:
-      return {
-        bg: 'var(--colheita-surface-elevated)',
-        color: 'var(--colheita-text-tertiary)',
-      };
-  }
 }
 
 interface PageProps {
@@ -217,7 +180,7 @@ export default async function MeusPedidosPage({ searchParams }: PageProps) {
             }}
           >
             {orderList.map((order, i) => {
-              const colors = statusColor(order.status as OrderStatus);
+              const colors = orderStatusColor(order.status);
               return (
                 <Link
                   key={order.id}
@@ -291,7 +254,7 @@ export default async function MeusPedidosPage({ searchParams }: PageProps) {
                         textAlign: 'center',
                       }}
                     >
-                      {statusLabel(order.status as OrderStatus)}
+                      {orderStatusLabel(order.status)}
                     </span>
                   </div>
                 </Link>
@@ -311,7 +274,7 @@ export default async function MeusPedidosPage({ searchParams }: PageProps) {
           >
             <p style={{ fontSize: '0.875rem', marginBottom: '6px' }}>
               {statusFilter
-                ? `Nenhum pedido ${statusLabel(statusFilter as OrderStatus).toLowerCase()}.`
+                ? `Nenhum pedido ${orderStatusLabel(statusFilter).toLowerCase()}.`
                 : 'Nenhum pedido encontrado.'}
             </p>
             <p style={{ fontSize: '0.8125rem' }}>

@@ -3,6 +3,7 @@ import { createServerClient } from '@colheita/auth';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { signOut } from '@/lib/actions/auth';
+import { orderStatusColorFg, orderStatusLabel } from '@/lib/order-labels';
 
 export const metadata = { title: 'Minha Conta' };
 
@@ -61,26 +62,6 @@ export default async function ContaPage() {
   const certList = certData ?? [];
   const productsList = productsData ?? [];
   const ordersList = ordersData ?? [];
-
-  type OrderStatus = 'rascunho' | 'confirmado' | 'faturado' | 'entregue' | 'cancelado';
-
-  function orderStatusLabel(s: string): string {
-    const map: Record<string, string> = {
-      rascunho: 'Rascunho',
-      confirmado: 'Confirmado',
-      faturado: 'Faturado',
-      entregue: 'Entregue',
-      cancelado: 'Cancelado',
-    };
-    return map[s] ?? s;
-  }
-
-  function orderStatusColor(s: string): string {
-    if (s === 'entregue') return 'var(--colheita-success)';
-    if (s === 'confirmado' || s === 'faturado') return 'var(--colheita-brand-primary)';
-    if (s === 'cancelado') return 'var(--colheita-warning)';
-    return 'var(--colheita-text-tertiary)';
-  }
 
   function formatCurrency(v: string): string {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v));
@@ -525,7 +506,7 @@ export default async function ContaPage() {
                       style={{
                         fontSize: '0.6875rem',
                         fontWeight: '600',
-                        color: orderStatusColor(order.status as OrderStatus),
+                        color: orderStatusColorFg(order.status),
                         textTransform: 'uppercase',
                         letterSpacing: '0.04em',
                       }}
