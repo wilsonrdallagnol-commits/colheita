@@ -9,6 +9,7 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 
+import { formatCurrency } from '@/lib/format-currency';
 import { type OrderStatus, orderStatusColor, orderStatusLabel } from '@/lib/order-labels';
 
 export const metadata: Metadata = { title: 'Meus pedidos' };
@@ -21,12 +22,6 @@ function formatDate(iso: string): string {
     month: '2-digit',
     year: 'numeric',
   });
-}
-
-function formatCurrency(value: string): string {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
-    Number(value),
-  );
 }
 
 interface PageProps {

@@ -3,6 +3,7 @@ import { createServerClient } from '@colheita/auth';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { signOut } from '@/lib/actions/auth';
+import { formatCurrency } from '@/lib/format-currency';
 import { orderStatusColorFg, orderStatusLabel } from '@/lib/order-labels';
 
 export const metadata = { title: 'Minha Conta' };
@@ -63,9 +64,6 @@ export default async function ContaPage() {
   const productsList = productsData ?? [];
   const ordersList = ordersData ?? [];
 
-  function formatCurrency(v: string): string {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v));
-  }
 
   const completedCount = progressList.filter((p) => p.status === 'completed').length;
   const inProgressCount = progressList.filter((p) => p.status === 'in_progress').length;

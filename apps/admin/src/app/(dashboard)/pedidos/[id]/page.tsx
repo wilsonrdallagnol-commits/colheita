@@ -13,6 +13,7 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+import { formatCurrency } from '@/lib/format-currency';
 import { type OrderStatus, orderStatusColor, orderStatusLabel } from '@/lib/order-labels';
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -43,11 +44,6 @@ function formatDateTime(iso: string): string {
   });
 }
 
-function formatCurrency(value: string | number): string {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
-    Number(value),
-  );
-}
 
 
 // ── Page ──────────────────────────────────────────────────────────────────────

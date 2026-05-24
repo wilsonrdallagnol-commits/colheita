@@ -14,6 +14,7 @@ export const metadata: Metadata = { title: 'Pedidos' };
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
+import { formatCurrency } from '@/lib/format-currency';
 import {
   type OrderStatus,
   orderStatusColor,
@@ -43,11 +44,6 @@ function formatDateTime(iso: string): string {
   });
 }
 
-function formatCurrency(value: string): string {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
-    Number(value),
-  );
-}
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 

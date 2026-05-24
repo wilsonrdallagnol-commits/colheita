@@ -18,6 +18,7 @@
 import { createServerClient, requireAuth } from '@colheita/auth';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import { formatCurrency } from '@/lib/format-currency';
 
 export const metadata = { title: 'Inteligência de Mercado' };
 
@@ -68,9 +69,6 @@ interface OrderRow {
   total_liquido: number | string | null;
 }
 
-function formatCurrency(brl: number): string {
-  return brl.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-}
 
 export default async function BiPage() {
   const cookieStore = await cookies();
