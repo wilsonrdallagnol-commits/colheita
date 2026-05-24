@@ -8,6 +8,7 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { SupportForm } from '@/components/conta/support-form';
+import { formatDate } from '@/lib/format-date';
 import { STATUS_LABEL, type TicketStatus, URGENCY_LABEL } from '@/lib/support-labels';
 
 export const metadata: Metadata = {
@@ -173,7 +174,7 @@ export default async function SuportePage({ searchParams }: PageProps) {
                         margin: 0,
                       }}
                     >
-                      {new Date(t.created_at).toLocaleDateString('pt-BR')} ·{' '}
+                      {formatDate(t.created_at)} ·{' '}
                       {URGENCY_LABEL[t.urgency as keyof typeof URGENCY_LABEL] ?? t.urgency}
                     </p>
                   </div>

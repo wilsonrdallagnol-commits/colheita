@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { signOut } from '@/lib/actions/auth';
 import { formatCurrency } from '@/lib/format-currency';
+import { formatDate } from '@/lib/format-date';
 import { orderStatusColorFg, orderStatusLabel } from '@/lib/order-labels';
 
 export const metadata = { title: 'Minha Conta' };
@@ -351,9 +352,7 @@ export default async function ContaPage() {
                   const track = Array.isArray(cert.learning_tracks)
                     ? cert.learning_tracks[0]
                     : cert.learning_tracks;
-                  const issuedDate = cert.issued_at
-                    ? new Date(cert.issued_at).toLocaleDateString('pt-BR')
-                    : '—';
+                  const issuedDate = formatDate(cert.issued_at);
 
                   return (
                     <div
@@ -482,11 +481,7 @@ export default async function ContaPage() {
                       {order.numero}
                     </p>
                     <p style={{ fontSize: '0.75rem', color: 'var(--colheita-text-tertiary)' }}>
-                      {new Date(order.emitido_em).toLocaleDateString('pt-BR', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                      })}
+                      {formatDate(order.emitido_em)}
                     </p>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>

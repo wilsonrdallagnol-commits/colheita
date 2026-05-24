@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SupportReplyForm } from '@/components/conta/support-reply-form';
 
+import { formatDateTime } from '@/lib/format-date';
 import {
   CATEGORY_LABEL,
   STATUS_LABEL,
@@ -158,7 +159,7 @@ export default async function MeuChamadoPage({ params }: PageProps) {
               margin: 0,
             }}
           >
-            Aberto em {new Date(ticket.created_at).toLocaleString('pt-BR')} · Urgência{' '}
+            Aberto em {formatDateTime(ticket.created_at)} · Urgência{' '}
             {URGENCY_LABEL[ticket.urgency as TicketUrgency]?.toLowerCase() ?? ticket.urgency}
             {ticket.product_slug && ` · Produto: ${ticket.product_slug}`}
           </p>
@@ -242,7 +243,7 @@ export default async function MeuChamadoPage({ params }: PageProps) {
                     >
                       {authorLabel}
                     </strong>
-                    <span>{new Date(m.created_at).toLocaleString('pt-BR')}</span>
+                    <span>{formatDateTime(m.created_at)}</span>
                   </header>
                   <pre
                     style={{

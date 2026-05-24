@@ -10,6 +10,7 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { academiaCertificateUrl, academiaTrackUrl } from '@/lib/academia-url';
+import { formatDate } from '@/lib/format-date';
 
 export const metadata: Metadata = {
   title: 'Academia',
@@ -331,9 +332,7 @@ export default async function AcademiaPage() {
                 const track = Array.isArray(cert.learning_tracks)
                   ? cert.learning_tracks[0]
                   : cert.learning_tracks;
-                const issuedDate = cert.issued_at
-                  ? new Date(cert.issued_at).toLocaleDateString('pt-BR')
-                  : '—';
+                const issuedDate = formatDate(cert.issued_at);
                 return (
                   <a
                     key={cert.certificate_no}
