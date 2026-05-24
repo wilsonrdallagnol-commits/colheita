@@ -5,6 +5,73 @@ Versionamento por **data + sprint** (sem semver — projeto interno single-tenan
 
 ---
 
+## Sprint 2026-05-23/24 #4 — Sweep, refactors e tests cleanup
+
+**Foco**: madrugada de manutenção pós-auditoria. Consolidação de
+utils duplicados, expansão de coverage de testes, e cleanup de lint.
+Resultado: ~20 commits, ~400 linhas removidas por consolidação,
+~+120 tests verde.
+
+### Consolidação de utilities (zero mudança de comportamento)
+
+- **`support-labels.ts`** (portal + admin): single source of truth
+  pros enums + labels do dominio support_tickets. Antes duplicado em
+  6 arquivos (3 portal + 3 admin) com risco de drift quando wording
+  mudasse em só 1 lugar. Inclui type guards `asTicketStatus`,
+  `asTicketUrgency`, `asTicketCategory`. (`ef08fc7`, `49e48f9`,
+  `0445ea6`)
+- **`order-labels.ts`** (portal + admin): mesma consolidação pro
+  dominio orders. Portal usa `{bg, color}`; admin usa
+  `{bg, color, border}` (border colorido em badges). Helper extra
+  `orderStatusColorFg` pra dashboard listas que só colorem texto.
+  (`cbc5e03`, `10cc638`)
+- **`format-currency.ts`** (portal + admin): aceita `string | number
+  | null | undefined` (defensivo). NaN → `R$ 0,00`. Consolida 6
+  arquivos. (`24a7467`)
+- **`format-date.ts`** (portal + admin): `formatDate(iso)` +
+  `formatDateTime(iso)` com guard pra null/invalid → `—`. Consolida
+  5 arquivos. (`a86baa9`, `48b1a9d`)
+- **`format-relative-time.ts`** (portal + admin): badge tempo curto
+  na inbox de notif. Aceita `now` param pra testes determinísticos.
+  (`3654b51`)
+- **`escape-html.ts`** (portal + admin): guard XSS extraído pra
+  módulo. Mantém função idêntica byte-a-byte. (`4c0a64c`, `07815c5`)
+- **`unread-notifs.ts`** (portal + admin): `notifsTag(userId)` helper
+  pra invalidação de cache. (`7245c4b`)
+- **`tenant.ts`** (portal): `resolveTenantId(supabase, context)`
+  encapsula pattern RPC + error + captureError. (`2ca4090`)
+
+### Testes
+
+- Portal: 21 → 99 (+78 tests verde)
+- Admin: 30 → 71 (+41 tests verde)
+- **Monorepo total: 170 tests verde** (era 51)
+
+### Cleanup
+
+- **Portal lint: 0 errors** após biome auto-fix + organizeImports
+  em 7 arquivos novos. (`e1cc850`)
+- **Admin lint: 27 → 2 errors** após:
+  - Auto-fix biome em 9 arquivos (`a435763`)
+  - `useId()` em 22 inputs (change-password 3, registro 8,
+    nova-colecao 2, academia forms 2, asset-edit 6, imagen-generator
+    4) (`25cf645`, `5002d0f`, `2e6a5d4`, `7152217`)
+  - 2 errors restantes são `<img>` em layout-inference (legado;
+    converter pra `<Image>` precisa medir width/height)
+- **AbortController client-side** em PortalChatPanel completa fix #9
+  do SSE abort do server. Stack TCP drop → server abort →
+  Anthropic stop → zero tokens órfãos. (`4b0e3bc`)
+
+### Pendências de prod (Wilson — inalteradas)
+
+- Aplicar 9 migrations encadeadas via psql `DATABASE_URL_DIRECT`:
+  `0034 + 0035 + 0036 + 0037 + 0038 + 0039 + 0040 + 0041 + 0042`
+- Reindex RAG: `pnpm --filter @colheita/jobs reindex-all`
+- Env vars Vercel: `SUPPORT_INBOX_EMAIL`, `NEXT_PUBLIC_ACADEMIA_URL`,
+  `GEMINI_API_KEY`, `UPSTASH_REDIS_REST_URL` + `_TOKEN`
+
+---
+
 ## Sprint 2026-05-23 #3 — Hardening pós-auditoria hm-engineer + perf
 
 **Foco**: aplicar 12 findings da auditoria hm-engineer no portal
