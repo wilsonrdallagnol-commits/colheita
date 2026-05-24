@@ -11,18 +11,16 @@ import Link from 'next/link';
 
 export const metadata: Metadata = { title: 'Suporte' };
 
-type TicketStatus = 'open' | 'in_progress' | 'waiting_user' | 'resolved' | 'closed';
-type TicketUrgency = 'low' | 'normal' | 'high' | 'urgent';
+import {
+  CATEGORY_LABEL,
+  STATUS_LABEL,
+  type TicketCategory,
+  type TicketStatus,
+  type TicketUrgency,
+  URGENCY_LABEL,
+} from '@/lib/support-labels';
 
 const PAGE_SIZE = 30;
-
-const STATUS_LABEL: Record<TicketStatus, string> = {
-  open: 'Aberto',
-  in_progress: 'Em andamento',
-  waiting_user: 'Aguardando user',
-  resolved: 'Resolvido',
-  closed: 'Fechado',
-};
 
 const STATUS_COLOR: Record<TicketStatus, { bg: string; color: string }> = {
   open: {
@@ -47,27 +45,11 @@ const STATUS_COLOR: Record<TicketStatus, { bg: string; color: string }> = {
   },
 };
 
-const URGENCY_LABEL: Record<TicketUrgency, string> = {
-  low: 'Baixa',
-  normal: 'Normal',
-  high: 'Alta',
-  urgent: 'Urgente',
-};
-
 const URGENCY_COLOR: Record<TicketUrgency, string> = {
   low: 'var(--colheita-text-tertiary)',
   normal: 'var(--colheita-text-secondary)',
   high: 'var(--colheita-warning, #d97706)',
   urgent: 'var(--colheita-danger, #dc2626)',
-};
-
-const CATEGORY_LABEL: Record<string, string> = {
-  agronomic: 'Agronômico',
-  commercial: 'Comercial',
-  product: 'Produto',
-  logistics: 'Logística',
-  platform: 'Plataforma',
-  other: 'Outros',
 };
 
 interface PageProps {
@@ -303,7 +285,7 @@ export default async function SuportePage({ searchParams }: PageProps) {
                     letterSpacing: '0.04em',
                   }}
                 >
-                  {CATEGORY_LABEL[t.category] ?? t.category}
+                  {CATEGORY_LABEL[t.category as TicketCategory] ?? t.category}
                 </span>
                 <span
                   style={{

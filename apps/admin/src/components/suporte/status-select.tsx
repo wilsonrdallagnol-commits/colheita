@@ -7,16 +7,12 @@
 
 import { useId, useState, useTransition } from 'react';
 import { updateTicketStatus } from '@/lib/actions/suporte';
+import { STATUS_LABEL, type TicketStatus, VALID_STATUSES } from '@/lib/support-labels';
 
-type TicketStatus = 'open' | 'in_progress' | 'waiting_user' | 'resolved' | 'closed';
-
-const STATUS_OPTIONS: { value: TicketStatus; label: string }[] = [
-  { value: 'open', label: 'Aberto' },
-  { value: 'in_progress', label: 'Em andamento' },
-  { value: 'waiting_user', label: 'Aguardando user' },
-  { value: 'resolved', label: 'Resolvido' },
-  { value: 'closed', label: 'Fechado' },
-];
+const STATUS_OPTIONS: { value: TicketStatus; label: string }[] = VALID_STATUSES.map((s) => ({
+  value: s,
+  label: STATUS_LABEL[s],
+}));
 
 interface StatusSelectProps {
   ticketId: string;

@@ -19,30 +19,19 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-type TicketStatus = 'open' | 'in_progress' | 'waiting_user' | 'resolved' | 'closed';
-type TicketUrgency = 'low' | 'normal' | 'high' | 'urgent';
-
-const URGENCY_LABEL: Record<TicketUrgency, string> = {
-  low: 'Baixa',
-  normal: 'Normal',
-  high: 'Alta',
-  urgent: 'Urgente',
-};
+import {
+  CATEGORY_LABEL,
+  type TicketCategory,
+  type TicketStatus,
+  type TicketUrgency,
+  URGENCY_LABEL,
+} from '@/lib/support-labels';
 
 const URGENCY_COLOR: Record<TicketUrgency, string> = {
   low: 'var(--colheita-text-tertiary)',
   normal: 'var(--colheita-text-secondary)',
   high: 'var(--colheita-warning, #d97706)',
   urgent: 'var(--colheita-danger, #dc2626)',
-};
-
-const CATEGORY_LABEL: Record<string, string> = {
-  agronomic: 'Recomendação agronômica',
-  commercial: 'Comercial / pedido',
-  product: 'Produto específico',
-  logistics: 'Logística / entrega',
-  platform: 'Plataforma Colheita',
-  other: 'Outros',
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -132,7 +121,7 @@ export default async function TicketDetailPage({ params }: PageProps) {
                 marginBottom: '6px',
               }}
             >
-              {CATEGORY_LABEL[ticket.category] ?? ticket.category}
+              {CATEGORY_LABEL[ticket.category as TicketCategory] ?? ticket.category}
             </p>
             <h1
               style={{

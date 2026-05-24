@@ -15,23 +15,11 @@ import { captureError } from '@colheita/observability';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { logAuditEvent } from '@/lib/audit';
-
-type TicketStatus = 'open' | 'in_progress' | 'waiting_user' | 'resolved' | 'closed';
-const VALID_STATUSES: TicketStatus[] = [
-  'open',
-  'in_progress',
-  'waiting_user',
-  'resolved',
-  'closed',
-];
-
-const STATUS_LABEL: Record<TicketStatus, string> = {
-  open: 'Aberto',
-  in_progress: 'Em andamento',
-  waiting_user: 'Aguardando distribuidor',
-  resolved: 'Resolvido',
-  closed: 'Fechado',
-};
+import {
+  STATUS_LABEL,
+  type TicketStatus,
+  VALID_STATUSES,
+} from '@/lib/support-labels';
 
 // ── replyToTicket ────────────────────────────────────────────────────────────
 
