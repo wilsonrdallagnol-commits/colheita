@@ -16,6 +16,7 @@ import { captureError } from '@colheita/observability';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { buildRateLimiter, checkRateLimit } from '@/lib/rate-limit';
+import { resolveTenantId } from '@/lib/tenant';
 
 // Rate limit: 2 exports/h por user (9 selects em paralelo — protege DB)
 const exportLimiter = buildRateLimiter({
@@ -154,14 +155,11 @@ export async function requestAccountDeletion(
     return { fieldErrors: { reason: 'Motivo muito longo (máx 1000 caracteres).' } };
   }
 
-  // Pega tenant via RPC
-  const { data: tenantRow, error: tenantErr } = await supabase.rpc('app_tenant_id');
-  if (tenantErr || !tenantRow) {
-    captureError(tenantErr ?? new Error('app_tenant_id null'), {
-      context: 'portal.privacidade.requestAccountDeletion.tenant',
-    });
-    return { error: 'Sessão sem tenant — refaça login.' };
-  }
+  const tenantId = await resolveTenantId(
+    supabase,
+    'portal.privacidade.requestAccountDeletion.tenant',
+  );
+  if (!tenantId) return { error: 'Sessão sem tenant — refaça login.' };
 
   // FIX ALTO #7 (auditoria): emails RFC5321 podem ter ate 254 chars,
   // estourando o CHECK BETWEEN 4 AND 200 do support_tickets.subject.
@@ -181,7 +179,7 @@ SLA: 15 dias úteis para resposta (LGPD).
 Procedimento: verificar identidade → checar FKs em orders/certifications → anonimizar (não hard-delete pra preservar histórico transacional).`;
 
   const { error: insertErr } = await supabase.from('support_tickets').insert({
-    tenant_id: String(tenantRow),
+    tenant_id: tenantId,
     user_id: user.id,
     subject,
     body,

@@ -13,6 +13,7 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { escapeHtml } from '@/lib/escape-html';
 import { buildRateLimiter, checkRateLimit } from '@/lib/rate-limit';
+import { resolveTenantId } from '@/lib/tenant';
 import {
   CATEGORY_LABEL,
   type TicketCategory as Category,
@@ -84,15 +85,8 @@ export async function createSupportTicket(
     ? (urgencyRaw as Urgency)
     : 'normal';
 
-  // Pega tenant_id do JWT (app_tenant_id)
-  const { data: tenantRow, error: tenantErr } = await supabase.rpc('app_tenant_id');
-  if (tenantErr || !tenantRow) {
-    captureError(tenantErr ?? new Error('app_tenant_id retornou null'), {
-      context: 'portal.suporte.createSupportTicket.tenant',
-    });
-    return { error: 'Sessão sem tenant — refaça login.' };
-  }
-  const tenantId = String(tenantRow);
+  const tenantId = await resolveTenantId(supabase, 'portal.suporte.createSupportTicket.tenant');
+  if (!tenantId) return { error: 'Sessão sem tenant — refaça login.' };
 
   // Insert
   const { data: ticket, error: insertErr } = await supabase
