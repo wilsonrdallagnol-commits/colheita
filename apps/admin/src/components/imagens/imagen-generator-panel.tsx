@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 type AspectRatio = '1:1' | '4:3' | '3:4' | '16:9' | '9:16';
 
@@ -55,6 +55,10 @@ export function ImagenGeneratorPanel() {
   const [images, setImages] = useState<GeneratedImage[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [metadata, setMetadata] = useState<{ model: string; promptUsed: string } | null>(null);
+  const promptId = useId();
+  const negativeId = useId();
+  const aspectId = useId();
+  const numId = useId();
 
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
@@ -121,7 +125,7 @@ export function ImagenGeneratorPanel() {
       >
         <div>
           <label
-            htmlFor="prompt"
+            htmlFor={promptId}
             style={{
               display: 'block',
               fontSize: '0.75rem',
@@ -135,7 +139,7 @@ export function ImagenGeneratorPanel() {
             Prompt
           </label>
           <textarea
-            id="prompt"
+            id={promptId}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="Descreva a imagem que quer gerar… ex: mockup foto-real de frasco 1L branco com rótulo azul Argho, fundo branco, sombra suave"
@@ -206,7 +210,7 @@ export function ImagenGeneratorPanel() {
 
         <div>
           <label
-            htmlFor="negative"
+            htmlFor={negativeId}
             style={{
               display: 'block',
               fontSize: '0.75rem',
@@ -220,7 +224,7 @@ export function ImagenGeneratorPanel() {
             Negative prompt (opcional)
           </label>
           <input
-            id="negative"
+            id={negativeId}
             type="text"
             value={negativePrompt}
             onChange={(e) => setNegativePrompt(e.target.value)}
@@ -242,7 +246,7 @@ export function ImagenGeneratorPanel() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
           <div>
             <label
-              htmlFor="aspect"
+              htmlFor={aspectId}
               style={{
                 display: 'block',
                 fontSize: '0.75rem',
@@ -256,7 +260,7 @@ export function ImagenGeneratorPanel() {
               Proporção
             </label>
             <select
-              id="aspect"
+              id={aspectId}
               value={aspectRatio}
               onChange={(e) => setAspectRatio(e.target.value as AspectRatio)}
               style={{
@@ -279,7 +283,7 @@ export function ImagenGeneratorPanel() {
           </div>
           <div>
             <label
-              htmlFor="num"
+              htmlFor={numId}
               style={{
                 display: 'block',
                 fontSize: '0.75rem',
@@ -293,7 +297,7 @@ export function ImagenGeneratorPanel() {
               Quantidade
             </label>
             <select
-              id="num"
+              id={numId}
               value={numImages}
               onChange={(e) => setNumImages(Number(e.target.value))}
               style={{
