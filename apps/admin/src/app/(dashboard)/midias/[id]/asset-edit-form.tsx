@@ -7,7 +7,7 @@
 // com prazo. Tudo numa form única com useActionState pra feedback inline.
 
 import { Button, Input, Textarea } from '@colheita/ui';
-import { useActionState } from 'react';
+import { useActionState, useId } from 'react';
 import { updateAsset } from './actions';
 
 type AssetLicense = 'internal' | 'public' | 'restricted' | 'licensed';
@@ -57,6 +57,12 @@ export function AssetEditForm({
   isImage,
 }: AssetEditFormProps) {
   const [state, formAction, isPending] = useActionState(updateAsset, undefined);
+  const titleId = useId();
+  const altTextId = useId();
+  const tagsId = useId();
+  const licenseId = useId();
+  const licenseNotesId = useId();
+  const expiresAtId = useId();
   const tagsString = tags.join(', ');
 
   return (
@@ -65,7 +71,7 @@ export function AssetEditForm({
 
       <div style={{ marginBottom: '20px' }}>
         <label
-          htmlFor="title"
+          htmlFor={titleId}
           style={{
             display: 'block',
             fontSize: '0.8125rem',
@@ -77,7 +83,7 @@ export function AssetEditForm({
           Título
         </label>
         <Input
-          id="title"
+          id={titleId}
           name="title"
           defaultValue={title}
           placeholder="Nome descritivo do arquivo"
@@ -97,7 +103,7 @@ export function AssetEditForm({
       {isImage && (
         <div style={{ marginBottom: '20px' }}>
           <label
-            htmlFor="alt_text"
+            htmlFor={altTextId}
             style={{
               display: 'block',
               fontSize: '0.8125rem',
@@ -109,7 +115,7 @@ export function AssetEditForm({
             Texto alternativo (alt)
           </label>
           <Textarea
-            id="alt_text"
+            id={altTextId}
             name="alt_text"
             defaultValue={altText}
             placeholder="Descreva a imagem para acessibilidade"
@@ -132,7 +138,7 @@ export function AssetEditForm({
       {/* ── Tags ────────────────────────────────────────────────────────── */}
       <div style={{ marginBottom: '20px' }}>
         <label
-          htmlFor="tags"
+          htmlFor={tagsId}
           style={{
             display: 'block',
             fontSize: '0.8125rem',
@@ -144,7 +150,7 @@ export function AssetEditForm({
           Tags
         </label>
         <Input
-          id="tags"
+          id={tagsId}
           name="tags"
           defaultValue={tagsString}
           placeholder="hero, soja, embalagem, lifeon (separadas por vírgula)"
@@ -184,7 +190,7 @@ export function AssetEditForm({
 
         <div style={{ marginBottom: '16px' }}>
           <label
-            htmlFor="license"
+            htmlFor={licenseId}
             style={{
               display: 'block',
               fontSize: '0.8125rem',
@@ -196,7 +202,7 @@ export function AssetEditForm({
             Licença
           </label>
           <select
-            id="license"
+            id={licenseId}
             name="license"
             defaultValue={license}
             disabled={isPending}
@@ -229,7 +235,7 @@ export function AssetEditForm({
 
         <div style={{ marginBottom: '16px' }}>
           <label
-            htmlFor="license_notes"
+            htmlFor={licenseNotesId}
             style={{
               display: 'block',
               fontSize: '0.8125rem',
@@ -241,7 +247,7 @@ export function AssetEditForm({
             Observações de licença
           </label>
           <Textarea
-            id="license_notes"
+            id={licenseNotesId}
             name="license_notes"
             defaultValue={licenseNotes}
             placeholder="Ex: licença Adobe Stock #12345, válida até 2027"
@@ -253,7 +259,7 @@ export function AssetEditForm({
 
         <div>
           <label
-            htmlFor="expires_at"
+            htmlFor={expiresAtId}
             style={{
               display: 'block',
               fontSize: '0.8125rem',
@@ -265,7 +271,7 @@ export function AssetEditForm({
             Vence em
           </label>
           <Input
-            id="expires_at"
+            id={expiresAtId}
             name="expires_at"
             type="date"
             defaultValue={expiresAt ?? ''}

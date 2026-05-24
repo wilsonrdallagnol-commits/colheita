@@ -165,7 +165,11 @@ export function RegistroForm({
       </Field>
 
       {/* Document URL */}
-      <Field label="URL do documento" htmlFor={documentUrlId} hint="Link pro PDF oficial (opcional)">
+      <Field
+        label="URL do documento"
+        htmlFor={documentUrlId}
+        hint="Link pro PDF oficial (opcional)"
+      >
         <input
           id={documentUrlId}
           name="document_url"
