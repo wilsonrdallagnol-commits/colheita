@@ -13,7 +13,7 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-type OrderStatus = 'rascunho' | 'confirmado' | 'faturado' | 'entregue' | 'cancelado';
+import { type OrderStatus, orderStatusColor, orderStatusLabel } from '@/lib/order-labels';
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
@@ -49,46 +49,6 @@ function formatCurrency(value: string | number): string {
   );
 }
 
-function statusLabel(status: OrderStatus): string {
-  const map: Record<OrderStatus, string> = {
-    rascunho: 'Rascunho',
-    confirmado: 'Confirmado',
-    faturado: 'Faturado',
-    entregue: 'Entregue',
-    cancelado: 'Cancelado',
-  };
-  return map[status];
-}
-
-function statusColor(status: OrderStatus): { bg: string; color: string; border: string } {
-  switch (status) {
-    case 'entregue':
-      return {
-        bg: 'var(--colheita-success-subtle)',
-        color: 'var(--colheita-success)',
-        border: 'var(--colheita-success)',
-      };
-    case 'confirmado':
-    case 'faturado':
-      return {
-        bg: 'color-mix(in oklch, var(--colheita-brand-primary) 12%, transparent)',
-        color: 'var(--colheita-brand-primary)',
-        border: 'var(--colheita-brand-primary)',
-      };
-    case 'cancelado':
-      return {
-        bg: 'color-mix(in oklch, var(--colheita-warning) 12%, transparent)',
-        color: 'var(--colheita-warning)',
-        border: 'var(--colheita-warning)',
-      };
-    default:
-      return {
-        bg: 'var(--colheita-surface-elevated)',
-        color: 'var(--colheita-text-tertiary)',
-        border: 'var(--colheita-border)',
-      };
-  }
-}
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
@@ -119,7 +79,7 @@ export default async function PedidoDetailPage({ params }: PageProps) {
   if (error || !order) notFound();
 
   const status = order.status as OrderStatus;
-  const colors = statusColor(status);
+  const colors = orderStatusColor(status);
 
   const labelStyle = {
     fontSize: '0.6875rem',
@@ -203,7 +163,7 @@ export default async function PedidoDetailPage({ params }: PageProps) {
             alignSelf: 'center',
           }}
         >
-          {statusLabel(status)}
+          {orderStatusLabel(status)}
         </span>
       </div>
 
@@ -264,7 +224,7 @@ export default async function PedidoDetailPage({ params }: PageProps) {
               {order.status_anterior && (
                 <div>
                   <p style={labelStyle}>Status anterior</p>
-                  <p style={valueStyle}>{statusLabel(order.status_anterior as OrderStatus)}</p>
+                  <p style={valueStyle}>{orderStatusLabel(order.status_anterior as OrderStatus)}</p>
                 </div>
               )}
               {order.motivo_ultima_atualizacao && (

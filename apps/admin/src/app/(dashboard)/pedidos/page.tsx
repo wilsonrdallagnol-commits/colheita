@@ -14,7 +14,12 @@ export const metadata: Metadata = { title: 'Pedidos' };
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
-type OrderStatus = 'rascunho' | 'confirmado' | 'faturado' | 'entregue' | 'cancelado';
+import {
+  type OrderStatus,
+  orderStatusColor,
+  orderStatusLabel,
+  VALID_ORDER_STATUSES,
+} from '@/lib/order-labels';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -44,47 +49,6 @@ function formatCurrency(value: string): string {
   );
 }
 
-function statusLabel(status: OrderStatus): string {
-  const map: Record<OrderStatus, string> = {
-    rascunho: 'Rascunho',
-    confirmado: 'Confirmado',
-    faturado: 'Faturado',
-    entregue: 'Entregue',
-    cancelado: 'Cancelado',
-  };
-  return map[status];
-}
-
-function statusColor(status: OrderStatus): { bg: string; color: string; border: string } {
-  switch (status) {
-    case 'entregue':
-      return {
-        bg: 'var(--colheita-success-subtle)',
-        color: 'var(--colheita-success)',
-        border: 'var(--colheita-success)',
-      };
-    case 'confirmado':
-    case 'faturado':
-      return {
-        bg: 'color-mix(in oklch, var(--colheita-brand-primary) 12%, transparent)',
-        color: 'var(--colheita-brand-primary)',
-        border: 'var(--colheita-brand-primary)',
-      };
-    case 'cancelado':
-      return {
-        bg: 'color-mix(in oklch, var(--colheita-warning) 12%, transparent)',
-        color: 'var(--colheita-warning)',
-        border: 'var(--colheita-warning)',
-      };
-    default:
-      return {
-        bg: 'var(--colheita-surface-elevated)',
-        color: 'var(--colheita-text-tertiary)',
-        border: 'var(--colheita-border)',
-      };
-  }
-}
-
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 interface PageProps {
@@ -100,15 +64,10 @@ export default async function PedidosPage({ searchParams }: PageProps) {
   const currentPage = Math.max(1, Number(page ?? 1));
   const offset = (currentPage - 1) * PAGE_SIZE;
 
-  const validStatuses: OrderStatus[] = [
-    'rascunho',
-    'confirmado',
-    'faturado',
-    'entregue',
-    'cancelado',
-  ];
   const activeStatus =
-    status && validStatuses.includes(status as OrderStatus) ? (status as OrderStatus) : undefined;
+    status && VALID_ORDER_STATUSES.includes(status as OrderStatus)
+      ? (status as OrderStatus)
+      : undefined;
 
   let query = supabase
     .from('orders')
@@ -216,7 +175,7 @@ export default async function PedidosPage({ searchParams }: PageProps) {
       >
         {(['confirmado', 'faturado', 'entregue', 'rascunho', 'cancelado'] as OrderStatus[]).map(
           (s) => {
-            const colors = statusColor(s);
+            const colors = orderStatusColor(s);
             return (
               <Link
                 key={s}
@@ -242,7 +201,7 @@ export default async function PedidosPage({ searchParams }: PageProps) {
                     marginBottom: '8px',
                   }}
                 >
-                  {statusLabel(s)}
+                  {orderStatusLabel(s)}
                 </p>
                 <p
                   style={{
@@ -353,7 +312,7 @@ export default async function PedidosPage({ searchParams }: PageProps) {
           </div>
         ) : (
           orders.map((order, i) => {
-            const colors = statusColor(order.status as OrderStatus);
+            const colors = orderStatusColor(order.status);
             return (
               <Link
                 key={order.id}
@@ -410,7 +369,7 @@ export default async function PedidosPage({ searchParams }: PageProps) {
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {statusLabel(order.status as OrderStatus)}
+                    {orderStatusLabel(order.status)}
                   </span>
                 </span>
                 <span
