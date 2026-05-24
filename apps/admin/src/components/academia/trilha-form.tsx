@@ -44,6 +44,7 @@ export function TrilhaForm({ action, defaultValues, submitLabel = 'Salvar' }: Tr
   const statusId = useId();
   const audienceId = useId();
   const validityId = useId();
+  const grantsCertId = useId();
 
   const fieldStyle = { marginBottom: '24px' };
   const labelStyle = {
@@ -191,7 +192,7 @@ export function TrilhaForm({ action, defaultValues, submitLabel = 'Salvar' }: Tr
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
           <input
             type="checkbox"
-            id="grants_certification"
+            id={grantsCertId}
             name="grants_certification"
             value="true"
             checked={grantsCert}
@@ -199,7 +200,7 @@ export function TrilhaForm({ action, defaultValues, submitLabel = 'Salvar' }: Tr
             style={{ width: '16px', height: '16px', cursor: 'pointer' }}
           />
           <label
-            htmlFor="grants_certification"
+            htmlFor={grantsCertId}
             style={{ ...labelStyle, marginBottom: 0, cursor: 'pointer' }}
           >
             Emite certificado ao concluir

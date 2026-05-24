@@ -44,6 +44,7 @@ export function LicaoForm({
   const estimatedMinutesId = useId();
   const contentMarkdownId = useId();
   const contentUrlId = useId();
+  const isRequiredId = useId();
 
   const labelStyle = {
     display: 'block',
@@ -154,13 +155,13 @@ export function LicaoForm({
       <div style={{ ...fieldStyle, display: 'flex', alignItems: 'center', gap: '10px' }}>
         <input
           type="checkbox"
-          id="is_required"
+          id={isRequiredId}
           name="is_required"
           value="true"
           defaultChecked={defaultValues?.is_required ?? true}
           style={{ width: '16px', height: '16px', cursor: 'pointer' }}
         />
-        <label htmlFor="is_required" style={{ ...labelStyle, marginBottom: 0, cursor: 'pointer' }}>
+        <label htmlFor={isRequiredId} style={{ ...labelStyle, marginBottom: 0, cursor: 'pointer' }}>
           Lição obrigatória para avançar
         </label>
       </div>

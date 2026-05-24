@@ -12,11 +12,13 @@ import {
   Textarea,
 } from '@colheita/ui';
 import Link from 'next/link';
-import { useActionState } from 'react';
+import { useActionState, useId } from 'react';
 import { createColecao } from './actions';
 
 export default function NovaColecaoPage() {
   const [state, formAction, isPending] = useActionState(createColecao, undefined);
+  const nameId = useId();
+  const descriptionId = useId();
 
   return (
     <div style={{ padding: 'clamp(28px, 3vw, 56px) clamp(24px, 4vw, 72px)', maxWidth: '560px' }}>
@@ -92,7 +94,7 @@ export default function NovaColecaoPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
             <label
-              htmlFor="name"
+              htmlFor={nameId}
               style={{
                 display: 'block',
                 fontSize: '0.875rem',
@@ -104,7 +106,7 @@ export default function NovaColecaoPage() {
               Nome <span style={{ color: '#dc2626' }}>*</span>
             </label>
             <Input
-              id="name"
+              id={nameId}
               name="name"
               placeholder="ex: Fotos de Produtos 2026"
               required
@@ -115,7 +117,7 @@ export default function NovaColecaoPage() {
 
           <div>
             <label
-              htmlFor="description"
+              htmlFor={descriptionId}
               style={{
                 display: 'block',
                 fontSize: '0.875rem',
@@ -127,7 +129,7 @@ export default function NovaColecaoPage() {
               Descrição
             </label>
             <Textarea
-              id="description"
+              id={descriptionId}
               name="description"
               placeholder="Descrição opcional da coleção"
               rows={3}
