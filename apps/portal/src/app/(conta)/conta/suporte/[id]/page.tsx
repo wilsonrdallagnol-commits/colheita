@@ -11,19 +11,18 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SupportReplyForm } from '@/components/conta/support-reply-form';
 
+import {
+  CATEGORY_LABEL,
+  STATUS_LABEL,
+  type TicketCategory,
+  type TicketStatus,
+  type TicketUrgency,
+  URGENCY_LABEL,
+} from '@/lib/support-labels';
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }
-
-type TicketStatus = 'open' | 'in_progress' | 'waiting_user' | 'resolved' | 'closed';
-
-const STATUS_LABEL: Record<TicketStatus, string> = {
-  open: 'Aberto',
-  in_progress: 'Em andamento',
-  waiting_user: 'Aguardando você',
-  resolved: 'Resolvido',
-  closed: 'Fechado',
-};
 
 const STATUS_COLOR: Record<TicketStatus, string> = {
   open: 'var(--colheita-brand-primary)',
@@ -31,22 +30,6 @@ const STATUS_COLOR: Record<TicketStatus, string> = {
   waiting_user: 'var(--colheita-warning, #d97706)',
   resolved: 'var(--colheita-success, rgb(5,150,105))',
   closed: 'var(--colheita-text-tertiary)',
-};
-
-const URGENCY_LABEL: Record<string, string> = {
-  low: 'Baixa',
-  normal: 'Normal',
-  high: 'Alta',
-  urgent: 'Urgente',
-};
-
-const CATEGORY_LABEL: Record<string, string> = {
-  agronomic: 'Recomendação agronômica',
-  commercial: 'Comercial / pedido',
-  product: 'Produto específico',
-  logistics: 'Logística / entrega',
-  platform: 'Plataforma Colheita',
-  other: 'Outros',
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -137,7 +120,7 @@ export default async function MeuChamadoPage({ params }: PageProps) {
                   marginBottom: '6px',
                 }}
               >
-                {CATEGORY_LABEL[ticket.category] ?? ticket.category}
+                {CATEGORY_LABEL[ticket.category as TicketCategory] ?? ticket.category}
               </p>
               <h1
                 style={{
@@ -176,7 +159,7 @@ export default async function MeuChamadoPage({ params }: PageProps) {
             }}
           >
             Aberto em {new Date(ticket.created_at).toLocaleString('pt-BR')} · Urgência{' '}
-            {URGENCY_LABEL[ticket.urgency]?.toLowerCase() ?? ticket.urgency}
+            {URGENCY_LABEL[ticket.urgency as TicketUrgency]?.toLowerCase() ?? ticket.urgency}
             {ticket.product_slug && ` · Produto: ${ticket.product_slug}`}
           </p>
         </header>

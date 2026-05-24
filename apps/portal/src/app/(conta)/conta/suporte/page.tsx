@@ -8,32 +8,18 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { SupportForm } from '@/components/conta/support-form';
+import { STATUS_LABEL, type TicketStatus, URGENCY_LABEL } from '@/lib/support-labels';
 
 export const metadata: Metadata = {
   title: 'Suporte humano',
 };
 
-const STATUS_LABEL: Record<string, string> = {
-  open: 'Aberto',
-  in_progress: 'Em andamento',
-  waiting_user: 'Aguardando você',
-  resolved: 'Resolvido',
-  closed: 'Fechado',
-};
-
-const STATUS_COLOR: Record<string, string> = {
+const STATUS_COLOR: Record<TicketStatus, string> = {
   open: 'var(--colheita-brand-primary)',
   in_progress: 'var(--colheita-brand-secondary)',
   waiting_user: 'var(--colheita-warning, #d97706)',
   resolved: 'var(--colheita-success, rgb(5,150,105))',
   closed: 'var(--colheita-text-tertiary)',
-};
-
-const URGENCY_LABEL: Record<string, string> = {
-  low: 'Baixa',
-  normal: 'Normal',
-  high: 'Alta',
-  urgent: 'Urgente',
 };
 
 interface PageProps {
@@ -188,20 +174,21 @@ export default async function SuportePage({ searchParams }: PageProps) {
                       }}
                     >
                       {new Date(t.created_at).toLocaleDateString('pt-BR')} ·{' '}
-                      {URGENCY_LABEL[t.urgency] ?? t.urgency}
+                      {URGENCY_LABEL[t.urgency as keyof typeof URGENCY_LABEL] ?? t.urgency}
                     </p>
                   </div>
                   <span
                     style={{
                       fontSize: '0.6875rem',
                       fontWeight: 600,
-                      color: STATUS_COLOR[t.status] ?? 'var(--colheita-text-tertiary)',
+                      color:
+                        STATUS_COLOR[t.status as TicketStatus] ?? 'var(--colheita-text-tertiary)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.04em',
                       flexShrink: 0,
                     }}
                   >
-                    {STATUS_LABEL[t.status] ?? t.status}
+                    {STATUS_LABEL[t.status as TicketStatus] ?? t.status}
                   </span>
                 </Link>
               ))}
