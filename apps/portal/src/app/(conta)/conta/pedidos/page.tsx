@@ -10,19 +10,12 @@ import { cookies } from 'next/headers';
 import Link from 'next/link';
 
 import { formatCurrency } from '@/lib/format-currency';
+import { formatDate } from '@/lib/format-date';
 import { type OrderStatus, orderStatusColor, orderStatusLabel } from '@/lib/order-labels';
 
 export const metadata: Metadata = { title: 'Meus pedidos' };
 
 const PAGE_SIZE = 20;
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
-}
 
 interface PageProps {
   searchParams: Promise<{ status?: string; page?: string }>;

@@ -10,6 +10,7 @@ import { createServerClient, requireAuth } from '@colheita/auth';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import { formatDateTime } from '@/lib/format-date';
 
 export const metadata: Metadata = { title: 'Histórico do Agrônomo IA' };
 
@@ -25,16 +26,6 @@ interface LogRow {
   context_path: string | null;
   sources: unknown[];
   status: LogStatus;
-}
-
-function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
 }
 
 interface PageProps {

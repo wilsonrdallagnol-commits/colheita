@@ -15,6 +15,7 @@ export const metadata: Metadata = { title: 'Pedidos' };
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
 import { formatCurrency } from '@/lib/format-currency';
+import { formatDate, formatDateTime } from '@/lib/format-date';
 import {
   type OrderStatus,
   orderStatusColor,
@@ -26,23 +27,6 @@ import {
 
 const PAGE_SIZE = 50;
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
-}
-
-function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
 
 
 // ── Page ──────────────────────────────────────────────────────────────────────

@@ -14,6 +14,7 @@ interface PageProps {
 }
 
 import { formatCurrency } from '@/lib/format-currency';
+import { formatDate, formatDateTime } from '@/lib/format-date';
 import { type OrderStatus, orderStatusColor, orderStatusLabel } from '@/lib/order-labels';
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -22,24 +23,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const supabase = createServerClient(cookieStore);
   const { data } = await supabase.from('orders').select('numero').eq('id', id).maybeSingle();
   return { title: data ? `Pedido ${data.numero}` : 'Pedido' };
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
-}
-
-function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
 }
 
 
