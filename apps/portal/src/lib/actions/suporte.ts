@@ -13,7 +13,6 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { escapeHtml } from '@/lib/escape-html';
 import { buildRateLimiter, checkRateLimit } from '@/lib/rate-limit';
-import { resolveTenantId } from '@/lib/tenant';
 import {
   CATEGORY_LABEL,
   type TicketCategory as Category,
@@ -21,6 +20,7 @@ import {
   VALID_CATEGORIES,
   VALID_URGENCIES,
 } from '@/lib/support-labels';
+import { resolveTenantId } from '@/lib/tenant';
 
 // Rate limit: 10 chamados/hora por user (custoso — INSERT + email Resend).
 const createTicketLimiter = buildRateLimiter({
@@ -153,4 +153,3 @@ export async function createSupportTicket(
   revalidatePath('/conta/suporte');
   return { success: true, ticketId: ticket.id };
 }
-

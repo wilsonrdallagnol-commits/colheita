@@ -8,12 +8,7 @@
 // Mantém PT-BR (UI do distribuidor). Pares value/label permitem
 // generic <select> e tabela de status visual.
 
-export type TicketStatus =
-  | 'open'
-  | 'in_progress'
-  | 'waiting_user'
-  | 'resolved'
-  | 'closed';
+export type TicketStatus = 'open' | 'in_progress' | 'waiting_user' | 'resolved' | 'closed';
 
 export type TicketUrgency = 'low' | 'normal' | 'high' | 'urgent';
 

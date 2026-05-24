@@ -65,7 +65,6 @@ export default async function ContaPage() {
   const productsList = productsData ?? [];
   const ordersList = ordersData ?? [];
 
-
   const completedCount = progressList.filter((p) => p.status === 'completed').length;
   const inProgressCount = progressList.filter((p) => p.status === 'in_progress').length;
 

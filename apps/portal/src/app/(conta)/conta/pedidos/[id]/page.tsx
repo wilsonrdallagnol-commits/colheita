@@ -25,8 +25,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return { title: data ? `Pedido ${data.numero}` : 'Pedido' };
 }
 
-
-
 const labelStyle: React.CSSProperties = {
   fontSize: '0.6875rem',
   fontWeight: 600,

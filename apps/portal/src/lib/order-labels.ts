@@ -7,12 +7,7 @@
 // Tipos batem com migration orders + ERP Safra:
 //   rascunho | confirmado | faturado | entregue | cancelado
 
-export type OrderStatus =
-  | 'rascunho'
-  | 'confirmado'
-  | 'faturado'
-  | 'entregue'
-  | 'cancelado';
+export type OrderStatus = 'rascunho' | 'confirmado' | 'faturado' | 'entregue' | 'cancelado';
 
 export const VALID_ORDER_STATUSES: OrderStatus[] = [
   'rascunho',
@@ -81,7 +76,5 @@ export function orderStatusColorFg(s: string): string {
 }
 
 export function asOrderStatus(s: string | null | undefined): OrderStatus | null {
-  return s && (VALID_ORDER_STATUSES as readonly string[]).includes(s)
-    ? (s as OrderStatus)
-    : null;
+  return s && (VALID_ORDER_STATUSES as readonly string[]).includes(s) ? (s as OrderStatus) : null;
 }

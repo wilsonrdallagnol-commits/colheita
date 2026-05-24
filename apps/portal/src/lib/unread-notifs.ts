@@ -12,8 +12,8 @@
 // notif (via trigger SQL) e exibição. Mesma janela que email Resend
 // já tem, então não introduz UX nova.
 
-import { unstable_cache } from 'next/cache';
 import { createAdminClient } from '@colheita/auth';
+import { unstable_cache } from 'next/cache';
 
 const TTL_SECONDS = 30;
 
