@@ -8,7 +8,7 @@
 
 import { Button } from '@colheita/ui';
 import { CheckCircle2, KeyRound } from 'lucide-react';
-import { useActionState, useState } from 'react';
+import { useActionState, useId, useState } from 'react';
 import { type ChangePasswordState, changePassword } from '@/lib/actions/auth';
 
 export function ChangePasswordForm() {
@@ -17,6 +17,9 @@ export function ChangePasswordForm() {
     changePassword,
     null,
   );
+  const currentId = useId();
+  const nextId = useId();
+  const confirmId = useId();
 
   if (!open) {
     return (
@@ -63,9 +66,9 @@ export function ChangePasswordForm() {
         backgroundColor: 'var(--colheita-surface-elevated)',
       }}
     >
-      <Field label="Senha atual" htmlFor="current" error={state?.fieldErrors?.current}>
+      <Field label="Senha atual" htmlFor={currentId} error={state?.fieldErrors?.current}>
         <input
-          id="current"
+          id={currentId}
           name="current"
           type="password"
           required
@@ -77,12 +80,12 @@ export function ChangePasswordForm() {
 
       <Field
         label="Nova senha"
-        htmlFor="next"
+        htmlFor={nextId}
         hint="Mínimo 8 caracteres"
         error={state?.fieldErrors?.next}
       >
         <input
-          id="next"
+          id={nextId}
           name="next"
           type="password"
           required
@@ -94,9 +97,9 @@ export function ChangePasswordForm() {
         />
       </Field>
 
-      <Field label="Confirmar nova senha" htmlFor="confirm" error={state?.fieldErrors?.confirm}>
+      <Field label="Confirmar nova senha" htmlFor={confirmId} error={state?.fieldErrors?.confirm}>
         <input
-          id="confirm"
+          id={confirmId}
           name="confirm"
           type="password"
           required

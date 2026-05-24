@@ -9,7 +9,7 @@
 
 import { Button } from '@colheita/ui';
 import Link from 'next/link';
-import { useActionState } from 'react';
+import { useActionState, useId } from 'react';
 import type { RegistroFormState, RegStatus } from '@/lib/actions/regulatorio';
 
 interface ProductOption {
@@ -61,13 +61,21 @@ export function RegistroForm({
   defaultValues,
 }: RegistroFormProps) {
   const [state, formAction, isPending] = useActionState<RegistroFormState, FormData>(action, null);
+  const productId = useId();
+  const authorityId = useId();
+  const registrationNoId = useId();
+  const issuedAtId = useId();
+  const expiresAtId = useId();
+  const statusId = useId();
+  const documentUrlId = useId();
+  const notesId = useId();
 
   return (
     <form action={formAction} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
       {/* Produto */}
-      <Field label="Produto *" htmlFor="product_id" error={state?.fieldErrors?.product_id}>
+      <Field label="Produto *" htmlFor={productId} error={state?.fieldErrors?.product_id}>
         <select
-          id="product_id"
+          id={productId}
           name="product_id"
           defaultValue={defaultValues?.product_id ?? ''}
           required
@@ -84,9 +92,9 @@ export function RegistroForm({
       </Field>
 
       {/* Autoridade */}
-      <Field label="Autoridade *" htmlFor="authority" error={state?.fieldErrors?.authority}>
+      <Field label="Autoridade *" htmlFor={authorityId} error={state?.fieldErrors?.authority}>
         <select
-          id="authority"
+          id={authorityId}
           name="authority"
           defaultValue={defaultValues?.authority ?? 'MAPA'}
           required
@@ -103,12 +111,12 @@ export function RegistroForm({
       {/* Numero do registro */}
       <Field
         label="Número do registro *"
-        htmlFor="registration_no"
+        htmlFor={registrationNoId}
         hint="Ex: 12345-6, conforme cadastro na autoridade"
         error={state?.fieldErrors?.registration_no}
       >
         <input
-          id="registration_no"
+          id={registrationNoId}
           name="registration_no"
           type="text"
           defaultValue={defaultValues?.registration_no ?? ''}
@@ -120,18 +128,18 @@ export function RegistroForm({
 
       {/* Datas */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-        <Field label="Emissão" htmlFor="issued_at" error={state?.fieldErrors?.issued_at}>
+        <Field label="Emissão" htmlFor={issuedAtId} error={state?.fieldErrors?.issued_at}>
           <input
-            id="issued_at"
+            id={issuedAtId}
             name="issued_at"
             type="date"
             defaultValue={defaultValues?.issued_at ?? ''}
             style={inputStyle}
           />
         </Field>
-        <Field label="Vencimento" htmlFor="expires_at" error={state?.fieldErrors?.expires_at}>
+        <Field label="Vencimento" htmlFor={expiresAtId} error={state?.fieldErrors?.expires_at}>
           <input
-            id="expires_at"
+            id={expiresAtId}
             name="expires_at"
             type="date"
             defaultValue={defaultValues?.expires_at ?? ''}
@@ -141,9 +149,9 @@ export function RegistroForm({
       </div>
 
       {/* Status */}
-      <Field label="Status" htmlFor="status">
+      <Field label="Status" htmlFor={statusId}>
         <select
-          id="status"
+          id={statusId}
           name="status"
           defaultValue={defaultValues?.status ?? 'active'}
           style={selectStyle}
@@ -157,9 +165,9 @@ export function RegistroForm({
       </Field>
 
       {/* Document URL */}
-      <Field label="URL do documento" htmlFor="document_url" hint="Link pro PDF oficial (opcional)">
+      <Field label="URL do documento" htmlFor={documentUrlId} hint="Link pro PDF oficial (opcional)">
         <input
-          id="document_url"
+          id={documentUrlId}
           name="document_url"
           type="url"
           defaultValue={defaultValues?.document_url ?? ''}
@@ -169,9 +177,9 @@ export function RegistroForm({
       </Field>
 
       {/* Notes */}
-      <Field label="Observações" htmlFor="notes" error={state?.fieldErrors?.notes}>
+      <Field label="Observações" htmlFor={notesId} error={state?.fieldErrors?.notes}>
         <textarea
-          id="notes"
+          id={notesId}
           name="notes"
           defaultValue={defaultValues?.notes ?? ''}
           rows={3}
