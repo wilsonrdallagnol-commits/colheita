@@ -15,6 +15,7 @@ import { captureError } from '@colheita/observability';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { logAuditEvent } from '@/lib/audit';
+import { escapeHtml } from '@/lib/escape-html';
 import {
   STATUS_LABEL,
   type TicketStatus,
@@ -194,11 +195,3 @@ export async function assignTicket(ticketId: string, assigneeId: string | null):
   revalidatePath(`/suporte/${ticketId}`);
 }
 
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
