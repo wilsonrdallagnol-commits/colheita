@@ -130,7 +130,7 @@ Possíveis causas:
 - **Safety filter**: prompt foi bloqueado (palavras sensíveis). Reescreve
   evitando termos médicos/violentos/políticos.
 - **Quota excedida**: free tier 1500/dia. Esperar 24h ou ativar billing.
-- **Modelo errado**: confirmar que `gemini-2.5-flash-image-preview` está
+- **Modelo errado**: confirmar que `gemini-2.5-flash-image` está
   disponível na sua região (pode estar em allowlist).
 
 ### Imagem gerada com texto borrado

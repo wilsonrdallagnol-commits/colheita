@@ -69,7 +69,7 @@ describe('generateWithGemini', () => {
       base64: 'iVBORw0KGgo=',
       mimeType: 'image/png',
     });
-    expect(result.model).toBe('gemini-2.5-flash-image-preview');
+    expect(result.model).toBe('gemini-2.5-flash-image');
     expect(result.promptUsed).toBe('frasco branco 1L');
   });
 

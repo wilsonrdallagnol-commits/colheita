@@ -1,15 +1,16 @@
 // packages/image-gen/src/providers/gemini.ts
 //
-// Provider Gemini 2.5 Flash Image Preview (apelido: Nano Banana Pro).
+// Provider Gemini 2.5 Flash Image (apelido: Nano Banana). Para qualidade
+// superior (Nano Banana Pro) passe model: 'gemini-3-pro-image' na request.
 //
 // Documentação: https://ai.google.dev/gemini-api/docs/image-generation
-// Modelo recomendado para produção: 'gemini-2.5-flash-image-preview'
+// Modelo recomendado para produção: 'gemini-2.5-flash-image'
 // Preview/desenv: 'imagen-3.0-generate-002' (Imagen 3, qualidade superior, mais caro)
 
 import { GoogleGenAI } from '@google/genai';
 import type { GeneratedImage } from '../index.js';
 
-const DEFAULT_MODEL = 'gemini-2.5-flash-image-preview';
+const DEFAULT_MODEL = 'gemini-2.5-flash-image';
 
 export interface GeminiImageRequest {
   prompt: string;
@@ -31,7 +32,7 @@ export interface GeminiImageResult {
  * Requer GEMINI_API_KEY no env. Pegue em https://aistudio.google.com/apikey.
  *
  * Custo aproximado (2026):
- * - gemini-2.5-flash-image-preview: ~$0.04 por imagem
+ * - gemini-2.5-flash-image: ~$0.04 por imagem
  * - imagen-3.0-generate-002: ~$0.04 por imagem (mas qualidade superior pra foto-real)
  */
 export async function generateWithGemini(req: GeminiImageRequest): Promise<GeminiImageResult> {
