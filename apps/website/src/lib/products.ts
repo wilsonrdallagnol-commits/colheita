@@ -25,7 +25,7 @@ export interface ProductApplication {
 }
 
 export interface ProductPackaging {
-  type: 'bag' | 'bottle' | 'drum' | 'box';
+  type: 'bag' | 'bottle' | 'drum' | 'ibc' | 'box';
   weightKg?: number;
   volumeL?: number;
   sku: string;
@@ -167,7 +167,7 @@ export const PRODUCTS: Product[] = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'STRON-1L' },
-      { type: 'drum', volumeL: 5, sku: 'STRON-5L' },
+      { type: 'bottle', volumeL: 5, sku: 'STRON-5L' },
     ],
   },
   {
@@ -188,7 +188,7 @@ export const PRODUCTS: Product[] = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'GROW-CALCIUM-1L' },
-      { type: 'drum', volumeL: 5, sku: 'GROW-CALCIUM-5L' },
+      { type: 'bottle', volumeL: 5, sku: 'GROW-CALCIUM-5L' },
     ],
   },
   {
@@ -209,7 +209,7 @@ export const PRODUCTS: Product[] = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'DEFON-1L' },
-      { type: 'drum', volumeL: 5, sku: 'DEFON-5L' },
+      { type: 'bottle', volumeL: 5, sku: 'DEFON-5L' },
     ],
   },
   {
@@ -259,8 +259,7 @@ export const PRODUCTS: Product[] = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'IMPUCH-1L' },
-      { type: 'drum', volumeL: 5, sku: 'IMPUCH-5L' },
-      { type: 'drum', volumeL: 20, sku: 'IMPUCH-20L' },
+      { type: 'bottle', volumeL: 5, sku: 'IMPUCH-5L' },
     ],
   },
   {
@@ -286,8 +285,7 @@ export const PRODUCTS: Product[] = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'LIFE-ON-1L' },
-      { type: 'drum', volumeL: 5, sku: 'LIFE-ON-5L' },
-      { type: 'drum', volumeL: 20, sku: 'LIFE-ON-20L' },
+      { type: 'bottle', volumeL: 5, sku: 'LIFE-ON-5L' },
     ],
   },
   {
@@ -310,7 +308,10 @@ export const PRODUCTS: Product[] = [
         'Substâncias húmicas': 15.0,
       },
     },
-    packaging: [{ type: 'drum', volumeL: 5, sku: 'GROW-NITROP-5L' }],
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'GROW-NITROP-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'GROW-NITROP-5L' },
+    ],
   },
   {
     slug: 'up-soil',
@@ -334,7 +335,7 @@ export const PRODUCTS: Product[] = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'UP-SOIL-1L' },
-      { type: 'drum', volumeL: 5, sku: 'UP-SOIL-5L' },
+      { type: 'bottle', volumeL: 5, sku: 'UP-SOIL-5L' },
     ],
   },
   {
@@ -382,7 +383,10 @@ export const PRODUCTS: Product[] = [
         'Bacillus amyloliquefaciens': 1,
       },
     },
-    packaging: [{ type: 'bottle', volumeL: 1, sku: 'TROIAN-1L' }],
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'TROIAN-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'TROIAN-5L' },
+    ],
     technicalDifferentials: [
       'Complexo microbiológico multi-Bacillus',
       'Formulação biotecnológica de composição declarada',
@@ -411,7 +415,10 @@ export const PRODUCTS: Product[] = [
         'Bacillus megaterium': 1,
       },
     },
-    packaging: [{ type: 'bottle', volumeL: 1, sku: 'BIOVAS-1L' }],
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'BIOVAS-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'BIOVAS-5L' },
+    ],
     technicalDifferentials: [
       'Complexo multi-Bacillus',
       'Formulação microbiológica de alta complexidade',
@@ -438,7 +445,10 @@ export const PRODUCTS: Product[] = [
         'Cordyceps fumosorosea': 1,
       },
     },
-    packaging: [{ type: 'bottle', volumeL: 1, sku: 'BOVEX-1L' }],
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'BOVEX-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'BOVEX-5L' },
+    ],
     technicalDifferentials: [
       'Complexo multi-gênero fúngico',
       'Formulação microbiológica de alta complexidade',
@@ -464,7 +474,10 @@ export const PRODUCTS: Product[] = [
         'Bacillus thuringiensis var. kurstaki': 1,
       },
     },
-    packaging: [{ type: 'bottle', volumeL: 1, sku: 'CONTROX-1L' }],
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'CONTROX-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'CONTROX-5L' },
+    ],
     technicalDifferentials: [
       'Complexo microbiológico multivariante',
       'Formulação microbiológica de alta complexidade',
@@ -491,7 +504,10 @@ export const PRODUCTS: Product[] = [
         'Purpureocillium lilacinum': 1,
       },
     },
-    packaging: [{ type: 'bottle', volumeL: 1, sku: 'NEMAX-1L' }],
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'NEMAX-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'NEMAX-5L' },
+    ],
     technicalDifferentials: [
       'Complexo multi-gênero fúngico',
       'Formulação microbiológica de alta complexidade',
@@ -514,7 +530,10 @@ export const PRODUCTS: Product[] = [
     composition: {
       others: { 'Trichoderma harzianum': 1 },
     },
-    packaging: [{ type: 'bottle', volumeL: 1, sku: 'TITAN-1L' }],
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'TITAN-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'TITAN-5L' },
+    ],
     technicalDifferentials: [
       'Matriz microbiológica fúngica líquida monoespécie',
       'Formulação líquida de alta praticidade operacional',
@@ -539,7 +558,10 @@ export const PRODUCTS: Product[] = [
     composition: {},
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'OPERATE-PLUS-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'OPERATE-PLUS-5L' },
       { type: 'drum', volumeL: 20, sku: 'OPERATE-PLUS-20L' },
+      { type: 'drum', volumeL: 200, sku: 'OPERATE-PLUS-200L' },
+      { type: 'ibc', volumeL: 1000, sku: 'OPERATE-PLUS-1000L' },
     ],
   },
   {
@@ -556,7 +578,10 @@ export const PRODUCTS: Product[] = [
     composition: {},
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'OPERATE-CIT-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'OPERATE-CIT-5L' },
       { type: 'drum', volumeL: 20, sku: 'OPERATE-CIT-20L' },
+      { type: 'drum', volumeL: 200, sku: 'OPERATE-CIT-200L' },
+      { type: 'ibc', volumeL: 1000, sku: 'OPERATE-CIT-1000L' },
     ],
   },
   {
@@ -573,7 +598,10 @@ export const PRODUCTS: Product[] = [
     composition: {},
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'OPERATE-4EM1-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'OPERATE-4EM1-5L' },
       { type: 'drum', volumeL: 20, sku: 'OPERATE-4EM1-20L' },
+      { type: 'drum', volumeL: 200, sku: 'OPERATE-4EM1-200L' },
+      { type: 'ibc', volumeL: 1000, sku: 'OPERATE-4EM1-1000L' },
     ],
   },
   {
@@ -590,7 +618,10 @@ export const PRODUCTS: Product[] = [
     composition: {},
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'OPERATE-ORANGE-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'OPERATE-ORANGE-5L' },
       { type: 'drum', volumeL: 20, sku: 'OPERATE-ORANGE-20L' },
+      { type: 'drum', volumeL: 200, sku: 'OPERATE-ORANGE-200L' },
+      { type: 'ibc', volumeL: 1000, sku: 'OPERATE-ORANGE-1000L' },
     ],
   },
 ];

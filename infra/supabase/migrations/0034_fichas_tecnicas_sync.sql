@@ -50,7 +50,7 @@ BEGIN
     'published',
     '{"others": {"Beauveria bassiana": 1, "Metarhizium anisopliae": 1, "Cordyceps fumosorosea": 1}}'::jsonb,
     '{"physical_state": "fluido", "origin_country": "Espanha", "product_type": "Complexo microbiológico", "concentration_total": "2,5e10"}'::jsonb,
-    '[{"type": "bottle", "volumeL": 1, "sku": "BOVEX-1L"}]'::jsonb,
+    '[{"type": "bottle", "volumeL": 1, "sku": "BOVEX-1L"}, {"type": "bottle", "volumeL": 5, "sku": "BOVEX-5L"}]'::jsonb,
     '[]'::jsonb
   )
   ON CONFLICT (tenant_id, slug) DO UPDATE SET
@@ -76,7 +76,7 @@ BEGIN
     'published',
     '{"others": {"Bacillus thuringiensis var. thuringiensis": 1, "Bacillus thuringiensis var. kurstaki": 1}}'::jsonb,
     '{"physical_state": "fluido", "origin_country": "Espanha", "product_type": "Complexo microbiológico", "concentration_total": "2,5e9"}'::jsonb,
-    '[{"type": "bottle", "volumeL": 1, "sku": "CONTROX-1L"}]'::jsonb,
+    '[{"type": "bottle", "volumeL": 1, "sku": "CONTROX-1L"}, {"type": "bottle", "volumeL": 5, "sku": "CONTROX-5L"}]'::jsonb,
     '[]'::jsonb
   )
   ON CONFLICT (tenant_id, slug) DO UPDATE SET
@@ -97,7 +97,7 @@ BEGIN
     'published',
     '{"others": {"Trichoderma harzianum": 1, "Trichoderma asperellum": 1, "Purpureocillium lilacinum": 1}}'::jsonb,
     '{"physical_state": "fluido", "origin_country": "Espanha", "product_type": "Complexo microbiológico", "concentration_total": "2,5e10"}'::jsonb,
-    '[{"type": "bottle", "volumeL": 1, "sku": "NEMAX-1L"}]'::jsonb,
+    '[{"type": "bottle", "volumeL": 1, "sku": "NEMAX-1L"}, {"type": "bottle", "volumeL": 5, "sku": "NEMAX-5L"}]'::jsonb,
     '[]'::jsonb
   )
   ON CONFLICT (tenant_id, slug) DO UPDATE SET
@@ -118,7 +118,7 @@ BEGIN
     'published',
     '{"others": {"Trichoderma harzianum": 1}}'::jsonb,
     '{"physical_state": "fluido", "origin_country": "Espanha", "product_type": "Complexo microbiológico", "concentration_total": "2,5e9"}'::jsonb,
-    '[{"type": "bottle", "volumeL": 1, "sku": "TITAN-1L"}]'::jsonb,
+    '[{"type": "bottle", "volumeL": 1, "sku": "TITAN-1L"}, {"type": "bottle", "volumeL": 5, "sku": "TITAN-5L"}]'::jsonb,
     '[]'::jsonb
   )
   ON CONFLICT (tenant_id, slug) DO UPDATE SET

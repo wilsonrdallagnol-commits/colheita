@@ -138,7 +138,7 @@ const PRODUCTS = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'STRON-1L' },
-      { type: 'drum', volumeL: 20, sku: 'STRON-20L' },
+      { type: 'bottle', volumeL: 5, sku: 'STRON-5L' },
     ],
   },
   {
@@ -212,7 +212,7 @@ const PRODUCTS = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'GROW-CALCIUM-1L' },
-      { type: 'drum', volumeL: 20, sku: 'GROW-CALCIUM-20L' },
+      { type: 'bottle', volumeL: 5, sku: 'GROW-CALCIUM-5L' },
     ],
     applications: [
       {
@@ -268,7 +268,7 @@ const PRODUCTS = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'DEFON-1L' },
-      { type: 'drum', volumeL: 5, sku: 'DEFON-5L' },
+      { type: 'bottle', volumeL: 5, sku: 'DEFON-5L' },
     ],
   },
   {
@@ -297,7 +297,10 @@ const PRODUCTS = [
         'Dióxido de Silício',
       ],
     },
-    packaging: [{ type: 'bag', weightKg: 1, sku: 'GROW-MOB-1KG' }],
+    packaging: [
+      { type: 'bag', weightKg: 1, sku: 'GROW-MOB-1KG' },
+      { type: 'bag', weightKg: 5, sku: 'GROW-MOB-5KG' },
+    ],
     applications: [
       {
         crop: 'Soja',
@@ -354,7 +357,7 @@ const PRODUCTS = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'IMPUCH-1L' },
-      { type: 'drum', volumeL: 20, sku: 'IMPUCH-20L' },
+      { type: 'bottle', volumeL: 5, sku: 'IMPUCH-5L' },
     ],
   },
   {
@@ -387,7 +390,7 @@ const PRODUCTS = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'LIFEON-1L' },
-      { type: 'drum', volumeL: 20, sku: 'LIFEON-20L' },
+      { type: 'bottle', volumeL: 5, sku: 'LIFEON-5L' },
     ],
   },
   {
@@ -420,7 +423,7 @@ const PRODUCTS = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'GROW-NITROP-1L' },
-      { type: 'drum', volumeL: 5, sku: 'GROW-NITROP-5L' },
+      { type: 'bottle', volumeL: 5, sku: 'GROW-NITROP-5L' },
     ],
   },
   {
@@ -451,7 +454,10 @@ const PRODUCTS = [
         'Torta Vegetal',
       ],
     },
-    packaging: [{ type: 'drum', volumeL: 20, sku: 'UPSOIL-20L' }],
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'UPSOIL-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'UPSOIL-5L' },
+    ],
   },
 
   // ── BIOLÓGICOS ────────────────────────────────────────────────────────────
@@ -477,7 +483,7 @@ const PRODUCTS = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'TROIAN-1L' },
-      { type: 'drum', volumeL: 20, sku: 'TROIAN-20L' },
+      { type: 'bottle', volumeL: 5, sku: 'TROIAN-5L' },
     ],
   },
   {
@@ -510,7 +516,7 @@ const PRODUCTS = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'BIOVAS-1L' },
-      { type: 'drum', volumeL: 20, sku: 'BIOVAS-20L' },
+      { type: 'bottle', volumeL: 5, sku: 'BIOVAS-5L' },
     ],
   },
 
@@ -531,7 +537,10 @@ const PRODUCTS = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'OPERATE-PLUS-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'OPERATE-PLUS-5L' },
       { type: 'drum', volumeL: 20, sku: 'OPERATE-PLUS-20L' },
+      { type: 'drum', volumeL: 200, sku: 'OPERATE-PLUS-200L' },
+      { type: 'ibc', volumeL: 1000, sku: 'OPERATE-PLUS-1000L' },
     ],
   },
   {
@@ -551,7 +560,10 @@ const PRODUCTS = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'OPERATE-CITRONELA-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'OPERATE-CITRONELA-5L' },
       { type: 'drum', volumeL: 20, sku: 'OPERATE-CITRONELA-20L' },
+      { type: 'drum', volumeL: 200, sku: 'OPERATE-CITRONELA-200L' },
+      { type: 'ibc', volumeL: 1000, sku: 'OPERATE-CITRONELA-1000L' },
     ],
   },
   {
@@ -572,7 +584,10 @@ const PRODUCTS = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'OPERATE-4EM1-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'OPERATE-4EM1-5L' },
       { type: 'drum', volumeL: 20, sku: 'OPERATE-4EM1-20L' },
+      { type: 'drum', volumeL: 200, sku: 'OPERATE-4EM1-200L' },
+      { type: 'ibc', volumeL: 1000, sku: 'OPERATE-4EM1-1000L' },
     ],
   },
   {
@@ -592,7 +607,10 @@ const PRODUCTS = [
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'OPERATE-ORANGE-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'OPERATE-ORANGE-5L' },
       { type: 'drum', volumeL: 20, sku: 'OPERATE-ORANGE-20L' },
+      { type: 'drum', volumeL: 200, sku: 'OPERATE-ORANGE-200L' },
+      { type: 'ibc', volumeL: 1000, sku: 'OPERATE-ORANGE-1000L' },
     ],
   },
 ] as const;
