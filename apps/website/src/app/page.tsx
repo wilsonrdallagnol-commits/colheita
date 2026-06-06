@@ -465,7 +465,7 @@ export default function Home() {
         accentRaw="oklch(0.586 0.150 138.8)"
         description="Fertilizante NPK foliar com aminoácidos e ácidos carboxílicos. Melhora arquitetura e ativação fisiológica da planta, potencializando enraizamento e absorção de nutrientes."
         tags={['NPK 4,5-2-7,2', 'Foliar', '500 g/ha · V3–V5']}
-        image="/products/stron.png"
+        image="/products/cover/stron.png"
         imageAlt="Stron 1L — Argho Agrosciences"
         href="/produtos/stron"
         reverse={false}
@@ -479,7 +479,7 @@ export default function Home() {
         accentRaw="oklch(0.62 0.130 78)"
         description="Adjuvante espalhante adesivo premium com surfactante não-iônico, condicionador de pH e antiespumante. Cobertura foliar uniforme e proteção contra hidrólise alcalina."
         tags={['Espalhante adesivo', 'Buffer pH 4,5–5,5', '50–100 mL/100L']}
-        image="/products/operate-plus.png"
+        image="/products/cover/operate-plus.png"
         imageAlt="Operate Plus 1L — Argho Agrosciences"
         href="/produtos/operate-plus"
         reverse={true}
@@ -2279,87 +2279,29 @@ function Spotlight({
               position: 'relative',
               display: 'flex',
               justifyContent: 'center',
-              alignItems: 'flex-end',
-              padding: '40px 32px 60px',
+              alignItems: 'center',
+              padding: '24px',
               minHeight: '460px',
               overflow: 'hidden',
+              backgroundColor: 'var(--bg)',
             }}
           >
-            {/* Halo radial categórico */}
-            <div
-              aria-hidden
+            {/* Arte premium da capa — tratamento dinâmico (swirl categórico + gotas + gloss) */}
+            <Image
+              src={image}
+              alt={imageAlt}
+              width={1024}
+              height={1024}
+              quality={95}
+              priority
               style={{
-                position: 'absolute',
-                inset: 0,
-                background: `radial-gradient(ellipse 60% 65% at 50% 75%, ${accentRaw.replace(')', ' / 0.20)')} 0%, ${accentRaw.replace(')', ' / 0.05)')} 45%, transparent 75%)`,
-                pointerEvents: 'none',
+                width: '100%',
+                height: '100%',
+                maxWidth: '600px',
+                objectFit: 'contain',
+                objectPosition: 'center',
               }}
             />
-
-            {/* Grid técnico mascarado */}
-            <div
-              aria-hidden
-              style={{
-                position: 'absolute',
-                inset: 0,
-                backgroundImage: `
-                  linear-gradient(${accentRaw.replace(')', ' / 0.06)')} 1px, transparent 1px),
-                  linear-gradient(90deg, ${accentRaw.replace(')', ' / 0.06)')} 1px, transparent 1px)
-                `,
-                backgroundSize: '40px 40px',
-                opacity: 0.7,
-                maskImage:
-                  'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
-                WebkitMaskImage:
-                  'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
-                pointerEvents: 'none',
-              }}
-            />
-
-            {/* Sombra de chão sob o produto */}
-            <div
-              aria-hidden
-              style={{
-                position: 'absolute',
-                bottom: '40px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '55%',
-                height: '28px',
-                background: `radial-gradient(ellipse 50% 50%, ${accentRaw.replace(')', ' / 0.55)')} 0%, transparent 70%)`,
-                filter: 'blur(18px)',
-                pointerEvents: 'none',
-                zIndex: 1,
-              }}
-            />
-
-            {/* Mockup */}
-            <div
-              style={{
-                position: 'relative',
-                zIndex: 2,
-                height: '400px',
-                display: 'flex',
-                alignItems: 'flex-end',
-                justifyContent: 'center',
-              }}
-            >
-              <Image
-                src={image}
-                alt={imageAlt}
-                width={500}
-                height={750}
-                quality={95}
-                style={{
-                  width: 'auto',
-                  height: '100%',
-                  maxWidth: '100%',
-                  objectFit: 'contain',
-                  objectPosition: 'bottom center',
-                  filter: `drop-shadow(0 28px 40px ${accentRaw.replace(')', ' / 0.35)')}) drop-shadow(0 8px 16px ${accentRaw.replace(')', ' / 0.20)')})`,
-                }}
-              />
-            </div>
           </div>
 
           {/* Footer do card — métricas pequenas */}
