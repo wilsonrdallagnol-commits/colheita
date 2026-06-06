@@ -680,6 +680,7 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
 const SPEC_LABEL_PT: Record<string, string> = {
   ph: 'pH',
   product_type: 'Tipo de produto',
+  concentration_total: 'Concentração',
   compatibility: 'Compatibilidade',
   raw_materials: 'Matérias-primas',
   origin_country: 'País de origem',

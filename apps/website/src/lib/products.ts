@@ -40,6 +40,11 @@ export interface Product {
   physicalState: 'sólido' | 'fluido' | 'pó';
   originCountry: string;
   productType: string;
+  /**
+   * Concentração microbiológica declarada (UFC/mL) — exibida nos biológicos
+   * por decisão do fundador (Wilson, 2026-06-06). Ver biologicos-compliance.md.
+   */
+  concentrationUfc?: string;
   registrationMapa?: string;
   applicationModes: ApplicationMode[];
   composition: ProductComposition;
@@ -373,8 +378,9 @@ export const PRODUCTS: Product[] = [
     description:
       'Troian reúne três espécies do gênero Bacillus em uma formulação biotecnológica de composição declarada: Bacillus subtilis, Bacillus velezensis e Bacillus amyloliquefaciens. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Troian se destaca pela arquitetura multi-Bacillus em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos. A presença simultânea de três espécies bacterianas declaradas confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade bacteriana, consistência microbiológica e precisão técnica na composição declarada. Concentração total: 2,0 × 10¹⁰.',
     physicalState: 'fluido',
-    originCountry: 'Espanha',
+    originCountry: 'Brasil',
     productType: 'Complexo microbiológico',
+    concentrationUfc: '2,0 × 10¹⁰ UFC/mL',
     applicationModes: [],
     composition: {
       others: {
@@ -403,8 +409,9 @@ export const PRODUCTS: Product[] = [
     description:
       'Biovas reúne cinco espécies do gênero Bacillus em uma formulação biotecnológica de alta complexidade microbiológica: Bacillus subtilis, Bacillus amyloliquefaciens, Bacillus licheniformis, Bacillus aryabhattai e Bacillus megaterium. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Biovas se destaca pela combinação de diferentes espécies bacterianas em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos bioinsumos de base microbiana. A presença de múltiplas espécies de Bacillus confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade microbiana, estabilidade de formulação e precisão técnica na composição declarada. Concentração total: 5,0 × 10⁹.',
     physicalState: 'fluido',
-    originCountry: 'Espanha',
+    originCountry: 'Brasil',
     productType: 'Complexo microbiológico',
+    concentrationUfc: '5,0 × 10⁹ UFC/mL',
     applicationModes: [],
     composition: {
       others: {
@@ -435,8 +442,9 @@ export const PRODUCTS: Product[] = [
     description:
       'Bovex reúne três espécies de fungos entomopatogênicos em uma formulação biotecnológica de alta complexidade microbiológica: Beauveria bassiana, Metarhizium anisopliae e Cordyceps fumosorosea. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Bovex se destaca pela combinação de três gêneros fúngicos distintos em uma única matriz biológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos de base fúngica. A presença simultânea de três gêneros fúngicos declarados confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade fúngica, estabilidade de formulação e precisão técnica na composição declarada. Concentração total: 2,5 × 10¹⁰.',
     physicalState: 'fluido',
-    originCountry: 'Espanha',
+    originCountry: 'Brasil',
     productType: 'Complexo microbiológico',
+    concentrationUfc: '2,5 × 10¹⁰ UFC/mL',
     applicationModes: [],
     composition: {
       others: {
@@ -465,8 +473,9 @@ export const PRODUCTS: Product[] = [
     description:
       'Controx reúne duas variedades distintas de Bacillus thuringiensis em uma formulação biotecnológica de alta complexidade microbiológica: Bacillus thuringiensis var. thuringiensis e Bacillus thuringiensis var. kurstaki. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Controx se destaca pela combinação de duas variedades distintas dentro da mesma espécie em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos multivariantes. A presença simultânea das variedades thuringiensis e kurstaki confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade intra-específica, estabilidade de formulação e precisão técnica na composição declarada. Concentração total: 2,5 × 10⁹.',
     physicalState: 'fluido',
-    originCountry: 'Espanha',
+    originCountry: 'Brasil',
     productType: 'Complexo microbiológico',
+    concentrationUfc: '2,5 × 10⁹ UFC/mL',
     applicationModes: [],
     composition: {
       others: {
@@ -494,8 +503,9 @@ export const PRODUCTS: Product[] = [
     description:
       'Nemax reúne três espécies de fungos filamentosos em uma formulação biotecnológica de alta complexidade microbiológica: Trichoderma harzianum, Trichoderma asperellum e Purpureocillium lilacinum. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Nemax se destaca pela combinação de três espécies de fungos filamentosos em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos de base fúngica. A presença simultânea de duas espécies do gênero Trichoderma com Purpureocillium lilacinum confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade microbiana, estabilidade de formulação e precisão técnica na composição declarada. Concentração total: 2,5 × 10¹⁰.',
     physicalState: 'fluido',
-    originCountry: 'Espanha',
+    originCountry: 'Brasil',
     productType: 'Complexo microbiológico',
+    concentrationUfc: '2,5 × 10¹⁰ UFC/mL',
     applicationModes: [],
     composition: {
       others: {
@@ -524,8 +534,9 @@ export const PRODUCTS: Product[] = [
     description:
       'Titan é uma matriz microbiológica fúngica líquida à base de Trichoderma harzianum, estruturada para apresentar identidade técnica clara, facilidade operacional e padronização microbiológica dentro da linha de biotecnologias da Argho Agrosciences. A proposta tecnológica do produto está na combinação entre base fúngica, formulação líquida e comunicação técnica voltada à construção de programas microbiológicos, respeitando a finalidade e as condições previstas no registro vigente. Concentração total: 2,5 × 10⁹.',
     physicalState: 'fluido',
-    originCountry: 'Espanha',
+    originCountry: 'Brasil',
     productType: 'Complexo microbiológico',
+    concentrationUfc: '2,5 × 10⁹ UFC/mL',
     applicationModes: [],
     composition: {
       others: { 'Trichoderma harzianum': 1 },

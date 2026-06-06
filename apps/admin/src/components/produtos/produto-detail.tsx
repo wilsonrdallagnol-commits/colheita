@@ -79,9 +79,11 @@ export function ProdutoDetail({ produto }: ProdutoDetailProps) {
   // biome-ignore lint/complexity/useLiteralKeys: snake_case key required for DB field access
   const physicalState = produto.technicalSpecs['physical_state'] as string | undefined;
   // biome-ignore lint/complexity/useLiteralKeys: snake_case key required for DB field access
-  const origin = produto.technicalSpecs['origin'] as string | undefined;
+  const origin = produto.technicalSpecs['origin_country'] as string | undefined;
   // biome-ignore lint/complexity/useLiteralKeys: snake_case key required for DB field access
   const productType = produto.technicalSpecs['product_type'] as string | undefined;
+  // biome-ignore lint/complexity/useLiteralKeys: snake_case key required for DB field access
+  const concentration = produto.technicalSpecs['concentration_total'] as string | undefined;
   // Produtos biologicos no modelo neutro (compliance MAPA) - composicao
   // ja vem com valor placeholder 1 (sem %), so o nome cientifico importa.
   // Ver apps/website/docs/biologicos-compliance.md.
@@ -302,8 +304,10 @@ export function ProdutoDetail({ produto }: ProdutoDetailProps) {
         {produto.registrationNo && (
           <MetaItem label="Registro MAPA" value={produto.registrationNo} />
         )}
+        {productType && <MetaItem label="Tipo" value={productType} />}
         {physicalState && <MetaItem label="Estado físico" value={physicalState} />}
         {origin && <MetaItem label="Origem" value={origin} />}
+        {concentration && <MetaItem label="Concentração" value={concentration} />}
 
         {produto.packaging.length > 0 && (
           <div>

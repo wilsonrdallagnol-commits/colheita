@@ -465,9 +465,9 @@ const PRODUCTS = [
     slug: 'troian',
     name: 'Troian',
     category: 'biologicos',
-    tagline: 'Trichoderma + Bacillus multicepa para controle biológico e promoção de crescimento',
+    tagline: 'Complexo microbiológico multi-Bacillus',
     description:
-      'Biológico com consórcio de Bacillus subtilis, Bacillus velezensis e Bacillus amyloliquefaciens. Atua no controle biológico de fitopatógenos de solo e parte aérea, além de promover crescimento radicular por produção de auxinas e citocininas. Substitui com vantagem produtos mono-cepa do mercado.',
+      'Troian reúne três espécies do gênero Bacillus em uma formulação biotecnológica de composição declarada: Bacillus subtilis, Bacillus velezensis e Bacillus amyloliquefaciens. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Troian se destaca pela arquitetura multi-Bacillus em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos. A presença simultânea de três espécies bacterianas declaradas confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade bacteriana, consistência microbiológica e precisão técnica na composição declarada. Concentração total: 2,0 × 10¹⁰.',
     status: 'published' as const,
     composition: {
       others: {
@@ -477,9 +477,10 @@ const PRODUCTS = [
       },
     },
     technicalSpecs: {
-      product_type: 'Biológico — Consórcio Bacillus',
-      strains: ['Bacillus subtilis', 'Bacillus velezensis', 'Bacillus amyloliquefaciens'],
-      application_modes: ['Via Foliar', 'Tratamento de Sementes', 'Drench'],
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
+      product_type: 'Complexo microbiológico',
+      concentration_total: '2,0 × 10¹⁰ UFC/mL',
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'TROIAN-1L' },
@@ -490,9 +491,9 @@ const PRODUCTS = [
     slug: 'biovas',
     name: 'Biovas',
     category: 'biologicos',
-    tagline: 'Consórcio de 5 espécies de Bacillus para máxima atividade biológica',
+    tagline: 'Complexo microbiológico multi-Bacillus',
     description:
-      'Biológico com consórcio de 5 espécies de Bacillus: subtilis, aryabhattai, amyloliquefaciens, licheniformis e megaterium. Combina atividade de controle biológico (subtilis + amyloliquefaciens), solubilização de fosfato (megaterium + licheniformis) e fixação de nitrogênio atmosférico (aryabhattai). O consórcio mais amplo do portfólio Argho.',
+      'Biovas reúne cinco espécies do gênero Bacillus em uma formulação biotecnológica de alta complexidade microbiológica: Bacillus subtilis, Bacillus amyloliquefaciens, Bacillus licheniformis, Bacillus aryabhattai e Bacillus megaterium. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Biovas se destaca pela combinação de diferentes espécies bacterianas em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos bioinsumos de base microbiana. A presença de múltiplas espécies de Bacillus confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade microbiana, estabilidade de formulação e precisão técnica na composição declarada. Concentração total: 5,0 × 10⁹.',
     status: 'published' as const,
     composition: {
       others: {
@@ -504,15 +505,10 @@ const PRODUCTS = [
       },
     },
     technicalSpecs: {
-      product_type: 'Biológico — Consórcio Bacillus (5 espécies)',
-      strains: [
-        'Bacillus subtilis',
-        'Bacillus aryabhattai',
-        'Bacillus amyloliquefaciens',
-        'Bacillus licheniformis',
-        'Bacillus megaterium',
-      ],
-      application_modes: ['Via Foliar', 'Tratamento de Sementes', 'Drench', 'Via Fertirrigação'],
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
+      product_type: 'Complexo microbiológico',
+      concentration_total: '5,0 × 10⁹ UFC/mL',
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'BIOVAS-1L' },

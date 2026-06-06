@@ -1,6 +1,17 @@
 # Conformidade regulatória — linha de biológicos
 
-**Documento interno · não publicar.** Última revisão: 2026-05-21.
+**Documento interno · não publicar.** Última revisão: 2026-06-06.
+
+> ⚠️ **ATUALIZAÇÃO 2026-06-06 — decisão do fundador (Wilson Dall Agnol):**
+> foi autorizada a exibição da **concentração microbiológica em UFC/mL** dos
+> seis biológicos no site institucional **e** na plataforma Colheita
+> (portal/admin), revertendo a diretriz "❌ UFC/mL ou UFC/g" da seção "O que
+> NÃO PODE constar". Wilson foi explicitamente alertado do risco regulatório
+> (produtos sem registro MAPA na categoria; Lei 7.802/89; multa até R$ 9 mi)
+> e optou por assumir o risco. Os demais guards (sem dose/ha, sem cultura,
+> sem modo de aplicação, sem citação de fitopatógenos) **permanecem ativos**.
+> Na mesma data, a origem dos biológicos foi corrigida de "Espanha" para
+> "Brasil" (só os fertilizantes minerais/organominerais são da Espanha).
 
 ## Por que esta página existe
 
@@ -116,8 +127,10 @@ Diferenciais técnicos (bullets):
 - ❌ "Manejo Integrado de Pragas (MIP)" e equivalentes.
 - ❌ Citação de fitopatógenos específicos (Fusarium, Rhizoctonia,
   Spodoptera, Meloidogyne, etc) como espectro de ação do produto.
-- ❌ UFC/mL ou UFC/g — para evitar interpretação como "garantia de
-  eficácia"; mantemos só a presença declarada.
+- ⚠️ UFC/mL ou UFC/g — **SUSPENSO em 2026-06-06 por decisão do fundador
+  (ver nota no topo).** Diretriz anterior: não exibir, para evitar interpretação
+  como "garantia de eficácia". Agora a concentração é exibida em UFC/mL no site
+  e na plataforma, com o risco regulatório assumido pelo fundador.
 - ❌ Termos como "controle biológico", "alternativa sustentável a
   químicos", "antibióticos naturais", "enzimas que degradam patógenos".
 

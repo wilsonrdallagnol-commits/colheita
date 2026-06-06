@@ -604,6 +604,9 @@ export default async function ProductPage({ params }: PageProps) {
                 { label: 'Tipo', value: product.productType },
                 { label: 'Origem', value: product.originCountry },
                 { label: 'Estado', value: product.physicalState },
+                ...(product.concentrationUfc
+                  ? [{ label: 'Concentração', value: product.concentrationUfc }]
+                  : []),
                 ...(product.registrationMapa
                   ? [{ label: 'Reg. MAPA', value: product.registrationMapa }]
                   : []),
