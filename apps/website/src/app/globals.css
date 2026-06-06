@@ -445,6 +445,31 @@ a {
   }
 }
 
+/* ---- Nav mobile: evita corte do CTA "Ver catálogo" (logo + CTA only) ---- */
+@media (max-width: 640px) {
+  .nav-link-secondary {
+    display: none !important;
+  }
+  .nav-logo-img {
+    width: 156px !important;
+    height: auto !important;
+  }
+}
+@media (max-width: 380px) {
+  .nav-logo-img {
+    width: 140px !important;
+  }
+  nav {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
+/* Safety: sem overflow horizontal no mobile (nav fixed fica fora do flow do main) */
+body {
+  overflow-x: hidden;
+}
+
 /* ========================================================================
    RESPONSIVO TABLET (769-1024px) — leves ajustes pra evitar quebra
    intermediaria

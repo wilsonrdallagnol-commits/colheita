@@ -477,6 +477,7 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
                         alt={product.name}
                         width={160}
                         height={160}
+                        quality={90}
                         style={{
                           objectFit: 'contain',
                           objectPosition: 'center',

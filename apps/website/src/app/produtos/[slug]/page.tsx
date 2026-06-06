@@ -1042,6 +1042,7 @@ export default async function ProductPage({ params }: PageProps) {
                 width={500}
                 height={680}
                 priority
+                quality={95}
                 style={{
                   width: 'auto',
                   height: 'auto',

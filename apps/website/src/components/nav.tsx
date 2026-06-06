@@ -39,6 +39,7 @@ export function Nav() {
         <Image
           src="/argho-logo-color.png"
           alt="Argho Agrosciences"
+          className="nav-logo-img"
           width={196}
           height={52}
           style={{ objectFit: 'contain', objectPosition: 'left center' }}
@@ -55,6 +56,7 @@ export function Nav() {
           <Link
             key={href}
             href={href}
+            className="nav-link-secondary"
             style={{
               fontFamily: 'var(--font-body)',
               fontSize: '0.875rem',

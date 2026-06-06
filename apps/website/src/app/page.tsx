@@ -2349,6 +2349,7 @@ function Spotlight({
                 alt={imageAlt}
                 width={500}
                 height={750}
+                quality={95}
                 style={{
                   width: 'auto',
                   height: '100%',
