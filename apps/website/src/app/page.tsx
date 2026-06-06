@@ -464,7 +464,7 @@ export default function Home() {
         accent="var(--cat-mineral)"
         accentRaw="oklch(0.586 0.150 138.8)"
         description="Fertilizante NPK foliar com aminoácidos e ácidos carboxílicos. Melhora arquitetura e ativação fisiológica da planta, potencializando enraizamento e absorção de nutrientes."
-        tags={['NPK 4,5-2-7,2', 'Foliar', '500 g/ha · V3–V5']}
+        tags={['NPK 4,5-2-7,2', 'Foliar', '100 mL/ha · V2–V3']}
         image="/products/cover/stron.png"
         imageAlt="Stron 1L — Argho Agrosciences"
         href="/produtos/stron"
