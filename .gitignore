@@ -63,3 +63,6 @@ commit_msg.txt
 colheita-fundacao/
 
 .vercel
+
+# working dir de mockups (nao versionar)
+.tmp-renders/

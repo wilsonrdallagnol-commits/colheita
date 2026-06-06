@@ -65,6 +65,10 @@ const PRODUCT_MOCKUP: Record<string, string> = {
   'operate-citronela': '/products/operate-citronela.png',
   'operate-4em1': '/products/operate-4em1.png',
   'operate-orange': '/products/operate-orange.png',
+  'up-soil': '/products/up-soil.png',
+  'grow-nitrop': '/products/grow-nitrop.png',
+  'grow-filling': '/products/grow-filling.png',
+  titan: '/products/titan.png',
 };
 
 interface PageProps {
