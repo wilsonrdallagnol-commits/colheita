@@ -46,29 +46,29 @@ const APP_MODE_LABELS: Record<string, string> = {
 // Max scale for composition bars per type
 const MAX_SCALE = { macro: 40, micro: 10, other: 10 };
 
-// PNGs com fundo transparente processados via rembg (scripts/process-mockups.py).
-// Cobre 100% do portfólio vigente.
-const PRODUCT_MOCKUP: Record<string, string> = {
-  xcensis: '/products/xcensis.png',
-  stron: '/products/stron.png',
-  'grow-calcium': '/products/grow-calcium.png',
-  defon: '/products/defon.png',
-  'grow-mob': '/products/grow-mob.png',
-  impuch: '/products/impuch.png',
-  'life-on': '/products/lifeon.png',
-  troian: '/products/troian.png',
-  biovas: '/products/biovas.png',
-  bovex: '/products/bovex.png',
-  controx: '/products/controx.png',
-  nemax: '/products/nemax.png',
-  'operate-plus': '/products/operate-plus.png',
-  'operate-citronela': '/products/operate-citronela.png',
-  'operate-4em1': '/products/operate-4em1.png',
-  'operate-orange': '/products/operate-orange.png',
-  'up-soil': '/products/up-soil.png',
-  'grow-nitrop': '/products/grow-nitrop.png',
-  'grow-filling': '/products/grow-filling.png',
-  titan: '/products/titan.png',
+// Arte premium (rotulo fiel + swirl categorico) — usada no showcase do produto.
+// Mockup real composto sobre swirl da categoria/campo (1024², ver .tmp-renders/compose2.py).
+const PRODUCT_PREMIUM: Record<string, string> = {
+  xcensis: '/products/premium/xcensis.jpg',
+  stron: '/products/premium/stron.jpg',
+  'grow-calcium': '/products/premium/grow-calcium.jpg',
+  defon: '/products/premium/defon.jpg',
+  'grow-mob': '/products/premium/grow-mob.jpg',
+  'grow-filling': '/products/premium/grow-filling.jpg',
+  troian: '/products/premium/troian.jpg',
+  biovas: '/products/premium/biovas.jpg',
+  bovex: '/products/premium/bovex.jpg',
+  controx: '/products/premium/controx.jpg',
+  nemax: '/products/premium/nemax.jpg',
+  titan: '/products/premium/titan.jpg',
+  impuch: '/products/premium/impuch.jpg',
+  'life-on': '/products/premium/life-on.jpg',
+  'grow-nitrop': '/products/premium/grow-nitrop.jpg',
+  'up-soil': '/products/premium/up-soil.jpg',
+  'operate-plus': '/products/premium/operate-plus.jpg',
+  'operate-citronela': '/products/premium/operate-citronela.jpg',
+  'operate-4em1': '/products/premium/operate-4em1.jpg',
+  'operate-orange': '/products/premium/operate-orange.jpg',
 };
 
 interface PageProps {
@@ -99,7 +99,7 @@ export default async function ProductPage({ params }: PageProps) {
   const catBgSoft = CAT_BG_SOFT[product.category];
   const catLine = CAT_LINE[product.category];
   const catLabel = CATEGORIES[product.category].label;
-  const mockupSrc: string | undefined = PRODUCT_MOCKUP[product.slug];
+  const premiumSrc: string | undefined = PRODUCT_PREMIUM[product.slug];
 
   // Produto "complexo microbiologico": modelo neutro (sem valores quantitativos
   // nem claims). Renderiza so a lista de especies declaradas + diferenciais
@@ -957,7 +957,7 @@ export default async function ProductPage({ params }: PageProps) {
       {/* ═══════════════════════════════════════════════════════════════════
           SHOWCASE — mockup dramático centralizado (apenas se tiver mockup)
       ══════════════════════════════════════════════════════════════════════ */}
-      {mockupSrc && (
+      {premiumSrc && (
         <section
           style={{
             position: 'relative',
@@ -967,35 +967,6 @@ export default async function ProductPage({ params }: PageProps) {
             overflow: 'hidden',
           }}
         >
-          {/* Halo radial gigante atrás do produto */}
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: `radial-gradient(ellipse 50% 65% at 50% 70%, ${catRaw.replace(')', ' / 0.18)')} 0%, transparent 65%)`,
-              pointerEvents: 'none',
-            }}
-          />
-
-          {/* Grid técnico sutil */}
-          <div
-            aria-hidden
-            style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundImage: `
-                linear-gradient(var(--border-subtle) 1px, transparent 1px),
-                linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px)
-              `,
-              backgroundSize: '64px 64px',
-              opacity: 0.4,
-              maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
-              WebkitMaskImage:
-                'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%)',
-              pointerEvents: 'none',
-            }}
-          />
 
           <div
             className="slug-showcase-grid"
@@ -1011,50 +982,42 @@ export default async function ProductPage({ params }: PageProps) {
               alignItems: 'center',
             }}
           >
-            {/* Mockup gigante */}
+            {/* Arte premium do produto (rotulo real fiel + swirl categorico) */}
             <div
               style={{
-                position: 'relative',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
                 minHeight: '560px',
               }}
             >
-              {/* Sombra de chão */}
               <div
-                aria-hidden
                 style={{
-                  position: 'absolute',
-                  bottom: '40px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: '60%',
-                  height: '40px',
-                  background: `radial-gradient(ellipse 50% 50%, ${catRaw.replace(')', ' / 0.35)')} 0%, transparent 70%)`,
-                  filter: 'blur(20px)',
-                  pointerEvents: 'none',
+                  width: '100%',
+                  maxWidth: '540px',
+                  aspectRatio: '1 / 1',
+                  borderRadius: '16px',
+                  border: '1px solid var(--border-subtle)',
+                  borderTop: `3px solid ${catColor}`,
+                  overflow: 'hidden',
+                  backgroundColor: 'var(--bg)',
+                  boxShadow: 'var(--shadow-card)',
                 }}
-              />
-              <Image
-                src={mockupSrc}
-                alt={product.name}
-                width={500}
-                height={680}
-                priority
-                quality={95}
-                style={{
-                  width: 'auto',
-                  height: 'auto',
-                  maxWidth: '100%',
-                  maxHeight: '640px',
-                  objectFit: 'contain',
-                  objectPosition: 'center bottom',
-                  filter: `drop-shadow(0 32px 64px ${catRaw.replace(')', ' / 0.30)')}) drop-shadow(0 8px 20px ${catRaw.replace(')', ' / 0.15)')})`,
-                  position: 'relative',
-                  zIndex: 1,
-                }}
-              />
+              >
+                <Image
+                  src={premiumSrc}
+                  alt={product.name}
+                  width={1024}
+                  height={1024}
+                  priority
+                  quality={90}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                  }}
+                />
+              </div>
             </div>
 
             {/* Copy ao lado */}

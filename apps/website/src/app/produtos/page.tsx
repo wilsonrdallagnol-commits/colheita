@@ -43,26 +43,29 @@ const CAT_LINE: Record<ProductCategory, string> = {
   adjuvantes: 'var(--cat-adj-line)',
 };
 
-// Product mockup image mapping (slug → public image path)
-// PNGs com fundo transparente processados via rembg (scripts/process-mockups.py).
-// Cobre 100% do portfólio vigente.
-const PRODUCT_MOCKUP: Record<string, string> = {
-  xcensis: '/products/xcensis.png',
-  stron: '/products/stron.png',
-  'grow-calcium': '/products/grow-calcium.png',
-  defon: '/products/defon.png',
-  'grow-mob': '/products/grow-mob.png',
-  impuch: '/products/impuch.png',
-  'life-on': '/products/lifeon.png',
-  troian: '/products/troian.png',
-  biovas: '/products/biovas.png',
-  bovex: '/products/bovex.png',
-  controx: '/products/controx.png',
-  nemax: '/products/nemax.png',
-  'operate-plus': '/products/operate-plus.png',
-  'operate-citronela': '/products/operate-citronela.png',
-  'operate-4em1': '/products/operate-4em1.png',
-  'operate-orange': '/products/operate-orange.png',
+// Arte premium (rotulo real fiel + swirl categorico) — thumbnail do catalogo.
+// Cobre os 20 produtos (ver .tmp-renders/compose2.py).
+const PRODUCT_PREMIUM: Record<string, string> = {
+  xcensis: '/products/premium/xcensis.jpg',
+  stron: '/products/premium/stron.jpg',
+  'grow-calcium': '/products/premium/grow-calcium.jpg',
+  defon: '/products/premium/defon.jpg',
+  'grow-mob': '/products/premium/grow-mob.jpg',
+  'grow-filling': '/products/premium/grow-filling.jpg',
+  troian: '/products/premium/troian.jpg',
+  biovas: '/products/premium/biovas.jpg',
+  bovex: '/products/premium/bovex.jpg',
+  controx: '/products/premium/controx.jpg',
+  nemax: '/products/premium/nemax.jpg',
+  titan: '/products/premium/titan.jpg',
+  impuch: '/products/premium/impuch.jpg',
+  'life-on': '/products/premium/life-on.jpg',
+  'grow-nitrop': '/products/premium/grow-nitrop.jpg',
+  'up-soil': '/products/premium/up-soil.jpg',
+  'operate-plus': '/products/premium/operate-plus.jpg',
+  'operate-citronela': '/products/premium/operate-citronela.jpg',
+  'operate-4em1': '/products/premium/operate-4em1.jpg',
+  'operate-orange': '/products/premium/operate-orange.jpg',
 };
 
 interface PageProps {
@@ -426,10 +429,9 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
           {displayed.map((product, i) => {
             const nutrients = getNutrientLabels(product);
             const color = CAT_COLORS[product.category];
-            const raw = CAT_RAW[product.category];
             const bgSoft = CAT_BG_SOFT[product.category];
             const line = CAT_LINE[product.category];
-            const mockupSrc: string | undefined = PRODUCT_MOCKUP[product.slug];
+            const premiumSrc: string | undefined = PRODUCT_PREMIUM[product.slug];
             return (
               <Link
                 key={product.slug}
@@ -441,54 +443,49 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
                   className="produto-row-grid"
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: mockupSrc
-                      ? '160px minmax(0, 220px) minmax(0, 1fr) auto'
-                      : '80px minmax(0, 220px) minmax(0, 1fr) auto',
+                    gridTemplateColumns: '160px minmax(0, 220px) minmax(0, 1fr) auto',
                     gap: '0 28px',
                     alignItems: 'center',
-                    padding: mockupSrc ? '24px 28px' : '20px 24px',
+                    padding: '24px 28px',
                     borderTop: i === 0 ? 'none' : '1px solid var(--border-subtle)',
                     borderLeft: `3px solid ${color}`,
                     transition: 'background-color 0.18s ease, transform 0.18s ease',
                     backgroundColor: 'var(--bg)',
                   }}
                 >
-                  {/* Product mockup thumbnail — destaque maior pros produtos com mockup real */}
+                  {/* Thumbnail premium — mockup real fiel sobre swirl categorico */}
                   <div
                     style={{
-                      width: mockupSrc ? '160px' : '80px',
-                      height: mockupSrc ? '160px' : '80px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: '10px',
-                      background: mockupSrc
-                        ? `radial-gradient(ellipse 70% 80% at 50% 80%, ${bgSoft} 0%, transparent 70%)`
-                        : bgSoft,
-                      border: mockupSrc ? 'none' : `1px solid ${line}`,
+                      width: '160px',
+                      height: '160px',
+                      borderRadius: '12px',
+                      overflow: 'hidden',
+                      border: `1px solid ${line}`,
+                      backgroundColor: 'var(--bg)',
                       flexShrink: 0,
-                      overflow: 'visible',
-                      position: 'relative',
                     }}
                   >
-                    {mockupSrc ? (
+                    {premiumSrc ? (
                       <Image
-                        src={mockupSrc}
+                        src={premiumSrc}
                         alt={product.name}
                         width={160}
                         height={160}
-                        quality={90}
+                        quality={85}
                         style={{
-                          objectFit: 'contain',
-                          objectPosition: 'center',
-                          filter: `drop-shadow(0 12px 24px ${raw.replace(')', ' / 0.18)')})`,
-                          maxWidth: '100%',
-                          maxHeight: '100%',
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
                         }}
                       />
                     ) : (
                       <span
                         style={{
+                          display: 'flex',
+                          width: '100%',
+                          height: '100%',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                           fontFamily: 'var(--font-display)',
                           fontSize: '1.875rem',
                           fontWeight: 700,
