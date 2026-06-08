@@ -477,9 +477,9 @@ export default function Home() {
         name="Operate Plus"
         accent="var(--cat-adj)"
         accentRaw="oklch(0.62 0.130 78)"
-        description="Adjuvante espalhante adesivo premium com surfactante não-iônico, condicionador de pH e antiespumante. Cobertura foliar uniforme e proteção contra hidrólise alcalina."
-        tags={['Espalhante adesivo', 'Buffer pH 4,5–5,5', '50–100 mL/100L']}
-        image="/products/cover/operate-plus.png"
+        description="Condicionador multifuncional de calda: sequestrante de cátions, surfactantes não-iônicos, antideriva e antiespumante. Mais qualidade na água de pulverização e eficiência na aplicação — sem ajuste de pH (função do 4em1)."
+        tags={['Condicionador de calda', 'Antideriva + antiespumante', '50–100 mL/100L']}
+        image="/products/premium/operate-plus.jpg"
         imageAlt="Operate Plus 1L — Argho Agrosciences"
         href="/produtos/operate-plus"
         reverse={true}

@@ -663,15 +663,22 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
         }
         @media (max-width: 768px) {
           .produto-row-grid {
-            grid-template-columns: 56px minmax(0, 1fr) auto !important;
+            grid-template-columns: 88px minmax(0, 1fr) auto !important;
             grid-template-areas: "thumb name arrow" "thumb tag tag" !important;
             gap: 8px 16px !important;
             padding: 16px !important;
+            align-items: start !important;
           }
-          .produto-row-grid > div:nth-child(1) { grid-area: thumb; align-self: start; }
-          .produto-row-grid > div:nth-child(2) { grid-area: name; }
+          .produto-row-grid > div:nth-child(1) {
+            grid-area: thumb;
+            width: 88px !important;
+            height: 88px !important;
+            align-self: start;
+          }
+          .produto-row-grid > div:nth-child(2) { grid-area: name; align-self: center; }
           .produto-row-grid > div:nth-child(3) { grid-area: tag; }
           .produto-row-grid > span:last-child { grid-area: arrow; }
+          .produto-row-grid img { max-width: 100% !important; max-height: 100% !important; }
         }
       `}</style>
     </main>
