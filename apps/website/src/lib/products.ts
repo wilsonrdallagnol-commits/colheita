@@ -81,7 +81,7 @@ export const CATEGORIES: Record<ProductCategory, { label: string; description: s
   adjuvantes: {
     label: 'Adjuvantes',
     description:
-      'A família Operate: espalhantes adesivos premium com óleos essenciais, condicionamento de pH e ação antideriva para potencializar a eficiência de qualquer calda.',
+      'A família Operate: adjuvantes premium — surfactantes com óleos essenciais, condicionadores de calda e ação antideriva — para potencializar a eficiência de qualquer aplicação.',
   },
 };
 
@@ -559,12 +559,12 @@ export const PRODUCTS: Product[] = [
     slug: 'operate-plus',
     name: 'Operate Plus',
     category: 'adjuvantes',
-    tagline: 'Adjuvante espalhante adesivo premium com condicionador de pH',
+    tagline: 'Condicionador multifuncional de calda — qualidade da água e eficiência na aplicação',
     description:
-      'Adjuvante espalhante adesivo de última geração com surfactante não-iônico de baixa tensão superficial, condicionador de pH (buffer ácido para 4,5–5,5) e agente antiespumante. Garante cobertura foliar uniforme, aderência superior e proteção contra hidrólise alcalina de agroquímicos.',
+      'Condicionador multifuncional de calda que reúne sequestrante de cátions, blend de surfactantes não-iônicos, agente antideriva e antiespumante. Melhora a qualidade da água de pulverização, a cobertura e a estabilidade da calda, reduzindo perdas por deriva e formação de espuma. Adicionar primeiro no tanque, na dose de 0,5–1,0 mL/L (100–200 mL/ha). Produto isento de registro no MAPA.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
-    productType: 'Adjuvante Espalhante Adesivo',
+    productType: 'Condicionador Multifuncional de Calda',
     applicationModes: ['Via Foliar'],
     composition: {},
     packaging: [
@@ -579,14 +579,14 @@ export const PRODUCTS: Product[] = [
     slug: 'operate-citronela',
     name: 'Operate Citronela',
     category: 'adjuvantes',
-    tagline: 'Adjuvante espalhante com óleo essencial de citronela',
+    tagline: 'Adjuvante surfactante com óleo essencial de citronela (3%)',
     description:
-      'Adjuvante espalhante adesivo formulado com óleo essencial de citronela (Cymbopogon nardus). Além da função de espalhante, o óleo essencial atua como repelente de insetos na calda, agregando efeito antipraga sem resistência. Aroma característico marca a passagem da aplicação.',
+      'Adjuvante surfactante formulado com óleo essencial de citronela (3%). Reduz a tensão superficial da calda, melhorando o espalhamento e a absorção dos ativos, e agrega o efeito repelente natural da citronela à aplicação. Adicionar por último no tanque (produto oleoso), na dose de 1,5–2,0 mL/L (150–200 mL/ha) — aplicação convencional, baixa vazão ou drone. Produto isento de registro no MAPA.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
-    productType: 'Adjuvante Espalhante Adesivo',
+    productType: 'Adjuvante Surfactante com Óleo Essencial',
     applicationModes: ['Via Foliar'],
-    composition: {},
+    composition: { others: { 'Óleo essencial de citronela': 3.0 } },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'OPERATE-CIT-1L' },
       { type: 'bottle', volumeL: 5, sku: 'OPERATE-CIT-5L' },
@@ -599,12 +599,12 @@ export const PRODUCTS: Product[] = [
     slug: 'operate-4em1',
     name: 'Operate 4em1',
     category: 'adjuvantes',
-    tagline: 'Adjuvante multifuncional: espalhante, adesivo, condicionador e anti-espumante',
+    tagline: 'Condicionador multifuncional 4 em 1 — ajusta o pH e prepara a calda',
     description:
-      'O mais completo da família Operate. Combina quatro funções em um único produto: espalhante não-iônico, adesivo polimérico, condicionador de pH e antiespumante de silicone. Reduz o volume de adjuvantes na mochila e simplifica o preparo da calda sem perda de eficiência.',
+      'O mais completo da família Operate: condicionador multifuncional que reúne sequestrante de cátions, redutor de pH à base de ácido fosfórico, surfactantes não-iônicos, antideriva e antiespumante. Ajusta o pH da calda para a faixa ideal de 4,0 a 6,5 e melhora a qualidade da aplicação em uma única adição ao tanque. Adicionar primeiro, na dose de 0,5–1,0 mL/L. Por conter ácido fosfórico, redobrar a atenção em misturas alcalinas e com produtos à base de cobre. Produto isento de registro no MAPA.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
-    productType: 'Adjuvante Multifuncional',
+    productType: 'Condicionador Multifuncional de Calda',
     applicationModes: ['Via Foliar'],
     composition: {},
     packaging: [
@@ -619,14 +619,14 @@ export const PRODUCTS: Product[] = [
     slug: 'operate-orange',
     name: 'Operate Orange',
     category: 'adjuvantes',
-    tagline: 'Adjuvante espalhante com óleo essencial de laranja',
+    tagline: 'Adjuvante super-molhante e penetrante com óleo de laranja (D-limoneno 6%)',
     description:
-      'Adjuvante espalhante adesivo com óleo essencial de laranja (Citrus sinensis). O d-Limoneno presente no óleo de laranja potencializa a penetração cuticular de herbicidas e fungicidas sistêmicos, além de exercer ação de choque sobre insetos de corpo mole.',
+      'Adjuvante super-molhante e penetrante à base de óleo da casca de laranja, com 6% de D-limoneno. Potencializa o molhamento das folhas e a penetração cuticular de defensivos e nutrientes sistêmicos. Adicionar por último no tanque, na dose de 1,5–2,0 mL/L (150–200 mL/ha). Produto isento de registro no MAPA.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
-    productType: 'Adjuvante Espalhante Adesivo',
+    productType: 'Adjuvante Super-molhante e Penetrante',
     applicationModes: ['Via Foliar'],
-    composition: {},
+    composition: { others: { 'D-limoneno': 6.0 } },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'OPERATE-ORANGE-1L' },
       { type: 'bottle', volumeL: 5, sku: 'OPERATE-ORANGE-5L' },
