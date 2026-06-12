@@ -90,19 +90,22 @@ export function HeroHeart() {
           height: 0,
           // Poster como background-image garante visibilidade mesmo se video
           // falhar a carregar em qualquer dispositivo legacy.
-          backgroundImage: 'url(/argho-heart-poster-hero.png)',
+          backgroundImage: 'url(/argho-heart-poster-hero.jpg)',
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
         }}
       >
         <video
+          // key força remount quando isMobile muda: trocar <source> via JS
+          // NÃO recarrega o vídeo — sem isso, o mobile baixava o MP4 desktop.
+          key={isMobile ? 'heart-mobile' : 'heart-desktop'}
           ref={videoRef}
           autoPlay
           loop
           muted
           playsInline
-          poster="/argho-heart-poster-hero.png"
+          poster="/argho-heart-poster-hero.jpg"
           aria-label="Coracao digital Argho — tecnologia viva"
           style={{
             position: 'absolute',

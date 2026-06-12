@@ -1,6 +1,7 @@
 // apps/website/src/app/opengraph-image.tsx
 // OG image dinâmica — Argho Agrosciences (white-first + blue/green)
 import { ImageResponse } from 'next/og';
+import { PRODUCTS } from '@/lib/products';
 
 export const runtime = 'edge';
 export const alt = 'Argho Agrosciences — Nutrição de precisão para o agro brasileiro';
@@ -87,7 +88,7 @@ export default function Image() {
           }}
         >
           <span style={{ width: '32px', height: '2px', background: ARGHO_GREEN }} />
-          Origem europeia · Registro MAPA · Ciência aplicada
+          Origem europeia e nacional · Ciência aplicada
         </div>
         <div
           style={{
@@ -125,10 +126,10 @@ export default function Image() {
         }}
       >
         {[
-          { value: '18', label: 'Produtos' },
+          { value: String(PRODUCTS.length), label: 'Produtos' },
           { value: '4', label: 'Linhas' },
           { value: 'MAPA', label: 'Registros' },
-          { value: 'ES', label: 'Origem europeia' },
+          { value: 'ES', label: 'P&D Espanha' },
         ].map(({ value, label }) => (
           <div
             key={label}

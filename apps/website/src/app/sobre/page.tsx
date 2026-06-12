@@ -8,11 +8,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { RootDivider } from '@/components/root-divider';
 import { FEATURES } from '@/lib/features';
+import { PRODUCTS } from '@/lib/products';
 
 export const metadata: Metadata = {
   title: 'Sobre',
   description:
-    'Argho Agrosciences — distribuição de insumos de origem europeia com registro MAPA para a agricultura brasileira.',
+    'Argho Agrosciences — fertilizantes de origem europeia com registro MAPA e linhas biológica e de adjuvantes nacionais para a agricultura brasileira.',
 };
 
 const VALUES = [
@@ -62,7 +63,7 @@ const EXPERTISE_ITEMS = [
     label: 'Biológicos',
     accent: 'var(--cat-bio)',
     detail:
-      'Consórcios de Trichoderma harzianum e Bacillus spp. (5 espécies) com alta viabilidade celular para controle biológico e promoção de crescimento.',
+      'Complexos microbiológicos multi-espécie de Trichoderma e Bacillus, formulados na linha de biotecnologias Argho — foco em diversidade microbiana, estabilidade de formulação e precisão na composição declarada.',
   },
   {
     id: 'e4',
@@ -74,7 +75,7 @@ const EXPERTISE_ITEMS = [
 ];
 
 const HERO_METRICS = [
-  { value: '16', label: 'Produtos no portfólio' },
+  { value: String(PRODUCTS.length), label: 'Produtos no portfólio' },
   { value: '4', label: 'Linhas de atuação' },
   { value: 'ES', label: 'Origem Espanha' },
   { value: 'MAPA', label: 'Registro brasileiro' },
@@ -1357,9 +1358,11 @@ export default function SobrePage() {
                 maxWidth: '480px',
               }}
             >
-              Todos os produtos do portfólio Argho possuem registro válido no Ministério da
-              Agricultura, Pecuária e Abastecimento (MAPA). Origem europeia com cadeia logística
-              rastreável e documentação disponível para distribuidores e agrônomos.
+              Os fertilizantes minerais e organominerais — de origem europeia, com cadeia
+              logística rastreável — possuem registro no Ministério da Agricultura, Pecuária e
+              Abastecimento (MAPA). Os adjuvantes da linha Operate são isentos de registro, nos
+              termos da legislação vigente, e os biológicos seguem composição microbiológica
+              declarada. Documentação disponível para distribuidores e agrônomos.
             </p>
           </div>
 
@@ -1413,11 +1416,11 @@ export default function SobrePage() {
                 marginBottom: '24px',
               }}
             >
-              CNPJ 00.000.000/0001-00
+              CNPJ 26.686.958/0001-71
               <br />
-              Inscrição Estadual — ES
+              Paraná — Brasil
               <br />
-              Registro MAPA — Revendedor
+              Estabelecimento registrado no MAPA — PR
             </p>
             <div
               style={{
@@ -1435,7 +1438,7 @@ export default function SobrePage() {
                 letterSpacing: '0.04em',
               }}
             >
-              ORIGEM EUROPEIA · REGISTRO MAPA
+              ORIGEM EUROPEIA E NACIONAL
               <br />
               FORMULAÇÃO TÉCNICA CERTIFICADA
             </p>
@@ -1497,8 +1500,9 @@ export default function SobrePage() {
               maxWidth: '900px',
             }}
           >
-            Conheça o portfólio. <span style={{ color: 'var(--argho-green)' }}>16 produtos</span>{' '}
-            com ficha técnica completa.
+            Conheça o portfólio.{' '}
+            <span style={{ color: 'var(--argho-green)' }}>{PRODUCTS.length} produtos</span> com
+            ficha técnica completa.
           </h2>
 
           <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', alignItems: 'center' }}>

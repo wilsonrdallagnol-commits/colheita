@@ -15,7 +15,10 @@ export const metadata: Metadata = {
     template: '%s | Argho Agrosciences',
   },
   description:
-    'Portfólio de fertilizantes minerais, organominerais, biológicos e adjuvantes com origem europeia e registro MAPA. Ciência aplicada ao campo.',
+    'Portfólio de fertilizantes minerais e organominerais de origem europeia com registro MAPA, e linhas biológica e de adjuvantes nacionais. Ciência aplicada ao campo.',
+  alternates: {
+    canonical: './',
+  },
   keywords: [
     'fertilizante',
     'nutrição foliar',
@@ -36,7 +39,23 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Argho Agrosciences — Nutrição de precisão',
-    description: 'Fertilizantes, biológicos e adjuvantes com origem europeia e registro MAPA.',
+    description:
+      'Fertilizantes de origem europeia com registro MAPA; linhas biológica e de adjuvantes nacionais.',
+  },
+};
+
+// JSON-LD Organization — associa marca, logo e CNPJ nos buscadores
+const ORGANIZATION_JSONLD = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Argho Agrosciences',
+  url: 'https://arghoagrosciences.com',
+  logo: 'https://arghoagrosciences.com/argho-logo-color.png',
+  taxID: '26.686.958/0001-71',
+  address: {
+    '@type': 'PostalAddress',
+    addressRegion: 'PR',
+    addressCountry: 'BR',
   },
 };
 
@@ -48,6 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body>
+        <script type="application/ld+json">{JSON.stringify(ORGANIZATION_JSONLD)}</script>
         <HeartIntro />
         <Nav />
         <div style={{ paddingTop: '88px' }}>{children}</div>

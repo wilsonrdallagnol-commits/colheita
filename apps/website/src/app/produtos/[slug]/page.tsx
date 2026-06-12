@@ -83,9 +83,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const product = getProductBySlug(slug);
   if (!product) return { title: 'Produto não encontrado' };
+  const premiumSrc = PRODUCT_PREMIUM[product.slug];
   return {
     title: product.name,
     description: product.tagline,
+    alternates: { canonical: `/produtos/${product.slug}` },
+    openGraph: {
+      title: `${product.name} | Argho Agrosciences`,
+      description: product.tagline,
+      url: `/produtos/${product.slug}`,
+      type: 'website',
+      ...(premiumSrc
+        ? { images: [{ url: premiumSrc, width: 1024, height: 1024, alt: product.name }] }
+        : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${product.name} | Argho Agrosciences`,
+      description: product.tagline,
+    },
   };
 }
 
@@ -168,8 +184,22 @@ export default async function ProductPage({ params }: PageProps) {
 
   const isBio = product.category === 'biologicos';
 
+  // JSON-LD Product — dados estruturados para buscadores
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: product.tagline,
+    ...(premiumSrc ? { image: `https://arghoagrosciences.com${premiumSrc}` } : {}),
+    brand: { '@type': 'Brand', name: 'Argho Agrosciences' },
+    category: catLabel,
+    ...(product.packaging[0]?.sku ? { sku: product.packaging[0].sku } : {}),
+    url: `https://arghoagrosciences.com/produtos/${product.slug}`,
+  };
+
   return (
     <main style={{ backgroundColor: 'var(--bg)', minHeight: '100vh', overflowX: 'hidden' }}>
+      <script type="application/ld+json">{JSON.stringify(productJsonLd)}</script>
       {/* ═══════════════════════════════════════════════════════════════════
           BREADCRUMB — minimal mono
       ══════════════════════════════════════════════════════════════════════ */}
@@ -1006,11 +1036,11 @@ export default async function ProductPage({ params }: PageProps) {
               >
                 <Image
                   src={premiumSrc}
-                  alt={product.name}
+                  alt={`Embalagem de ${product.name} — ${CATEGORIES[product.category].label} Argho Agrosciences`}
                   width={1024}
                   height={1024}
-                  priority
-                  quality={90}
+                  quality={85}
+                  sizes="(max-width: 968px) 100vw, 540px"
                   style={{
                     width: '100%',
                     height: '100%',
@@ -1354,8 +1384,8 @@ export default async function ProductPage({ params }: PageProps) {
                 {isBio && !isMicrobialComplex && (
                   <>
                     {' '}
-                    Produto biológico registrado no MAPA — consulte a bula oficial para protocolo de
-                    armazenamento e viabilidade microbiológica.
+                    Produto biológico — composição declarada conforme padrão Argho; consulte a
+                    ficha técnica para protocolo de armazenamento e viabilidade microbiológica.
                   </>
                 )}
                 {isMicrobialComplex && (

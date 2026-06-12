@@ -42,6 +42,7 @@ const PRODUCTS = [
     composition: {
       micros: { Fe: 7.0, Mn: 3.5, Zn: 0.8, B: 0.7, Cu: 0.4, Mo: 0.3 },
       macros: { K2O: 4.0 },
+      others: { EDTA: 9.9, Lignossulfonatos: 23.0, Sacarídeos: 10.0 },
     },
     technicalSpecs: {
       registration_mapa: 'PR 002049-4.000006',
@@ -118,6 +119,7 @@ const PRODUCTS = [
     status: 'published' as const,
     composition: {
       macros: { N: 4.5, P2O5: 2.0, K2O: 7.2 },
+      others: { Aminoácidos: 2.0, 'Ácidos carboxílicos': 4.6 },
     },
     technicalSpecs: {
       registration_mapa: 'PR 002049-4.000014',
@@ -152,6 +154,7 @@ const PRODUCTS = [
     status: 'published' as const,
     composition: {
       macros: { N: 2.0, K2O: 35.0 },
+      others: { Aminoácidos: 6.0, Sacarídeos: 8.0 },
     },
     technicalSpecs: {
       registration_mapa: 'PR 002049-4.000003',
@@ -274,7 +277,7 @@ const PRODUCTS = [
   },
   {
     slug: 'grow-mob',
-    name: 'Grow Mob',
+    name: 'Grow MoB+',
     category: 'fertilizantes-minerais',
     tagline: 'Fósforo, boro e molibdênio concentrados para fixação biológica e florescimento',
     description:
@@ -283,6 +286,7 @@ const PRODUCTS = [
     composition: {
       macros: { N: 4.5, P2O5: 24.0 },
       micros: { Mo: 7.0, B: 8.0 },
+      others: { 'Dióxido de silício': 1.6 },
     },
     technicalSpecs: {
       registration_mapa: 'PR 002049-4.000005',
@@ -337,7 +341,12 @@ const PRODUCTS = [
     status: 'published' as const,
     composition: {
       macros: { N: 5.0, K2O: 2.0 },
-      others: { 'Carbono Orgânico': 11.0 },
+      others: {
+        'Carbono orgânico': 11.0,
+        Aminoácidos: 8.7,
+        'Substâncias húmicas': 15.0,
+        'Óleo vegetal': 0.7,
+      },
     },
     technicalSpecs: {
       registration_mapa: 'PR 002049-4.000013',
@@ -363,7 +372,7 @@ const PRODUCTS = [
   },
   {
     slug: 'life-on',
-    name: 'Life On',
+    name: 'Lifeon',
     category: 'organominerais',
     tagline: 'Bioestimulante organomineral com torta vegetal e glicerina',
     description:
@@ -371,7 +380,12 @@ const PRODUCTS = [
     status: 'published' as const,
     composition: {
       macros: { N: 6.0 },
-      others: { 'Carbono Orgânico': 14.0 },
+      others: {
+        'Carbono orgânico': 14.0,
+        Aminoácidos: 12.5,
+        'Ácidos carboxílicos': 20.0,
+        Glicerina: 3.0,
+      },
     },
     technicalSpecs: {
       registration_mapa: 'PR 002049-4.000011',
@@ -396,7 +410,7 @@ const PRODUCTS = [
   },
   {
     slug: 'grow-nitro-p',
-    name: 'Grow Nitro P',
+    name: 'Grow NitroP',
     category: 'organominerais',
     tagline: 'Organomineral nitrogenado concentrado com vinhaça e substâncias húmicas',
     description:
@@ -404,7 +418,11 @@ const PRODUCTS = [
     status: 'published' as const,
     composition: {
       macros: { N: 20.0 },
-      others: { 'Carbono Orgânico': 7.0 },
+      others: {
+        'Carbono orgânico': 7.0,
+        Aminoácidos: 3.0,
+        'Substâncias húmicas': 15.0,
+      },
     },
     technicalSpecs: {
       registration_mapa: 'PR 002049-4.000012',
@@ -437,7 +455,11 @@ const PRODUCTS = [
     status: 'published' as const,
     composition: {
       macros: { N: 6.0 },
-      others: { 'Carbono Orgânico': 20.0 },
+      others: {
+        'Carbono orgânico': 20.0,
+        Aminoácidos: 10.0,
+        'Substâncias húmicas': 24.0,
+      },
     },
     technicalSpecs: {
       registration_mapa: 'PR 002049-4.000010',
@@ -516,6 +538,105 @@ const PRODUCTS = [
       { type: 'bottle', volumeL: 5, sku: 'BIOVAS-5L' },
     ],
   },
+  {
+    slug: 'bovex',
+    name: 'Bovex',
+    category: 'biologicos',
+    tagline: 'Complexo microbiológico fúngico entomopatogênico',
+    description:
+      'Bovex reúne três espécies de fungos entomopatogênicos em uma formulação biotecnológica de alta complexidade microbiológica: Beauveria bassiana, Metarhizium anisopliae e Cordyceps fumosorosea. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Bovex se destaca pela combinação de três gêneros fúngicos distintos em uma única matriz biológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos de base fúngica. A presença simultânea de três gêneros fúngicos declarados confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade fúngica, estabilidade de formulação e precisão técnica na composição declarada. Concentração total: 2,5 × 10¹⁰.',
+    status: 'published' as const,
+    composition: {
+      others: {
+        'Beauveria bassiana': 1,
+        'Metarhizium anisopliae': 1,
+        'Cordyceps fumosorosea': 1,
+      },
+    },
+    technicalSpecs: {
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
+      product_type: 'Complexo microbiológico',
+      concentration_total: '2,5 × 10¹⁰ UFC/mL',
+    },
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'BOVEX-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'BOVEX-5L' },
+    ],
+  },
+  {
+    slug: 'controx',
+    name: 'Controx',
+    category: 'biologicos',
+    tagline: 'Complexo microbiológico multivariante de Bacillus thuringiensis',
+    description:
+      'Controx reúne duas variedades distintas de Bacillus thuringiensis em uma formulação biotecnológica de alta complexidade microbiológica: Bacillus thuringiensis var. thuringiensis e Bacillus thuringiensis var. kurstaki. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Controx se destaca pela combinação de duas variedades distintas dentro da mesma espécie em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos multivariantes. A presença simultânea das variedades thuringiensis e kurstaki confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade intra-específica, estabilidade de formulação e precisão técnica na composição declarada. Concentração total: 2,5 × 10⁹.',
+    status: 'published' as const,
+    composition: {
+      others: {
+        'Bacillus thuringiensis var. thuringiensis': 1,
+        'Bacillus thuringiensis var. kurstaki': 1,
+      },
+    },
+    technicalSpecs: {
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
+      product_type: 'Complexo microbiológico',
+      concentration_total: '2,5 × 10⁹ UFC/mL',
+    },
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'CONTROX-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'CONTROX-5L' },
+    ],
+  },
+  {
+    slug: 'nemax',
+    name: 'Nemax',
+    category: 'biologicos',
+    tagline: 'Complexo microbiológico multi-gênero de fungos filamentosos',
+    description:
+      'Nemax reúne três espécies de fungos filamentosos em uma formulação biotecnológica de alta complexidade microbiológica: Trichoderma harzianum, Trichoderma asperellum e Purpureocillium lilacinum. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Nemax se destaca pela combinação de três espécies de fungos filamentosos em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos de base fúngica. A presença simultânea de duas espécies do gênero Trichoderma com Purpureocillium lilacinum confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade microbiana, estabilidade de formulação e precisão técnica na composição declarada. Concentração total: 2,5 × 10¹⁰.',
+    status: 'published' as const,
+    composition: {
+      others: {
+        'Trichoderma harzianum': 1,
+        'Trichoderma asperellum': 1,
+        'Purpureocillium lilacinum': 1,
+      },
+    },
+    technicalSpecs: {
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
+      product_type: 'Complexo microbiológico',
+      concentration_total: '2,5 × 10¹⁰ UFC/mL',
+    },
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'NEMAX-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'NEMAX-5L' },
+    ],
+  },
+  {
+    slug: 'titan',
+    name: 'Titan',
+    category: 'biologicos',
+    tagline: 'Matriz microbiológica fúngica líquida à base de Trichoderma harzianum',
+    description:
+      'Titan é uma matriz microbiológica fúngica líquida à base de Trichoderma harzianum, estruturada para apresentar identidade técnica clara, facilidade operacional e padronização microbiológica dentro da linha de biotecnologias da Argho Agrosciences. A proposta tecnológica do produto está na combinação entre base fúngica, formulação líquida e comunicação técnica voltada à construção de programas microbiológicos, respeitando a finalidade e as condições previstas no registro vigente. Concentração total: 2,5 × 10⁹.',
+    status: 'published' as const,
+    composition: {
+      others: { 'Trichoderma harzianum': 1 },
+    },
+    technicalSpecs: {
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
+      product_type: 'Complexo microbiológico',
+      concentration_total: '2,5 × 10⁹ UFC/mL',
+    },
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'TITAN-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'TITAN-5L' },
+    ],
+  },
 
   // ── ADJUVANTES ────────────────────────────────────────────────────────────
   {
@@ -528,6 +649,8 @@ const PRODUCTS = [
     status: 'published' as const,
     composition: {},
     technicalSpecs: {
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
       product_type: 'Condicionador Multifuncional de Calda',
       application_modes: ['Calda Fitossanitária', 'Calda Foliar Nutricional'],
       linha: 'Operate',
@@ -550,6 +673,8 @@ const PRODUCTS = [
     status: 'published' as const,
     composition: { others: { 'Óleo essencial de citronela': 3.0 } },
     technicalSpecs: {
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
       product_type: 'Adjuvante Surfactante com Óleo Essencial',
       application_modes: ['Calda Fitossanitária', 'Calda Foliar Nutricional'],
       linha: 'Operate',
@@ -573,6 +698,8 @@ const PRODUCTS = [
     status: 'published' as const,
     composition: {},
     technicalSpecs: {
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
       product_type: 'Condicionador Multifuncional de Calda',
       application_modes: ['Calda Fitossanitária', 'Calda Foliar Nutricional'],
       linha: 'Operate',
@@ -590,13 +717,15 @@ const PRODUCTS = [
     slug: 'operate-orange',
     name: 'Operate Orange',
     category: 'adjuvantes',
-    tagline: 'Adjuvante super-molhante e penetrante com óleo de laranja (D-limoneno 6%)',
+    tagline: 'Adjuvante supermolhante e penetrante com óleo de laranja (D-limoneno 6%)',
     description:
-      'Adjuvante super-molhante e penetrante à base de óleo da casca de laranja, com 6% de D-limoneno. Potencializa o molhamento das folhas e a penetração cuticular de defensivos e nutrientes sistêmicos. Adicionar por último no tanque, na dose de 1,5–2,0 mL/L (150–200 mL/ha). Produto isento de registro no MAPA.',
+      'Adjuvante supermolhante e penetrante à base de óleo da casca de laranja, com 6% de D-limoneno. Potencializa o molhamento das folhas e a penetração cuticular de defensivos e nutrientes sistêmicos. Adicionar por último no tanque, na dose de 1,5–2,0 mL/L (150–200 mL/ha). Produto isento de registro no MAPA.',
     status: 'published' as const,
     composition: { others: { 'D-limoneno': 6.0 } },
     technicalSpecs: {
-      product_type: 'Adjuvante Super-molhante e Penetrante',
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
+      product_type: 'Adjuvante Supermolhante e Penetrante',
       application_modes: ['Calda Fitossanitária', 'Calda Foliar Nutricional'],
       linha: 'Operate',
       active_ingredient: 'Óleo essencial de laranja (D-limoneno)',

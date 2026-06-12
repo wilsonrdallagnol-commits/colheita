@@ -9,32 +9,17 @@ import Link from 'next/link';
 import { HeroHeart } from '@/components/hero-heart';
 import { RootDivider } from '@/components/root-divider';
 import { FEATURES } from '@/lib/features';
+import { PRODUCTS, getProductsByCategory } from '@/lib/products';
 
 export const metadata: Metadata = {
   title: 'Argho Agrosciences — Tecnologia viva para o agro brasileiro',
   description:
-    'Fertilizantes minerais, organominerais, biológicos e adjuvantes desenvolvidos com ciência de ponta. Origem europeia. Registro MAPA.',
+    'Fertilizantes minerais, organominerais, biológicos e adjuvantes desenvolvidos com ciência de ponta. Fertilizantes de origem europeia com registro MAPA; linhas biológica e de adjuvantes nacionais.',
 };
 
-// Marquee de produtos para tira inferior do hero — portfólio vigente
-const MARQUEE_PRODUCTS = [
-  'Xcensis',
-  'Stron',
-  'Grow Calcium',
-  'Defon',
-  'Grow MoB',
-  'Impuch',
-  'Life On',
-  'Troian',
-  'Biovas',
-  'Bovex',
-  'Controx',
-  'Nemax',
-  'Operate Plus',
-  'Operate Citronela',
-  'Operate 4 em 1',
-  'Operate Orange',
-];
+// Marquee de produtos para tira inferior do hero — derivado de PRODUCTS
+// (fonte única; nunca dessincroniza do catálogo)
+const MARQUEE_PRODUCTS = PRODUCTS.map((p) => p.name);
 
 export default function Home() {
   return (
@@ -144,8 +129,8 @@ export default function Home() {
                 letterSpacing: '-0.005em',
               }}
             >
-              16 produtos. 4 linhas. Uma ciência cultivada na fronteira entre microbiologia, química
-              mineral e a realidade do campo brasileiro.
+              {PRODUCTS.length} produtos. 4 linhas. Uma ciência cultivada na fronteira entre
+              microbiologia, química mineral e a realidade do campo brasileiro.
             </p>
 
             {/* CTA cluster */}
@@ -230,9 +215,12 @@ export default function Home() {
               }}
             >
               {[
-                { value: '16', label: 'Produtos ativos' },
+                { value: String(PRODUCTS.length), label: 'Produtos ativos' },
                 { value: '4', label: 'Linhas especializadas' },
-                { value: '100%', label: 'Tech nacional' },
+                {
+                  value: String(PRODUCTS.filter((p) => p.registrationMapa).length),
+                  label: 'Registros MAPA',
+                },
               ].map((m) => (
                 <div key={m.label}>
                   <div
@@ -414,16 +402,7 @@ export default function Home() {
             name="Fertilizantes Minerais"
             accent="var(--cat-mineral)"
             description="Macronutrientes e micronutrientes em formulações de alta eficiência para suprimento direto da planta."
-            products={[
-              'Xcensis',
-              'Stron',
-              'Grow Filling',
-              'Grow Calcium',
-              'Defon',
-              'Algen',
-              'Grow MoB',
-              'Grow Sulfur',
-            ]}
+            products={getProductsByCategory('fertilizantes-minerais').map((p) => p.name)}
             href="/produtos?categoria=fertilizantes-minerais"
           />
           <LineCard
@@ -431,7 +410,7 @@ export default function Home() {
             name="Organominerais"
             accent="var(--cat-organo)"
             description="Minerais associados a fontes orgânicas para melhora do solo e eficiência de absorção radicular."
-            products={['Impuch', 'Life On', 'Grow Nitro P', 'Up Soil']}
+            products={getProductsByCategory('organominerais').map((p) => p.name)}
             href="/produtos?categoria=organominerais"
           />
           <LineCard
@@ -439,7 +418,7 @@ export default function Home() {
             name="Biológicos"
             accent="var(--cat-bio)"
             description="Inoculantes e compostos bioativos que estimulam a microbiologia do solo e a resistência da planta."
-            products={['Troian', 'Biovas']}
+            products={getProductsByCategory('biologicos').map((p) => p.name)}
             href="/produtos?categoria=biologicos"
           />
           <LineCard
@@ -447,7 +426,7 @@ export default function Home() {
             name="Adjuvantes"
             accent="var(--cat-adj)"
             description="Potencializadores de caldas e pulverização para maximizar a absorção e cobertura foliar."
-            products={['Operate Plus', 'Operate Citronela', 'Operate 4 em 1', 'Operate Orange']}
+            products={getProductsByCategory('adjuvantes').map((p) => p.name)}
             href="/produtos?categoria=adjuvantes"
           />
         </div>
@@ -465,7 +444,7 @@ export default function Home() {
         accentRaw="oklch(0.586 0.150 138.8)"
         description="Fertilizante NPK foliar com aminoácidos e ácidos carboxílicos. Melhora arquitetura e ativação fisiológica da planta, potencializando enraizamento e absorção de nutrientes."
         tags={['NPK 4,5-2-7,2', 'Foliar', '100 mL/ha · V2–V3']}
-        image="/products/cover/stron.png"
+        image="/products/premium/stron.jpg"
         imageAlt="Stron 1L — Argho Agrosciences"
         href="/produtos/stron"
         reverse={false}
@@ -478,7 +457,7 @@ export default function Home() {
         accent="var(--cat-adj)"
         accentRaw="oklch(0.62 0.130 78)"
         description="Condicionador multifuncional de calda: sequestrante de cátions, surfactantes não-iônicos, antideriva e antiespumante. Mais qualidade na água de pulverização e eficiência na aplicação — sem ajuste de pH (função do 4em1)."
-        tags={['Condicionador de calda', 'Antideriva + antiespumante', '50–100 mL/100L']}
+        tags={['Condicionador de calda', 'Antideriva + antiespumante', '0,5–1,0 mL/L']}
         image="/products/premium/operate-plus.jpg"
         imageAlt="Operate Plus 1L — Argho Agrosciences"
         href="/produtos/operate-plus"
@@ -1871,7 +1850,7 @@ export default function Home() {
                 color: 'var(--argho-green)',
               }}
             >
-              16 produtos
+              {PRODUCTS.length} produtos
             </span>
             .
           </h2>
@@ -2292,8 +2271,8 @@ function Spotlight({
               alt={imageAlt}
               width={1024}
               height={1024}
-              quality={95}
-              priority
+              quality={85}
+              sizes="(max-width: 968px) 100vw, 600px"
               style={{
                 width: '100%',
                 height: '100%',

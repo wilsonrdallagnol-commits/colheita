@@ -94,9 +94,9 @@ export const PRODUCTS: Product[] = [
     name: 'Xcensis',
     category: 'fertilizantes-minerais',
     tagline:
-      'Micronutrição funcional de alta densidade com matriz EDTA, lignosulfonatos e sacarídeos',
+      'Micronutrição funcional de alta densidade com matriz EDTA, lignossulfonatos e sacarídeos',
     description:
-      'Fertilizante mineral misto sólido microgranulado com micronutrientes solúveis em água — Fe (7,0%), Mn (3,5%), K2O (4,0%), Zn (0,8%), B (0,7%), Cu (0,4%) e Mo (0,3%) — complexados em matriz com EDTA (9,9%), lignosulfonatos (23,0%) e sacarídeos (10,0%). Posicionamento como ferramenta de micronutrição funcional para janelas de alta exigência metabólica: Fe e Mn sustentam fotossíntese e transporte de elétrons; Zn, B e Mo formam eixo crítico para florescimento, pegamento e enchimento; Cu e Mn participam de cuproenzimas, lignificação e homeostase oxidativa. Compatível com biológicos quando bem posicionada.',
+      'Fertilizante mineral misto sólido microgranulado com micronutrientes solúveis em água — Fe (7,0%), Mn (3,5%), K2O (4,0%), Zn (0,8%), B (0,7%), Cu (0,4%) e Mo (0,3%) — complexados em matriz com EDTA (9,9%), lignossulfonatos (23,0%) e sacarídeos (10,0%). Posicionamento como ferramenta de micronutrição funcional para janelas de alta exigência metabólica: Fe e Mn sustentam fotossíntese e transporte de elétrons; Zn, B e Mo formam eixo crítico para florescimento, pegamento e enchimento; Cu e Mn participam de cuproenzimas, lignificação e homeostase oxidativa. Compatível com biológicos quando bem posicionada.',
     physicalState: 'sólido',
     originCountry: 'Espanha',
     productType: 'Fertilizante Mineral Misto',
@@ -107,7 +107,7 @@ export const PRODUCTS: Product[] = [
       macros: { K2O: 4.0 },
       others: {
         EDTA: 9.9,
-        Lignosulfonatos: 23.0,
+        Lignossulfonatos: 23.0,
         Sacarídeos: 10.0,
       },
     },
@@ -289,8 +289,8 @@ export const PRODUCTS: Product[] = [
       },
     },
     packaging: [
-      { type: 'bottle', volumeL: 1, sku: 'LIFE-ON-1L' },
-      { type: 'bottle', volumeL: 5, sku: 'LIFE-ON-5L' },
+      { type: 'bottle', volumeL: 1, sku: 'LIFEON-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'LIFEON-5L' },
     ],
   },
   {
@@ -339,8 +339,8 @@ export const PRODUCTS: Product[] = [
       },
     },
     packaging: [
-      { type: 'bottle', volumeL: 1, sku: 'UP-SOIL-1L' },
-      { type: 'bottle', volumeL: 5, sku: 'UP-SOIL-5L' },
+      { type: 'bottle', volumeL: 1, sku: 'UPSOIL-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'UPSOIL-5L' },
     ],
   },
   {
@@ -588,18 +588,18 @@ export const PRODUCTS: Product[] = [
     applicationModes: ['Via Foliar'],
     composition: { others: { 'Óleo essencial de citronela': 3.0 } },
     packaging: [
-      { type: 'bottle', volumeL: 1, sku: 'OPERATE-CIT-1L' },
-      { type: 'bottle', volumeL: 5, sku: 'OPERATE-CIT-5L' },
-      { type: 'drum', volumeL: 20, sku: 'OPERATE-CIT-20L' },
-      { type: 'drum', volumeL: 200, sku: 'OPERATE-CIT-200L' },
-      { type: 'ibc', volumeL: 1000, sku: 'OPERATE-CIT-1000L' },
+      { type: 'bottle', volumeL: 1, sku: 'OPERATE-CITRONELA-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'OPERATE-CITRONELA-5L' },
+      { type: 'drum', volumeL: 20, sku: 'OPERATE-CITRONELA-20L' },
+      { type: 'drum', volumeL: 200, sku: 'OPERATE-CITRONELA-200L' },
+      { type: 'ibc', volumeL: 1000, sku: 'OPERATE-CITRONELA-1000L' },
     ],
   },
   {
     slug: 'operate-4em1',
     name: 'Operate 4em1',
     category: 'adjuvantes',
-    tagline: 'Condicionador multifuncional 4 em 1 — ajusta o pH e prepara a calda',
+    tagline: 'Condicionador multifuncional 4em1 — ajusta o pH e prepara a calda',
     description:
       'O mais completo da família Operate: condicionador multifuncional que reúne sequestrante de cátions, redutor de pH à base de ácido fosfórico, surfactantes não-iônicos, antideriva e antiespumante. Ajusta o pH da calda para a faixa ideal de 4,0 a 6,5 e melhora a qualidade da aplicação em uma única adição ao tanque. Adicionar primeiro, na dose de 0,5–1,0 mL/L. Por conter ácido fosfórico, redobrar a atenção em misturas alcalinas e com produtos à base de cobre. Produto isento de registro no MAPA.',
     physicalState: 'fluido',
@@ -619,12 +619,12 @@ export const PRODUCTS: Product[] = [
     slug: 'operate-orange',
     name: 'Operate Orange',
     category: 'adjuvantes',
-    tagline: 'Adjuvante super-molhante e penetrante com óleo de laranja (D-limoneno 6%)',
+    tagline: 'Adjuvante supermolhante e penetrante com óleo de laranja (D-limoneno 6%)',
     description:
-      'Adjuvante super-molhante e penetrante à base de óleo da casca de laranja, com 6% de D-limoneno. Potencializa o molhamento das folhas e a penetração cuticular de defensivos e nutrientes sistêmicos. Adicionar por último no tanque, na dose de 1,5–2,0 mL/L (150–200 mL/ha). Produto isento de registro no MAPA.',
+      'Adjuvante supermolhante e penetrante à base de óleo da casca de laranja, com 6% de D-limoneno. Potencializa o molhamento das folhas e a penetração cuticular de defensivos e nutrientes sistêmicos. Adicionar por último no tanque, na dose de 1,5–2,0 mL/L (150–200 mL/ha). Produto isento de registro no MAPA.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
-    productType: 'Adjuvante Super-molhante e Penetrante',
+    productType: 'Adjuvante Supermolhante e Penetrante',
     applicationModes: ['Via Foliar'],
     composition: { others: { 'D-limoneno': 6.0 } },
     packaging: [

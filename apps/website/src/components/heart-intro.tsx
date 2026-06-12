@@ -170,7 +170,7 @@ export function HeartIntro() {
           zIndex: 2,
           // Poster como background pra garantir visibilidade mesmo se video
           // falhar em algum dispositivo legacy
-          backgroundImage: 'url(/argho-heart-poster-hero.png)',
+          backgroundImage: 'url(/argho-heart-poster-hero.jpg)',
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
@@ -182,7 +182,7 @@ export function HeartIntro() {
           loop
           muted
           playsInline
-          poster="/argho-heart-poster-hero.png"
+          poster="/argho-heart-poster-hero.jpg"
           aria-label="Coracao digital Argho"
           style={{
             position: 'absolute',
@@ -196,7 +196,10 @@ export function HeartIntro() {
         >
           {/* MP4 H.264 baseline PRIMEIRO — iOS Safari falha silencioso quando
               WebM eh o primeiro source (mesmo com type=webm). Inverter ordem
-              garante que todos browsers peguem MP4 (que funciona universal). */}
+              garante que todos browsers peguem MP4 (que funciona universal).
+              Variante mobile via media= no source: a selecao acontece no load
+              (trocar source depois via JS NAO recarrega o video). */}
+          <source src="/argho-heart-hero-mobile.mp4" type="video/mp4" media="(max-width: 768px)" />
           <source src="/argho-heart-hero.mp4" type="video/mp4" />
           <source src="/argho-heart-hero.webm" type="video/webm" />
         </video>

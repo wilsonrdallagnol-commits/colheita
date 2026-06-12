@@ -221,7 +221,7 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
                 textTransform: 'uppercase',
               }}
             >
-              Origem Espanha
+              Origem Espanha e Brasil
             </span>
           </div>
 
@@ -248,8 +248,9 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
               lineHeight: 1.65,
             }}
           >
-            Nutrição foliar, organomineral e biológica com origem europeia e registro MAPA — para
-            quem exige ciência aplicada ao campo.
+            Nutrição foliar, organomineral e biológica — fertilizantes de origem europeia com
+            registro MAPA e linhas biológica e de adjuvantes nacionais, para quem exige ciência
+            aplicada ao campo.
           </p>
         </div>
       </section>
@@ -644,10 +645,13 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
               margin: 0,
             }}
           >
-            Todos os produtos exibem a composição garantida conforme Certificado de Análise e
-            Registro no MAPA (Ministério da Agricultura, Pecuária e Abastecimento). O uso de
-            fertilizantes requer acompanhamento de Engenheiro Agrônomo ou Florestal habilitado,
-            conforme Lei 5.194/66. As recomendações de dose são orientativas.
+            Os fertilizantes minerais e organominerais possuem Registro no MAPA (Ministério da
+            Agricultura, Pecuária e Abastecimento) e exibem a composição garantida conforme
+            Certificado de Análise. Os produtos biológicos têm composição microbiológica
+            declarada. Os adjuvantes da linha Operate são isentos de registro no MAPA, nos termos
+            da legislação vigente. O uso de fertilizantes requer acompanhamento de Engenheiro
+            Agrônomo ou Florestal habilitado, conforme Lei 5.194/66. As recomendações de dose são
+            orientativas.
           </p>
         </div>
       </section>
@@ -668,6 +672,14 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
             gap: 8px 16px !important;
             padding: 16px !important;
             align-items: start !important;
+          }
+          .produto-row-grid h3 {
+            font-size: 1rem !important;
+            line-height: 1.15 !important;
+          }
+          .produto-row-grid p {
+            font-size: 0.8125rem !important;
+            line-height: 1.45 !important;
           }
           .produto-row-grid > div:nth-child(1) {
             grid-area: thumb;

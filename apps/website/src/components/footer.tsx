@@ -15,6 +15,7 @@ export function Footer() {
       }}
     >
       <div
+        className="footer-grid"
         style={{
           maxWidth: '1280px',
           margin: '0 auto',
@@ -32,7 +33,7 @@ export function Footer() {
               alt="Argho Agrosciences"
               width={180}
               height={48}
-              style={{ objectFit: 'contain', objectPosition: 'left center' }}
+              style={{ objectFit: 'contain', objectPosition: 'left center', maxWidth: '100%', height: 'auto' }}
             />
           </Link>
           <p
@@ -59,7 +60,7 @@ export function Footer() {
               letterSpacing: '0.04em',
             }}
           >
-            CNPJ 00.000.000/0001-00
+            CNPJ 26.686.958/0001-71
           </p>
         </div>
 
@@ -146,9 +147,11 @@ export function Footer() {
                 lineHeight: 1.6,
               }}
             >
-              Produtos registrados
+              Fertilizantes e organominerais
               <br />
-              pelo MAPA — Brasil
+              com registro MAPA · Adjuvantes
+              <br />
+              isentos de registro
             </p>
           </div>
         </div>
@@ -185,7 +188,7 @@ export function Footer() {
             letterSpacing: '0.08em',
           }}
         >
-          ORIGEM EUROPEIA · REGISTRO MAPA
+          ORIGEM EUROPEIA E NACIONAL
         </p>
       </div>
     </footer>
