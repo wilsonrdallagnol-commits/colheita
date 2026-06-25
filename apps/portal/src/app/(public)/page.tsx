@@ -86,6 +86,10 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   const supabase = createServerClient(cookieStore);
 
   const qTrimmed = q?.trim() ?? '';
+  // Sanitiza o input do usuario UMA vez, antes de qualquer uso — tanto na busca
+  // vetorial (evita enviar query crua ao provider de embedding) quanto no filtro
+  // PostgREST `or()` mais abaixo.
+  const safeQ = sanitizeSearchQuery(qTrimmed);
 
   // Fetch tenant — fallback gracioso quando Supabase indisponivel.
   let tenantId: string | undefined;
@@ -99,8 +103,8 @@ export default async function CatalogPage({ searchParams }: PageProps) {
 
   // Vector search
   let vectorProductIds: string[] | null = null;
-  if (qTrimmed && tenantId) {
-    vectorProductIds = await vectorSearchProductIds(qTrimmed, tenantId);
+  if (safeQ && tenantId) {
+    vectorProductIds = await vectorSearchProductIds(safeQ, tenantId);
   }
 
   // Fetch categories and products em paralelo. Falhas viram listas vazias
@@ -113,9 +117,6 @@ export default async function CatalogPage({ searchParams }: PageProps) {
       return { data: null as null | { id: string; slug: string; name: string }[] };
     }
   })();
-
-  // Sanitiza input do usuario antes de interpolar em filtro PostgREST `or()`.
-  const safeQ = sanitizeSearchQuery(qTrimmed);
 
   const produtosResult = await (async () => {
     try {
