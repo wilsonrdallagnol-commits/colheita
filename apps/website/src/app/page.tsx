@@ -2350,6 +2350,11 @@ function Spotlight({
             min-height: 480px !important;
           }
         }
+        @media (max-width: 768px) {
+          .spotlight-grid {
+            padding: 64px 0 !important;
+          }
+        }
       `}</style>
     </section>
   );
