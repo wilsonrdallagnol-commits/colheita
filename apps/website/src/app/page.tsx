@@ -209,6 +209,7 @@ export default function Home() {
               className="anim-fade-in-up delay-4"
               style={{
                 display: 'flex',
+                flexWrap: 'wrap',
                 gap: '48px',
                 paddingTop: '32px',
                 borderTop: '1px solid var(--border-subtle)',
@@ -686,6 +687,7 @@ export default function Home() {
 
             {/* Grid 2x2 de leituras (light-first, instrumentos científicos legíveis) */}
             <div
+              className="lab-pheno-grid"
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(2, 1fr)',
@@ -1459,6 +1461,9 @@ export default function Home() {
             }
           }
           @media (max-width: 640px) {
+            .lab-pheno-grid {
+              grid-template-columns: 1fr !important;
+            }
             .lab-vectors-grid {
               grid-template-columns: 1fr !important;
             }

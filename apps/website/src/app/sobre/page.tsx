@@ -295,7 +295,7 @@ export default function SobrePage() {
             />
 
             <div
-              className="anim-fade-in-up delay-2"
+              className="anim-fade-in-up delay-2 sobre-eyebrow"
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.6875rem',
@@ -1269,6 +1269,9 @@ export default function SobrePage() {
             .ciencia-pipeline-line { display: none !important; }
           }
           @media (max-width: 640px) {
+            .sobre-eyebrow {
+              margin-left: 0 !important;
+            }
             .ciencia-metrics-grid {
               grid-template-columns: 1fr !important;
             }

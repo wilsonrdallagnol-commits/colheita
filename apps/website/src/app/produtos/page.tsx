@@ -469,7 +469,7 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
                     {premiumSrc ? (
                       <Image
                         src={premiumSrc}
-                        alt={product.name}
+                        alt={`Embalagem de ${product.name} — ${CATEGORIES[product.category].label} Argho Agrosciences`}
                         width={160}
                         height={160}
                         quality={85}
