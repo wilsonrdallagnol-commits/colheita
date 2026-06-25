@@ -502,7 +502,7 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
 
                   {/* Name + category */}
                   <div>
-                    <h3
+                    <h2
                       style={{
                         fontFamily: 'var(--font-display)',
                         fontSize: '1.125rem',
@@ -515,7 +515,7 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
                       }}
                     >
                       {product.name}
-                    </h3>
+                    </h2>
                     <p
                       style={{
                         fontFamily: 'var(--font-mono)',
@@ -673,7 +673,7 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
             padding: 16px !important;
             align-items: start !important;
           }
-          .produto-row-grid h3 {
+          .produto-row-grid h2 {
             font-size: 1rem !important;
             line-height: 1.15 !important;
           }

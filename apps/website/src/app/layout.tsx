@@ -68,9 +68,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body>
         <script type="application/ld+json">{JSON.stringify(ORGANIZATION_JSONLD)}</script>
+        <a href="#conteudo" className="skip-link">
+          Pular para o conteúdo
+        </a>
         <HeartIntro />
         <Nav />
-        <div style={{ paddingTop: '88px' }}>{children}</div>
+        <div id="conteudo" style={{ paddingTop: '88px' }}>
+          {children}
+        </div>
         <Footer />
       </body>
     </html>

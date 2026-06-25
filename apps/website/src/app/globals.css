@@ -135,6 +135,25 @@ body {
   border-radius: 4px;
 }
 
+/* Skip-link (acessibilidade) — fora da tela, visível só ao receber foco por teclado */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 1000;
+  padding: 12px 20px;
+  background: var(--argho-blue);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 8px 0;
+}
+.skip-link:focus {
+  left: 0;
+}
+
 /* Selection — Argho blue tint */
 ::selection {
   background-color: oklch(0.362 0.160 266.7 / 0.20);
