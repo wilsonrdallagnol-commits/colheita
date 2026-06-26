@@ -58,6 +58,7 @@ const PRODUCT_PREMIUM: Record<string, string> = {
   controx: '/products/premium/controx.jpg',
   nemax: '/products/premium/nemax.jpg',
   titan: '/products/premium/titan.jpg',
+  'n-import': '/products/premium/n-import.jpg',
   impuch: '/products/premium/impuch.jpg',
   'life-on': '/products/premium/life-on.jpg',
   'grow-nitrop': '/products/premium/grow-nitrop.jpg',

@@ -553,6 +553,33 @@ export const PRODUCTS: Product[] = [
       'Padrão Argho de qualidade, rastreabilidade e formulação',
     ],
   },
+  {
+    slug: 'n-import',
+    name: 'N-import',
+    category: 'biologicos',
+    tagline: 'Matriz microbiológica à base de Herbaspirillum seropedicae',
+    description:
+      'N-import é uma matriz microbiológica fluida à base de Herbaspirillum seropedicae, bactéria diazotrófica, formulada dentro da linha de biotecnologias da Argho Agrosciences com foco em composição declarada e padronização microbiológica. A proposta tecnológica do produto está na combinação entre base bacteriana monoespécie, formulação fluida e identidade técnica clara dentro do portfólio biológico Argho. A presença declarada de Herbaspirillum seropedicae confere ao produto uma identidade biológica singular, valorizando consistência microbiológica, estabilidade de formulação e precisão técnica na composição declarada. Concentração total: 1,0 × 10⁹.',
+    physicalState: 'fluido',
+    originCountry: 'Brasil',
+    productType: 'Complexo microbiológico',
+    concentrationUfc: '1,0 × 10⁹ UFC/mL',
+    applicationModes: [],
+    composition: {
+      others: { 'Herbaspirillum seropedicae': 1 },
+    },
+    packaging: [
+      { type: 'bottle', volumeL: 1.8, sku: 'NIMPORT-1.8L' },
+      { type: 'bottle', volumeL: 5, sku: 'NIMPORT-5L' },
+    ],
+    technicalDifferentials: [
+      'Matriz microbiológica fluida monoespécie',
+      'Base bacteriana Herbaspirillum seropedicae declarada',
+      'Formulação microbiológica de composição declarada',
+      'Tecnologia biológica desenvolvida para sistemas técnicos controlados',
+      'Padrão Argho de qualidade, rastreabilidade e formulação',
+    ],
+  },
 
   // ADJUVANTES
   {

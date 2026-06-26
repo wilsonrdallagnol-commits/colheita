@@ -637,6 +637,28 @@ const PRODUCTS = [
       { type: 'bottle', volumeL: 5, sku: 'TITAN-5L' },
     ],
   },
+  {
+    slug: 'n-import',
+    name: 'N-import',
+    category: 'biologicos',
+    tagline: 'Matriz microbiológica à base de Herbaspirillum seropedicae',
+    description:
+      'N-import é uma matriz microbiológica fluida à base de Herbaspirillum seropedicae, bactéria diazotrófica, formulada dentro da linha de biotecnologias da Argho Agrosciences com foco em composição declarada e padronização microbiológica. A proposta tecnológica do produto está na combinação entre base bacteriana monoespécie, formulação fluida e identidade técnica clara dentro do portfólio biológico Argho. A presença declarada de Herbaspirillum seropedicae confere ao produto uma identidade biológica singular, valorizando consistência microbiológica, estabilidade de formulação e precisão técnica na composição declarada. Concentração total: 1,0 × 10⁹.',
+    status: 'published' as const,
+    composition: {
+      others: { 'Herbaspirillum seropedicae': 1 },
+    },
+    technicalSpecs: {
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
+      product_type: 'Complexo microbiológico',
+      concentration_total: '1,0 × 10⁹ UFC/mL',
+    },
+    packaging: [
+      { type: 'bottle', volumeL: 1.8, sku: 'NIMPORT-1.8L' },
+      { type: 'bottle', volumeL: 5, sku: 'NIMPORT-5L' },
+    ],
+  },
 
   // ── ADJUVANTES ────────────────────────────────────────────────────────────
   {
