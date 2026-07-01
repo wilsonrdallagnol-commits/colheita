@@ -275,6 +275,25 @@ const s: Record<string, CSSProperties> = {
     fontVariantNumeric: 'tabular-nums',
   },
 
+  // Biológicos (modelo neutro MAPA): espécie declarada por nome científico,
+  // sem porcentagem. Espelha `microbialSpeciesLabel` da FichaTecnica.
+  compChipSpecies: {
+    display: 'inline-flex',
+    padding: '3pt 8pt',
+    border: `1px solid ${GREEN_LIGHT_BORDER}`,
+    borderRadius: '3pt',
+    fontSize: '8.5pt',
+    fontStyle: 'italic',
+    color: TEXT_PRIMARY,
+    background: GREEN_LIGHT_BG,
+  },
+  microbialNote: {
+    marginTop: '8pt',
+    fontSize: '7pt',
+    color: TEXT_TERTIARY,
+    lineHeight: 1.5,
+  },
+
   packagingList: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -405,6 +424,15 @@ function ProdutoPage({ produto, data }: { produto: CatalogoProduto; data: Catalo
   const hasComposition =
     Object.keys(macros).length + Object.keys(micros).length + Object.keys(others).length > 0;
 
+  // Biológicos (modelo neutro MAPA): composition.others traz a espécie com valor
+  // placeholder 1 — declara-se o nome científico, NUNCA uma porcentagem. Espelha
+  // FichaTecnica.tsx e apps/website/docs/biologicos-compliance.md.
+  const isMicrobialComplex =
+    (produto.technicalSpecs?.product_type as string | undefined) === 'Complexo microbiológico';
+  const microbialSpecies = isMicrobialComplex
+    ? [...Object.keys(macros), ...Object.keys(micros), ...Object.keys(others)]
+    : [];
+
   return (
     <section style={s.page}>
       <header style={s.pageHeader}>
@@ -421,7 +449,25 @@ function ProdutoPage({ produto, data }: { produto: CatalogoProduto; data: Catalo
 
       {produto.mapaRegistration && <span style={s.mapaBadge}>MAPA {produto.mapaRegistration}</span>}
 
-      {hasComposition && (
+      {/* Biológicos (modelo neutro): espécies sem % — evita claim de porcentagem falso */}
+      {hasComposition && isMicrobialComplex && (
+        <div style={s.section}>
+          <p style={s.sectionTitle}>Composição microbiológica</p>
+          <div style={s.compRow}>
+            {microbialSpecies.map((species) => (
+              <span key={`species-${species}`} style={s.compChipSpecies}>
+                {species}
+              </span>
+            ))}
+          </div>
+          <p style={s.microbialNote}>
+            Composição microbiológica declarada conforme padrão Argho de formulação.
+          </p>
+        </div>
+      )}
+
+      {/* Minerais/organominerais: a % é garantia real e deve aparecer */}
+      {hasComposition && !isMicrobialComplex && (
         <div style={s.section}>
           <p style={s.sectionTitle}>Composição garantida</p>
           <div style={s.compRow}>

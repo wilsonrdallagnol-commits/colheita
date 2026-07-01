@@ -172,6 +172,17 @@ const s: Record<string, CSSProperties> = {
     color: TEXT_PRIMARY,
     fontVariantNumeric: 'tabular-nums',
   },
+  microbialSpeciesLabel: {
+    fontSize: '8.5pt',
+    fontStyle: 'italic',
+    color: TEXT_PRIMARY,
+  },
+  microbialNote: {
+    marginTop: '8pt',
+    fontSize: '7pt',
+    color: TEXT_TERTIARY,
+    lineHeight: 1.5,
+  },
   specsRow: {
     display: 'flex',
     padding: '4pt 0',
@@ -268,6 +279,20 @@ export function FichaTecnica({ data }: Props) {
   const hasApplications = data.applications.length > 0;
   const year = data.year ?? new Date().getFullYear();
 
+  // Biológicos (modelo neutro MAPA): composition.others traz a espécie declarada
+  // com valor placeholder 1 — declara-se o nome científico, NUNCA uma porcentagem.
+  // Espelha a detecção do portal (apps/portal/.../produtos/[slug]/page.tsx) e as
+  // regras de apps/website/docs/biologicos-compliance.md.
+  const isMicrobialComplex =
+    (data.technicalSpecs?.product_type as string | undefined) === 'Complexo microbiológico';
+  const microbialSpecies = isMicrobialComplex
+    ? [
+        ...Object.keys(data.composition.macros ?? {}),
+        ...Object.keys(data.composition.micros ?? {}),
+        ...Object.keys(data.composition.others ?? {}),
+      ]
+    : [];
+
   return (
     <html lang="pt-BR">
       <head>
@@ -306,8 +331,25 @@ export function FichaTecnica({ data }: Props) {
             ) : null}
           </section>
 
-          {/* Composição garantida */}
-          {hasComposition && (
+          {/* Composição — biológicos (modelo neutro) usam renderer alternativo */}
+          {hasComposition && isMicrobialComplex && (
+            <section style={s.section}>
+              <h2 style={s.sectionTitle}>Composição Microbiológica</h2>
+              <div>
+                {microbialSpecies.map((species) => (
+                  <div key={species} style={s.compRow}>
+                    <span style={s.microbialSpeciesLabel}>{species}</span>
+                  </div>
+                ))}
+              </div>
+              <p style={s.microbialNote}>
+                Composição microbiológica declarada conforme padrão Argho de formulação.
+              </p>
+            </section>
+          )}
+
+          {/* Composição garantida — minerais/organominerais com % */}
+          {hasComposition && !isMicrobialComplex && (
             <section style={s.section}>
               <h2 style={s.sectionTitle}>Composição Garantida</h2>
               <div style={s.compositionGrid}>
