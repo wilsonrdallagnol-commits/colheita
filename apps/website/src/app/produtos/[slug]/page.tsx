@@ -1109,7 +1109,7 @@ export default async function ProductPage({ params }: PageProps) {
                     letterSpacing: '-0.05em',
                   }}
                 >
-                  Pronto para o campo.
+                  {isMicrobialComplex ? 'Composição declarada.' : 'Pronto para o campo.'}
                 </span>
               </h2>
 
