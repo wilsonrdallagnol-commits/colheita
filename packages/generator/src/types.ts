@@ -71,6 +71,13 @@ export interface CatalogoProduto {
   description?: string;
   categoryName?: string;
   composition: ProductComposition;
+  /**
+   * Especificações técnicas livres (pH, densidade, formulação, product_type…).
+   * Necessário para detectar biológicos (modelo neutro MAPA): quando
+   * `product_type === 'Complexo microbiológico'`, a composição declara espécies
+   * (nome científico), NUNCA porcentagens. Espelha FichaTecnicaData.technicalSpecs.
+   */
+  technicalSpecs?: Record<string, unknown>;
   packaging: PackagingUnit[];
   applications: ProductApplication[];
   mapaRegistration?: string;

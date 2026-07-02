@@ -72,7 +72,7 @@ export async function GET(_request: NextRequest) {
       .from('products')
       .select(
         `id, slug, name, tagline, description,
-         composition, packaging, applications,
+         composition, technical_specs, packaging, applications,
          category:product_categories(name),
          registrations:regulatory_registrations(registration_no)`,
       )
@@ -107,6 +107,7 @@ export async function GET(_request: NextRequest) {
       description: (p.description as string | null) ?? undefined,
       categoryName: (category as { name?: string } | null)?.name ?? undefined,
       composition: (p.composition as ProductComposition) ?? {},
+      technicalSpecs: (p.technical_specs as Record<string, unknown> | null) ?? undefined,
       packaging: ((p.packaging as PackagingUnit[]) ?? []).map((pkg) => ({
         type: pkg.type,
         weightKg: pkg.weightKg,

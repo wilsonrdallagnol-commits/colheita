@@ -5,9 +5,10 @@ import type { CompilerTheme } from '@colheita/ui';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
+import { Catalogo } from '../src/templates/Catalogo.js';
 import { FichaTecnica } from '../src/templates/FichaTecnica.js';
 import { RenderSpecLayout } from '../src/templates/RenderSpecLayout.js';
-import type { FichaTecnicaData } from '../src/types.js';
+import type { CatalogoData, FichaTecnicaData } from '../src/types.js';
 
 // Fixture com dados completos do Xcensis (sem acionar Playwright)
 const XCENSIS_DATA: FichaTecnicaData = {
@@ -127,6 +128,125 @@ describe('FichaTecnica template', () => {
     const el = createElement(FichaTecnica, { data: XCENSIS_DATA });
     const html = renderToStaticMarkup(el);
     expect(html).toContain('Argho AgriSciences');
+  });
+});
+
+// Fixture de produto biológico (modelo neutro MAPA): composition.others traz
+// a espécie declarada com valor placeholder 1 — só o nome científico importa.
+// Ver apps/website/docs/biologicos-compliance.md.
+const NIMPORT_DATA: FichaTecnicaData = {
+  productName: 'N-import',
+  tagline: 'Complexo microbiológico',
+  tenantName: 'Argho Agrosciences',
+  composition: {
+    others: { 'Herbaspirillum seropedicae': 1 },
+  },
+  technicalSpecs: {
+    product_type: 'Complexo microbiológico',
+    concentration_total: '1,0 × 10⁹ UFC/mL',
+    physical_state: 'Líquido',
+  },
+  packaging: [
+    { type: 'bottle', volumeL: 1.8 },
+    { type: 'bottle', volumeL: 5 },
+  ],
+  applications: [],
+  year: 2026,
+};
+
+describe('FichaTecnica — complexo microbiológico (biológicos)', () => {
+  it('NÃO renderiza porcentagem falsa para a espécie (placeholder 1)', () => {
+    const html = renderToStaticMarkup(createElement(FichaTecnica, { data: NIMPORT_DATA }));
+    expect(html).not.toContain('1%');
+  });
+
+  it('usa o heading "Composição Microbiológica" em vez de "Composição Garantida"', () => {
+    const html = renderToStaticMarkup(createElement(FichaTecnica, { data: NIMPORT_DATA }));
+    expect(html).toContain('Composição Microbiológica');
+    expect(html).not.toContain('Composição Garantida');
+  });
+
+  it('não exibe o bloco "Outros (%)" para biológico', () => {
+    const html = renderToStaticMarkup(createElement(FichaTecnica, { data: NIMPORT_DATA }));
+    expect(html).not.toContain('Outros (%)');
+  });
+
+  it('lista o nome científico da espécie declarada', () => {
+    const html = renderToStaticMarkup(createElement(FichaTecnica, { data: NIMPORT_DATA }));
+    expect(html).toContain('Herbaspirillum seropedicae');
+  });
+
+  it('produto químico (não-microbiológico) mantém "Composição Garantida" com %', () => {
+    const html = renderToStaticMarkup(createElement(FichaTecnica, { data: XCENSIS_DATA }));
+    expect(html).toContain('Composição Garantida');
+    expect(html).not.toContain('Composição Microbiológica');
+    expect(html).toContain('10%');
+  });
+});
+
+// ============================================================================
+// Catálogo — mesma armadilha do FichaTecnica: composition.others de biológico
+// (modelo neutro MAPA) traz a espécie com placeholder 1. Renderizar "{v}%"
+// imprimiria "Herbaspirillum seropedicae 1%" — claim de porcentagem falso.
+// Ver apps/website/docs/biologicos-compliance.md.
+// ============================================================================
+const CATALOGO_NIMPORT: CatalogoData = {
+  tenantName: 'Argho Agrosciences',
+  year: 2026,
+  produtos: [
+    {
+      id: 'nimport',
+      slug: 'n-import',
+      name: 'N-import',
+      tagline: 'Complexo microbiológico',
+      categoryName: 'Biológicos',
+      composition: { others: { 'Herbaspirillum seropedicae': 1 } },
+      technicalSpecs: { product_type: 'Complexo microbiológico' },
+      packaging: [{ type: 'bottle', volumeL: 1.8 }],
+      applications: [],
+    },
+  ],
+};
+
+// Produto mineral no catálogo — a % é uma garantia real e DEVE aparecer.
+const CATALOGO_XCENSIS: CatalogoData = {
+  tenantName: 'Argho AgriSciences',
+  year: 2026,
+  produtos: [
+    {
+      id: 'xcensis',
+      slug: 'xcensis-10-00-06',
+      name: 'Xcensis 10-00-06',
+      categoryName: 'Fertilizantes foliares',
+      composition: { macros: { N: 10, K2O: 6 }, micros: { Zn: 0.5 } },
+      packaging: [],
+      applications: [],
+    },
+  ],
+};
+
+describe('Catalogo — complexo microbiológico (biológicos)', () => {
+  it('NÃO renderiza porcentagem falsa para a espécie (placeholder 1)', () => {
+    const html = renderToStaticMarkup(createElement(Catalogo, { data: CATALOGO_NIMPORT }));
+    expect(html).not.toContain('1%');
+  });
+
+  it('usa o heading "Composição microbiológica" em vez de "Composição garantida"', () => {
+    const html = renderToStaticMarkup(createElement(Catalogo, { data: CATALOGO_NIMPORT }));
+    expect(html).toContain('Composição microbiológica');
+    expect(html).not.toContain('Composição garantida');
+  });
+
+  it('lista o nome científico da espécie declarada', () => {
+    const html = renderToStaticMarkup(createElement(Catalogo, { data: CATALOGO_NIMPORT }));
+    expect(html).toContain('Herbaspirillum seropedicae');
+  });
+
+  it('produto mineral (não-microbiológico) mantém "Composição garantida" com %', () => {
+    const html = renderToStaticMarkup(createElement(Catalogo, { data: CATALOGO_XCENSIS }));
+    expect(html).toContain('Composição garantida');
+    expect(html).not.toContain('Composição microbiológica');
+    expect(html).toContain('10%');
   });
 });
 
