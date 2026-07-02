@@ -490,7 +490,7 @@ const PRODUCTS = [
     category: 'biologicos',
     tagline: 'Complexo microbiológico multi-Bacillus',
     description:
-      'Troian reúne três espécies do gênero Bacillus em uma formulação biotecnológica de composição declarada: Bacillus subtilis, Bacillus velezensis e Bacillus amyloliquefaciens. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Troian se destaca pela arquitetura multi-Bacillus em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos. A presença simultânea de três espécies bacterianas declaradas confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade bacteriana, consistência microbiológica e precisão técnica na composição declarada. Concentração total: 2,0 × 10¹⁰.',
+      'Troian é uma matriz microbiológica de composição declarada, formada por três espécies do gênero Bacillus: Bacillus subtilis, Bacillus velezensis e Bacillus amyloliquefaciens. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-Bacillus, diversidade bacteriana e padrão de formulação declarado. Concentração total declarada: 2,0 × 10¹⁰ UFC/mL.',
     status: 'published' as const,
     composition: {
       others: {
@@ -516,7 +516,7 @@ const PRODUCTS = [
     category: 'biologicos',
     tagline: 'Complexo microbiológico multi-Bacillus',
     description:
-      'Biovas reúne cinco espécies do gênero Bacillus em uma formulação biotecnológica de alta complexidade microbiológica: Bacillus subtilis, Bacillus amyloliquefaciens, Bacillus licheniformis, Bacillus aryabhattai e Bacillus megaterium. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Biovas se destaca pela combinação de diferentes espécies bacterianas em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos bioinsumos de base microbiana. A presença de múltiplas espécies de Bacillus confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade microbiana, estabilidade de formulação e precisão técnica na composição declarada. Concentração total: 5,0 × 10⁹.',
+      'Biovas é uma matriz microbiológica de composição declarada, formada por cinco espécies do gênero Bacillus: Bacillus subtilis, Bacillus amyloliquefaciens, Bacillus licheniformis, Bacillus aryabhattai e Bacillus megaterium. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-Bacillus, diversidade bacteriana e padrão de formulação declarado. Concentração total declarada: 5,0 × 10⁹ UFC/mL.',
     status: 'published' as const,
     composition: {
       others: {
@@ -544,7 +544,7 @@ const PRODUCTS = [
     category: 'biologicos',
     tagline: 'Complexo microbiológico fúngico entomopatogênico',
     description:
-      'Bovex reúne três espécies de fungos entomopatogênicos em uma formulação biotecnológica de alta complexidade microbiológica: Beauveria bassiana, Metarhizium anisopliae e Cordyceps fumosorosea. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Bovex se destaca pela combinação de três gêneros fúngicos distintos em uma única matriz biológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos de base fúngica. A presença simultânea de três gêneros fúngicos declarados confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade fúngica, estabilidade de formulação e precisão técnica na composição declarada. Concentração total: 2,5 × 10¹⁰.',
+      'Bovex é uma matriz microbiológica de composição declarada, formada por três gêneros de fungos: Beauveria bassiana, Metarhizium anisopliae e Cordyceps fumosorosea. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-gênero fúngica, diversidade fúngica e padrão de formulação declarado. Concentração total declarada: 2,5 × 10¹⁰ UFC/mL.',
     status: 'published' as const,
     composition: {
       others: {
@@ -570,7 +570,7 @@ const PRODUCTS = [
     category: 'biologicos',
     tagline: 'Complexo microbiológico multivariante de Bacillus thuringiensis',
     description:
-      'Controx reúne duas variedades distintas de Bacillus thuringiensis em uma formulação biotecnológica de alta complexidade microbiológica: Bacillus thuringiensis var. thuringiensis e Bacillus thuringiensis var. kurstaki. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Controx se destaca pela combinação de duas variedades distintas dentro da mesma espécie em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos multivariantes. A presença simultânea das variedades thuringiensis e kurstaki confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade intra-específica, estabilidade de formulação e precisão técnica na composição declarada. Concentração total: 2,5 × 10⁹.',
+      'Controx é uma matriz microbiológica de composição declarada, formada por duas variedades de Bacillus thuringiensis: Bacillus thuringiensis var. thuringiensis e Bacillus thuringiensis var. kurstaki. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multivariante, diversidade intra-específica e padrão de formulação declarado. Concentração total declarada: 2,5 × 10⁹ UFC/mL.',
     status: 'published' as const,
     composition: {
       others: {
@@ -595,7 +595,7 @@ const PRODUCTS = [
     category: 'biologicos',
     tagline: 'Complexo microbiológico multi-gênero de fungos filamentosos',
     description:
-      'Nemax reúne três espécies de fungos filamentosos em uma formulação biotecnológica de alta complexidade microbiológica: Trichoderma harzianum, Trichoderma asperellum e Purpureocillium lilacinum. Desenvolvido dentro da linha de biotecnologias da Argho Agrosciences, o Nemax se destaca pela combinação de três espécies de fungos filamentosos em uma única matriz microbiológica, oferecendo uma composição robusta, tecnicamente diferenciada e alinhada ao avanço dos consórcios microbiológicos de base fúngica. A presença simultânea de duas espécies do gênero Trichoderma com Purpureocillium lilacinum confere ao produto uma identidade biológica singular dentro do portfólio Argho, valorizando diversidade microbiana, estabilidade de formulação e precisão técnica na composição declarada. Concentração total: 2,5 × 10¹⁰.',
+      'Nemax é uma matriz microbiológica de composição declarada, formada por três espécies de fungos filamentosos: Trichoderma harzianum, Trichoderma asperellum e Purpureocillium lilacinum. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-gênero fúngica, diversidade microbiana e padrão de formulação declarado. Concentração total declarada: 2,5 × 10¹⁰ UFC/mL.',
     status: 'published' as const,
     composition: {
       others: {
@@ -621,7 +621,7 @@ const PRODUCTS = [
     category: 'biologicos',
     tagline: 'Matriz microbiológica fúngica líquida à base de Trichoderma harzianum',
     description:
-      'Titan é uma matriz microbiológica fúngica líquida à base de Trichoderma harzianum, estruturada para apresentar identidade técnica clara, facilidade operacional e padronização microbiológica dentro da linha de biotecnologias da Argho Agrosciences. A proposta tecnológica do produto está na combinação entre base fúngica, formulação líquida e comunicação técnica voltada à construção de programas microbiológicos, respeitando a finalidade e as condições previstas no registro vigente. Concentração total: 2,5 × 10⁹.',
+      'Titan é uma matriz microbiológica fluida de composição declarada, à base de Trichoderma harzianum. Formulação monoespécie desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade fúngica declarada e padrão de formulação. Concentração total declarada: 2,5 × 10⁹ UFC/mL.',
     status: 'published' as const,
     composition: {
       others: { 'Trichoderma harzianum': 1 },
@@ -643,7 +643,7 @@ const PRODUCTS = [
     category: 'biologicos',
     tagline: 'Matriz microbiológica à base de Herbaspirillum seropedicae',
     description:
-      'N-import é uma matriz microbiológica fluida à base de Herbaspirillum seropedicae, bactéria diazotrófica, formulada dentro da linha de biotecnologias da Argho Agrosciences com foco em composição declarada e padronização microbiológica. A proposta tecnológica do produto está na combinação entre base bacteriana monoespécie, formulação fluida e identidade técnica clara dentro do portfólio biológico Argho. A presença declarada de Herbaspirillum seropedicae confere ao produto uma identidade biológica singular, valorizando consistência microbiológica, estabilidade de formulação e precisão técnica na composição declarada. Concentração total: 1,0 × 10⁹.',
+      'N-import é uma matriz microbiológica fluida de composição declarada, à base de Herbaspirillum seropedicae. Formulação monoespécie desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade bacteriana declarada e padrão de formulação. Concentração total declarada: 1,0 × 10⁹ UFC/mL.',
     status: 'published' as const,
     composition: {
       others: { 'Herbaspirillum seropedicae': 1 },
