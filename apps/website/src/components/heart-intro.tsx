@@ -16,6 +16,7 @@
 // total. Textos em azul Argho pra contraste.
 
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const SESSION_KEY = 'argho-intro-seen';
@@ -23,9 +24,17 @@ const SESSION_KEY = 'argho-intro-seen';
 export function HeartIntro() {
   const [phase, setPhase] = useState<'hidden' | 'visible' | 'exiting'>('hidden');
   const videoRef = useRef<HTMLVideoElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    // Wilson 2026-08-13: a intro é o portal do site, e portal só faz sentido na entrada.
+    // Quem chega por link direto de produto (WhatsApp, Google, e-mail) quer o produto —
+    // cobrir a tela com a animação nesse caso é atrito, não marca.
+    if (pathname !== '/') {
+      sessionStorage.setItem(SESSION_KEY, '1');
+      return;
+    }
     if (sessionStorage.getItem(SESSION_KEY) === '1') return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       sessionStorage.setItem(SESSION_KEY, '1');
@@ -36,7 +45,7 @@ export function HeartIntro() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     if (phase === 'visible') {

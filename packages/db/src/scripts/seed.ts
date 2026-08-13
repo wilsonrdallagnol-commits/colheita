@@ -1,5 +1,22 @@
 /**
- * Seed — tenant Argho + portfólio completo de produtos (dados oficiais MAPA).
+ * Seed — tenant Argho + portfólio completo de produtos.
+ *
+ * FONTE DA VERDADE do portfólio (decisão do Wilson, 2026-08-13): o CATÁLOGO
+ * ARGHO 2026 — `CATALOGO BIOLOGICOS 2026/conteudo/site-data.json` e
+ * `conteudo/copy/produto-*.json`. Espelha o site institucional
+ * (apps/website/src/lib/products.ts) e a migration
+ * `infra/supabase/migrations/0050_catalogo_2026_produtos.sql`, que leva um
+ * banco JÁ EXISTENTE ao mesmo estado deste seed.
+ *
+ * Regras que este arquivo precisa respeitar:
+ *   • Linha biológica: identidade + composição declarada (espécie + cepa) +
+ *     concentração. SEM dose, SEM cultura, SEM destinação de uso, SEM
+ *     categoria funcional — ver apps/website/docs/biologicos-compliance.md.
+ *     `product_type: 'Complexo microbiológico'` é o seletor do renderer de
+ *     compliance no portal; não trocar essa string.
+ *   • Dose só existe nos 4 adjuvantes Operate (linha isenta de registro no
+ *     MAPA) e é dose de CALDA. Nenhum produto tem `applications` (dose ou
+ *     posicionamento por cultura) — não existe no catálogo.
  *
  * Uso: pnpm db:seed
  * Idempotente: INSERT ... ON CONFLICT DO NOTHING / DO UPDATE.
@@ -70,43 +87,8 @@ const PRODUCTS = [
       { type: 'bag', weightKg: 1, sku: 'XCENSIS-1KG' },
       { type: 'bag', weightKg: 5, sku: 'XCENSIS-5KG' },
     ],
-    applications: [
-      {
-        crop: 'Soja',
-        stage: 'V3–V5',
-        dosePerHa: 250,
-        unit: 'g',
-        notes: 'Grupo cereais (ficha): 0,2–0,3 kg/ha. Aplicar com Operate Plus. Compatível com biológicos.',
-      },
-      {
-        crop: 'Milho',
-        stage: 'V4–V6',
-        dosePerHa: 250,
-        unit: 'g',
-        notes: 'Grupo cereais (ficha): 0,2–0,3 kg/ha. Pode ser misturado com herbicidas pós-emergentes.',
-      },
-      {
-        crop: 'Café',
-        stage: 'Florescimento e enchimento de grãos',
-        dosePerHa: 1000,
-        unit: 'g',
-        notes: 'Grupo frutíferas/perenes (ficha): 0,5–2,0 kg/ha. Repetir a cada 30 dias em períodos críticos.',
-      },
-      {
-        crop: 'Banana',
-        stage: 'Produção mensal',
-        dosePerHa: 1000,
-        unit: 'g',
-        notes: 'Grupo frutíferas (ficha): 0,5–2,0 kg/ha; fertirrigação 0,3–0,5 kg/ha (diluir 1 kg em 200 L).',
-      },
-      {
-        crop: 'Tomate',
-        stage: 'Florescimento ao início de maturação',
-        dosePerHa: 1500,
-        unit: 'g',
-        notes: 'Grupo hortaliças (ficha): 1,0–2,0 kg/ha. Evitar aplicação em horas de maior insolação.',
-      },
-    ],
+    // Sem `applications`: dose e posicionamento por cultura não constam do
+    // catálogo 2026 (catálogo só traz dose nos adjuvantes Operate).
   },
   {
     slug: 'stron',
@@ -169,29 +151,7 @@ const PRODUCTS = [
       { type: 'bag', weightKg: 1, sku: 'GROW-FILLING-1KG' },
       { type: 'bag', weightKg: 5, sku: 'GROW-FILLING-5KG' },
     ],
-    applications: [
-      {
-        crop: 'Soja',
-        stage: 'R3–R5 (enchimento de grãos)',
-        dosePerHa: 200,
-        unit: 'g',
-        notes: 'Ficha cereais: 0,15–0,25 kg/ha (soja R4–R5). Combinar com Xcensis ("dupla final").',
-      },
-      {
-        crop: 'Milho',
-        stage: 'R2–R4',
-        dosePerHa: 200,
-        unit: 'g',
-        notes: 'Ficha cereais: 0,15–0,25 kg/ha (milho R1–R3). Aplicar antes das 9h ou após as 17h.',
-      },
-      {
-        crop: 'Trigo',
-        stage: 'Espigamento',
-        dosePerHa: 200,
-        unit: 'g',
-        notes: 'Ficha cereais: 0,15–0,25 kg/ha. Dissolver em 200 L de água por hectare.',
-      },
-    ],
+    // Sem `applications` — ver nota no Xcensis.
   },
   {
     slug: 'grow-calcium',
@@ -218,36 +178,7 @@ const PRODUCTS = [
       { type: 'bottle', volumeL: 1, sku: 'GROW-CALCIUM-1L' },
       { type: 'bottle', volumeL: 5, sku: 'GROW-CALCIUM-5L' },
     ],
-    applications: [
-      {
-        crop: 'Tomate',
-        stage: 'Frutificação até maturação',
-        dosePerHa: 4,
-        unit: 'mL/L',
-        notes: 'Ficha hortaliças de fruto: 3–5 mL/L de água. Previne podridão apical. Intervalo de 7–10 dias.',
-      },
-      {
-        crop: 'Alface',
-        stage: 'Toda a produção',
-        dosePerHa: 4,
-        unit: 'mL/L',
-        notes: 'Ficha folhosas: 3–5 mL/L de água. Direcionar a folhas jovens; atenção a tip burn.',
-      },
-      {
-        crop: 'Maçã',
-        stage: 'Pós-florescimento e pré-colheita',
-        dosePerHa: 2.5,
-        unit: 'l',
-        notes: 'Ficha frutíferas: 2–3 L/ha foliar. Reduz bitter-pit e russeting.',
-      },
-      {
-        crop: 'Banana',
-        stage: 'Desenvolvimento do cacho',
-        dosePerHa: 2.5,
-        unit: 'l',
-        notes: 'Ficha: 2–3 L/ha foliar. Aplicar via foliar no coração do cacho.',
-      },
-    ],
+    // Sem `applications` — ver nota no Xcensis.
   },
   {
     slug: 'defon',
@@ -306,29 +237,7 @@ const PRODUCTS = [
       { type: 'bag', weightKg: 1, sku: 'GROW-MOB-1KG' },
       { type: 'bag', weightKg: 5, sku: 'GROW-MOB-5KG' },
     ],
-    applications: [
-      {
-        crop: 'Soja',
-        stage: 'V3 (pré-inoculação)',
-        dosePerHa: 60,
-        unit: 'g',
-        notes: 'Ficha cereais/leguminosas: 0,04–0,08 kg/ha (V4–R1). Não misturar com inoculante no tanque.',
-      },
-      {
-        crop: 'Milho',
-        stage: 'V4–V6',
-        dosePerHa: 60,
-        unit: 'g',
-        notes: 'Ficha cereais: 0,04–0,08 kg/ha. Favorece enraizamento e antecipa o florescimento.',
-      },
-      {
-        crop: 'Girassol',
-        stage: 'Pré-florescimento',
-        dosePerHa: 60,
-        unit: 'g',
-        notes: 'Ficha cereais: 0,04–0,08 kg/ha. B essencial para fertilização do grão.',
-      },
-    ],
+    // Sem `applications` — ver nota no Xcensis.
   },
   // ── ORGANOMINERAIS ────────────────────────────────────────────────────────
   {
@@ -337,7 +246,7 @@ const PRODUCTS = [
     category: 'organominerais',
     tagline: 'Organomineral com vinhaça, substâncias húmicas e aminoácidos',
     description:
-      'Fertilizante orgânico organomineral Classe A com nitrogênio (5%), potássio (2%) e carbono orgânico (11%). Combina vinhaça fermentada, substâncias húmicas, óleos vegetais e aminoácidos para melhorar a biologia do solo, a retenção de nutrientes e a eficiência de absorção radicular. Uso foliar em programas de nutrição integrada.',
+      'Fertilizante Organomineral Classe A com nitrogênio (5%), potássio (2%) e carbono orgânico (11%). Combina vinhaça fermentada, substâncias húmicas, óleos vegetais e aminoácidos para melhorar a biologia do solo, a retenção de nutrientes e a eficiência de absorção radicular. Uso foliar em programas de nutrição integrada.',
     status: 'published' as const,
     composition: {
       macros: { N: 5.0, K2O: 2.0 },
@@ -353,7 +262,7 @@ const PRODUCTS = [
       registration_date: '2023-04-12',
       physical_state: 'fluido',
       origin_country: 'Espanha',
-      product_type: 'Fertilizante Orgânico Organomineral Classe A',
+      product_type: 'Fertilizante Organomineral Classe A',
       application_modes: ['Via Foliar'],
       raw_materials: [
         'Água',
@@ -376,7 +285,7 @@ const PRODUCTS = [
     category: 'organominerais',
     tagline: 'Bioestimulante organomineral com torta vegetal e glicerina',
     description:
-      'Fertilizante orgânico organomineral Classe A com nitrogênio (6%) e carbono orgânico (14%). Formulado com ácidos carboxílicos, aminoácidos, glicerina e torta vegetal para estimular a microbiota do solo e a capacidade de absorção da planta. Indicado em programas de transição agroecológica e produção integrada.',
+      'Fertilizante Organomineral Classe A com nitrogênio (6%) e carbono orgânico (14%). Formulado com ácidos carboxílicos, aminoácidos, glicerina e torta vegetal para estimular a microbiota do solo e a capacidade de absorção da planta. Indicado em programas de transição agroecológica e produção integrada.',
     status: 'published' as const,
     composition: {
       macros: { N: 6.0 },
@@ -392,7 +301,7 @@ const PRODUCTS = [
       registration_date: '2023-03-22',
       physical_state: 'fluido',
       origin_country: 'Espanha',
-      product_type: 'Fertilizante Orgânico Organomineral Classe A',
+      product_type: 'Fertilizante Organomineral Classe A',
       application_modes: ['Via Foliar'],
       raw_materials: [
         'Água',
@@ -414,7 +323,7 @@ const PRODUCTS = [
     category: 'organominerais',
     tagline: 'Organomineral nitrogenado concentrado com vinhaça e substâncias húmicas',
     description:
-      'Fertilizante orgânico organomineral Classe A com alto teor de nitrogênio (20%) e carbono orgânico (7%). Formulado com vinhaça, substâncias húmicas, aminoácidos e ureia para suprir demanda intensa de N em estádios críticos. Uso foliar e fertirrigação em culturas de alta produtividade.',
+      'Fertilizante Organomineral Classe A com alto teor de nitrogênio (20%) e carbono orgânico (7%). Formulado com vinhaça, substâncias húmicas, aminoácidos e ureia para suprir demanda intensa de N em estádios críticos. Uso foliar e fertirrigação em culturas de alta produtividade.',
     status: 'published' as const,
     composition: {
       macros: { N: 20.0 },
@@ -429,7 +338,7 @@ const PRODUCTS = [
       registration_date: '2023-04-12',
       physical_state: 'fluido',
       origin_country: 'Espanha',
-      product_type: 'Fertilizante Orgânico Organomineral Classe A',
+      product_type: 'Fertilizante Organomineral Classe A',
       application_modes: ['Via Foliar', 'Via Fertirrigação'],
       raw_materials: [
         'Vinhaça',
@@ -451,7 +360,7 @@ const PRODUCTS = [
     category: 'organominerais',
     tagline: 'Condicionador de solo organomineral via fertirrigação',
     description:
-      'Fertilizante orgânico organomineral Classe A com N total (6%) e elevado carbono orgânico (20%). Formulado com substâncias húmicas, acetato de amônio, aminoácidos e torta vegetal para recuperar e manter a biologia e a estrutura do solo. Aplicação via fertirrigação em sistemas irrigados.',
+      'Fertilizante Organomineral Classe A com N total (6%) e elevado carbono orgânico (20%). Formulado com substâncias húmicas, acetato de amônio, aminoácidos e torta vegetal para recuperar e manter a biologia e a estrutura do solo. Aplicação via fertirrigação em sistemas irrigados.',
     status: 'published' as const,
     composition: {
       macros: { N: 6.0 },
@@ -466,7 +375,7 @@ const PRODUCTS = [
       registration_date: '2023-03-22',
       physical_state: 'fluido',
       origin_country: 'Espanha',
-      product_type: 'Fertilizante Orgânico Organomineral Classe A',
+      product_type: 'Fertilizante Organomineral Classe A',
       application_modes: ['Via Fertirrigação'],
       raw_materials: [
         'Água',
@@ -484,47 +393,26 @@ const PRODUCTS = [
   },
 
   // ── BIOLÓGICOS ────────────────────────────────────────────────────────────
+  // Catálogo Argho 2026 (conteudo/copy/produto-*.json) — espécie + CEPA
+  // declaradas. A cepa entra na CHAVE da composição porque é o único jeito de
+  // distinguir cepas da mesma espécie (Nemax tem 2× T. harzianum; Troian, 2×
+  // B. velezensis). O valor 1 é placeholder do modelo neutro: o portal só
+  // renderiza o nome quando product_type = 'Complexo microbiológico'.
   {
-    slug: 'troian',
-    name: 'Troian',
+    slug: 'biotas',
+    name: 'Biotas',
     category: 'biologicos',
-    tagline: 'Complexo microbiológico multi-Bacillus',
+    tagline: 'Complexo microbiológico multiespécie de Bacillus e Priestia',
     description:
-      'Troian é uma matriz microbiológica de composição declarada, formada por três espécies do gênero Bacillus: Bacillus subtilis, Bacillus velezensis e Bacillus amyloliquefaciens. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-Bacillus, diversidade bacteriana e padrão de formulação declarado. Concentração total declarada: 2,0 × 10¹⁰ UFC/mL.',
+      'Biotas é uma matriz microbiológica de composição declarada, formada por cinco cepas de cinco espécies dos gêneros Bacillus e Priestia: Bacillus velezensis DC 101, Bacillus subtilis DC 107, Priestia megaterium DC 93, Bacillus licheniformis DC 40 e Priestia aryabhattai DC 26. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multiespécie, diversidade bacteriana e padrão de formulação declarado. Concentração total declarada: 5,0 × 10⁹ UFC/mL.',
     status: 'published' as const,
     composition: {
       others: {
-        'Bacillus subtilis': 1,
-        'Bacillus velezensis': 1,
-        'Bacillus amyloliquefaciens': 1,
-      },
-    },
-    technicalSpecs: {
-      physical_state: 'fluido',
-      origin_country: 'Brasil',
-      product_type: 'Complexo microbiológico',
-      concentration_total: '2,0 × 10¹⁰ UFC/mL',
-    },
-    packaging: [
-      { type: 'bottle', volumeL: 1, sku: 'TROIAN-1L' },
-      { type: 'bottle', volumeL: 5, sku: 'TROIAN-5L' },
-    ],
-  },
-  {
-    slug: 'biovas',
-    name: 'Biovas',
-    category: 'biologicos',
-    tagline: 'Complexo microbiológico multi-Bacillus',
-    description:
-      'Biovas é uma matriz microbiológica de composição declarada, formada por cinco espécies do gênero Bacillus: Bacillus subtilis, Bacillus amyloliquefaciens, Bacillus licheniformis, Bacillus aryabhattai e Bacillus megaterium. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-Bacillus, diversidade bacteriana e padrão de formulação declarado. Concentração total declarada: 5,0 × 10⁹ UFC/mL.',
-    status: 'published' as const,
-    composition: {
-      others: {
-        'Bacillus subtilis': 1,
-        'Bacillus aryabhattai': 1,
-        'Bacillus amyloliquefaciens': 1,
-        'Bacillus licheniformis': 1,
-        'Bacillus megaterium': 1,
+        'Bacillus velezensis DC 101': 1,
+        'Bacillus subtilis DC 107': 1,
+        'Priestia megaterium DC 93': 1,
+        'Bacillus licheniformis DC 40': 1,
+        'Priestia aryabhattai DC 26': 1,
       },
     },
     technicalSpecs: {
@@ -534,119 +422,50 @@ const PRODUCTS = [
       concentration_total: '5,0 × 10⁹ UFC/mL',
     },
     packaging: [
-      { type: 'bottle', volumeL: 1, sku: 'BIOVAS-1L' },
-      { type: 'bottle', volumeL: 5, sku: 'BIOVAS-5L' },
+      { type: 'bottle', volumeL: 1, sku: 'BIOTAS-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'BIOTAS-5L' },
     ],
   },
   {
-    slug: 'bovex',
-    name: 'Bovex',
+    slug: 'troian',
+    name: 'Troian',
     category: 'biologicos',
-    tagline: 'Complexo microbiológico fúngico entomopatogênico',
+    tagline: 'Complexo microbiológico multi-Bacillus',
     description:
-      'Bovex é uma matriz microbiológica de composição declarada, formada por três gêneros de fungos: Beauveria bassiana, Metarhizium anisopliae e Cordyceps fumosorosea. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-gênero fúngica, diversidade fúngica e padrão de formulação declarado. Concentração total declarada: 2,5 × 10¹⁰ UFC/mL.',
+      'Troian é uma matriz microbiológica de composição declarada, formada por três cepas do gênero Bacillus: Bacillus velezensis DC 81, Bacillus velezensis DC 88 e Bacillus pumilus DC 61. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-Bacillus, diversidade bacteriana e padrão de formulação declarado. Concentração total declarada: 3,0 × 10⁸ UFC/mL.',
     status: 'published' as const,
     composition: {
       others: {
-        'Beauveria bassiana': 1,
-        'Metarhizium anisopliae': 1,
-        'Cordyceps fumosorosea': 1,
+        'Bacillus velezensis DC 81': 1,
+        'Bacillus velezensis DC 88': 1,
+        'Bacillus pumilus DC 61': 1,
       },
     },
     technicalSpecs: {
       physical_state: 'fluido',
       origin_country: 'Brasil',
       product_type: 'Complexo microbiológico',
-      concentration_total: '2,5 × 10¹⁰ UFC/mL',
+      concentration_total: '3,0 × 10⁸ UFC/mL',
     },
     packaging: [
-      { type: 'bottle', volumeL: 1, sku: 'BOVEX-1L' },
-      { type: 'bottle', volumeL: 5, sku: 'BOVEX-5L' },
+      { type: 'bottle', volumeL: 1, sku: 'TROIAN-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'TROIAN-5L' },
     ],
   },
   {
     slug: 'controx',
+    safraCodigo: 'ARG-CONTROX',
     name: 'Controx',
     category: 'biologicos',
-    tagline: 'Complexo microbiológico multivariante de Bacillus thuringiensis',
+    tagline: 'Complexo microbiológico de duas subespécies de Bacillus thuringiensis',
     description:
-      'Controx é uma matriz microbiológica de composição declarada, formada por duas variedades de Bacillus thuringiensis: Bacillus thuringiensis var. thuringiensis e Bacillus thuringiensis var. kurstaki. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multivariante, diversidade intra-específica e padrão de formulação declarado. Concentração total declarada: 2,5 × 10⁹ UFC/mL.',
+      'Controx é uma matriz microbiológica de composição declarada, formada por duas subespécies de Bacillus thuringiensis: Bacillus thuringiensis subsp. aizawai DC 38 e Bacillus thuringiensis subsp. kurstaki DC 41. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-subespécie, diversidade intra-específica e padrão de formulação declarado. Concentração total declarada: 1,0 × 10⁹ UFC/mL.',
     status: 'published' as const,
     composition: {
       others: {
-        'Bacillus thuringiensis var. thuringiensis': 1,
-        'Bacillus thuringiensis var. kurstaki': 1,
+        'Bacillus thuringiensis subsp. aizawai DC 38': 1,
+        'Bacillus thuringiensis subsp. kurstaki DC 41': 1,
       },
-    },
-    technicalSpecs: {
-      physical_state: 'fluido',
-      origin_country: 'Brasil',
-      product_type: 'Complexo microbiológico',
-      concentration_total: '2,5 × 10⁹ UFC/mL',
-    },
-    packaging: [
-      { type: 'bottle', volumeL: 1, sku: 'CONTROX-1L' },
-      { type: 'bottle', volumeL: 5, sku: 'CONTROX-5L' },
-    ],
-  },
-  {
-    slug: 'nemax',
-    name: 'Nemax',
-    category: 'biologicos',
-    tagline: 'Complexo microbiológico multi-gênero de fungos filamentosos',
-    description:
-      'Nemax é uma matriz microbiológica de composição declarada, formada por três espécies de fungos filamentosos: Trichoderma harzianum, Trichoderma asperellum e Purpureocillium lilacinum. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-gênero fúngica, diversidade microbiana e padrão de formulação declarado. Concentração total declarada: 2,5 × 10¹⁰ UFC/mL.',
-    status: 'published' as const,
-    composition: {
-      others: {
-        'Trichoderma harzianum': 1,
-        'Trichoderma asperellum': 1,
-        'Purpureocillium lilacinum': 1,
-      },
-    },
-    technicalSpecs: {
-      physical_state: 'fluido',
-      origin_country: 'Brasil',
-      product_type: 'Complexo microbiológico',
-      concentration_total: '2,5 × 10¹⁰ UFC/mL',
-    },
-    packaging: [
-      { type: 'bottle', volumeL: 1, sku: 'NEMAX-1L' },
-      { type: 'bottle', volumeL: 5, sku: 'NEMAX-5L' },
-    ],
-  },
-  {
-    slug: 'titan',
-    name: 'Titan',
-    category: 'biologicos',
-    tagline: 'Matriz microbiológica fúngica líquida à base de Trichoderma harzianum',
-    description:
-      'Titan é uma matriz microbiológica fluida de composição declarada, à base de Trichoderma harzianum. Formulação monoespécie desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade fúngica declarada e padrão de formulação. Concentração total declarada: 2,5 × 10⁹ UFC/mL.',
-    status: 'published' as const,
-    composition: {
-      others: { 'Trichoderma harzianum': 1 },
-    },
-    technicalSpecs: {
-      physical_state: 'fluido',
-      origin_country: 'Brasil',
-      product_type: 'Complexo microbiológico',
-      concentration_total: '2,5 × 10⁹ UFC/mL',
-    },
-    packaging: [
-      { type: 'bottle', volumeL: 1, sku: 'TITAN-1L' },
-      { type: 'bottle', volumeL: 5, sku: 'TITAN-5L' },
-    ],
-  },
-  {
-    slug: 'n-import',
-    name: 'N-import',
-    category: 'biologicos',
-    tagline: 'Matriz microbiológica à base de Herbaspirillum seropedicae',
-    description:
-      'N-import é uma matriz microbiológica fluida de composição declarada, à base de Herbaspirillum seropedicae. Formulação monoespécie desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade bacteriana declarada e padrão de formulação. Concentração total declarada: 1,0 × 10⁹ UFC/mL.',
-    status: 'published' as const,
-    composition: {
-      others: { 'Herbaspirillum seropedicae': 1 },
     },
     technicalSpecs: {
       physical_state: 'fluido',
@@ -655,9 +474,134 @@ const PRODUCTS = [
       concentration_total: '1,0 × 10⁹ UFC/mL',
     },
     packaging: [
-      { type: 'bottle', volumeL: 1.8, sku: 'NIMPORT-1.8L' },
-      { type: 'bottle', volumeL: 5, sku: 'NIMPORT-5L' },
+      { type: 'bottle', volumeL: 1, sku: 'CONTROX-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'CONTROX-5L' },
     ],
+  },
+  {
+    slug: 'sporax',
+    // ⚠️ safraCodigo segue 'ARG-BOVEX' de propósito: é o código do item no ERP
+    // Safra/Omie (JOIN com product_stock.safra_codigo). Só muda depois que o
+    // produto for renomeado no ERP — senão o portal para de exibir estoque.
+    safraCodigo: 'ARG-BOVEX',
+    name: 'Sporax',
+    category: 'biologicos',
+    tagline: 'Complexo microbiológico multi-gênero fúngico',
+    description:
+      'Sporax é uma matriz microbiológica de composição declarada, formada por três cepas de três gêneros de fungos: Beauveria bassiana IBCB 66, Metarhizium anisopliae IBCB 425 e Cordyceps fumosorosea DC 134. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-gênero fúngica, diversidade fúngica e padrão de formulação declarado. Concentração total declarada: 5,0 × 10⁸ UFC/mL.',
+    status: 'published' as const,
+    composition: {
+      others: {
+        'Beauveria bassiana IBCB 66': 1,
+        'Metarhizium anisopliae IBCB 425': 1,
+        'Cordyceps fumosorosea DC 134': 1,
+      },
+    },
+    technicalSpecs: {
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
+      product_type: 'Complexo microbiológico',
+      concentration_total: '5,0 × 10⁸ UFC/mL',
+    },
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'SPORAX-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'SPORAX-5L' },
+    ],
+  },
+  {
+    slug: 'nemax',
+    safraCodigo: 'ARG-NEMAX',
+    name: 'Nemax',
+    category: 'biologicos',
+    tagline: 'Complexo microbiológico multi-gênero de fungos filamentosos',
+    description:
+      'Nemax é uma matriz microbiológica de composição declarada, formada por quatro cepas de fungos filamentosos: Trichoderma harzianum IB 19/17, Trichoderma harzianum DC 133, Trichoderma asperellum URM 5911 e Metarhizium anisopliae IBCB 425. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-gênero fúngica, diversidade microbiana e padrão de formulação declarado. Concentração total declarada: 2,0 × 10⁹ UFC/mL.',
+    status: 'published' as const,
+    composition: {
+      others: {
+        'Trichoderma harzianum IB 19/17': 1,
+        'Trichoderma harzianum DC 133': 1,
+        'Trichoderma asperellum URM 5911': 1,
+        'Metarhizium anisopliae IBCB 425': 1,
+      },
+    },
+    technicalSpecs: {
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
+      product_type: 'Complexo microbiológico',
+      concentration_total: '2,0 × 10⁹ UFC/mL',
+    },
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'NEMAX-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'NEMAX-5L' },
+    ],
+  },
+  {
+    slug: 'harzon',
+    // ⚠️ safraCodigo segue 'ARG-TITAN' — mesma razão do Sporax (código do ERP).
+    safraCodigo: 'ARG-TITAN',
+    name: 'Harzon',
+    category: 'biologicos',
+    tagline: 'Matriz microbiológica fúngica à base de Trichoderma harzianum',
+    description:
+      'Harzon é uma matriz microbiológica fluida de composição declarada, à base de uma única cepa de Trichoderma harzianum: IB 19/17. Formulação monoespécie desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade fúngica declarada e padrão de formulação. Concentração total declarada: 1,0 × 10⁹ UFC/mL.',
+    status: 'published' as const,
+    composition: {
+      others: { 'Trichoderma harzianum IB 19/17': 1 },
+    },
+    technicalSpecs: {
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
+      product_type: 'Complexo microbiológico',
+      concentration_total: '1,0 × 10⁹ UFC/mL',
+    },
+    // Catálogo 2026: HARZON é vendido SÓ em 5 L.
+    packaging: [
+      { type: 'bottle', volumeL: 1, sku: 'HARZON-1L' },
+      { type: 'bottle', volumeL: 5, sku: 'HARZON-5L' },
+    ],
+  },
+  {
+    slug: 'chrom',
+    safraCodigo: 'ARG-CHROM',
+    name: 'Chrom',
+    category: 'biologicos',
+    tagline: 'Matriz microbiológica à base de Chromobacterium subtsugae',
+    description:
+      'Chrom é uma matriz microbiológica fluida de composição declarada, à base de uma única cepa de Chromobacterium subtsugae: DC 43. Formulação monoespécie desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade bacteriana declarada e padrão de formulação. Concentração total declarada: 1,0 × 10⁸ UFC/mL.',
+    status: 'published' as const,
+    composition: {
+      others: { 'Chromobacterium subtsugae DC 43': 1 },
+    },
+    technicalSpecs: {
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
+      product_type: 'Complexo microbiológico',
+      concentration_total: '1,0 × 10⁸ UFC/mL',
+    },
+    // Catálogo 2026: CHROM é vendido SÓ em 1 L.
+    packaging: [{ type: 'bottle', volumeL: 1, sku: 'CHROM-1L' }],
+  },
+  {
+    slug: 'n-import',
+    safraCodigo: 'ARG-NIMPORT',
+    name: 'N-import',
+    category: 'biologicos',
+    tagline: 'Matriz microbiológica à base de Methylobacterium sp.',
+    description:
+      'N-import é uma matriz microbiológica fluida de composição declarada, à base de uma única cepa de Methylobacterium sp.: SEMIA 658, código de coleção de referência brasileira. Formulação monoespécie desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade bacteriana declarada e padrão de formulação. Concentração total declarada: 1,0 × 10⁸ UFC/mL.',
+    status: 'published' as const,
+    composition: {
+      others: { 'Methylobacterium sp. SEMIA 658': 1 },
+    },
+    technicalSpecs: {
+      physical_state: 'fluido',
+      origin_country: 'Brasil',
+      product_type: 'Complexo microbiológico',
+      concentration_total: '1,0 × 10⁸ UFC/mL',
+    },
+    // Catálogo 2026: N-IMPORT é vendido SÓ em 1 L.
+    packaging: [{ type: 'bottle', volumeL: 1, sku: 'NIMPORT-1L' }],
   },
 
   // ── ADJUVANTES ────────────────────────────────────────────────────────────
@@ -667,7 +611,7 @@ const PRODUCTS = [
     category: 'adjuvantes',
     tagline: 'Condicionador multifuncional de calda — qualidade da água e eficiência na aplicação',
     description:
-      'Condicionador multifuncional de calda que reúne sequestrante de cátions, blend de surfactantes não-iônicos, agente antideriva e antiespumante. Melhora a qualidade da água de pulverização, a cobertura e a estabilidade da calda, reduzindo perdas por deriva e formação de espuma. Adicionar primeiro no tanque, na dose de 0,5–1,0 mL/L (100–200 mL/ha). Produto isento de registro no MAPA.',
+      'Condicionador multifuncional de calda que reúne sequestrante de cátions, blend de surfactantes não-iônicos, agente antideriva e antiespumante. Melhora a qualidade da água de pulverização, a cobertura e a estabilidade da calda, reduzindo perdas por deriva e formação de espuma. Adicionar primeiro no tanque, na dose de 0,5–1,0 mL/L de calda · em baixa vazão, 50–100 mL/ha. Produto isento de registro no MAPA.',
     status: 'published' as const,
     composition: {},
     technicalSpecs: {
@@ -691,7 +635,7 @@ const PRODUCTS = [
     category: 'adjuvantes',
     tagline: 'Adjuvante surfactante com óleo essencial de citronela (3%)',
     description:
-      'Adjuvante surfactante formulado com óleo essencial de citronela (3%). Reduz a tensão superficial da calda, melhorando o espalhamento e a absorção dos ativos, e agrega o efeito repelente natural da citronela à aplicação. Adicionar por último no tanque (produto oleoso), na dose de 1,5–2,0 mL/L (150–200 mL/ha) — aplicação convencional, baixa vazão ou drone. Produto isento de registro no MAPA.',
+      'Adjuvante surfactante formulado com óleo essencial de citronela (3%). Reduz a tensão superficial da calda, melhorando o espalhamento e a absorção dos ativos. Adicionar por último no tanque (produto oleoso), na dose de 1,5–2,0 mL/L de calda · em baixa vazão, 100–200 mL/ha. Produto isento de registro no MAPA.',
     status: 'published' as const,
     composition: { others: { 'Óleo essencial de citronela': 3.0 } },
     technicalSpecs: {
@@ -716,7 +660,7 @@ const PRODUCTS = [
     category: 'adjuvantes',
     tagline: 'Condicionador multifuncional 4 em 1 — ajusta o pH e prepara a calda',
     description:
-      'O mais completo da família Operate: condicionador multifuncional que reúne sequestrante de cátions, redutor de pH à base de ácido fosfórico, surfactantes não-iônicos, antideriva e antiespumante. Ajusta o pH da calda para a faixa ideal de 4,0 a 6,5 e melhora a qualidade da aplicação em uma única adição ao tanque. Adicionar primeiro, na dose de 0,5–1,0 mL/L. Por conter ácido fosfórico, redobrar a atenção em misturas alcalinas e com produtos à base de cobre. Produto isento de registro no MAPA.',
+      'O mais completo da família Operate: condicionador multifuncional que reúne sequestrante de cátions, redutor de pH à base de ácido fosfórico, surfactantes não-iônicos, antideriva e antiespumante. Ajusta o pH da calda para a faixa ideal de 4,0 a 6,5 e melhora a qualidade da aplicação em uma única adição ao tanque. Adicionar primeiro, na dose de 0,5–1,0 mL/L de calda · em baixa vazão, 50–100 mL/ha. Por conter ácido fosfórico, redobrar a atenção em misturas alcalinas e com produtos à base de cobre. Produto isento de registro no MAPA.',
     status: 'published' as const,
     composition: {},
     technicalSpecs: {
@@ -725,7 +669,13 @@ const PRODUCTS = [
       product_type: 'Condicionador Multifuncional de Calda',
       application_modes: ['Calda Fitossanitária', 'Calda Foliar Nutricional'],
       linha: 'Operate',
-      functions: ['Sequestrante de cátions', 'Redutor de pH (ácido fosfórico)', 'Surfactante não-iônico', 'Antideriva', 'Antiespumante'],
+      functions: [
+        'Sequestrante de cátions',
+        'Redutor de pH (ácido fosfórico)',
+        'Surfactante não-iônico',
+        'Antideriva',
+        'Antiespumante',
+      ],
     },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'OPERATE-4EM1-1L' },
@@ -741,7 +691,7 @@ const PRODUCTS = [
     category: 'adjuvantes',
     tagline: 'Adjuvante supermolhante e penetrante com óleo de laranja (D-limoneno 6%)',
     description:
-      'Adjuvante supermolhante e penetrante à base de óleo da casca de laranja, com 6% de D-limoneno. Potencializa o molhamento das folhas e a penetração cuticular de defensivos e nutrientes sistêmicos. Adicionar por último no tanque, na dose de 1,5–2,0 mL/L (150–200 mL/ha). Produto isento de registro no MAPA.',
+      'Adjuvante supermolhante e penetrante à base de óleo da casca de laranja, com 6% de D-limoneno. Potencializa o molhamento das folhas e a penetração cuticular de defensivos e nutrientes sistêmicos. Adicionar por último no tanque, na dose de 1,5–2,0 mL/L de calda · em baixa vazão, 100–200 mL/ha. Produto isento de registro no MAPA.',
     status: 'published' as const,
     composition: { others: { 'D-limoneno': 6.0 } },
     technicalSpecs: {
@@ -985,7 +935,7 @@ Antes de preparar a calda:
 ## Compatibilidade
 
 O Xcensis é **compatível** com:
-- Troian e Biovas (biológicos Bacillus)
+- Troian e Biotas (biológicos Bacillus)
 - Stron, Grow Filling, Grow Calcium, Grow Mob
 - A maioria dos fungicidas e inseticidas (verificar bula)
 

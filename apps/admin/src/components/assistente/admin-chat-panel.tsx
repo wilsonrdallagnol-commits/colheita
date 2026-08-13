@@ -35,8 +35,8 @@ const SUGGESTED_QUERIES = [
   'Programa para soja R3-R5 com estresse hídrico moderado',
   'Diferença técnica entre Stron e Grow MoB+ na pré-florada',
   'Quando indicar Defon vs cobre tradicional? Janela e dose',
-  'Combinação Lifeon + Biovas: lógica e compatibilidade de calda',
-  'Composição do Biovas e diferenciação técnica',
+  'Combinação Lifeon + Biotas: lógica e compatibilidade de calda',
+  'Composição do Biotas e diferenciação técnica',
 ];
 
 const INITIAL_MESSAGES: Message[] = [
@@ -90,7 +90,7 @@ export function AdminChatPanel() {
           history: conversationHistory,
           // contextPath alimenta system prompt do agente PhD agronomico
           // com awareness da rota - permite respostas contextuais ("voce
-          // esta em /produtos/biovas, posso explicar a composicao...").
+          // esta em /produtos/biotas, posso explicar a composicao...").
           contextPath: pathname ?? undefined,
         }),
       });

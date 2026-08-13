@@ -14,7 +14,7 @@
  * const response = await client.messages.create({
  *   model: 'claude-haiku-4-5',
  *   tools: anthropicTools,
- *   messages: [{ role: 'user', content: 'Qual a dose de Xcensis para soja?' }],
+ *   messages: [{ role: 'user', content: 'Qual a composição do Xcensis?' }],
  * });
  * ```
  */

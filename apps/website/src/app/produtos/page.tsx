@@ -44,7 +44,7 @@ const CAT_LINE: Record<ProductCategory, string> = {
 };
 
 // Arte premium (rotulo real fiel + swirl categorico) — thumbnail do catalogo.
-// Cobre os 20 produtos (ver .tmp-renders/compose2.py).
+// Cobre os 22 produtos (ver .tmp-renders/compose2.py).
 const PRODUCT_PREMIUM: Record<string, string> = {
   xcensis: '/products/premium/xcensis.jpg',
   stron: '/products/premium/stron.jpg',
@@ -53,11 +53,12 @@ const PRODUCT_PREMIUM: Record<string, string> = {
   'grow-mob': '/products/premium/grow-mob.jpg',
   'grow-filling': '/products/premium/grow-filling.jpg',
   troian: '/products/premium/troian.jpg',
-  biovas: '/products/premium/biovas.jpg',
-  bovex: '/products/premium/bovex.jpg',
+  biotas: '/products/premium/biotas.jpg',
+  sporax: '/products/premium/sporax.jpg',
   controx: '/products/premium/controx.jpg',
   nemax: '/products/premium/nemax.jpg',
-  titan: '/products/premium/titan.jpg',
+  harzon: '/products/premium/harzon.jpg',
+  chrom: '/products/premium/chrom.jpg',
   'n-import': '/products/premium/n-import.jpg',
   impuch: '/products/premium/impuch.jpg',
   'life-on': '/products/premium/life-on.jpg',
@@ -74,6 +75,11 @@ interface PageProps {
 }
 
 function getNutrientLabels(product: import('@/lib/products').Product): string[] {
+  // Biologicos nao tem composicao quantificada: o chip mostra as especies
+  // declaradas (sem repetir especie quando ha mais de uma cepa dela).
+  if (product.microbialStrains?.length) {
+    return [...new Set(product.microbialStrains.map((s) => s.species))].slice(0, 5);
+  }
   const labels: string[] = [];
   const all = {
     ...(product.composition.macros ?? {}),

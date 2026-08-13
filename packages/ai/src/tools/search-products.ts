@@ -4,13 +4,17 @@
  *
  * Permite ao agente Claude buscar produtos no catálogo do tenant via RAG.
  * O agente chama esta tool quando precisa responder perguntas sobre produtos:
- * composição, indicações de uso, doses, embalagens, especificações técnicas.
+ * composição declarada, embalagens, especificações técnicas, registro MAPA.
+ *
+ * Dose e posicionamento por cultura só existem para os adjuvantes da linha
+ * Operate; a linha biológica é publicada apenas com identidade e composição
+ * declarada (ver apps/website/docs/biologicos-compliance.md).
  *
  * @example (chamada pelo modelo)
  * {
  *   type: 'tool_use',
  *   name: 'search_products',
- *   input: { query: 'dose de Xcensis para soja', tenantId: '...' }
+ *   input: { query: 'composição do Xcensis', tenantId: '...' }
  * }
  */
 
@@ -36,7 +40,7 @@ export function createSearchProductsTool(retriever: Retriever): AiTool<SearchPro
   return {
     name: 'search_products',
     description:
-      'Busca informações sobre produtos agroquímicos do catálogo: composição garantida, indicações por cultura, dose recomendada, embalagens, especificações técnicas, registro MAPA. Use quando o usuário perguntar sobre um produto específico ou quiser comparar produtos.',
+      'Busca informações sobre produtos do catálogo Argho: composição declarada, embalagens, especificações técnicas, registro MAPA e — quando o catálogo publicar — janela de aplicação e dose. Use quando o usuário perguntar sobre um produto específico ou quiser comparar produtos. Dose publicada existe apenas para os adjuvantes da linha Operate; a linha biológica traz somente identidade e composição declarada, sem dose, cultura ou modo de aplicação.',
     inputSchema: SearchProductsInput,
     async execute(input) {
       const results = await retriever.retrieve({

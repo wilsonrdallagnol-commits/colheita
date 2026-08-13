@@ -425,7 +425,7 @@ export function OperateLineGrid() {
     },
     {
       label: 'Citronela',
-      attr: 'Óleo essencial repelente',
+      attr: 'Óleo essencial de citronela 3%',
       cx: 270,
       ny: 68,
       color: 'oklch(0.58 0.165 148)',

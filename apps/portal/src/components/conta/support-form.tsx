@@ -216,7 +216,7 @@ export function SupportForm({ defaultProductSlug }: SupportFormProps) {
           maxLength={100}
           disabled={pending}
           style={inputStyle}
-          placeholder="Ex: xcensis, defon, biovas"
+          placeholder="Ex: xcensis, defon, biotas"
         />
         <p style={helpStyle}>Slug do produto se a dúvida for sobre algo específico.</p>
       </div>

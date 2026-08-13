@@ -1,7 +1,16 @@
 # Conformidade regulatória — linha de biológicos
 
-**Documento interno · não publicar.** Última revisão: 2026-06-06.
+**Documento interno · não publicar.** Última revisão: 2026-08-13.
 
+> ⚠️ **ATUALIZAÇÃO 2026-08-13 — Catálogo Argho 2026 é a fonte da verdade:**
+> a linha biológica foi corrigida contra o catálogo — BIOVAS→BIOTAS,
+> BOVEX→SPORAX, TITAN→HARZON, entrada do CHROM, espécies, cepas,
+> concentrações e embalagens revisadas — e passou a declarar **espécie +
+> cepa**. Os guards desta página seguem valendo: sem dose, sem cultura, sem
+> modo de aplicação, sem fitopatógeno, sem categoria funcional. A tabela
+> "Protocolo de Aplicação" (dose por cultura) saiu do site inteiro na mesma
+> data.
+>
 > ⚠️ **ATUALIZAÇÃO 2026-06-06 — decisão do fundador (Wilson Dall Agnol):**
 > foi autorizada a exibição da **concentração microbiológica em UFC/mL** dos
 > seis biológicos no site institucional **e** na plataforma Colheita
@@ -15,16 +24,16 @@
 
 ## Por que esta página existe
 
-Os cinco produtos da linha biológica (Biovas, Bovex, Controx, Nemax, Troian)
-seguem no site institucional Argho um padrão de descrição diferente dos
-demais produtos do portfólio. Este documento explica a razão regulatória,
+Os oito produtos da linha biológica (Biotas, Sporax, Harzon, Troian, Controx,
+Nemax, N-import, Chrom) seguem no site institucional Argho um padrão de
+descrição diferente dos demais produtos do portfólio. Este documento explica a razão regulatória,
 o que pode e o que não pode constar, e qual o caminho de reenquadramento.
 
-**Quem edita texto desses cinco produtos precisa ler antes.**
+**Quem edita texto desses oito produtos precisa ler antes.**
 
 ## O problema regulatório (resumo)
 
-Esses cinco produtos hoje estão posicionados internamente em categorias
+Esses oito produtos hoje estão posicionados internamente em categorias
 regulatórias (ex.: "Aditivo de Compostagem (isento MAPA)", "Bioinsumo")
 que **não permitem claims agronômicos ou fitossanitários**:
 
@@ -70,8 +79,8 @@ descreve o que ELE É, não o que ELE FAZ.
 
 ## O modelo de texto adotado
 
-Cada um dos cinco produtos segue a estrutura aprovada pelo fundador
-(modelo Biovas, 2026-05-21):
+Cada um dos oito produtos segue a estrutura aprovada pelo fundador
+(modelo Biovas — hoje Biotas —, 2026-05-21):
 
 ```
 NOME DO PRODUTO
@@ -136,14 +145,14 @@ Diferenciais técnicos (bullets):
 
 ## Implementação no código
 
-Os cinco produtos são identificados via campo `technicalDifferentials`
+Os oito produtos são identificados via campo `technicalDifferentials`
 no tipo `Product` (`apps/website/src/lib/products.ts`). A presença desse
 campo aciona o renderer "complexo microbiológico" em
 `apps/website/src/app/produtos/[slug]/page.tsx`:
 
 - Esconde o bloco de "Composição Garantida" (bar gauge percentual).
-- Renderiza bloco "Composição microbiológica" como lista simples (só
-  nomes científicos em itálico, sem valores).
+- Renderiza bloco "Composição microbiológica" como lista de espécie + cepa
+  (nome científico em itálico, código de cepa em romano, sem percentuais).
 - Renderiza bloco "Diferenciais técnicos" com as bullets.
 - Esconde chips de "Modo de aplicação" (array `applicationModes` fica vazio).
 - Esconde frase legal "Produto biológico registrado sob legislação
@@ -168,11 +177,14 @@ Caminhos prováveis por produto:
 
 | Produto | Composição | Categoria-alvo |
 |---|---|---|
-| Biovas | Consórcio multi-*Bacillus* | Bioinsumo agrícola (promotor de crescimento) |
-| Bovex | *Beauveria* + *Metarhizium* + *Cordyceps* | Bioinseticida (entomopatógeno) |
-| Controx | *B. thuringiensis* kurstaki + israelensis | Bioinseticida (Bt) |
-| Nemax | *Trichoderma* + *Purpureocillium* | Nematicida biológico |
-| Troian | *Trichoderma* + *Bacillus* | Biofungicida + promotor |
+| Biotas | *Bacillus* + *Priestia* (5 cepas) | Bioinsumo agrícola (promotor de crescimento) |
+| Sporax | *Beauveria* + *Metarhizium* + *Cordyceps* | Bioinseticida (entomopatógeno) |
+| Controx | *B. thuringiensis* subsp. *aizawai* + *kurstaki* | Bioinseticida (Bt) |
+| Nemax | *Trichoderma* (3 cepas) + *Metarhizium* | Nematicida biológico |
+| Troian | *B. velezensis* (2 cepas) + *B. pumilus* | Biofungicida + promotor |
+| Harzon | *T. harzianum* IB 19/17 (cepa única) | Biofungicida |
+| N-import | *Methylobacterium* sp. SEMIA 658 | Biofertilizante / inoculante |
+| Chrom | *Chromobacterium subtsugae* DC 43 | Bioinseticida |
 
 Cada categoria exige dossiê próprio com:
 - Ensaios de eficácia agronômica (mínimo 2 safras, 2 regiões).
@@ -210,6 +222,6 @@ Discutir com Wilson + consultor MAPA antes da formalização do registro.
 
 ## Quem mantém este documento
 
-Edição de copy dos cinco produtos = `wilsonrdallagnol@gmail.com` + revisor
+Edição de copy dos oito produtos = `wilsonrdallagnol@gmail.com` + revisor
 regulatório quando houver. Atualização deste arquivo = qualquer engenheiro
 ao revisar `products.ts` ou `/produtos/[slug]/page.tsx`.

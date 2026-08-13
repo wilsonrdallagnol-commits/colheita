@@ -132,24 +132,23 @@ describe('FichaTecnica template', () => {
 });
 
 // Fixture de produto biológico (modelo neutro MAPA): composition.others traz
-// a espécie declarada com valor placeholder 1 — só o nome científico importa.
+// espécie + cepa declaradas com valor placeholder 1 — só o nome importa.
+// Dados do Catálogo Argho 2026 (produto-n-import.json): Methylobacterium sp.
+// SEMIA 658, 1,0 × 10⁸ UFC/mL, embalagem só 1 L.
 // Ver apps/website/docs/biologicos-compliance.md.
 const NIMPORT_DATA: FichaTecnicaData = {
   productName: 'N-import',
   tagline: 'Complexo microbiológico',
   tenantName: 'Argho Agrosciences',
   composition: {
-    others: { 'Herbaspirillum seropedicae': 1 },
+    others: { 'Methylobacterium sp. SEMIA 658': 1 },
   },
   technicalSpecs: {
     product_type: 'Complexo microbiológico',
-    concentration_total: '1,0 × 10⁹ UFC/mL',
+    concentration_total: '1,0 × 10⁸ UFC/mL',
     physical_state: 'Líquido',
   },
-  packaging: [
-    { type: 'bottle', volumeL: 1.8 },
-    { type: 'bottle', volumeL: 5 },
-  ],
+  packaging: [{ type: 'bottle', volumeL: 1 }],
   applications: [],
   year: 2026,
 };
@@ -173,7 +172,7 @@ describe('FichaTecnica — complexo microbiológico (biológicos)', () => {
 
   it('lista o nome científico da espécie declarada', () => {
     const html = renderToStaticMarkup(createElement(FichaTecnica, { data: NIMPORT_DATA }));
-    expect(html).toContain('Herbaspirillum seropedicae');
+    expect(html).toContain('Methylobacterium sp. SEMIA 658');
   });
 
   it('produto químico (não-microbiológico) mantém "Composição Garantida" com %', () => {
@@ -186,8 +185,8 @@ describe('FichaTecnica — complexo microbiológico (biológicos)', () => {
 
 // ============================================================================
 // Catálogo — mesma armadilha do FichaTecnica: composition.others de biológico
-// (modelo neutro MAPA) traz a espécie com placeholder 1. Renderizar "{v}%"
-// imprimiria "Herbaspirillum seropedicae 1%" — claim de porcentagem falso.
+// (modelo neutro MAPA) traz espécie + cepa com placeholder 1. Renderizar "{v}%"
+// imprimiria "Methylobacterium sp. SEMIA 658 1%" — claim de porcentagem falso.
 // Ver apps/website/docs/biologicos-compliance.md.
 // ============================================================================
 const CATALOGO_NIMPORT: CatalogoData = {
@@ -200,9 +199,9 @@ const CATALOGO_NIMPORT: CatalogoData = {
       name: 'N-import',
       tagline: 'Complexo microbiológico',
       categoryName: 'Biológicos',
-      composition: { others: { 'Herbaspirillum seropedicae': 1 } },
+      composition: { others: { 'Methylobacterium sp. SEMIA 658': 1 } },
       technicalSpecs: { product_type: 'Complexo microbiológico' },
-      packaging: [{ type: 'bottle', volumeL: 1.8 }],
+      packaging: [{ type: 'bottle', volumeL: 1 }],
       applications: [],
     },
   ],
@@ -239,7 +238,7 @@ describe('Catalogo — complexo microbiológico (biológicos)', () => {
 
   it('lista o nome científico da espécie declarada', () => {
     const html = renderToStaticMarkup(createElement(Catalogo, { data: CATALOGO_NIMPORT }));
-    expect(html).toContain('Herbaspirillum seropedicae');
+    expect(html).toContain('Methylobacterium sp. SEMIA 658');
   });
 
   it('produto mineral (não-microbiológico) mantém "Composição garantida" com %', () => {

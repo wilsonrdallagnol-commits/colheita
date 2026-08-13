@@ -46,6 +46,22 @@ const APP_MODE_LABELS: Record<string, string> = {
 // Max scale for composition bars per type
 const MAX_SCALE = { macro: 40, micro: 10, other: 10 };
 
+// Nomenclatura cientifica: so genero e epiteto vao em italico. Conectores
+// ("sp.", "subsp.", "var.") ficam em romano — e o codigo de cepa nunca entra
+// aqui (vem no campo `strain`). Ex.: *Bacillus thuringiensis* subsp. *aizawai*.
+const NAME_CONNECTORS = new Set(['sp.', 'spp.', 'subsp.', 'ssp.', 'var.', 'f.']);
+
+function speciesSegments(raw: string): { text: string; italic: boolean }[] {
+  const segments: { text: string; italic: boolean }[] = [];
+  for (const token of raw.split(/\s+/).filter(Boolean)) {
+    const italic = !NAME_CONNECTORS.has(token) && /^[A-Za-zÀ-ÿ][a-zà-ÿ-]*$/.test(token);
+    const last = segments[segments.length - 1];
+    if (last && last.italic === italic) last.text += ` ${token}`;
+    else segments.push({ text: token, italic });
+  }
+  return segments;
+}
+
 // Arte premium (rotulo fiel + swirl categorico) — usada no showcase do produto.
 // Mockup real composto sobre swirl da categoria/campo (1024², ver .tmp-renders/compose2.py).
 const PRODUCT_PREMIUM: Record<string, string> = {
@@ -56,11 +72,12 @@ const PRODUCT_PREMIUM: Record<string, string> = {
   'grow-mob': '/products/premium/grow-mob.jpg',
   'grow-filling': '/products/premium/grow-filling.jpg',
   troian: '/products/premium/troian.jpg',
-  biovas: '/products/premium/biovas.jpg',
-  bovex: '/products/premium/bovex.jpg',
+  biotas: '/products/premium/biotas.jpg',
+  sporax: '/products/premium/sporax.jpg',
   controx: '/products/premium/controx.jpg',
   nemax: '/products/premium/nemax.jpg',
-  titan: '/products/premium/titan.jpg',
+  harzon: '/products/premium/harzon.jpg',
+  chrom: '/products/premium/chrom.jpg',
   'n-import': '/products/premium/n-import.jpg',
   impuch: '/products/premium/impuch.jpg',
   'life-on': '/products/premium/life-on.jpg',
@@ -173,17 +190,14 @@ export default async function ProductPage({ params }: PageProps) {
     }
   }
 
-  // Lista de especies declaradas — usada apenas em produtos "complexo microbiologico".
-  const microbialSpecies: string[] = isMicrobialComplex
-    ? Object.keys(product.composition.others ?? {})
-    : [];
+  // Especies + cepas declaradas — usadas apenas em produtos "complexo microbiologico".
+  // Nome cientifico em italico; codigo de cepa em romano (nunca italico).
+  const microbialStrains = isMicrobialComplex ? (product.microbialStrains ?? []) : [];
 
   // Related products
   const related = PRODUCTS.filter(
     (p) => p.category === product.category && p.slug !== product.slug,
   ).slice(0, 4);
-
-  const isBio = product.category === 'biologicos';
 
   // JSON-LD Product — dados estruturados para buscadores
   const productJsonLd = {
@@ -532,7 +546,7 @@ export default async function ProductPage({ params }: PageProps) {
                   <p
                     className="mono"
                     style={{
-                      fontSize: '0.625rem',
+                      fontSize: 'var(--label-xs)',
                       letterSpacing: '0.14em',
                       textTransform: 'uppercase',
                       color: 'var(--text-tertiary)',
@@ -614,7 +628,7 @@ export default async function ProductPage({ params }: PageProps) {
                 <span
                   style={{
                     fontFamily: 'var(--font-mono)',
-                    fontSize: '0.625rem',
+                    fontSize: 'var(--label-xs)',
                     color: 'var(--argho-blue)',
                     letterSpacing: '0.06em',
                     fontWeight: 700,
@@ -680,20 +694,23 @@ export default async function ProductPage({ params }: PageProps) {
             </div>
 
             {/* ── Composição microbiológica (modelo neutro: lista de espécies declaradas) ── */}
-            {isMicrobialComplex && microbialSpecies.length > 0 && (
+            {isMicrobialComplex && microbialStrains.length > 0 && (
               <div>
                 <div
                   style={{
                     padding: '14px 24px 10px',
                     borderTop: '1px solid var(--border-subtle)',
                     borderBottom: '1px solid var(--border-subtle)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                     backgroundColor: 'var(--bg-mist)',
                   }}
                 >
                   <span
                     style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: '0.625rem',
+                      fontSize: 'var(--label-xs)',
                       fontWeight: 700,
                       textTransform: 'uppercase',
                       letterSpacing: '0.16em',
@@ -702,11 +719,21 @@ export default async function ProductPage({ params }: PageProps) {
                   >
                     Composição microbiológica
                   </span>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 'var(--label-xxs)',
+                      color: 'var(--text-tertiary)',
+                      letterSpacing: '0.04em',
+                    }}
+                  >
+                    espécie · cepa
+                  </span>
                 </div>
                 <div style={{ padding: '12px 0 8px' }}>
-                  {microbialSpecies.map((sp) => (
+                  {microbialStrains.map(({ species, strain }) => (
                     <div
-                      key={sp}
+                      key={`${species}-${strain}`}
                       style={{
                         padding: '10px 24px',
                         borderBottom: '1px solid var(--border-subtle)',
@@ -730,12 +757,33 @@ export default async function ProductPage({ params }: PageProps) {
                         style={{
                           fontFamily: 'var(--font-body)',
                           fontSize: '0.9375rem',
-                          fontStyle: 'italic',
                           color: 'var(--text-primary)',
                           letterSpacing: '-0.005em',
                         }}
                       >
-                        {sp}
+                        {speciesSegments(species).map((seg, idx) => (
+                          <span
+                            // biome-ignore lint/suspicious/noArrayIndexKey: segmento derivado da string, sem id proprio
+                            key={`${species}-${idx}`}
+                            style={{ fontStyle: seg.italic ? 'italic' : 'normal' }}
+                          >
+                            {idx > 0 ? ' ' : ''}
+                            {seg.text}
+                          </span>
+                        ))}
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          color: 'var(--text-tertiary)',
+                          letterSpacing: '0.04em',
+                          marginLeft: 'auto',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {strain}
                       </span>
                     </div>
                   ))}
@@ -757,7 +805,7 @@ export default async function ProductPage({ params }: PageProps) {
                   <span
                     style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: '0.625rem',
+                      fontSize: 'var(--label-xs)',
                       fontWeight: 700,
                       textTransform: 'uppercase',
                       letterSpacing: '0.16em',
@@ -825,7 +873,7 @@ export default async function ProductPage({ params }: PageProps) {
                   <span
                     style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: '0.625rem',
+                      fontSize: 'var(--label-xs)',
                       fontWeight: 700,
                       textTransform: 'uppercase',
                       letterSpacing: '0.16em',
@@ -837,7 +885,7 @@ export default async function ProductPage({ params }: PageProps) {
                   <span
                     style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: '0.5875rem',
+                      fontSize: 'var(--label-xxs)',
                       color: 'var(--text-tertiary)',
                       letterSpacing: '0.04em',
                     }}
@@ -926,7 +974,7 @@ export default async function ProductPage({ params }: PageProps) {
               <p
                 style={{
                   fontFamily: 'var(--font-mono)',
-                  fontSize: '0.625rem',
+                  fontSize: 'var(--label-xs)',
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   letterSpacing: '0.16em',
@@ -1038,8 +1086,8 @@ export default async function ProductPage({ params }: PageProps) {
                 <Image
                   src={premiumSrc}
                   alt={`Embalagem de ${product.name} — ${CATEGORIES[product.category].label} Argho Agrosciences`}
-                  width={1024}
-                  height={1024}
+                  width={1440}
+                  height={1440}
                   quality={85}
                   sizes="(max-width: 968px) 100vw, 540px"
                   style={{
@@ -1131,7 +1179,7 @@ export default async function ProductPage({ params }: PageProps) {
                 <p
                   className="mono"
                   style={{
-                    fontSize: '0.625rem',
+                    fontSize: 'var(--label-xs)',
                     letterSpacing: '0.16em',
                     textTransform: 'uppercase',
                     color: 'var(--text-tertiary)',
@@ -1168,236 +1216,6 @@ export default async function ProductPage({ params }: PageProps) {
                   })}
                 </div>
               </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          APPLICATIONS — protocolo de aplicação por cultura
-      ══════════════════════════════════════════════════════════════════════ */}
-      {product.applications && product.applications.length > 0 && (
-        <section
-          style={{
-            borderTop: '1px solid var(--border-subtle)',
-            backgroundColor: 'var(--bg-soft)',
-          }}
-        >
-          <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '80px 48px' }}>
-            <div style={{ marginBottom: '48px', maxWidth: '720px' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  marginBottom: '20px',
-                }}
-              >
-                <span
-                  aria-hidden
-                  style={{
-                    width: '24px',
-                    height: '1px',
-                    background: catColor,
-                  }}
-                />
-                <span
-                  className="mono"
-                  style={{
-                    fontSize: '0.6875rem',
-                    letterSpacing: '0.18em',
-                    textTransform: 'uppercase',
-                    color: catColor,
-                    fontWeight: 700,
-                  }}
-                >
-                  Recomendações Agronômicas · orientativo
-                </span>
-              </div>
-              <h2
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 'clamp(2rem, 4vw, 3rem)',
-                  fontWeight: 700,
-                  letterSpacing: '-0.05em',
-                  color: 'var(--argho-blue)',
-                  lineHeight: 0.95,
-                }}
-              >
-                Protocolo de Aplicação.
-              </h2>
-            </div>
-
-            {/* Table */}
-            <div
-              style={{
-                border: '1px solid var(--border-subtle)',
-                borderTop: `2px solid ${catColor}`,
-                borderRadius: '12px',
-                overflow: 'hidden',
-                backgroundColor: 'var(--bg)',
-              }}
-            >
-              {/* Header */}
-              <div
-                className="slug-app-grid slug-app-header"
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '180px 220px 160px 1fr',
-                  gap: '0',
-                  backgroundColor: 'var(--bg-mist)',
-                  borderBottom: '1px solid var(--border-subtle)',
-                  padding: '14px 28px',
-                }}
-              >
-                {['Cultura', 'Fase fenológica', 'Dose / ha', 'Observações'].map((h) => (
-                  <span
-                    key={h}
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.625rem',
-                      fontWeight: 700,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.14em',
-                      color: 'var(--text-tertiary)',
-                    }}
-                  >
-                    {h}
-                  </span>
-                ))}
-              </div>
-
-              {product.applications.map((app, i) => (
-                <div
-                  key={`${app.crop}-${i}`}
-                  className="slug-app-grid"
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '180px 220px 160px 1fr',
-                    gap: '0',
-                    padding: '20px 28px',
-                    borderBottom:
-                      i < (product.applications?.length ?? 0) - 1
-                        ? '1px solid var(--border-subtle)'
-                        : 'none',
-                    borderLeft: `2px solid ${catLine}`,
-                    transition: 'background-color 0.15s ease',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-display)',
-                      fontSize: '1rem',
-                      fontWeight: 700,
-                      color: 'var(--text-primary)',
-                      letterSpacing: '-0.025em',
-                    }}
-                  >
-                    {app.crop}
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '0.875rem',
-                      color: 'var(--text-secondary)',
-                      lineHeight: 1.5,
-                    }}
-                  >
-                    {app.stage}
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '1rem',
-                      color: catColor,
-                      fontWeight: 700,
-                      letterSpacing: '-0.01em',
-                    }}
-                  >
-                    {app.dosePerHa}
-                    <span
-                      style={{
-                        fontSize: '0.6875rem',
-                        fontWeight: 500,
-                        marginLeft: '4px',
-                        color: 'var(--text-muted)',
-                      }}
-                    >
-                      {app.unit}
-                    </span>
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '0.875rem',
-                      color: 'var(--text-muted)',
-                      lineHeight: 1.55,
-                    }}
-                  >
-                    {app.notes ?? '—'}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* ── Legal disclaimer ── */}
-            <div
-              style={{
-                marginTop: '24px',
-                padding: '18px 24px',
-                backgroundColor: 'var(--bg)',
-                border: '1px solid var(--border-subtle)',
-                borderLeft: `3px solid ${catColor}`,
-                borderRadius: '6px',
-                display: 'flex',
-                gap: '14px',
-                alignItems: 'flex-start',
-              }}
-            >
-              <span
-                aria-hidden
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '1rem',
-                  color: catColor,
-                  flexShrink: 0,
-                  fontWeight: 700,
-                  marginTop: '-2px',
-                }}
-              >
-                ⚠
-              </span>
-              <p
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '0.8125rem',
-                  color: 'var(--text-secondary)',
-                  lineHeight: 1.65,
-                  margin: 0,
-                }}
-              >
-                <strong style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
-                  Recomendações orientativas.
-                </strong>{' '}
-                O uso de fertilizantes requer acompanhamento de Engenheiro Agrônomo ou Engenheiro
-                Florestal habilitado, conforme a Lei 5.194/66. Realize teste de compatibilidade
-                antes de misturar com outros produtos.
-                {isBio && !isMicrobialComplex && (
-                  <>
-                    {' '}
-                    Produto biológico — composição declarada conforme padrão Argho; consulte a
-                    ficha técnica para protocolo de armazenamento e viabilidade microbiológica.
-                  </>
-                )}
-                {isMicrobialComplex && (
-                  <>
-                    {' '}
-                    Complexo microbiológico — informações de composição declarada conforme padrão
-                    Argho de formulação. Para condições de armazenamento e manuseio, consulte a
-                    ficha técnica do produto via canal comercial.
-                  </>
-                )}
-              </p>
             </div>
           </div>
         </section>
@@ -1556,19 +1374,6 @@ export default async function ProductPage({ params }: PageProps) {
           }
         }
         @media (max-width: 768px) {
-          .slug-app-grid {
-            grid-template-columns: 1fr 1fr !important;
-            grid-template-areas: "crop dose" "stage stage" "notes notes" !important;
-            gap: 8px 16px !important;
-            padding: 16px !important;
-          }
-          .slug-app-grid > span:nth-child(1) { grid-area: crop; }
-          .slug-app-grid > span:nth-child(2) { grid-area: stage; }
-          .slug-app-grid > span:nth-child(3) { grid-area: dose; text-align: right; }
-          .slug-app-grid > span:nth-child(4) { grid-area: notes; }
-          .slug-app-header {
-            display: none !important;
-          }
           .slug-related-grid {
             grid-template-columns: 1fr auto !important;
             gap: 8px 16px !important;

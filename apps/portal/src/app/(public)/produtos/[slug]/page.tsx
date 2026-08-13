@@ -36,6 +36,31 @@ function packagingLabel(p: ProductPackaging[number]) {
   return p.type;
 }
 
+/**
+ * Composição microbiológica: a chave vem do banco como
+ * "<Gênero> <espécie>[ subsp. <subespécie>] [<código da cepa>]" — a cepa entra
+ * na chave (migration 0050) porque é o único jeito de distinguir duas cepas da
+ * mesma espécie (Nemax tem 2x Trichoderma harzianum; Troian, 2x B. velezensis).
+ *
+ * Convenção de nomenclatura: só gênero e epíteto vão em itálico. Conectores
+ * ("sp.", "subsp.", "var.") e código de cepa ("DC 101", "IB 19/17", "SEMIA 658")
+ * ficam em romano. Sem cepa na chave, o nome inteiro segue itálico como antes.
+ */
+const NAME_CONNECTORS = new Set(['sp.', 'spp.', 'subsp.', 'ssp.', 'var.', 'f.']);
+
+function microbialNameSegments(raw: string): { text: string; italic: boolean }[] {
+  const segments: { text: string; italic: boolean }[] = [];
+  for (const token of raw.split(/\s+/).filter(Boolean)) {
+    // Epíteto/gênero = só letras (o gênero vem capitalizado). Conector e código
+    // de cepa (tem dígito, barra ou caixa alta no meio) nunca são itálico.
+    const italic = !NAME_CONNECTORS.has(token) && /^[A-Za-zÀ-ÿ][a-zà-ÿ-]*$/.test(token);
+    const last = segments[segments.length - 1];
+    if (last && last.italic === italic) last.text += ` ${token}`;
+    else segments.push({ text: token, italic });
+  }
+  return segments;
+}
+
 export default async function ProdutoDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const cookieStore = await cookies();
@@ -320,11 +345,19 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
                     <span
                       style={{
                         fontSize: '0.9375rem',
-                        fontStyle: 'italic',
                         color: 'var(--colheita-text-primary)',
                       }}
                     >
-                      {species}
+                      {microbialNameSegments(species).map((seg, idx) => (
+                        <span
+                          // biome-ignore lint/suspicious/noArrayIndexKey: segmentos derivam da string, sem id proprio
+                          key={`${species}-${idx}`}
+                          style={{ fontStyle: seg.italic ? 'italic' : 'normal' }}
+                        >
+                          {idx > 0 ? ' ' : ''}
+                          {seg.text}
+                        </span>
+                      ))}
                     </span>
                   </div>
                 ))}

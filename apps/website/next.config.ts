@@ -3,6 +3,15 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@colheita/tokens'],
+  // Renomeacao dos biologicos (Catalogo Argho 2026): biovas -> biotas,
+  // bovex -> sporax, titan -> harzon. Link publicado nao pode virar 404.
+  async redirects() {
+    return [
+      { source: '/produtos/biovas', destination: '/produtos/biotas', permanent: true },
+      { source: '/produtos/bovex', destination: '/produtos/sporax', permanent: true },
+      { source: '/produtos/titan', destination: '/produtos/harzon', permanent: true },
+    ];
+  },
   async headers() {
     const isProd = process.env.NODE_ENV === 'production';
     return [

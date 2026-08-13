@@ -1,6 +1,15 @@
 # Sincronização do RAG com dados das fichas técnicas
 
-**Status:** TODO — script preparado, aplicação em prod pendente confirmação.
+> ⚠️ **SUPERSEDIDO EM 2026-08-13 — NÃO rode o SQL desta página.** O plano foi
+> executado pela migration 0034 e depois refeito pelo Catálogo Argho 2026: os
+> biológicos foram renomeados (`bovex→sporax`, `titan→harzon`,
+> `biovas→biotas`), ganharam CHROM e tiveram espécies/cepas/concentrações
+> corrigidas. Em particular, a composição do Troian citada abaixo
+> (`subtilis + velezensis + amyloliquefaciens`) está **errada** — o correto é
+> `B. velezensis DC 81 + DC 88 + B. pumilus DC 61`. Fonte da verdade:
+> `infra/supabase/migrations/0050_catalogo_2026_produtos.sql`.
+
+**Status:** histórico — substituído pela migration 0050 (ver aviso acima).
 
 ## Contexto
 

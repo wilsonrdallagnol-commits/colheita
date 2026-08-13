@@ -1,5 +1,13 @@
 # Como aplicar migrations 0034 a 0042 + reindex RAG em prod
 
+> ⚠️ **SUPERSEDIDO EM 2026-08-13 — leia antes de rodar qualquer coisa daqui.**
+> Os nomes e as composições citados neste documento são os de 2026-05 e hoje
+> estão **factualmente errados**. O Catálogo Argho 2026 renomeou
+> `bovex→sporax`, `titan→harzon` e `biovas→biotas`, corrigiu espécies, cepas e
+> concentrações e criou o CHROM. Fonte da verdade atual:
+> `infra/supabase/migrations/0050_catalogo_2026_produtos.sql`. Este arquivo
+> vale só como registro histórico da sequência 0034→0042.
+
 > **Atualizado 2026-05-23:** agora são 9 migrations encadeadas. Aplicar
 > todas e fazer 1 único reindex no final.
 >

@@ -19,7 +19,7 @@
  *
  * // Fazer uma pergunta
  * const answer = await pipeline.ask({
- *   query: 'Qual a dose recomendada de Xcensis para soja?',
+ *   query: 'Qual a composição declarada do Xcensis?',
  *   tenantId: 'uuid-do-tenant',
  * });
  *

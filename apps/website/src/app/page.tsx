@@ -444,11 +444,12 @@ export default function Home() {
         accent="var(--cat-mineral)"
         accentRaw="oklch(0.586 0.150 138.8)"
         description="Fertilizante NPK foliar com aminoácidos e ácidos carboxílicos. Melhora arquitetura e ativação fisiológica da planta, potencializando enraizamento e absorção de nutrientes."
-        tags={['NPK 4,5-2-7,2', 'Foliar', '100 mL/ha · V2–V3']}
+        tags={['NPK 4,5-2-7,2', 'Foliar']}
         image="/products/premium/stron.jpg"
         imageAlt="Stron 1L — Argho Agrosciences"
         href="/produtos/stron"
         reverse={false}
+        origin="Espanha"
       />
 
       {/* Operate Plus */}
@@ -463,6 +464,7 @@ export default function Home() {
         imageAlt="Operate Plus 1L — Argho Agrosciences"
         href="/produtos/operate-plus"
         reverse={true}
+        origin="Brasil"
       />
 
       {/* Divisor — raiz vertical descendo (verde Argho) */}
@@ -2041,6 +2043,10 @@ function LineCard({
 }
 
 // ─── Componente: spotlight de produto ────────────────────────────────────────
+// Rótulo de cada métrica do rodapé do card, na ordem em que as tags chegam.
+// Só entra "Dose" quando o produto tem dose no catálogo (linha Operate).
+const SPOTLIGHT_TAG_LABELS = ['Composição', 'Modo', 'Dose'] as const;
+
 function Spotlight({
   eyebrow,
   name,
@@ -2052,6 +2058,7 @@ function Spotlight({
   imageAlt,
   href,
   reverse,
+  origin,
 }: {
   eyebrow: string;
   name: string;
@@ -2063,6 +2070,9 @@ function Spotlight({
   imageAlt: string;
   href: string;
   reverse: boolean;
+  /** País de origem do produto — era fixo em "Espanha" no corpo do componente, o que
+   *  exibia origem errada no card do Operate Plus (a linha de adjuvantes é 100% Brasil). */
+  origin: string;
 }) {
   return (
     <section
@@ -2252,7 +2262,7 @@ function Spotlight({
                 textTransform: 'uppercase',
               }}
             >
-              Origem · Espanha
+              Origem · {origin}
             </span>
           </div>
 
@@ -2274,8 +2284,8 @@ function Spotlight({
             <Image
               src={image}
               alt={imageAlt}
-              width={1024}
-              height={1024}
+              width={1440}
+              height={1440}
               quality={85}
               sizes="(max-width: 968px) 100vw, 600px"
               style={{
@@ -2295,7 +2305,7 @@ function Spotlight({
               borderTop: '1px solid var(--border-subtle)',
               backgroundColor: 'var(--bg-mist)',
               display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
+              gridTemplateColumns: `repeat(${Math.min(tags.length, 3)}, 1fr)`,
               gap: '16px',
             }}
           >
@@ -2319,7 +2329,7 @@ function Spotlight({
                     textTransform: 'uppercase',
                   }}
                 >
-                  {idx === 0 ? 'Composição' : idx === 1 ? 'Modo' : 'Dose'}
+                  {SPOTLIGHT_TAG_LABELS[idx]}
                 </span>
                 <span
                   style={{

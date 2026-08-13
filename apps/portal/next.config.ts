@@ -96,6 +96,32 @@ const nextConfig: NextConfig = {
     '@colheita/tokens',
     '@colheita/db',
   ],
+  // Renomeacao dos biologicos (Catalogo Argho 2026, migration 0050):
+  // biovas -> biotas, bovex -> sporax, titan -> harzon. O slug e a chave da
+  // rota publica /produtos/[slug] — link ja compartilhado nao pode virar 404.
+  // Mesmo padrao de apps/website/next.config.ts.
+  async redirects() {
+    return [
+      { source: '/produtos/biovas', destination: '/produtos/biotas', permanent: true },
+      { source: '/produtos/bovex', destination: '/produtos/sporax', permanent: true },
+      { source: '/produtos/titan', destination: '/produtos/harzon', permanent: true },
+      {
+        source: '/produtos/biovas/ficha-tecnica',
+        destination: '/produtos/biotas/ficha-tecnica',
+        permanent: true,
+      },
+      {
+        source: '/produtos/bovex/ficha-tecnica',
+        destination: '/produtos/sporax/ficha-tecnica',
+        permanent: true,
+      },
+      {
+        source: '/produtos/titan/ficha-tecnica',
+        destination: '/produtos/harzon/ficha-tecnica',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [{ source: '/(.*)', headers: securityHeaders() }];
   },

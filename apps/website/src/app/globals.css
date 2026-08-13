@@ -10,6 +10,12 @@
 }
 
 :root {
+  /* Rótulos/eyebrows em mono. No desktop 10px e 9,4px ficam elegantes; no celular
+     ficam apertados para leitura (auditoria 2026-08-13). Como o tamanho é aplicado
+     inline nos componentes, media query não alcança — por isso vem de variável. */
+  --label-xs:  0.625rem;   /* 10px  */
+  --label-xxs: 0.5875rem;  /* 9,4px */
+
   /* Backgrounds — white-first */
   --bg:              #ffffff;
   --bg-warm:         #fafafa;
@@ -381,10 +387,9 @@ a {
     gap: 32px !important;
   }
 
-  /* Grid de aplicacoes: fonte única do layout mobile = <style> inline de
-     produtos/[slug]/page.tsx (template nomeado crop/dose/stage/notes + hide
-     do header). O bloco duplicado daqui foi removido — a regra :not() vencia
-     por especificidade e quebrava o layout da página num híbrido. */
+  /* A tabela "Protocolo de Aplicação" (dose/cultura por produto) foi removida
+     do site em 2026-08-13 — o site espelha o catálogo, que não traz dose por
+     cultura. Junto dela saíram as regras .slug-app-grid / .slug-app-header. */
 
   /* ---- /sobre ---- */
   .sobre-hero-grid {
@@ -429,6 +434,11 @@ a {
   .nav-logo-img {
     width: 156px !important;
     height: auto !important;
+  }
+  /* rótulos sobem para 11px no celular — ver comentário em :root */
+  :root {
+    --label-xs:  0.6875rem;
+    --label-xxs: 0.6875rem;
   }
 }
 @media (max-width: 380px) {

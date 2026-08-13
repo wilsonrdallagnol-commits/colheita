@@ -66,10 +66,12 @@ export const ARGHO_GOLDEN_QUERIES: GoldenQuery[] = [
     category: 'agronomico',
   },
   {
-    id: 'biovas-cana',
-    query: 'biovas é indicado para cana-de-açúcar?',
-    expectedProductSlugs: ['biovas'],
+    id: 'biotas-cana',
+    query: 'biotas é indicado para cana-de-açúcar?',
+    expectedProductSlugs: ['biotas'],
     category: 'tecnico',
+    notes:
+      'Renomeado de biovas->biotas (catalogo 2026). Mede so recuperacao: a resposta correta do generator e NAO indicar cultura para a linha biologica.',
   },
   {
     id: 'dose-folhar',
@@ -78,10 +80,11 @@ export const ARGHO_GOLDEN_QUERIES: GoldenQuery[] = [
     category: 'aplicacao',
   },
   {
-    id: 'mapa-titan',
-    query: 'titan tem registro MAPA?',
-    expectedProductSlugs: ['titan'],
+    id: 'mapa-harzon',
+    query: 'harzon tem registro MAPA?',
+    expectedProductSlugs: ['harzon'],
     category: 'compliance',
+    notes: 'Renomeado de titan->harzon (catalogo 2026).',
   },
   {
     id: 'preco-stron',
