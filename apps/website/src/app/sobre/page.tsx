@@ -779,11 +779,13 @@ export default function SobrePage() {
                 marginBottom: '20px',
               }}
             >
-              Cada formulação Argho nasce em um centro de pesquisa com mais de{' '}
+              {/* "centro de pesquisa PARCEIRO": a estrutura não é da Argho. E 5.000m² virou
+                  10.000m², número do catálogo, conferido na fonte primária em 13/08. */}
+              Cada formulação Argho nasce em um centro de pesquisa parceiro com mais de{' '}
               <strong style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
-                5.000m² de laboratórios
+                10.000m² dedicados à pesquisa
               </strong>{' '}
-              no sul da Espanha, dedicado a substituir química sintética por alternativas
+              no sul da Espanha, voltado a substituir química sintética por alternativas
               biotecnológicas — sem comprometer produtividade.
             </p>
             <p
@@ -794,9 +796,13 @@ export default function SobrePage() {
                 lineHeight: 1.7,
               }}
             >
-              Mais de 60 pesquisadores combinam botânica, microbiologia, microalgas e química verde
-              em uma cadeia única de descoberta — da identificação de cepas até a planta piloto de
-              produção microbiana com capacidade de 500 mil litros por ano.
+              {/* Sem contagem de pesquisadores (ordem do Wilson, 13/08) e sem o "500 mil
+                  litros/ano", que o catálogo — conferido na fonte primária — não traz.
+                  O trajeto abaixo é o do catálogo: laboratório → estufa → planta-piloto. */}
+              Botânica, microbiologia, microalgas e química verde combinam-se numa cadeia única
+              de descoberta, organizada em seis áreas — biocontrole, bioestimulantes, saúde do
+              solo, química analítica, fitopatologia e entomologia. O percurso vai do
+              laboratório à estufa e da planta-piloto à escala industrial.
             </p>
           </div>
 
@@ -815,9 +821,13 @@ export default function SobrePage() {
             }}
           >
             {[
-              { value: '60+', label: 'Pesquisadores em cadeia única' },
-              { value: '5.000m²', label: 'Laboratórios + 2.000m² estufas' },
-              { value: '500k L', label: 'Probióticos / ano em planta piloto' },
+              // Mesma correção da faixa da home (17/08): sai o número de pesquisadores
+              // (ordem do Wilson em 13/08 — equipe encolheu, fontes públicas desatualizadas)
+              // e o 5.000m² vira 10.000m², que é o número verificado no catálogo. O "500k L"
+              // saiu por não constar do catálogo, que foi conferido em fonte primária.
+              { value: '10.000m²', label: 'Área dedicada à pesquisa' },
+              { value: '2019', label: 'Centro inaugurado' },
+              { value: '6', label: 'Áreas de pesquisa' },
               { value: '4', label: 'Disciplinas em sinergia' },
             ].map((m, i) => (
               <div

@@ -585,7 +585,10 @@ export default function Home() {
                 maxWidth: '560px',
               }}
             >
-              Nosso laboratório no sul da Espanha combina{' '}
+              {/* Era "Nosso laboratório" ate 17/08/2026. O centro NAO e da Argho — e o
+                  parceiro/fornecedor de P&D (regra do Wilson). Dizer "nosso" reivindica uma
+                  estrutura de terceiro. O site nao nomeia o centro, de proposito. */}
+              O centro de pesquisa parceiro da Argho, no sul da Espanha, combina{' '}
               <strong style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
                 fenotipagem computacional
               </strong>{' '}
@@ -1046,10 +1049,17 @@ export default function Home() {
           }}
         >
           {[
-            { value: '60+', label: 'Pesquisadores' },
-            { value: '5.000m²', label: 'Laboratório' },
+            // Faixa alinhada ao catalogo 2026 em 17/08. Duas trocas:
+            //  * "60+ Pesquisadores" SAIU — Wilson mandou tirar o número em 13/08: a equipe
+            //    do centro encolheu muito e as fontes públicas (site, LinkedIn) seguem com o
+            //    número antigo. Foi tirado do catálogo na época e ficou no site.
+            //  * "5.000m²" -> "10.000m²": o catálogo traz "mais de 10.000 m²", verificado na
+            //    fonte primária em 13/08. O site tinha metade disso.
+            // As duas entradas novas (2019 e 6 áreas) também vêm do catálogo.
+            { value: '10.000m²', label: 'Área de pesquisa' },
+            { value: '2019', label: 'Centro inaugurado' },
             { value: '4', label: 'Disciplinas integradas' },
-            { value: '500k L/ano', label: 'Produção microbiana' },
+            { value: '6', label: 'Áreas de pesquisa' },
           ].map((m) => (
             <div key={m.label}>
               <div
