@@ -947,7 +947,10 @@ export default function SobrePage() {
                 {
                   num: '03',
                   title: 'Microalgas',
-                  body: 'Produção de metabólitos secundários e bioestimulantes em fotobiorreatores tubulares de 140L. Cepas selecionadas para alto rendimento de polissacarídeos, betaínas e aminoácidos vegetais.',
+                  // Saiu o "de 140L" dos fotobiorreatores — último número do centro que vinha
+                  // das fontes públicas antigas e que o catálogo não confirma. A técnica fica;
+                  // o volume, que ninguém verificou, não.
+                  body: 'Produção de metabólitos secundários e bioestimulantes em fotobiorreatores tubulares. Cepas selecionadas para alto rendimento de polissacarídeos, betaínas e aminoácidos vegetais.',
                   techniques: [
                     'Fotobiorreatores tubulares',
                     'Cultivo controlado',
@@ -1145,7 +1148,11 @@ export default function SobrePage() {
                 {
                   step: '04',
                   title: 'Validação',
-                  body: 'Cultivo em fitotrons (-5 a 35°C, 0–100% umidade) e estufas controladas com 2.000m².',
+                  // Saíram a faixa dos fitotrons (-5 a 35°C, 0–100%) e os "2.000m² de
+                  // estufas": números da mesma safra desatualizada dos 5.000m² e do "60+
+                  // pesquisadores", e o catálogo — conferido em fonte primária — não traz
+                  // nenhum dos dois. Ele descreve o trajeto, e é isso que fica.
+                  body: 'Cultivo em fitotrons e estufas controladas: do laboratório à estufa e da planta-piloto à escala industrial.',
                 },
                 {
                   step: '05',
