@@ -7,7 +7,87 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { catalogoDoBiologico, type Trecho } from '@/lib/biologicos-catalogo';
 import { CATEGORIES, getProductBySlug, PRODUCTS, type ProductCategory } from '@/lib/products';
+
+/** Texto do catálogo com nome científico em itálico. O catálogo marca com *asteriscos*;
+ *  o gerador converte em trechos, e aqui viram <em> — sem dangerouslySetInnerHTML. */
+function Trechos({ partes }: { partes: Trecho[] }) {
+  return (
+    <>
+      {partes.map((p, i) =>
+        p.i ? <em key={`${i}-${p.t}`}>{p.t}</em> : <span key={`${i}-${p.t}`}>{p.t}</span>,
+      )}
+    </>
+  );
+}
+
+/** Bloco de texto corrido do catálogo (Sinergia, Papel no programa), no mesmo padrão
+ *  visual das outras seções da ficha: cabeçalho em mono + corpo justificado. */
+function BlocoTexto({
+  titulo,
+  nota,
+  partes,
+}: {
+  titulo: string;
+  nota?: string;
+  partes: Trecho[];
+}) {
+  return (
+    <div>
+      <div
+        style={{
+          padding: '14px 24px 10px',
+          borderTop: '1px solid var(--border-subtle)',
+          borderBottom: '1px solid var(--border-subtle)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '12px',
+          backgroundColor: 'var(--bg-mist)',
+        }}
+      >
+        <span
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: 'var(--label-xs)',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.16em',
+            color: 'var(--argho-blue)',
+          }}
+        >
+          {titulo}
+        </span>
+        {nota && (
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 'var(--label-xxs)',
+              color: 'var(--text-tertiary)',
+              letterSpacing: '0.04em',
+              textAlign: 'right',
+            }}
+          >
+            {nota}
+          </span>
+        )}
+      </div>
+      <p
+        style={{
+          fontFamily: 'var(--font-body)',
+          fontSize: '0.875rem',
+          color: 'var(--text-secondary)',
+          lineHeight: 1.65,
+          margin: 0,
+          padding: '14px 24px 18px',
+        }}
+      >
+        <Trechos partes={partes} />
+      </p>
+    </div>
+  );
+}
 
 const CAT_COLORS: Record<ProductCategory, string> = {
   'fertilizantes-minerais': 'var(--cat-mineral)',
@@ -134,6 +214,8 @@ export default async function ProductPage({ params }: PageProps) {
   const catLine = CAT_LINE[product.category];
   const catLabel = CATEGORIES[product.category].label;
   const premiumSrc: string | undefined = PRODUCT_PREMIUM[product.slug];
+  // Conteúdo homologado do catálogo (só os 8 biológicos têm). undefined nos demais.
+  const cat = catalogoDoBiologico(product.slug);
 
   // Nota legal por categoria. Ate 17/08/2026 esta pagina nao tinha NENHUMA — so a
   // listagem /produtos tinha, e e aqui que caem os links compartilhados, os redirects
@@ -469,6 +551,49 @@ export default async function ProductPage({ params }: PageProps) {
             >
               {product.tagline}
             </p>
+
+            {/* ── Função da composição (biológicos) ──────────────────────────────
+                Mesma barra do catálogo: filete na cor da categoria + a função em
+                destaque. Descreve o que a COMPOSIÇÃO é e faz — "Fungos
+                entomopatogênicos", "Bacillus thuringiensis · cristais Cry" — e não
+                uma classe de defensivo. O enquadramento legal fica na nota do rodapé,
+                separado, como no catálogo. */}
+            {cat?.funcaoComposicao && (
+              <div
+                className="anim-fade-in-up delay-3"
+                style={{
+                  borderLeft: `3px solid ${catColor}`,
+                  padding: '4px 0 4px 14px',
+                  marginBottom: '28px',
+                }}
+              >
+                {cat.categoriaLegal && (
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 'var(--label-xxs)',
+                      letterSpacing: '0.16em',
+                      color: 'var(--text-tertiary)',
+                      textTransform: 'uppercase',
+                      marginBottom: '3px',
+                    }}
+                  >
+                    {cat.categoriaLegal}
+                  </div>
+                )}
+                <div
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '1.0625rem',
+                    fontWeight: 700,
+                    color: catColor,
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  {cat.funcaoComposicao}
+                </div>
+              </div>
+            )}
 
             {/* Application mode chips — apenas quando ha modos declarados */}
             <div
@@ -893,6 +1018,127 @@ export default async function ProductPage({ params }: PageProps) {
                   ))}
                 </div>
               </div>
+            )}
+
+            {/* ══════════════════════════════════════════════════════════════════
+                NA NATUREZA · SINERGIA · PAPEL NO PROGRAMA
+                Conteúdo do CATÁLOGO 2026, importado por scripts/sync-catalogo.mjs.
+                O site descrevia o que o produto É (espécie + cepa) e nunca o que cada
+                microrganismo FAZ. Esse texto é o que sustenta a venda técnica e já está
+                homologado — inclusive nas regras que não podem ser reescritas de memória
+                (sem praga nomeada, sem dose de campo, sem classe de defensivo).
+            ══════════════════════════════════════════════════════════════════ */}
+            {cat && cat.especies.length > 0 && (
+              <div>
+                <div
+                  style={{
+                    padding: '14px 24px 10px',
+                    borderTop: '1px solid var(--border-subtle)',
+                    borderBottom: '1px solid var(--border-subtle)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    backgroundColor: 'var(--bg-mist)',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 'var(--label-xs)',
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.16em',
+                      color: 'var(--argho-blue)',
+                    }}
+                  >
+                    Na natureza
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 'var(--label-xxs)',
+                      color: 'var(--text-tertiary)',
+                      letterSpacing: '0.04em',
+                    }}
+                  >
+                    o que cada microrganismo faz
+                  </span>
+                </div>
+                <div style={{ padding: '14px 24px 18px' }}>
+                  {cat.especies.map((esp, idx) => (
+                    <div
+                      key={`${esp.cepa ?? 'sem-cepa'}-${idx}`}
+                      style={{
+                        padding: idx === 0 ? '0 0 14px' : '14px 0',
+                        borderTop: idx === 0 ? 'none' : '1px solid var(--border-subtle)',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'baseline',
+                          gap: '10px',
+                          flexWrap: 'wrap',
+                          marginBottom: '6px',
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontFamily: 'var(--font-body)',
+                            fontSize: '0.9375rem',
+                            fontWeight: 600,
+                            color: 'var(--text-primary)',
+                            letterSpacing: '-0.01em',
+                          }}
+                        >
+                          <Trechos partes={esp.nome} />
+                        </span>
+                        {esp.cepa && (
+                          <span
+                            style={{
+                              fontFamily: 'var(--font-mono)',
+                              fontSize: 'var(--label-xxs)',
+                              color: catColor,
+                              letterSpacing: '0.06em',
+                              fontWeight: 700,
+                            }}
+                          >
+                            {esp.cepa}
+                            {esp.pct ? ` · ${esp.pct}` : ''}
+                          </span>
+                        )}
+                      </div>
+                      <p
+                        style={{
+                          fontFamily: 'var(--font-body)',
+                          fontSize: '0.875rem',
+                          color: 'var(--text-secondary)',
+                          lineHeight: 1.65,
+                          margin: 0,
+                        }}
+                      >
+                        <Trechos partes={esp.naNatureza} />
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {cat?.sinergia && (
+              <BlocoTexto
+                titulo="Sinergia do blend"
+                nota="por que as cepas andam juntas"
+                partes={cat.sinergia}
+              />
+            )}
+
+            {cat?.papelNoPrograma && (
+              <BlocoTexto
+                titulo="Papel no programa"
+                nota={cat.doseMultiplicacao ?? 'produção para uso próprio'}
+                partes={cat.papelNoPrograma}
+              />
             )}
 
             {/* ── Composition bar gauges (apenas para produtos quantificados — minerais/organominerais) ── */}
