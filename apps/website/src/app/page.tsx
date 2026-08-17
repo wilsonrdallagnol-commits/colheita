@@ -21,6 +21,23 @@ export const metadata: Metadata = {
 // (fonte única; nunca dessincroniza do catálogo)
 const MARQUEE_PRODUCTS = PRODUCTS.map((p) => p.name);
 
+// Canais e condições da fenotipagem por imagem do centro parceiro — mesma ordem e mesmos
+// rótulos do catálogo (build/gerar-catálogo.mjs, pgMaavi). As imagens são as leituras REAIS,
+// em public/maavi/, copiadas de imagens/maavi/ do catálogo.
+const FENOTIPAGEM_CANAIS = [
+  { chave: 'rgb', rotulo: 'Imagem real' },
+  { chave: 'temperatura', rotulo: 'Temperatura' },
+  { chave: 'fotossintese', rotulo: 'Fotossíntese' },
+  { chave: 'psii', rotulo: 'Fotossistema II' },
+  { chave: 'npq', rotulo: 'Energia dissipada' },
+  { chave: 'defesa', rotulo: 'Compostos de defesa' },
+] as const;
+
+const FENOTIPAGEM_CONDICOES = [
+  { chave: 'sadia', rotulo: 'Sem doença', alt: 'sadia' },
+  { chave: 'doente', rotulo: 'Com doença fúngica', alt: 'com doença fúngica' },
+] as const;
+
 export default function Home() {
   return (
     <main style={{ backgroundColor: 'var(--bg)', overflowX: 'hidden' }}>
@@ -615,9 +632,20 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Lado direito: visualização "fenotipagem" — 4 leaf scans */}
+          {/* ══════════════════════════════════════════════════════════════════
+              FENOTIPAGEM POR IMAGEM — leituras REAIS do centro parceiro.
+
+              Até 17/08/2026 este painel exibia números INVENTADOS com a linguagem de um
+              instrumento em operação: "captura ao vivo", "Planta-modelo · ID 0247", um ponto
+              verde pulsando e "IA aprendendo", com valores (+0,8 °C · 0,78 Φ · 2,4 · 240 RFU)
+              que não vinham de medição nenhuma. Numa página cujo assunto é a credibilidade
+              científica da empresa, isso é o pior lugar possível para dado fabricado.
+
+              Trocado pelas 12 leituras que o catálogo imprime (6 canais × planta sadia e
+              doente), na mesma estrutura: colunas numeradas + legenda corrida embaixo —
+              recurso que o catálogo adotou porque "Fotossistema II" não cabe sob a coluna.
+          ══════════════════════════════════════════════════════════════════ */}
           <div
-            aria-hidden
             style={{
               position: 'relative',
               padding: '32px',
@@ -627,321 +655,126 @@ export default function Home() {
               boxShadow: 'var(--shadow-card)',
             }}
           >
-            {/* Header da viz */}
             <div
               style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                paddingBottom: '14px',
-                borderBottom: '1px solid var(--border-subtle)',
-                marginBottom: '16px',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span
-                  className="anim-pulse-ring"
-                  style={{
-                    width: '6px',
-                    height: '6px',
-                    borderRadius: '50%',
-                    backgroundColor: 'var(--argho-green)',
-                    boxShadow: '0 0 0 3px oklch(0.586 0.150 138.8 / 0.18)',
-                  }}
-                />
-                <span
-                  className="mono"
-                  style={{
-                    fontSize: '0.625rem',
-                    letterSpacing: '0.16em',
-                    textTransform: 'uppercase',
-                    color: 'var(--text-secondary)',
-                    fontWeight: 700,
-                  }}
-                >
-                  Fenotipagem · captura ao vivo
-                </span>
-              </div>
-              <span
-                className="mono"
-                style={{
-                  fontSize: '0.625rem',
-                  color: 'var(--text-tertiary)',
-                  letterSpacing: '0.06em',
-                }}
-              >
-                Planta-modelo · ID 0247
-              </span>
-            </div>
-
-            {/* Subtítulo explicativo */}
-            <p
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '0.8125rem',
-                color: 'var(--text-secondary)',
-                lineHeight: 1.5,
-                marginBottom: '16px',
-              }}
-            >
-              Cada folha-modelo é escaneada simultaneamente em{' '}
-              <strong style={{ color: 'var(--text-primary)' }}>4 dimensões fisiológicas</strong>. A
-              IA correlaciona as leituras pra inferir como cada combinação de moléculas afeta a
-              planta.
-            </p>
-
-            {/* Grid 2x2 de leituras (light-first, instrumentos científicos legíveis) */}
-            <div
-              className="lab-pheno-grid"
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '10px',
-                marginBottom: '16px',
-              }}
-            >
-              {[
-                {
-                  label: 'Temperatura',
-                  unit: 'Δ vs baseline',
-                  metric: '+0.8',
-                  metricUnit: '°C',
-                  hint: 'Termografia infravermelha',
-                  fill: 65, // % do bar
-                  accent: 'var(--argho-green)',
-                  accentRaw: 'oklch(0.586 0.150 138.8)',
-                },
-                {
-                  label: 'Fotossíntese',
-                  unit: 'PSII · rendimento',
-                  metric: '0.78',
-                  metricUnit: 'Φ',
-                  hint: 'Fluorescência de clorofila',
-                  fill: 78,
-                  accent: 'var(--argho-blue)',
-                  accentRaw: 'oklch(0.362 0.160 266.7)',
-                },
-                {
-                  label: 'NPQ',
-                  unit: 'Quenching não-fotoquímico',
-                  metric: '2.4',
-                  metricUnit: '',
-                  hint: 'Proteção fotossintética',
-                  fill: 60,
-                  accent: 'var(--argho-blue)',
-                  accentRaw: 'oklch(0.362 0.160 266.7)',
-                },
-                {
-                  label: 'Defesa',
-                  unit: 'Fluorescência relativa',
-                  metric: '240',
-                  metricUnit: 'RFU',
-                  hint: 'Compostos defensivos',
-                  fill: 80,
-                  accent: 'var(--argho-green)',
-                  accentRaw: 'oklch(0.586 0.150 138.8)',
-                },
-              ].map((vec) => (
-                <div
-                  key={vec.label}
-                  style={{
-                    position: 'relative',
-                    backgroundColor: 'var(--bg)',
-                    border: '1px solid var(--border-subtle)',
-                    borderTop: `2px solid ${vec.accent}`,
-                    borderRadius: '8px',
-                    padding: '14px 14px 12px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px',
-                  }}
-                >
-                  {/* Header */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'baseline',
-                    }}
-                  >
-                    <span
-                      className="mono"
-                      style={{
-                        fontSize: '0.625rem',
-                        letterSpacing: '0.14em',
-                        textTransform: 'uppercase',
-                        color: vec.accent,
-                        fontWeight: 700,
-                      }}
-                    >
-                      {vec.label}
-                    </span>
-                    <span
-                      className="mono"
-                      style={{
-                        fontSize: '0.5625rem',
-                        letterSpacing: '0.04em',
-                        color: 'var(--text-tertiary)',
-                      }}
-                    >
-                      {vec.unit}
-                    </span>
-                  </div>
-
-                  {/* Centro: folha SVG verde + métrica grande */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      paddingTop: '4px',
-                    }}
-                  >
-                    {/* Folha clara, literal (verde Argho com veias) */}
-                    <svg
-                      aria-hidden="true"
-                      role="presentation"
-                      viewBox="0 0 60 60"
-                      style={{ width: '40px', height: '40px', flexShrink: 0 }}
-                    >
-                      <path
-                        d="M30 55 C 12 55, 5 38, 8 22 C 11 8, 22 4, 30 8 C 38 4, 49 8, 52 22 C 55 38, 48 55, 30 55 Z"
-                        fill="var(--argho-green-soft)"
-                        stroke="var(--argho-green)"
-                        strokeWidth="1.2"
-                      />
-                      <path
-                        d="M30 8 L30 55 M30 22 L18 32 M30 22 L42 32 M30 36 L20 44 M30 36 L40 44"
-                        stroke="var(--argho-green)"
-                        strokeWidth="0.8"
-                        fill="none"
-                        opacity="0.6"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-
-                    {/* Métrica display grande */}
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'baseline',
-                        gap: '4px',
-                        marginLeft: 'auto',
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontFamily: 'var(--font-display)',
-                          fontSize: '1.625rem',
-                          fontWeight: 700,
-                          color: 'var(--text-primary)',
-                          letterSpacing: '-0.045em',
-                          lineHeight: 1,
-                        }}
-                      >
-                        {vec.metric}
-                      </span>
-                      {vec.metricUnit && (
-                        <span
-                          className="mono"
-                          style={{
-                            fontSize: '0.6875rem',
-                            color: vec.accent,
-                            fontWeight: 700,
-                            letterSpacing: '0.04em',
-                          }}
-                        >
-                          {vec.metricUnit}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Bar gauge */}
-                  <div>
-                    <div
-                      style={{
-                        height: '4px',
-                        backgroundColor: 'var(--bg-soft)',
-                        borderRadius: '2px',
-                        overflow: 'hidden',
-                        marginBottom: '6px',
-                      }}
-                    >
-                      <div
-                        style={{
-                          height: '100%',
-                          width: `${vec.fill}%`,
-                          backgroundColor: vec.accent,
-                          borderRadius: '2px',
-                          transition: 'width 0.6s var(--ease-out-expo)',
-                        }}
-                      />
-                    </div>
-                    <span
-                      className="mono"
-                      style={{
-                        fontSize: '0.5625rem',
-                        color: 'var(--text-muted)',
-                        letterSpacing: '0.02em',
-                        lineHeight: 1.3,
-                      }}
-                    >
-                      {vec.hint}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Footer */}
-            <div
-              style={{
-                paddingTop: '12px',
-                borderTop: '1px solid var(--border-subtle)',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 gap: '12px',
                 flexWrap: 'wrap',
+                paddingBottom: '14px',
+                borderBottom: '1px solid var(--border-subtle)',
+                marginBottom: '18px',
               }}
             >
               <span
                 className="mono"
                 style={{
                   fontSize: '0.625rem',
-                  letterSpacing: '0.10em',
-                  color: 'var(--text-tertiary)',
+                  letterSpacing: '0.16em',
                   textTransform: 'uppercase',
+                  color: 'var(--text-secondary)',
+                  fontWeight: 700,
                 }}
               >
-                4 leituras simultâneas · 1 planta-modelo
+                Fenotipagem por imagem
               </span>
               <span
                 className="mono"
                 style={{
                   fontSize: '0.625rem',
-                  color: 'var(--argho-green)',
-                  fontWeight: 700,
+                  color: 'var(--text-tertiary)',
                   letterSpacing: '0.06em',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
                 }}
               >
-                <span
-                  className="anim-pulse-ring"
-                  style={{
-                    width: '5px',
-                    height: '5px',
-                    borderRadius: '50%',
-                    backgroundColor: 'var(--argho-green)',
-                    boxShadow: '0 0 0 3px oklch(0.586 0.150 138.8 / 0.18)',
-                  }}
-                />
-                IA aprendendo
+                6 canais · mesma planta
               </span>
             </div>
+
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.875rem',
+                color: 'var(--text-muted)',
+                lineHeight: 1.6,
+                marginBottom: '18px',
+              }}
+            >
+              Câmeras multiespectrais leem a planta sem tocá-la. O estresse aparece nos dados
+              antes do sintoma visível — compare a mesma folha nas duas condições.
+            </p>
+
+            {FENOTIPAGEM_CONDICOES.map((cond) => (
+              <div key={cond.chave} style={{ marginBottom: '14px' }}>
+                <div
+                  className="mono"
+                  style={{
+                    fontSize: '0.625rem',
+                    letterSpacing: '0.10em',
+                    textTransform: 'uppercase',
+                    color: 'var(--text-tertiary)',
+                    marginBottom: '6px',
+                  }}
+                >
+                  {cond.rotulo}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '6px' }}>
+                  {FENOTIPAGEM_CANAIS.map((canal, i) => (
+                    <Image
+                      key={canal.chave}
+                      src={`/maavi/fen-${canal.chave}-${cond.chave}.png`}
+                      alt={`${canal.rotulo} — folha ${cond.alt}`}
+                      width={104}
+                      height={118}
+                      sizes="(max-width: 968px) 15vw, 90px"
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        borderRadius: '3px',
+                        display: 'block',
+                        border: `1px solid ${i === 0 ? 'var(--border-subtle)' : 'transparent'}`,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {/* Colunas numeradas + legenda corrida: o rótulo por coluna não cabe na largura
+                de cada leitura — mesma solução do catálogo. */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '6px' }}>
+              {FENOTIPAGEM_CANAIS.map((canal, i) => (
+                <div
+                  key={canal.chave}
+                  className="mono"
+                  style={{
+                    fontSize: '0.625rem',
+                    color: 'var(--text-tertiary)',
+                    textAlign: 'center',
+                  }}
+                >
+                  {i + 1}
+                </div>
+              ))}
+            </div>
+            <p
+              className="mono"
+              style={{
+                marginTop: '10px',
+                paddingTop: '12px',
+                borderTop: '1px solid var(--border-subtle)',
+                fontSize: '0.625rem',
+                lineHeight: 1.7,
+                color: 'var(--text-muted)',
+              }}
+            >
+              {FENOTIPAGEM_CANAIS.map((canal, i) => (
+                <span key={canal.chave}>
+                  {i > 0 && ' · '}
+                  <b style={{ color: 'var(--text-secondary)' }}>{i + 1}</b> {canal.rotulo}
+                </span>
+              ))}
+            </p>
           </div>
         </div>
 
