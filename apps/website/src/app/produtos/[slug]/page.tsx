@@ -7,6 +7,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ARTE_MODO_ACAO } from '@/lib/artes-modo-acao';
 import { catalogoDoBiologico, type Trecho } from '@/lib/biologicos-catalogo';
 import { CATEGORIES, getProductBySlug, PRODUCTS, type ProductCategory } from '@/lib/products';
 
@@ -216,6 +217,7 @@ export default async function ProductPage({ params }: PageProps) {
   const premiumSrc: string | undefined = PRODUCT_PREMIUM[product.slug];
   // Conteúdo homologado do catálogo (só os 8 biológicos têm). undefined nos demais.
   const cat = catalogoDoBiologico(product.slug);
+  const arte = ARTE_MODO_ACAO[product.slug];
 
   // Nota legal por categoria. Ate 17/08/2026 esta pagina nao tinha NENHUMA — so a
   // listagem /produtos tinha, e e aqui que caem os links compartilhados, os redirects
@@ -1051,7 +1053,7 @@ export default async function ProductPage({ params }: PageProps) {
                       color: 'var(--argho-blue)',
                     }}
                   >
-                    Na natureza
+                    Modo de ação
                   </span>
                   <span
                     style={{
@@ -1059,11 +1061,39 @@ export default async function ProductPage({ params }: PageProps) {
                       fontSize: 'var(--label-xxs)',
                       color: 'var(--text-tertiary)',
                       letterSpacing: '0.04em',
+                      textAlign: 'right',
                     }}
                   >
-                    o que cada microrganismo faz
+                    mecanismo de cada ativo declarado
                   </span>
                 </div>
+                {/* Arte da página "Modo de ação" do catálogo. Sem recorte forçado: cinco são
+                    ilustrações quadradas e três são fotos 16:9 — uma faixa única decepava o
+                    assunto das quadradas. */}
+                {arte && (
+                  <div
+                    style={{
+                      padding: '18px 24px 4px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      backgroundColor: 'var(--bg)',
+                    }}
+                  >
+                    <Image
+                      src={arte.src}
+                      alt={`${product.name} — mecanismo de ação das cepas declaradas`}
+                      width={arte.width}
+                      height={arte.height}
+                      sizes="(max-width: 968px) 92vw, 520px"
+                      style={{
+                        width: '100%',
+                        maxWidth: arte.width === arte.height ? '440px' : '560px',
+                        height: 'auto',
+                        borderRadius: '8px',
+                      }}
+                    />
+                  </div>
+                )}
                 <div style={{ padding: '14px 24px 18px' }}>
                   {cat.especies.map((esp, idx) => (
                     <div
@@ -1707,6 +1737,20 @@ export default async function ProductPage({ params }: PageProps) {
           .slug-showcase-grid {
             grid-template-columns: 1fr !important;
             gap: 48px !important;
+          }
+        }
+        /* Ate 17/08 a media query so trocava as colunas e deixava os 48px de padding
+           lateral de pe. Num iPhone de 375px isso comia 96px e a ficha tecnica inteira
+           — specs, composicao, modo de acao — ficava com 239px de largura util.
+           Medido no proprio DOM, nao estimado. */
+        @media (max-width: 640px) {
+          .slug-hero-grid {
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+          }
+          .slug-showcase-grid {
+            padding-left: 20px !important;
+            padding-right: 20px !important;
           }
         }
         @media (max-width: 768px) {
