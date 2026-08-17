@@ -1128,13 +1128,17 @@ export default function Home() {
               {
                 num: '01',
                 title: 'Botânica',
-                body: 'Triagem de extratos vegetais para identificação de princípios ativos com função biopesticida e bioestimulante.',
+                // Mesma correcao aplicada no /sobre em 17/08: "funcao biopesticida" e termo de
+                // classe de defensivo e "potencial antifungico/antibacteriano" atribui
+                // finalidade sobre patogeno. O catalogo nomeia as quatro frentes sem nenhum
+                // dos dois. Estes cartoes ficam na home, ao lado do portfolio.
+                body: 'Triagem de extratos vegetais para identificação de moléculas de interesse e de sua estrutura química.',
                 accent: 'var(--argho-green)',
               },
               {
                 num: '02',
                 title: 'Microbiologia',
-                body: 'Isolamento e seleção de cepas com potencial antifúngico, antibacteriano e probiótico para o solo.',
+                body: 'Isolamento e seleção de cepas com identidade genética declarada e código de coleção rastreável.',
                 accent: 'var(--argho-blue)',
               },
               {
@@ -1302,12 +1306,20 @@ export default function Home() {
                 title: 'Caracterização',
                 body: 'HPLC-MS e cromatografia gasosa.',
               },
-              { step: '03', title: 'Bioensaios', body: 'Letalidade, repelência e antifúngico.' },
+              // 03 e 05 alinhados a pagina do MAAVi no catalogo 2026 (decisao do Wilson,
+              // 17/08). O "Bioensaios — letalidade, repelencia e antifungico" era a redacao
+              // antiga: descrevia ensaio sobre praga, o que o catalogo ja tinha trocado pela
+              // fenotipagem por imagem. Sem alvo nomeado e sem finalidade de controle.
+              {
+                step: '03',
+                title: 'Fenotipagem por imagem',
+                body: 'Termografia e fluorescência da clorofila.',
+              },
               { step: '04', title: 'Validação', body: 'Fitotrons e estufas controladas.' },
               {
                 step: '05',
-                title: 'Escala piloto',
-                body: 'Fermentadores e fotobiorreatores.',
+                title: 'Fermentação dirigida',
+                body: 'Peptídeos, aminoácidos e metabólitos.',
               },
               {
                 step: '06',

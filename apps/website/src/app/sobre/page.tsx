@@ -913,7 +913,9 @@ export default function SobrePage() {
                 {
                   num: '01',
                   title: 'Botânica',
-                  body: 'Triagem de extratos de plantas medicinais e agrícolas para identificar princípios ativos com função biopesticida e bioestimulante. Cromatografia flash, destilação Soxhlet, rotavapor e extração em cascata.',
+                  // "funcao biopesticida" saiu em 17/08: e termo de classe de defensivo, e o
+                  // catalogo descreve as quatro frentes sem atribuir finalidade sobre praga.
+                  body: 'Triagem de extratos de plantas medicinais e agrícolas para identificar moléculas de interesse e caracterizar sua estrutura química. Cromatografia flash, destilação Soxhlet, rotavapor e extração em cascata.',
                   techniques: [
                     'HPLC semipreparativa',
                     'Cromatografia gasosa-MS',
@@ -924,11 +926,11 @@ export default function SobrePage() {
                 {
                   num: '02',
                   title: 'Microbiologia',
-                  body: 'Isolamento, seleção e caracterização de cepas bacterianas e fúngicas com propriedades antifúngicas, antibacterianas e probióticas para o solo. Foco em consórcios sinérgicos de Trichoderma, Bacillus e similares.',
+                  body: 'Isolamento, seleção e caracterização de cepas bacterianas e fúngicas com identidade genética declarada e código de coleção rastreável. Foco em consórcios de Trichoderma, Bacillus e gêneros correlatos.',
                   techniques: [
                     'Fermentação líquida e sólida',
-                    'Bioensaios de letalidade',
-                    'Probióticos de solo',
+                    'Identificação de cepa',
+                    'Consórcios microbianos',
                   ],
                   accent: 'var(--argho-blue)',
                 },
@@ -1122,9 +1124,13 @@ export default function SobrePage() {
                   body: 'Análise molecular por HPLC-MS e cromatografia gasosa para mapear estrutura química.',
                 },
                 {
+                  // Alinhado a pagina do MAAVi no catalogo 2026 (decisao do Wilson, 17/08).
+                  // A redacao antiga — "letalidade, repelencia e atividade antifungica contra
+                  // pragas e patogenos-alvo" — descrevia ensaio sobre praga numa pagina que
+                  // fica ao lado do portfolio; o catalogo ja tinha trocado pela fenotipagem.
                   step: '03',
-                  title: 'Bioensaios',
-                  body: 'Testes de letalidade, repelência e atividade antifúngica contra pragas e patógenos-alvo.',
+                  title: 'Fenotipagem por imagem',
+                  body: 'Câmeras multiespectrais leem a planta sem tocá-la: termografia infravermelha para a temperatura foliar e fluorescência da clorofila para o rendimento quântico do fotossistema II e a energia dissipada como calor.',
                 },
                 {
                   step: '04',
@@ -1133,8 +1139,8 @@ export default function SobrePage() {
                 },
                 {
                   step: '05',
-                  title: 'Escala piloto',
-                  body: 'Fermentadores e fotobiorreatores produzindo lotes pré-industriais para estabilização.',
+                  title: 'Fermentação dirigida',
+                  body: 'Espécies vegetais combinadas com microrganismos específicos: o metabolismo microbiano libera peptídeos, aminoácidos livres e metabólitos que a extração direta não alcançaria.',
                 },
                 {
                   step: '06',
