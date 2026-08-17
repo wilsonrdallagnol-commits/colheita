@@ -1,46 +1,39 @@
 # Aplicar a migration 0050 (Catálogo Argho 2026) — passo a passo
 
-**O que já está no ar:** o site institucional (arghoagrosciences.com) já está com os dados do
-catálogo 2026 — nomes, espécies, cepas, concentrações e imagens novas. Ele lê de arquivo estático,
-então subiu junto com o deploy.
+**Já está no ar:** o site institucional está com os dados do catálogo 2026 (nomes, espécies, cepas,
+concentrações e imagens novas). Ele lê de arquivo estático, então subiu junto com o deploy.
 
-**O que falta:** o **portal** e o **admin** leem do Supabase, e o banco ainda tem os dados antigos
-(Biovas, Bovex, Titan, sem CHROM). Este documento é para alinhá-los.
+**Falta:** o **portal** e o **admin** leem do Supabase, e o banco ainda tem os dados antigos
+(Biovas, Bovex, Titan, sem CHROM). Este documento alinha os dois.
 
-**Enquanto não rodar, nada quebra.** Os redirects dos slugs novos ficaram desligados de propósito
-(`CATALOGO_2026_MIGRADO`), então o portal segue funcionando com os dados antigos.
+**Enquanto não rodar, nada quebra.** Os redirects dos slugs novos estão desligados de propósito
+(env `CATALOGO_2026_MIGRADO`), então o portal segue funcional com os dados antigos.
 
----
-
-## Antes de começar: o que você precisa em mãos
-
-**A senha do banco.** No painel do Supabase, no projeto do Colheita (pelos meus registros o ID é
-`htoqhomunwkrnizibusc` — confirme, é o que aparece na URL do painel):
-**Settings → Database → Connection string**. Guarde a URI de conexão. Se não lembrar a senha, é
-nessa mesma tela que se gera uma nova ("Reset database password").
-
-> ⚠️ Use a porta **5432** (session mode), não a 6543. A 6543 não aceita o bloco `DO` que a
-> migration usa — é o padrão já documentado neste projeto.
+> **Sobre os links deste documento:** os caminhos de menu foram conferidos na documentação oficial
+> do Supabase e da Vercel em 13/08/2026. O identificador do projeto (`htoqhomunwkrnizibusc`) e a
+> organização Vercel (`evofitia`) vêm dos registros deste projeto — **confira se batem** com o que
+> aparece na URL quando você abre cada painel. Se o seu for diferente, troque na URL.
 
 ---
 
 ## Passo 1 — Aplicar a migration
 
-Existem dois caminhos. **O A não exige instalar nada** e é o que eu recomendo, porque o `psql` não
-está instalado nesta máquina (verifiquei).
+Pelo **SQL Editor** do painel, que não exige instalar nada. (O `psql` não está instalado nesta
+máquina — verifiquei.)
 
-### Caminho A — SQL Editor do Supabase (recomendado)
+**🔗 Abrir direto:** https://supabase.com/dashboard/project/htoqhomunwkrnizibusc/sql/new
 
-1. Abra o painel do Supabase, no projeto do Colheita
-2. Vá em **SQL Editor** → **New query**
-3. Abra o arquivo abaixo, selecione tudo e copie:
+1. O link acima já abre uma query nova no SQL Editor
+2. Abra este arquivo no editor de texto, selecione tudo e copie:
    ```
    C:\Users\Usuario\Desktop\colheita\infra\supabase\migrations\0050_catalogo_2026_produtos.sql
    ```
-   (28 KB, 367 linhas — cabe de sobra numa query)
-4. Cole no editor e clique em **Run**
+   (28 KB, 367 linhas — cabe numa query sem problema)
+3. Cole no editor e clique em **Run** (ou `Ctrl+Enter`)
 
-**Deu certo se a última linha for esta:**
+### Como saber se deu certo
+
+A última mensagem tem que ser esta:
 
 ```
 NOTICE:  Migration 0050 concluida: biologicos renomeados e corrigidos (+CHROM),
@@ -48,75 +41,108 @@ NOTICE:  Migration 0050 concluida: biologicos renomeados e corrigidos (+CHROM),
          RODAR AGORA: pnpm --filter @colheita/jobs reindex-all
 ```
 
-Antes dela aparecem dois avisos normais, de contagem:
+Antes dela aparecem duas contagens normais:
 
 ```
 NOTICE:  Migration 0050: applications zerado em N produto(s).
 NOTICE:  Migration 0050: N chunk(s) "application" removidos do pgvector.
 ```
 
-**A migration se autoconfere no final.** Se algo tiver saído do esperado, ela emite `WARNING` em
-vez de ficar em silêncio — por exemplo "esperava 8 biologicos, encontrei N", "N produto(s) ainda
-com slug antigo" ou "N descricao(oes) ainda com termo corrigido". Se aparecer qualquer `WARNING`,
-**pare e me mande o retorno**: significa que o banco estava num estado diferente do previsto.
+**A migration se autoconfere.** Se algo sair do previsto ela emite `WARNING` em vez de passar
+batido — "esperava 8 biologicos, encontrei N", "N produto(s) ainda com slug antigo" ou
+"N descricao(oes) ainda com termo corrigido". **Qualquer `WARNING` desses: pare e me mande o
+retorno.**
 
-Um `WARNING` é esperado e não impede nada: o que avisa que lições da Academia ainda citam
-Biovas/Bovex. Esse conteúdo é texto de curso e precisa de revisão humana — me avise que eu trato.
+Há um `WARNING` que é esperado e não impede nada: o que avisa que lições da Academia ainda citam
+Biovas/Bovex. É texto de curso e precisa de revisão humana — me avise que eu trato.
 
-### Caminho B — psql (só se você já usa)
+> A migration é **idempotente**: rodar duas vezes não duplica nem quebra.
 
-Requer PostgreSQL client instalado (hoje não está). Com a URI em mãos:
+### Se preferir linha de comando
+
+Requer PostgreSQL client instalado (hoje não está). A string de conexão fica no botão **Connect**,
+no topo da página do projeto — não em Settings:
+
+**🔗 Abrir direto:** https://supabase.com/dashboard/project/htoqhomunwkrnizibusc?showConnect=true
+
+Escolha **Direct connection** (é a indicada pela documentação para migrations; os modos de pooler
+podem recusar o bloco `DO` que esta migration usa).
 
 ```bash
-cd /c/Users/Usuario/Desktop/colheita && psql "postgresql://postgres.<ID-DO-PROJETO>:<SENHA>@aws-0-sa-east-1.pooler.supabase.com:5432/postgres" -f infra/supabase/migrations/0050_catalogo_2026_produtos.sql
+cd /c/Users/Usuario/Desktop/colheita && psql "COLE_AQUI_A_STRING_DE_CONEXAO" -f infra/supabase/migrations/0050_catalogo_2026_produtos.sql
 ```
-
-> A migration é **idempotente**: rodar duas vezes não duplica nem quebra nada.
 
 ---
 
 ## Passo 2 — Reindexar o agente de IA
 
-Sem isso, o assistente continua respondendo com os dados antigos, porque as respostas dele saem de
-um índice vetorial que foi gerado a partir das descrições velhas.
+Sem isso o assistente continua respondendo com os dados velhos: as respostas dele saem de um índice
+vetorial gerado a partir das descrições antigas.
 
-O script precisa de três variáveis. Crie (ou complete) o arquivo
-`C:\Users\Usuario\Desktop\colheita\.env` com:
+### 2.1 — Pegar a chave secreta
+
+**🔗 Abrir direto:** https://supabase.com/dashboard/project/htoqhomunwkrnizibusc/settings/api-keys
+
+Nessa tela há duas abas. A chave que o script usa é a **`service_role`**, que fica na aba
+**Legacy API Keys**. (O Supabase está migrando para "Secret keys" no formato `sb_secret_…` na aba
+**API Keys**; as `service_role` seguem válidas até o fim de 2026.)
+
+### 2.2 — Preencher o `.env`
+
+Crie ou complete `C:\Users\Usuario\Desktop\colheita\.env`:
 
 ```
-SUPABASE_URL=https://<ID-DO-PROJETO>.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=<Settings → API → service_role, "secret">
+SUPABASE_URL=https://htoqhomunwkrnizibusc.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=<a chave da aba Legacy API Keys>
 OPENAI_API_KEY=<a mesma que o projeto já usa>
 ```
 
-Depois rode:
+> São exatamente os três nomes que o script lê (`packages/jobs/src/scripts/reindex-all.ts`).
+> A `service_role` dá acesso total ao banco: ela fica só no `.env` local, que não vai para o Git.
+> Não cole essa chave em nenhum site ou chat.
+
+### 2.3 — Rodar
 
 ```bash
 cd /c/Users/Usuario/Desktop/colheita && pnpm --filter @colheita/jobs reindex-all
 ```
 
-> A `service_role` dá acesso total ao banco — ela fica só no seu `.env` local, que não vai para o
-> Git. Não cole essa chave em lugar nenhum online.
-
 ---
 
 ## Passo 3 — Ligar os redirects do portal
 
-Só depois dos passos 1 e 2, senão os links antigos passam a apontar para produtos que ainda não
+Só depois dos passos 1 e 2 — senão os links antigos passam a apontar para produtos que ainda não
 existem no banco.
 
-1. Vercel → projeto **colheita-portal** → **Settings** → **Environment Variables**
-2. Adicione `CATALOGO_2026_MIGRADO` com valor `1`, no ambiente **Production**
-3. **Deployments** → no deploy mais recente, **Redeploy**
+### 3.1 — Criar a variável
 
-A partir daí, quem abrir um link antigo (`/produtos/biovas`, `/produtos/bovex`, `/produtos/titan`)
-é levado ao produto renomeado, em vez de tomar 404.
+**🔗 Abrir direto:** https://vercel.com/evofitia/colheita-portal/settings/environment-variables
+
+1. Em **Name**, escreva `CATALOGO_2026_MIGRADO`
+2. Em **Value**, escreva `1`
+3. Marque o ambiente **Production**
+4. **Save**
+
+### 3.2 — Redeployar
+
+Variável nova só vale para deploy novo — a Vercel não reaplica em deploys anteriores.
+
+**🔗 Abrir direto:** https://vercel.com/evofitia/colheita-portal/deployments
+
+1. Localize o deployment mais recente de Production
+2. Clique no ícone de **reticências (…)** à direita dele
+3. Selecione **Redeploy**
+4. Na janela **Redeploy to Production**, escolha se quer usar o Build Cache e confirme em
+   **Redeploy**
+
+A partir daí, quem abrir `/produtos/biovas`, `/produtos/bovex` ou `/produtos/titan` é levado ao
+produto renomeado em vez de tomar 404.
 
 ---
 
-## Como conferir que deu certo
+## Conferir que funcionou
 
-No **portal**, abra um biológico e verifique:
+No **portal**, abra os biológicos:
 
 | Produto | O que tem que aparecer |
 |---|---|
@@ -124,20 +150,22 @@ No **portal**, abra um biológico e verifique:
 | NEMAX | *Metarhizium anisopliae* **IBCB 425** (sem *Purpureocillium lilacinum*) |
 | CONTROX | *Bacillus thuringiensis* subsp. **aizawai** DC 38 (não var. *thuringiensis*) |
 | TROIAN | 3,0 × 10⁸ UFC/mL (não 2,0 × 10¹⁰) |
-| CHROM | deve **existir** — é produto novo |
+| SPORAX | 5,0 × 10⁸ UFC/mL (não 2,5 × 10¹⁰) |
+| CHROM | precisa **existir** — é produto novo |
 | HARZON | embalagens **1 L e 5 L** |
 
-E no **assistente de IA**, pergunte "quais biológicos a Argho tem?" — a resposta deve trazer os
-oito nomes novos, incluindo CHROM.
+E no assistente de IA, pergunte "quais biológicos a Argho tem?" — devem vir os oito nomes novos,
+incluindo CHROM.
 
 ---
 
 ## Se algo der errado
 
-- **"Tenant argho nao existe"** — o seed inicial nunca rodou nesse banco. Me avise antes de rodar
-  qualquer outra coisa.
-- **Erro de sintaxe em `DO $$`** — está conectando pela porta 6543. Troque para 5432.
-- **O portal mostra 404 nos biológicos** — os redirects foram ligados antes da migration. Remova a
-  env `CATALOGO_2026_MIGRADO` e redeploye; volta ao normal na hora.
+| Sintoma | O que é | O que fazer |
+|---|---|---|
+| `Tenant argho nao existe` | o seed inicial nunca rodou nesse banco | pare e me avise antes de rodar qualquer outra coisa |
+| erro de sintaxe no `DO $$` | conexão em modo pooler (6543) | use **Direct connection** (5432) |
+| portal com 404 nos biológicos | os redirects foram ligados antes da migration | apague a env `CATALOGO_2026_MIGRADO` e redeploye — volta ao normal na hora |
+| assistente citando Biovas/Bovex | o reindex do passo 2 não rodou | rode o passo 2 |
 
-Qualquer retorno diferente do esperado, me mande a saída que eu analiso.
+Qualquer saída diferente da esperada, me mande que eu analiso.
