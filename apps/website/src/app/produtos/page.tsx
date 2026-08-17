@@ -654,11 +654,14 @@ export default async function ProdutosPage({ searchParams }: PageProps) {
           >
             Os fertilizantes minerais e organominerais possuem Registro no MAPA (Ministério da
             Agricultura, Pecuária e Abastecimento) e exibem a composição garantida conforme
-            Certificado de Análise. Os produtos biológicos têm composição microbiológica
-            declarada. Os adjuvantes da linha Operate são isentos de registro no MAPA, nos termos
-            da legislação vigente. O uso de fertilizantes requer acompanhamento de Engenheiro
-            Agrônomo ou Florestal habilitado, conforme Lei 5.194/66. As recomendações de dose são
-            orientativas.
+            Certificado de Análise. Os produtos biológicos têm composição microbiológica declarada
+            e são inóculos fornecidos como insumo para produção de bioinsumos para uso próprio,
+            nos termos do art. 36 da Lei Federal nº 15.070/2024; vedada a comercialização do
+            bioinsumo produzido. Os adjuvantes da linha Operate são isentos de registro no MAPA,
+            nos termos da legislação vigente. O uso de fertilizantes requer acompanhamento de
+            Engenheiro Agrônomo ou Florestal habilitado, conforme Lei 5.194/66. As recomendações
+            de dose são orientativas. Este material não substitui o rótulo — consulte nossa equipe
+            técnica.
           </p>
         </div>
       </section>

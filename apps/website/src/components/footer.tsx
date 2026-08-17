@@ -151,7 +151,11 @@ export function Footer() {
               <br />
               com registro MAPA · Adjuvantes
               <br />
-              isentos de registro
+              isentos de registro · Biológicos:
+              <br />
+              inóculos para uso próprio
+              <br />
+              (art. 36 da Lei 15.070/2024)
             </p>
           </div>
         </div>

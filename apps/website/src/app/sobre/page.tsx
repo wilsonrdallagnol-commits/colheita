@@ -1348,7 +1348,11 @@ export default function SobrePage() {
                 lineHeight: 1.0,
               }}
             >
-              Tudo registrado.
+              {/* Era "Tudo registrado." ate 17/08/2026 — falso para metade do portfolio: o
+                  inoculo biologico e DISPENSADO de registro (so a fabrica tem) e o adjuvante e
+                  ISENTO. "Declarado" vale para as quatro linhas e nao promete registro que
+                  nao existe. */}
+              Tudo declarado.
               <br />
               <span style={{ color: 'var(--argho-green)' }}>Sem atalhos.</span>
             </h2>
@@ -1364,8 +1368,11 @@ export default function SobrePage() {
               Os fertilizantes minerais e organominerais — de origem europeia, com cadeia
               logística rastreável — possuem registro no Ministério da Agricultura, Pecuária e
               Abastecimento (MAPA). Os adjuvantes da linha Operate são isentos de registro, nos
-              termos da legislação vigente, e os biológicos seguem composição microbiológica
-              declarada. Documentação disponível para distribuidores e agrônomos.
+              termos da legislação vigente. Os biológicos são inóculos de composição
+              microbiológica declarada, fornecidos como insumo para produção de bioinsumos para
+              uso próprio, nos termos do art. 36 da Lei Federal nº 15.070/2024 — vedada a
+              comercialização do bioinsumo produzido. Documentação disponível para distribuidores
+              e agrônomos.
             </p>
           </div>
 

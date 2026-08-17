@@ -135,6 +135,45 @@ export default async function ProductPage({ params }: PageProps) {
   const catLabel = CATEGORIES[product.category].label;
   const premiumSrc: string | undefined = PRODUCT_PREMIUM[product.slug];
 
+  // Nota legal por categoria. Ate 17/08/2026 esta pagina nao tinha NENHUMA — so a
+  // listagem /produtos tinha, e e aqui que caem os links compartilhados, os redirects
+  // dos slugs renomeados e a indexacao do Google.
+  //
+  // Enquadramento dos biologicos = o MESMO dos rotulos impressos (decisao do Wilson,
+  // 17/08/2026): art. 36 da Lei 15.070/2024. O art. 36 esta no Cap. X (Disposicoes
+  // Finais e Transitorias) e vige ate a regulamentacao sair — a lei segue sem
+  // regulamento (o Decreto 12.502/2025 regulamenta a Lei 14.515/2022, outra). Quando
+  // sair, o paragrafo unico da 12 meses de adequacao: revisar rotulo, catalogo e site
+  // JUNTOS, senao um cita base vencida enquanto o outro nao.
+  //
+  // A vedacao de comercializar o bioinsumo produzido vai SEM citacao de artigo: ela e
+  // do regime permanente (art. 10, caput), e amarra-la ao art. 36 seria atribuir a
+  // norma errada. Como afirmacao isolada e correta e protege a Argho.
+  const NOTA_LEGAL: Record<typeof product.category, string> = {
+    biologicos:
+      'Inóculo fornecido como insumo para produção de bioinsumos para uso próprio, nos termos ' +
+      'do art. 36 da Lei Federal nº 15.070/2024; vedada a comercialização do bioinsumo ' +
+      'produzido. Composição microbiológica declarada. Este material não substitui o rótulo — ' +
+      'consulte nossa equipe técnica.',
+    'fertilizantes-minerais':
+      'Fertilizante mineral com Registro no MAPA (Ministério da Agricultura, Pecuária e ' +
+      'Abastecimento) e composição garantida conforme Certificado de Análise. O uso de ' +
+      'fertilizantes requer acompanhamento de Engenheiro Agrônomo ou Florestal habilitado, ' +
+      'conforme Lei 5.194/66. As recomendações de dose são orientativas. Este material não ' +
+      'substitui o rótulo — consulte nossa equipe técnica.',
+    organominerais:
+      'Fertilizante organomineral com Registro no MAPA (Ministério da Agricultura, Pecuária e ' +
+      'Abastecimento) e composição garantida conforme Certificado de Análise. O uso de ' +
+      'fertilizantes requer acompanhamento de Engenheiro Agrônomo ou Florestal habilitado, ' +
+      'conforme Lei 5.194/66. As recomendações de dose são orientativas. Este material não ' +
+      'substitui o rótulo — consulte nossa equipe técnica.',
+    adjuvantes:
+      'Adjuvante isento de registro no MAPA, nos termos da legislação vigente. As recomendações ' +
+      'de dose são orientativas. Este material não substitui o rótulo — consulte nossa equipe ' +
+      'técnica.',
+  };
+  const notaLegal = NOTA_LEGAL[product.category];
+
   // Produto "complexo microbiologico": modelo neutro (sem valores quantitativos
   // nem claims). Renderiza so a lista de especies declaradas + diferenciais
   // tecnicos da composicao. Ver doc apps/website/docs/biologicos-compliance.md.
@@ -1354,6 +1393,57 @@ export default async function ProductPage({ params }: PageProps) {
           </div>
         </section>
       )}
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          NOTA LEGAL — fora do bloco de relacionados de proposito: aquele so
+          renderiza quando ha outros produtos da mesma categoria, e a nota
+          precisa aparecer em TODA pagina de produto.
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section
+        style={{
+          borderTop: '1px solid var(--border-subtle)',
+          padding: '40px 24px 64px',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '1200px',
+            margin: '0 auto',
+            padding: '20px 24px',
+            backgroundColor: 'var(--bg-soft)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: '8px',
+            display: 'flex',
+            gap: '12px',
+            alignItems: 'flex-start',
+          }}
+        >
+          <span
+            aria-hidden
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.875rem',
+              color: 'var(--argho-blue)',
+              flexShrink: 0,
+              fontWeight: 700,
+              marginTop: '1px',
+            }}
+          >
+            §
+          </span>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '0.8125rem',
+              color: 'var(--text-muted)',
+              lineHeight: 1.65,
+              margin: 0,
+            }}
+          >
+            {notaLegal}
+          </p>
+        </div>
+      </section>
 
       <style>{`
         .related-row:hover article {
