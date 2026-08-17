@@ -100,7 +100,19 @@ const nextConfig: NextConfig = {
   // biovas -> biotas, bovex -> sporax, titan -> harzon. O slug e a chave da
   // rota publica /produtos/[slug] — link ja compartilhado nao pode virar 404.
   // Mesmo padrao de apps/website/next.config.ts.
+  //
+  // ⚠️ TRAVA DE ORDEM (2026-08-13): o portal le os produtos do SUPABASE, e o
+  // website le de arquivo estatico. Se estes redirects entrarem no ar ANTES da
+  // migration 0050 rodar, /produtos/biovas manda para /produtos/biotas — que
+  // ainda nao existe no banco — e os 8 biologicos viram 404 no portal.
+  // Por isso ficam atras da env CATALOGO_2026_MIGRADO.
+  //
+  // COMO LIGAR, depois de aplicar a migration:
+  //   1) psql "$DATABASE_URL_DIRECT" -f infra/supabase/migrations/0050_catalogo_2026_produtos.sql
+  //   2) pnpm --filter @colheita/jobs reindex-all
+  //   3) definir CATALOGO_2026_MIGRADO=1 no projeto colheita-portal (Vercel) e redeployar
   async redirects() {
+    if (process.env.CATALOGO_2026_MIGRADO !== '1') return [];
     return [
       { source: '/produtos/biovas', destination: '/produtos/biotas', permanent: true },
       { source: '/produtos/bovex', destination: '/produtos/sporax', permanent: true },
