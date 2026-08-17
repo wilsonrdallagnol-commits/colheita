@@ -703,9 +703,70 @@ export default async function ProdutoDetailPage({ params }: PageProps) {
           </div>
         </div>
       </div>
+
+      {/* Nota legal — fora do container principal para aparecer em TODA página de produto,
+          inclusive nas que não têm bloco de composição. */}
+      {category?.name && NOTA_LEGAL[category.name] && (
+        <div
+          style={{
+            maxWidth: '1200px',
+            margin: '32px auto 0',
+            padding: '16px 20px',
+            display: 'flex',
+            gap: '10px',
+            alignItems: 'flex-start',
+            border: '1px solid rgba(0,0,0,0.08)',
+            borderRadius: '8px',
+            background: 'rgba(0,0,0,0.02)',
+          }}
+        >
+          <span aria-hidden style={{ fontWeight: 700, flexShrink: 0, opacity: 0.55 }}>
+            §
+          </span>
+          <p style={{ fontSize: '0.8125rem', lineHeight: 1.65, margin: 0, opacity: 0.75 }}>
+            {NOTA_LEGAL[category.name]}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Nota legal por categoria. Até 17/08/2026 a página de produto do portal não tinha
+// NENHUMA — nem a do site tinha, e foi corrigida no mesmo dia. Aqui pesa mais: o portal
+// é a superfície do cliente logado, que é quem de fato compra.
+//
+// Enquadramento dos biológicos = o MESMO dos 8 rótulos impressos (decisão do Wilson,
+// 17/08/2026): art. 36 da Lei 15.070/2024. Ele é transitório (Cap. X) e vige até sair a
+// regulamentação — quando sair, o parágrafo único dá 12 meses: revisar rótulo, catálogo,
+// site e portal JUNTOS.
+//
+// A vedação de comercializar o produzido vai SEM citação de artigo: ela é do art. 10,
+// caput (regime permanente), e amarrá-la ao art. 36 seria atribuir a norma errada.
+const NOTA_LEGAL: Record<string, string> = {
+  Biológicos:
+    'Inóculo fornecido como insumo para produção de bioinsumos para uso próprio, nos termos ' +
+    'do art. 36 da Lei Federal nº 15.070/2024; vedada a comercialização do bioinsumo ' +
+    'produzido. Composição microbiológica declarada. Este material não substitui o rótulo — ' +
+    'consulte nossa equipe técnica.',
+  'Fertilizantes Minerais':
+    'Fertilizante mineral com Registro no MAPA (Ministério da Agricultura, Pecuária e ' +
+    'Abastecimento) e composição garantida conforme Certificado de Análise. O uso de ' +
+    'fertilizantes requer acompanhamento de Engenheiro Agrônomo ou Florestal habilitado, ' +
+    'conforme Lei 5.194/66. As recomendações de dose são orientativas. Este material não ' +
+    'substitui o rótulo — consulte nossa equipe técnica.',
+  Organominerais:
+    'Fertilizante organomineral com Registro no MAPA (Ministério da Agricultura, Pecuária e ' +
+    'Abastecimento) e composição garantida conforme Certificado de Análise. O uso de ' +
+    'fertilizantes requer acompanhamento de Engenheiro Agrônomo ou Florestal habilitado, ' +
+    'conforme Lei 5.194/66. As recomendações de dose são orientativas. Este material não ' +
+    'substitui o rótulo — consulte nossa equipe técnica.',
+  Adjuvantes:
+    'Adjuvante isento de registro no MAPA, nos termos da legislação vigente. As recomendações ' +
+    'de dose são orientativas. Este material não substitui o rótulo — consulte nossa equipe ' +
+    'técnica.',
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Tradução de chaves de specs técnicas (vem do JSONB do banco em ingles).
