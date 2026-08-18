@@ -20,8 +20,8 @@ const DEST = join(AQUI, '..', 'public', 'products', 'modo-acao');
 const CAT = 'C:/Users/Usuario/Desktop/ARGHO AGROSCIENCES/CATALOGO BIOLOGICOS 2026/imagens';
 const REWORK = 'C:/Users/Usuario/Desktop/ARGHO AGROSCIENCES/APRESENTAÇÕES/_REWORK NOVA COMPLETA';
 
-// Espelha o mapa CENA de build/gerar-catalogo.mjs — se lá mudar, mude aqui.
-const ARTES = {
+// BIOLÓGICOS: espelha o mapa CENA de build/gerar-catalogo.mjs — se lá mudar, mude aqui.
+const ARTES_BIO = {
   biotas: `${CAT}/arte-biotas-v2.png`,
   troian: `${CAT}/arte-troian-v2.png`,
   controx: `${CAT}/arte-controx-v3.png`,
@@ -31,6 +31,28 @@ const ARTES = {
   chrom: `${REWORK}/imagens/chrom-abertura.png`,
   'n-import': `${REWORK}/imagens/nimport/cena.png`,
 };
+
+// DEMAIS 14: o catálogo resolve por convenção de nome (pgImportado, linha 357) — prefere a
+// versão mais nova quando existe. Reproduzo a mesma ordem para as duas peças mostrarem a
+// MESMA arte; foi por não olhar isso que o site ficou só com o frasco enquanto o catálogo
+// já trazia a cena de cada produto.
+const OUTROS = [
+  'xcensis', 'stron', 'grow-calcium', 'defon', 'grow-mob', 'grow-filling',
+  'impuch', 'life-on', 'grow-nitrop', 'up-soil',
+  'operate-plus', 'operate-citronela', 'operate-4em1', 'operate-orange',
+];
+
+const resolver = (slug) =>
+  [`arte-${slug}-v3.png`, `arte-${slug}-v2.png`, `arte-${slug}.png`, `arte-${slug}-fix.png`]
+    .map((f) => `${CAT}/${f}`)
+    .find((p) => existsSync(p));
+
+const ARTES = { ...ARTES_BIO };
+for (const slug of OUTROS) {
+  const encontrada = resolver(slug);
+  if (encontrada) ARTES[slug] = encontrada;
+  else console.warn(`  sem arte no catálogo: ${slug}`);
+}
 
 const LADO_MAX = 1280; // exibida em ~520px; 1280 cobre retina sem inflar o peso da página
 

@@ -9,7 +9,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ARTE_MODO_ACAO } from '@/lib/artes-modo-acao';
 import { catalogoDoBiologico, type Trecho } from '@/lib/biologicos-catalogo';
-import { CATEGORIES, getProductBySlug, PRODUCTS, type ProductCategory } from '@/lib/products';
+import {
+  CATEGORIES,
+  ENQUADRAMENTO,
+  getProductBySlug,
+  PRODUCTS,
+  type ProductCategory,
+} from '@/lib/products';
 
 /** Texto do catálogo com nome científico em itálico. O catálogo marca com *asteriscos*;
  *  o gerador converte em trechos, e aqui viram <em> — sem dangerouslySetInnerHTML. */
@@ -218,6 +224,12 @@ export default async function ProductPage({ params }: PageProps) {
   // Conteúdo homologado do catálogo (só os 8 biológicos têm). undefined nos demais.
   const cat = catalogoDoBiologico(product.slug);
   const arte = ARTE_MODO_ACAO[product.slug];
+  const enq = ENQUADRAMENTO[product.category];
+  // Concentracao no padrao Argho: UFC/mL E UFC/L. O site publicava so o /mL; o catalogo
+  // sempre trouxe os dois. Vem do catalogo p/ os biologicos; fallback p/ o resto.
+  const concentracaoLinhas = (cat?.concentracao ?? product.concentrationUfc ?? '')
+    .split(' · ')
+    .filter(Boolean);
 
   // Nota legal por categoria. Ate 17/08/2026 esta pagina nao tinha NENHUMA — so a
   // listagem /produtos tinha, e e aqui que caem os links compartilhados, os redirects
@@ -813,10 +825,27 @@ export default async function ProductPage({ params }: PageProps) {
             <div>
               {[
                 { label: 'Tipo', value: product.productType },
+                // Classificacao + enquadramento entram para TODO produto, nao so biologico
+                // (pedido do Wilson, 17/08). Fonte unica em lib/products.ts.
+                { label: 'Classificação', value: enq.classificacao },
+                { label: 'Enquadramento', value: enq.base },
                 { label: 'Origem', value: product.originCountry },
                 { label: 'Estado', value: product.physicalState },
-                ...(product.concentrationUfc
-                  ? [{ label: 'Concentração', value: product.concentrationUfc }]
+                ...(concentracaoLinhas.length
+                  ? [
+                      {
+                        label: 'Concentração',
+                        value: (
+                          <>
+                            {concentracaoLinhas.map((linha, i) => (
+                              <span key={linha} style={{ display: 'block' }}>
+                                {i > 0 ? <>{linha}</> : linha}
+                              </span>
+                            ))}
+                          </>
+                        ),
+                      },
+                    ]
                   : []),
                 ...(product.registrationMapa
                   ? [{ label: 'Reg. MAPA', value: product.registrationMapa }]
@@ -1030,7 +1059,7 @@ export default async function ProductPage({ params }: PageProps) {
                 homologado — inclusive nas regras que não podem ser reescritas de memória
                 (sem praga nomeada, sem dose de campo, sem classe de defensivo).
             ══════════════════════════════════════════════════════════════════ */}
-            {cat && cat.especies.length > 0 && (
+            {(arte || (cat && cat.especies.length > 0)) && (
               <div>
                 <div
                   style={{
@@ -1064,7 +1093,9 @@ export default async function ProductPage({ params }: PageProps) {
                       textAlign: 'right',
                     }}
                   >
-                    mecanismo de cada ativo declarado
+                    {cat && cat.especies.length > 0
+                      ? 'mecanismo de cada ativo declarado'
+                      : 'eixo técnico do produto'}
                   </span>
                 </div>
                 {/* Arte da página "Modo de ação" do catálogo. Sem recorte forçado: cinco são
@@ -1094,8 +1125,12 @@ export default async function ProductPage({ params }: PageProps) {
                     />
                   </div>
                 )}
-                <div style={{ padding: '14px 24px 18px' }}>
-                  {cat.especies.map((esp, idx) => (
+                <div
+                  style={{
+                    padding: cat && cat.especies.length > 0 ? '14px 24px 18px' : '0 24px 18px',
+                  }}
+                >
+                  {(cat?.especies ?? []).map((esp, idx) => (
                     <div
                       key={`${esp.cepa ?? 'sem-cepa'}-${idx}`}
                       style={{
@@ -1489,6 +1524,40 @@ export default async function ProductPage({ params }: PageProps) {
                 {product.tagline}
               </p>
 
+              {/* Classificação + enquadramento também aqui: o showcase é o bloco que muita
+                  gente vê antes da ficha, e sozinho ele só dizia a classe técnica. */}
+              <div
+                style={{
+                  borderLeft: `3px solid ${catColor}`,
+                  padding: '4px 0 4px 14px',
+                  marginBottom: '32px',
+                }}
+              >
+                <div
+                  className="mono"
+                  style={{
+                    fontSize: 'var(--label-xxs)',
+                    letterSpacing: '0.16em',
+                    textTransform: 'uppercase',
+                    color: 'var(--text-tertiary)',
+                    marginBottom: '3px',
+                  }}
+                >
+                  {enq.classificacao}
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.9375rem',
+                    fontWeight: 600,
+                    color: catColor,
+                    letterSpacing: '-0.005em',
+                  }}
+                >
+                  {enq.base}
+                </div>
+              </div>
+
               {/* Embalagens disponíveis */}
               <div>
                 <p
@@ -1627,6 +1696,20 @@ export default async function ProductPage({ params }: PageProps) {
                   >
                     {p.tagline}
                   </p>
+                  {/* Classificação também na lista de relacionados: era a única superfície
+                      da página que ainda anunciava só a classe técnica. */}
+                  <span
+                    className="mono"
+                    style={{
+                      fontSize: 'var(--label-xxs)',
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      color: 'var(--text-tertiary)',
+                      gridColumn: '2',
+                    }}
+                  >
+                    {ENQUADRAMENTO[p.category].classificacao}
+                  </span>
                   <span
                     aria-hidden
                     style={{

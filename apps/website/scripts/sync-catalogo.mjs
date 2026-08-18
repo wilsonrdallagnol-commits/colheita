@@ -54,6 +54,11 @@ const dados = SLUGS.map((slug) => {
     })),
     sinergia: c.sinergia ? partesItalico(c.sinergia) : null,
     papelNoPrograma: c.papel_no_programa ? partesItalico(c.papel_no_programa) : null,
+    // Concentracao no padrao Argho: UFC/mL E UFC/L, como o catalogo publica.
+    // O site trazia so o /mL.
+    concentracao: c.specs?.concentracao ?? null,
+    validade: c.specs?.validade ?? null,
+    embalagens: c.specs?.embalagens ?? null,
     doseMultiplicacao: c.specs?.dose_biofabrica ?? null,
     selos: c.selos ?? [],
   };
@@ -84,6 +89,9 @@ export type BiologicoCatalogo = {
   especies: EspecieCatalogo[];
   sinergia: Trecho[] | null;
   papelNoPrograma: Trecho[] | null;
+  concentracao: string | null;
+  validade: string | null;
+  embalagens: string | null;
   doseMultiplicacao: string | null;
   selos: string[];
 };

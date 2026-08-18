@@ -71,26 +71,57 @@ export interface Product {
 
 // ─── Categorias ──────────────────────────────────────────────────────────────
 
+// ─── Classificação e enquadramento legal por categoria ───────────────────────
+// Fonte única: a ficha do produto, a listagem e as notas legais leem daqui, para as três
+// não voltarem a divergir. Os textos vêm do CATÁLOGO ARGHO 2026 e dos rótulos impressos.
+//
+// Biológicos: a classificação é "inóculo de bioinsumo" e a base é o art. 36 da Lei
+// 15.070/2024 — a mesma dos 8 rótulos (decisão do Wilson, 17/08/2026). O art. 36 é
+// transitório: quando a regulamentação sair, o parágrafo único dá 12 meses para adequar.
+// Organominerais: "Classe A" na grafia literal do art. 17, §7º da IN MAPA 61/2020 — sem a
+// palavra "Orgânico", que funde duas alíneas excludentes.
+export const ENQUADRAMENTO: Record<
+  ProductCategory,
+  { classificacao: string; base: string }
+> = {
+  'fertilizantes-minerais': {
+    classificacao: 'Fertilizante mineral',
+    base: 'Registro no MAPA',
+  },
+  organominerais: {
+    classificacao: 'Fertilizante Organomineral Classe A',
+    base: 'Registro no MAPA',
+  },
+  biologicos: {
+    classificacao: 'Inóculo de bioinsumo',
+    base: 'Uso próprio — art. 36, Lei 15.070/2024',
+  },
+  adjuvantes: {
+    classificacao: 'Adjuvante',
+    base: 'Isento de registro no MAPA',
+  },
+};
+
 export const CATEGORIES: Record<ProductCategory, { label: string; description: string }> = {
   'fertilizantes-minerais': {
     label: 'Fertilizantes Minerais',
     description:
-      'Soluções minerais de alta concentração para nutrição foliar e fertirrigação — micronutrientes quelados, macros e complexos específicos por fase fenológica.',
+      'Fertilizantes minerais com Registro no MAPA e composição garantida conforme Certificado de Análise. Soluções de alta concentração para nutrição foliar e fertirrigação — micronutrientes quelados, macros e complexos específicos por fase fenológica.',
   },
   organominerais: {
     label: 'Organominerais',
     description:
-      'A sinergia entre a matéria orgânica e os minerais: vinhaça, substâncias húmicas, aminoácidos e torta vegetal potencializando a vida do solo e a absorção radicular.',
+      'Fertilizantes Organominerais Classe A (IN MAPA 61/2020) com Registro no MAPA. A sinergia entre a matéria orgânica e os minerais: vinhaça, substâncias húmicas, aminoácidos e torta vegetal potencializando a vida do solo e a absorção radicular.',
   },
   biologicos: {
     label: 'Biológicos',
     description:
-      'Complexos microbiológicos de composição declarada — matrizes de Bacillus, Priestia, Trichoderma e outros gêneros bacterianos e fúngicos formuladas na linha de biotecnologias Argho, com cepas identificadas e foco em diversidade microbiana, estabilidade de formulação e precisão técnica na composição declarada.',
+      'Inóculos de bioinsumo: microrganismos vivos com identidade de cepa declarada, fornecidos como insumo para produção de bioinsumos para uso próprio, nos termos do art. 36 da Lei Federal nº 15.070/2024 — vedada a comercialização do bioinsumo produzido. Oito matrizes de Bacillus, Priestia, Trichoderma e outros gêneros bacterianos e fúngicos, 100% nacionais, com foco em diversidade microbiana e precisão na composição declarada.',
   },
   adjuvantes: {
     label: 'Adjuvantes',
     description:
-      'A família Operate: adjuvantes premium — surfactantes com óleos essenciais, condicionadores de calda e ação antideriva — para potencializar a eficiência de qualquer aplicação.',
+      'Adjuvantes isentos de registro no MAPA, nos termos da legislação vigente. A família Operate: surfactantes com óleos essenciais, condicionadores de calda e ação antideriva — para potencializar a eficiência de qualquer aplicação.',
   },
 };
 
@@ -350,7 +381,7 @@ export const PRODUCTS: Product[] = [
     category: 'biologicos',
     tagline: 'Complexo microbiológico multi-Bacillus',
     description:
-      'Troian é uma matriz microbiológica de composição declarada, formada por três cepas do gênero Bacillus: Bacillus velezensis DC 81, Bacillus velezensis DC 88 e Bacillus pumilus DC 61. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-Bacillus, diversidade bacteriana e padrão de formulação declarado. Concentração total declarada: 3,0 × 10⁸ UFC/mL.',
+      'Troian é uma matriz microbiológica de composição declarada, formada por três cepas do gênero Bacillus: Bacillus velezensis DC 81, Bacillus velezensis DC 88 e Bacillus pumilus DC 61. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-Bacillus, diversidade bacteriana e padrão de formulação declarado. Concentração total declarada: 3,0×10⁸ UFC/mL · 3,0×10¹¹ UFC/L.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
     productType: 'Complexo microbiológico',
@@ -379,7 +410,7 @@ export const PRODUCTS: Product[] = [
     category: 'biologicos',
     tagline: 'Complexo microbiológico multi-espécie de Bacillus e Priestia',
     description:
-      'Biotas é uma matriz microbiológica de composição declarada, formada por cinco cepas de cinco espécies — três do gênero Bacillus e duas do gênero Priestia: Bacillus velezensis DC 101, Bacillus subtilis DC 107, Priestia megaterium DC 93, Bacillus licheniformis DC 40 e Priestia aryabhattai DC 26. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-espécie, diversidade bacteriana e padrão de formulação declarado. Concentração total declarada: 5,0 × 10⁹ UFC/mL.',
+      'Biotas é uma matriz microbiológica de composição declarada, formada por cinco cepas de cinco espécies — três do gênero Bacillus e duas do gênero Priestia: Bacillus velezensis DC 101, Bacillus subtilis DC 107, Priestia megaterium DC 93, Bacillus licheniformis DC 40 e Priestia aryabhattai DC 26. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-espécie, diversidade bacteriana e padrão de formulação declarado. Concentração total declarada: 5,0×10⁹ UFC/mL · 5,0×10¹² UFC/L.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
     productType: 'Complexo microbiológico',
@@ -410,7 +441,7 @@ export const PRODUCTS: Product[] = [
     category: 'biologicos',
     tagline: 'Complexo microbiológico multi-gênero fúngico',
     description:
-      'Sporax é uma matriz microbiológica de composição declarada, formada por três cepas de três gêneros de fungos: Beauveria bassiana IBCB 66, Metarhizium anisopliae IBCB 425 e Cordyceps fumosorosea DC 134. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-gênero fúngica, diversidade fúngica e padrão de formulação declarado. Concentração total declarada: 5,0 × 10⁸ UFC/mL.',
+      'Sporax é uma matriz microbiológica de composição declarada, formada por três cepas de três gêneros de fungos: Beauveria bassiana IBCB 66, Metarhizium anisopliae IBCB 425 e Cordyceps fumosorosea DC 134. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-gênero fúngica, diversidade fúngica e padrão de formulação declarado. Concentração total declarada: 5,0×10⁸ UFC/mL · 5,0×10¹¹ UFC/L.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
     productType: 'Complexo microbiológico',
@@ -439,7 +470,7 @@ export const PRODUCTS: Product[] = [
     category: 'biologicos',
     tagline: 'Complexo microbiológico multi-subespécie de Bacillus thuringiensis',
     description:
-      'Controx é uma matriz microbiológica de composição declarada, formada por duas subespécies de Bacillus thuringiensis: Bacillus thuringiensis subsp. aizawai DC 38 e Bacillus thuringiensis subsp. kurstaki DC 41. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-subespécie, diversidade intraespecífica e padrão de formulação declarado. Concentração total declarada: 1,0 × 10⁹ UFC/mL.',
+      'Controx é uma matriz microbiológica de composição declarada, formada por duas subespécies de Bacillus thuringiensis: Bacillus thuringiensis subsp. aizawai DC 38 e Bacillus thuringiensis subsp. kurstaki DC 41. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-subespécie, diversidade intraespecífica e padrão de formulação declarado. Concentração total declarada: 1,0×10⁹ UFC/mL · 1,0×10¹² UFC/L.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
     productType: 'Complexo microbiológico',
@@ -467,7 +498,7 @@ export const PRODUCTS: Product[] = [
     category: 'biologicos',
     tagline: 'Complexo microbiológico multi-gênero de fungos filamentosos',
     description:
-      'Nemax é uma matriz microbiológica de composição declarada, formada por quatro cepas de fungos filamentosos: Trichoderma harzianum IB 19/17, Trichoderma harzianum DC 133, Trichoderma asperellum URM 5911 e Metarhizium anisopliae IBCB 425. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-gênero fúngica, diversidade microbiana e padrão de formulação declarado. Concentração total declarada: 2,0 × 10⁹ UFC/mL.',
+      'Nemax é uma matriz microbiológica de composição declarada, formada por quatro cepas de fungos filamentosos: Trichoderma harzianum IB 19/17, Trichoderma harzianum DC 133, Trichoderma asperellum URM 5911 e Metarhizium anisopliae IBCB 425. Formulação fluida desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade multi-gênero fúngica, diversidade microbiana e padrão de formulação declarado. Concentração total declarada: 2,0×10⁹ UFC/mL · 2,0×10¹² UFC/L.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
     productType: 'Complexo microbiológico',
@@ -497,7 +528,7 @@ export const PRODUCTS: Product[] = [
     category: 'biologicos',
     tagline: 'Matriz microbiológica fúngica líquida à base de Trichoderma harzianum',
     description:
-      'Harzon é uma matriz microbiológica fluida de composição declarada, à base da cepa IB 19/17 de Trichoderma harzianum. Formulação de cepa única desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade fúngica declarada e padrão de formulação. Concentração total declarada: 1,0 × 10⁹ UFC/mL.',
+      'Harzon é uma matriz microbiológica fluida de composição declarada, à base da cepa IB 19/17 de Trichoderma harzianum. Formulação de cepa única desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade fúngica declarada e padrão de formulação. Concentração total declarada: 1,0×10⁹ UFC/mL · 1,0×10¹² UFC/L.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
     productType: 'Complexo microbiológico',
@@ -522,7 +553,7 @@ export const PRODUCTS: Product[] = [
     category: 'biologicos',
     tagline: 'Matriz microbiológica à base de Methylobacterium sp.',
     description:
-      'N-import é uma matriz microbiológica fluida de composição declarada, à base da cepa SEMIA 658 de Methylobacterium sp. Formulação de cepa única desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade bacteriana declarada e padrão de formulação. Concentração total declarada: 1,0 × 10⁸ UFC/mL.',
+      'N-import é uma matriz microbiológica fluida de composição declarada, à base da cepa SEMIA 658 de Methylobacterium sp. Formulação de cepa única desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade bacteriana declarada e padrão de formulação. Concentração total declarada: 1,0×10⁸ UFC/mL · 1,0×10¹¹ UFC/L.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
     productType: 'Complexo microbiológico',
@@ -544,7 +575,7 @@ export const PRODUCTS: Product[] = [
     category: 'biologicos',
     tagline: 'Matriz microbiológica à base de Chromobacterium subtsugae',
     description:
-      'Chrom é uma matriz microbiológica fluida de composição declarada, à base da cepa DC 43 de Chromobacterium subtsugae. Formulação de cepa única desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade bacteriana declarada e padrão de formulação. Concentração total declarada: 1,0 × 10⁸ UFC/mL.',
+      'Chrom é uma matriz microbiológica fluida de composição declarada, à base da cepa DC 43 de Chromobacterium subtsugae. Formulação de cepa única desenvolvida dentro da linha de biotecnologias da Argho Agrosciences, com identidade bacteriana declarada e padrão de formulação. Concentração total declarada: 1,0×10⁸ UFC/mL · 1,0×10¹¹ UFC/L.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
     productType: 'Complexo microbiológico',

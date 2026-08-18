@@ -43,5 +43,75 @@ export const ARTE_MODO_ACAO: Record<string, ArteModoAcao> = {
     "src": "/products/modo-acao/n-import.jpg",
     "width": 1280,
     "height": 714
+  },
+  "xcensis": {
+    "src": "/products/modo-acao/xcensis.jpg",
+    "width": 1280,
+    "height": 1280
+  },
+  "stron": {
+    "src": "/products/modo-acao/stron.jpg",
+    "width": 1280,
+    "height": 1280
+  },
+  "grow-calcium": {
+    "src": "/products/modo-acao/grow-calcium.jpg",
+    "width": 1280,
+    "height": 1280
+  },
+  "defon": {
+    "src": "/products/modo-acao/defon.jpg",
+    "width": 1280,
+    "height": 1280
+  },
+  "grow-mob": {
+    "src": "/products/modo-acao/grow-mob.jpg",
+    "width": 1280,
+    "height": 1280
+  },
+  "grow-filling": {
+    "src": "/products/modo-acao/grow-filling.jpg",
+    "width": 1280,
+    "height": 1280
+  },
+  "impuch": {
+    "src": "/products/modo-acao/impuch.jpg",
+    "width": 1280,
+    "height": 1280
+  },
+  "life-on": {
+    "src": "/products/modo-acao/life-on.jpg",
+    "width": 1280,
+    "height": 1280
+  },
+  "grow-nitrop": {
+    "src": "/products/modo-acao/grow-nitrop.jpg",
+    "width": 1280,
+    "height": 1280
+  },
+  "up-soil": {
+    "src": "/products/modo-acao/up-soil.jpg",
+    "width": 1280,
+    "height": 1280
+  },
+  "operate-plus": {
+    "src": "/products/modo-acao/operate-plus.jpg",
+    "width": 1280,
+    "height": 1280
+  },
+  "operate-citronela": {
+    "src": "/products/modo-acao/operate-citronela.jpg",
+    "width": 1280,
+    "height": 1280
+  },
+  "operate-4em1": {
+    "src": "/products/modo-acao/operate-4em1.jpg",
+    "width": 1280,
+    "height": 1280
+  },
+  "operate-orange": {
+    "src": "/products/modo-acao/operate-orange.jpg",
+    "width": 1280,
+    "height": 1280
   }
 };

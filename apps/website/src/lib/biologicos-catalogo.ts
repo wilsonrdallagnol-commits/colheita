@@ -23,6 +23,9 @@ export type BiologicoCatalogo = {
   especies: EspecieCatalogo[];
   sinergia: Trecho[] | null;
   papelNoPrograma: Trecho[] | null;
+  concentracao: string | null;
+  validade: string | null;
+  embalagens: string | null;
   doseMultiplicacao: string | null;
   selos: string[];
 };
@@ -165,6 +168,9 @@ export const BIOLOGICOS_CATALOGO: Record<string, BiologicoCatalogo> = {
         "i": false
       }
     ],
+    "concentracao": "5,0×10⁹ UFC/mL · 5,0×10¹² UFC/L",
+    "validade": "18 meses",
+    "embalagens": "1 L · 5 L",
     "doseMultiplicacao": "4 L / 1000 L de meio de cultivo",
     "selos": [
       "Produto 100% nacional",
@@ -286,6 +292,9 @@ export const BIOLOGICOS_CATALOGO: Record<string, BiologicoCatalogo> = {
         "i": false
       }
     ],
+    "concentracao": "3,0×10⁸ UFC/mL · 3,0×10¹¹ UFC/L",
+    "validade": "18 meses",
+    "embalagens": "1 L · 5 L",
     "doseMultiplicacao": "4 L / 1000 L de meio de cultivo",
     "selos": [
       "Produto 100% nacional",
@@ -383,6 +392,9 @@ export const BIOLOGICOS_CATALOGO: Record<string, BiologicoCatalogo> = {
         "i": false
       }
     ],
+    "concentracao": "1,0×10⁹ UFC/mL · 1,0×10¹² UFC/L",
+    "validade": "18 meses",
+    "embalagens": "1 L · 5 L",
     "doseMultiplicacao": "4 L / 1000 L de meio de cultivo",
     "selos": [
       "Produto 100% nacional",
@@ -512,6 +524,9 @@ export const BIOLOGICOS_CATALOGO: Record<string, BiologicoCatalogo> = {
         "i": false
       }
     ],
+    "concentracao": "5,0×10⁸ UFC/mL · 5,0×10¹¹ UFC/L",
+    "validade": "12 meses",
+    "embalagens": "1 L · 5 L",
     "doseMultiplicacao": "4 L / 1000 L de meio de cultivo",
     "selos": [
       "Produto 100% nacional",
@@ -645,6 +660,9 @@ export const BIOLOGICOS_CATALOGO: Record<string, BiologicoCatalogo> = {
         "i": false
       }
     ],
+    "concentracao": "2,0×10⁹ UFC/mL · 2,0×10¹² UFC/L",
+    "validade": "12 meses",
+    "embalagens": "1 L · 5 L",
     "doseMultiplicacao": "4 L / 1000 L de meio de cultivo",
     "selos": [
       "Produto 100% nacional",
@@ -705,6 +723,9 @@ export const BIOLOGICOS_CATALOGO: Record<string, BiologicoCatalogo> = {
         "i": false
       }
     ],
+    "concentracao": "1,0×10⁹ UFC/mL · 1,0×10¹² UFC/L",
+    "validade": "12 meses",
+    "embalagens": "1 L · 5 L",
     "doseMultiplicacao": "4 L / 1000 L de meio de cultivo",
     "selos": [
       "Produto 100% nacional",
@@ -753,6 +774,9 @@ export const BIOLOGICOS_CATALOGO: Record<string, BiologicoCatalogo> = {
         "i": false
       }
     ],
+    "concentracao": "1,0×10⁸ UFC/mL · 1,0×10¹¹ UFC/L",
+    "validade": "12 meses",
+    "embalagens": "1 L",
     "doseMultiplicacao": "4 L / 1000 L de meio de cultivo",
     "selos": [
       "Produto 100% nacional",
@@ -809,6 +833,9 @@ export const BIOLOGICOS_CATALOGO: Record<string, BiologicoCatalogo> = {
         "i": false
       }
     ],
+    "concentracao": "1,0×10⁸ UFC/mL · 1,0×10¹¹ UFC/L",
+    "validade": "12 meses",
+    "embalagens": "1 L",
     "doseMultiplicacao": "4 L / 1000 L de meio de cultivo",
     "selos": [
       "Produto 100% nacional",
