@@ -96,6 +96,11 @@ function BlocoTexto({
   );
 }
 
+// Numero em pt-BR: separador decimal e VIRGULA. O site imprimia "5.5%" nas tabelas de
+// composicao enquanto o catalogo imprime "5,5%" — mesmo dado, notacao de outro idioma.
+// Achado da auditoria de 17/08 (19 ocorrencias em 10 produtos).
+const pct = (v: number | string) => `${String(v).replace('.', ',')}%`;
+
 const CAT_COLORS: Record<ProductCategory, string> = {
   'fertilizantes-minerais': 'var(--cat-mineral)',
   organominerais: 'var(--cat-organo)',
@@ -291,7 +296,7 @@ export default async function ProductPage({ params }: PageProps) {
       for (const [k, v] of Object.entries(product.composition.macros)) {
         compRows.push({
           label: k,
-          value: `${v}%`,
+          value: pct(v),
           numValue: v,
           maxScale: MAX_SCALE.macro,
           type: 'macro',
@@ -302,7 +307,7 @@ export default async function ProductPage({ params }: PageProps) {
       for (const [k, v] of Object.entries(product.composition.micros)) {
         compRows.push({
           label: k,
-          value: `${v}%`,
+          value: pct(v),
           numValue: v,
           maxScale: MAX_SCALE.micro,
           type: 'micro',
@@ -313,7 +318,7 @@ export default async function ProductPage({ params }: PageProps) {
       for (const [k, v] of Object.entries(product.composition.others)) {
         const isUFC = typeof v === 'number' && v >= 1e7;
         const numV = isUFC ? 100 : typeof v === 'number' ? v : 0;
-        const fmt = isUFC ? `${(v / 1e8).toFixed(0)}×10⁸ UFC/g` : `${v}%`;
+        const fmt = isUFC ? `${(v / 1e8).toFixed(0)}×10⁸ UFC/g` : pct(v);
         compRows.push({
           label: k,
           value: fmt,
@@ -847,6 +852,10 @@ export default async function ProductPage({ params }: PageProps) {
                       },
                     ]
                   : []),
+                // Validade: o catálogo publica (12 ou 18 meses conforme o produto) e o site
+                // não publicava em NENHUM dos 8 biológicos. Achado da auditoria de 17/08 —
+                // é dado que o comprador precisa e estava só na peça impressa.
+                ...(cat?.validade ? [{ label: 'Validade', value: cat.validade }] : []),
                 ...(product.registrationMapa
                   ? [{ label: 'Reg. MAPA', value: product.registrationMapa }]
                   : []),
