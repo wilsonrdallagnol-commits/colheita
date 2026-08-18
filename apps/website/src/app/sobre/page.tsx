@@ -8,13 +8,37 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { RootDivider } from '@/components/root-divider';
 import { FEATURES } from '@/lib/features';
-import { PRODUCTS } from '@/lib/products';
+import { CATEGORIES, ENQUADRAMENTO, PRODUCTS, type ProductCategory } from '@/lib/products';
 
 export const metadata: Metadata = {
   title: 'Sobre',
   description:
     'Argho Agrosciences — fertilizantes de origem europeia com registro MAPA e linhas biológica e de adjuvantes nacionais para a agricultura brasileira.',
 };
+
+// Acento por categoria — mesma correspondencia da ficha de produto.
+const CAT_ACCENT: Record<ProductCategory, string> = {
+  'fertilizantes-minerais': 'var(--cat-mineral)',
+  organominerais: 'var(--cat-organo)',
+  biologicos: 'var(--cat-bio)',
+  adjuvantes: 'var(--cat-adj)',
+};
+
+// Canais e condicoes da fenotipagem — mesma ordem e mesmos rotulos do catalogo
+// (build/gerar-catalogo.mjs, pgMaavi) e da home. Imagens em public/maavi/.
+const FENOTIPAGEM_CANAIS = [
+  { chave: 'rgb', rotulo: 'Imagem real' },
+  { chave: 'temperatura', rotulo: 'Temperatura' },
+  { chave: 'fotossintese', rotulo: 'Fotossíntese' },
+  { chave: 'psii', rotulo: 'Fotossistema II' },
+  { chave: 'npq', rotulo: 'Energia dissipada' },
+  { chave: 'defesa', rotulo: 'Compostos de defesa' },
+] as const;
+
+const FENOTIPAGEM_CONDICOES = [
+  { chave: 'sadia', rotulo: 'Sem doença', alt: 'sadia' },
+  { chave: 'doente', rotulo: 'Com doença fúngica', alt: 'com doença fúngica' },
+] as const;
 
 const VALUES = [
   {
@@ -477,10 +501,12 @@ export default function SobrePage() {
           PRINCÍPIOS — grid 2x2, cards com numeração editorial
       ══════════════════════════════════════════════════════════════════════ */}
       <section
+        id="valores"
         style={{
           backgroundColor: 'var(--bg-soft)',
           borderTop: '1px solid var(--border-subtle)',
           borderBottom: '1px solid var(--border-subtle)',
+          scrollMarginTop: '88px',
         }}
       >
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '96px 48px' }}>
@@ -593,7 +619,7 @@ export default function SobrePage() {
       {/* ═══════════════════════════════════════════════════════════════════
           EXPERTISE — lista editorial com accent colorido por categoria
       ══════════════════════════════════════════════════════════════════════ */}
-      <section style={{ padding: '120px 48px' }}>
+      <section id="expertise" style={{ padding: '120px 48px', scrollMarginTop: '88px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ marginBottom: '64px', maxWidth: '720px' }}>
             <div
@@ -1057,6 +1083,138 @@ export default function SobrePage() {
             </div>
           </div>
 
+          {/* ═══════════════════════════════════════════════════════════════
+              FENOTIPAGEM POR IMAGEM — leituras REAIS do centro parceiro.
+              A seção de ciência do /sobre não tinha uma única imagem técnica: falava
+              de fenotipagem computacional só em texto. Estas são as 12 leituras que o
+              catálogo imprime (6 canais × planta sadia e doente), na mesma estrutura,
+              com colunas numeradas e legenda corrida — porque "Fotossistema II" não
+              cabe sob a largura de uma leitura.
+          ═══════════════════════════════════════════════════════════════ */}
+          <div style={{ marginBottom: '72px' }}>
+            <div
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}
+            >
+              <span
+                aria-hidden
+                style={{
+                  display: 'inline-block',
+                  width: '28px',
+                  height: '1px',
+                  background: 'var(--argho-green)',
+                }}
+              />
+              <span
+                className="mono"
+                style={{
+                  fontSize: '0.6875rem',
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  color: 'var(--argho-blue)',
+                  fontWeight: 600,
+                }}
+              >
+                Fenotipagem por imagem · leitura real
+              </span>
+            </div>
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '1rem',
+                color: 'var(--text-secondary)',
+                lineHeight: 1.7,
+                maxWidth: '760px',
+                marginBottom: '28px',
+              }}
+            >
+              Câmeras multiespectrais leem a planta sem tocá-la: termografia infravermelha
+              para a temperatura foliar — indicador indireto de transpiração e fechamento
+              estomático — e fluorescência da clorofila para o rendimento quântico do
+              fotossistema II (ΦPSII) e para a energia excedente dissipada como calor (NPQ),
+              mecanismo de fotoproteção. <strong>O estresse aparece nos dados antes do
+              sintoma visível</strong>: compare a mesma folha nas duas condições.
+            </p>
+
+            <div
+              style={{
+                border: '1px solid var(--border-subtle)',
+                borderRadius: '12px',
+                padding: '24px',
+                backgroundColor: 'var(--bg-mist)',
+              }}
+            >
+              {FENOTIPAGEM_CONDICOES.map((cond) => (
+                <div key={cond.chave} style={{ marginBottom: '16px' }}>
+                  <div
+                    className="mono"
+                    style={{
+                      fontSize: '0.625rem',
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      color: 'var(--text-tertiary)',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    {cond.rotulo}
+                  </div>
+                  <div
+                    style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '8px' }}
+                  >
+                    {FENOTIPAGEM_CANAIS.map((canal) => (
+                      <Image
+                        key={canal.chave}
+                        src={`/maavi/fen-${canal.chave}-${cond.chave}.png`}
+                        alt={`${canal.rotulo} — folha ${cond.alt}`}
+                        width={104}
+                        height={118}
+                        sizes="(max-width: 968px) 15vw, 130px"
+                        style={{
+                          width: '100%',
+                          height: 'auto',
+                          borderRadius: '4px',
+                          display: 'block',
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '8px' }}>
+                {FENOTIPAGEM_CANAIS.map((canal, i) => (
+                  <div
+                    key={canal.chave}
+                    className="mono"
+                    style={{
+                      fontSize: '0.625rem',
+                      color: 'var(--text-tertiary)',
+                      textAlign: 'center',
+                    }}
+                  >
+                    {i + 1}
+                  </div>
+                ))}
+              </div>
+              <p
+                className="mono"
+                style={{
+                  marginTop: '12px',
+                  paddingTop: '12px',
+                  borderTop: '1px solid var(--border-subtle)',
+                  fontSize: '0.6875rem',
+                  lineHeight: 1.7,
+                  color: 'var(--text-muted)',
+                }}
+              >
+                {FENOTIPAGEM_CANAIS.map((canal, i) => (
+                  <span key={canal.chave}>
+                    {i > 0 && ' · '}
+                    <b style={{ color: 'var(--text-secondary)' }}>{i + 1}</b> {canal.rotulo}
+                  </span>
+                ))}
+              </p>
+            </div>
+          </div>
+
           {/* Pipeline de descoberta */}
           <div>
             <div
@@ -1476,6 +1634,107 @@ export default function SobrePage() {
               FORMULAÇÃO TÉCNICA CERTIFICADA
             </p>
           </div>
+
+          {/* ═══════════════════════════════════════════════════════════════
+              QUADRO DE ENQUADRAMENTO — o teor técnico que faltava aqui.
+              A seção afirmava "tudo declarado" e não mostrava o quê. Cada linha
+              é o regime real da categoria, com a base legal e a contagem de
+              produtos — tudo derivado de lib/products.ts, a mesma fonte que a
+              ficha de cada produto usa, então não há como divergir.
+          ═══════════════════════════════════════════════════════════════ */}
+          <div style={{ marginTop: '56px', gridColumn: '1 / -1' }}>
+            <div
+              className="mono"
+              style={{
+                fontSize: '0.625rem',
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase',
+                color: 'var(--argho-blue)',
+                fontWeight: 700,
+                marginBottom: '16px',
+              }}
+            >
+              Regime por linha de produto
+            </div>
+            <div
+              style={{
+                border: '1px solid var(--border-subtle)',
+                borderRadius: '10px',
+                overflow: 'hidden',
+              }}
+            >
+              {(Object.keys(ENQUADRAMENTO) as ProductCategory[]).map((c, i) => {
+                const n = PRODUCTS.filter((p) => p.category === c).length;
+                const cor = CAT_ACCENT[c];
+                return (
+                  <div
+                    key={c}
+                    className="regime-linha"
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'minmax(0,1.1fr) minmax(0,1.3fr) minmax(0,1.4fr) auto',
+                      gap: '16px',
+                      alignItems: 'center',
+                      padding: '16px 20px',
+                      borderTop: i === 0 ? 'none' : '1px solid var(--border-subtle)',
+                      borderLeft: `3px solid ${cor}`,
+                      backgroundColor: 'var(--bg)',
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        fontWeight: 700,
+                        fontSize: '0.9375rem',
+                        color: 'var(--text-primary)',
+                        letterSpacing: '-0.01em',
+                      }}
+                    >
+                      {CATEGORIES[c].label}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '0.875rem',
+                        color: 'var(--text-secondary)',
+                      }}
+                    >
+                      {ENQUADRAMENTO[c].classificacao}
+                    </span>
+                    <span
+                      className="mono"
+                      style={{ fontSize: '0.75rem', color: cor, fontWeight: 700 }}
+                    >
+                      {ENQUADRAMENTO[c].base}
+                    </span>
+                    <span
+                      className="mono"
+                      style={{
+                        fontSize: '0.75rem',
+                        color: 'var(--text-tertiary)',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {n} produtos
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <p
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '0.8125rem',
+                color: 'var(--text-muted)',
+                lineHeight: 1.65,
+                marginTop: '14px',
+              }}
+            >
+              Os inóculos biológicos são <strong>dispensados de registro</strong> — quem tem
+              registro é a unidade fabril. A vedação de comercializar o bioinsumo produzido
+              decorre do regime de uso próprio e acompanha todo material da linha.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -1634,6 +1893,13 @@ export default function SobrePage() {
           }
           .sobre-values-grid {
             grid-template-columns: 1fr !important;
+          }
+          /* O quadro de regime tem 4 colunas; a 375px sobram ~55px por coluna e o texto
+             quebra letra a letra. Medido no DOM. Empilha e vira lista legivel. */
+          .regime-linha {
+            grid-template-columns: 1fr !important;
+            gap: 4px !important;
+            padding: 14px 16px !important;
           }
         }
       `}</style>
