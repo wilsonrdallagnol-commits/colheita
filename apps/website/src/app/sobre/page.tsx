@@ -41,60 +41,76 @@ const FENOTIPAGEM_CONDICOES = [
 ] as const;
 
 const VALUES = [
+  // Reescrito em 17/08/2026. A versão anterior era marketês — "pesquisa agronômica séria",
+  // "nenhuma promessa sem laudo", "construímos resultados": frases que servem para qualquer
+  // empresa e não se pode conferir. Wilson: "não temos nada no site sobre isso".
+  // Cada item abaixo carrega um número ou um mecanismo que o próprio site publica, e a
+  // pessoa pode ir conferir na página do produto.
   {
     id: 'v1',
     number: '01',
-    title: 'Ciência aplicada',
-    body: 'Cada produto nasce de pesquisa agronômica séria. Nenhuma promessa sem laudo. Toda eficácia sustentada por dados de campo.',
+    title: 'Identidade de cepa declarada',
+    body: 'Cada microrganismo da linha biológica vai ao rótulo com espécie, código de coleção e fração na formulação — 20 identidades declaradas em 8 inóculos. Sem "consórcio de Bacillus" genérico: cepa com nome e sobrenome.',
   },
   {
     id: 'v2',
     number: '02',
-    title: 'Transparência regulatória',
-    body: 'Registro MAPA é pré-requisito, não diferencial. Atuamos com rastreabilidade total da origem europeia ao agricultor brasileiro.',
+    title: 'Garantia é do laudo',
+    body: 'Nos minerais e organominerais, a composição publicada é a do Certificado de Análise, não a do folheto. Dez produtos com número de registro MAPA exibido na ficha, aberto para conferência.',
   },
   {
     id: 'v3',
     number: '03',
-    title: 'Parceria de longo prazo',
-    body: 'Desenvolvemos relações com distribuidores e agrônomos que entendem nutrição de precisão — não vendemos commodities, construímos resultados.',
+    title: 'Cada linha no seu regime',
+    body: 'Registro para fertilizante, dispensa para o inóculo de bioinsumo, isenção para o adjuvante. Nenhum produto anunciado sob classificação que não é a dele — e nenhuma classe de defensivo atribuída a quem não a tem.',
   },
   {
     id: 'v4',
     number: '04',
-    title: 'Inovação contínua',
-    body: 'Conectamos o pipeline de P&D europeu à realidade dos solos tropicais brasileiros, trazendo formulações que o mercado ainda não conhece.',
+    title: 'Pesquisa que se mede',
+    body: 'Fenotipagem por imagem em seis canais no centro parceiro: termografia, fluorescência da clorofila, ΦPSII, NPQ. O estresse aparece nos dados antes do sintoma visível — e é o dado que decide a formulação, não a observação.',
   },
 ];
 
 const EXPERTISE_ITEMS = [
+  // Cada linha agora abre com o QUE ELA É no plano regulatório e traz a arte de mecanismo
+  // que o catálogo usa. Antes eram quatro frases soltas, sem número, sem produto e sem
+  // imagem — o que o Wilson leu, com razão, como "não tem nada".
   {
     id: 'e1',
+    categoria: 'fertilizantes-minerais' as const,
     label: 'Fertilizantes Minerais',
     accent: 'var(--cat-mineral)',
+    arte: '/products/modo-acao/xcensis.jpg',
     detail:
-      'Micronutrientes quelados com EDTA e Lignossulfonatos, formulações potássicas para enchimento de grãos, cálcio de alta mobilidade foliar.',
+      'Micronutrientes quelados com EDTA e lignossulfonatos, formulações potássicas para enchimento de grãos e cálcio de alta mobilidade foliar. Composição garantida por Certificado de Análise.',
   },
   {
     id: 'e2',
+    categoria: 'organominerais' as const,
     label: 'Organominerais',
     accent: 'var(--cat-organo)',
+    arte: '/products/modo-acao/impuch.jpg',
     detail:
-      'Vinhaça fermentada, substâncias húmicas de leonardita, aminoácidos de origem vegetal e torta de mamona hidrolisada para microbiota e CTC.',
+      'Vinhaça fermentada, substâncias húmicas de leonardita, aminoácidos de origem vegetal e torta de mamona hidrolisada. Carbono orgânico e minerais na mesma matriz, para microbiota e CTC.',
   },
   {
     id: 'e3',
+    categoria: 'biologicos' as const,
     label: 'Biológicos',
     accent: 'var(--cat-bio)',
+    arte: '/products/modo-acao/biotas.jpg',
     detail:
-      'Complexos microbiológicos multi-espécie de Trichoderma e Bacillus, formulados na linha de biotecnologias Argho — foco em diversidade microbiana, estabilidade de formulação e precisão na composição declarada.',
+      'Inóculos de Bacillus, Priestia, Trichoderma, Metarhizium e outros gêneros, com cepa identificada e concentração declarada em UFC/mL e UFC/L. Multiplicados em unidade de produção para uso próprio.',
   },
   {
     id: 'e4',
+    categoria: 'adjuvantes' as const,
     label: 'Adjuvantes',
     accent: 'var(--cat-adj)',
+    arte: '/products/modo-acao/operate-plus.jpg',
     detail:
-      'Família Operate: espalhantes com óleos essenciais, condicionamento de pH, antideriva — formulados para compatibilidade com biológicos.',
+      'Família Operate: surfactantes com óleos essenciais, sequestrante de cátions, ajuste de pH da calda e ação antideriva. Dose publicada em dois regimes — mL/L de calda e mL/ha em baixa vazão.',
   },
 ];
 
@@ -694,29 +710,75 @@ export default function SobrePage() {
                     borderRadius: '0 2px 2px 0',
                   }}
                 />
-                <h3
+                <div>
+                  <h3
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '1.375rem',
+                      fontWeight: 700,
+                      letterSpacing: '-0.035em',
+                      color: 'var(--text-primary)',
+                      lineHeight: 1.1,
+                      marginBottom: '10px',
+                    }}
+                  >
+                    {item.label}
+                  </h3>
+                  {/* Classificação + contagem: o card dizia só o nome da linha. Os dois
+                      valores saem de lib/products.ts, a mesma fonte da ficha de produto. */}
+                  <div
+                    className="mono"
+                    style={{
+                      fontSize: '0.6875rem',
+                      letterSpacing: '0.08em',
+                      color: item.accent,
+                      fontWeight: 700,
+                      marginBottom: '4px',
+                    }}
+                  >
+                    {ENQUADRAMENTO[item.categoria].classificacao}
+                  </div>
+                  <div
+                    className="mono"
+                    style={{
+                      fontSize: '0.6875rem',
+                      letterSpacing: '0.06em',
+                      color: 'var(--text-tertiary)',
+                    }}
+                  >
+                    {PRODUCTS.filter((pr) => pr.category === item.categoria).length} produtos ·{' '}
+                    {ENQUADRAMENTO[item.categoria].base}
+                  </div>
+                </div>
+                <div
                   style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '1.375rem',
-                    fontWeight: 700,
-                    letterSpacing: '-0.035em',
-                    color: 'var(--text-primary)',
-                    lineHeight: 1.1,
+                    display: 'grid',
+                    gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 200px)',
+                    gap: '32px',
+                    alignItems: 'center',
                   }}
+                  className="sobre-expertise-corpo"
                 >
-                  {item.label}
-                </h3>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '1rem',
-                    color: 'var(--text-secondary)',
-                    lineHeight: 1.7,
-                    maxWidth: '640px',
-                  }}
-                >
-                  {item.detail}
-                </p>
+                  <p
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '1rem',
+                      color: 'var(--text-secondary)',
+                      lineHeight: 1.7,
+                    }}
+                  >
+                    {item.detail}
+                  </p>
+                  {/* Arte de mecanismo do catálogo — a seção não tinha imagem nenhuma. */}
+                  <Image
+                    src={item.arte}
+                    alt={`${item.label} — arte técnica da linha`}
+                    width={200}
+                    height={200}
+                    sizes="(max-width: 968px) 40vw, 200px"
+                    style={{ width: '100%', height: 'auto', borderRadius: '8px' }}
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -1893,6 +1955,10 @@ export default function SobrePage() {
           }
           .sobre-values-grid {
             grid-template-columns: 1fr !important;
+          }
+          .sobre-expertise-corpo {
+            grid-template-columns: 1fr !important;
+            gap: 20px !important;
           }
           /* O quadro de regime tem 4 colunas; a 375px sobram ~55px por coluna e o texto
              quebra letra a letra. Medido no DOM. Empilha e vira lista legivel. */
