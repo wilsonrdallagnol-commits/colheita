@@ -18,6 +18,10 @@ test-results
 
 # Env
 .env
+# .env.bak apareceu no working tree em 17/08 (backup manual do .env com a service_role
+# dentro) e NAO era coberto — um `git add -A` commitaria segredo. Cobre qualquer sufixo.
+.env.bak
+.env.*.bak
 .env.local
 .env.*.local
 infra/docker/.env
