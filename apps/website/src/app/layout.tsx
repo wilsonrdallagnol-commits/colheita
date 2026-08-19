@@ -51,7 +51,9 @@ const ORGANIZATION_JSONLD = {
   name: 'Argho Agrosciences',
   url: 'https://arghoagrosciences.com',
   logo: 'https://arghoagrosciences.com/argho-logo-color.png',
-  taxID: '26.686.958/0001-71',
+  // taxID REMOVIDO em 18/08/2026 a pedido do Wilson: o CNPJ 26.686.958/0001-71 que estava
+  // aqui NAO e da empresa — publicava identidade fiscal de terceiro no JSON-LD indexado.
+  // So reintroduzir com o CNPJ correto confirmado por ele em documento oficial.
   address: {
     '@type': 'PostalAddress',
     addressRegion: 'PR',

@@ -1669,8 +1669,7 @@ export default function SobrePage() {
                 marginBottom: '24px',
               }}
             >
-              CNPJ 26.686.958/0001-71
-              <br />
+              {/* CNPJ removido em 18/08/2026 — o numero publicado nao era da empresa. */}
               Paraná — Brasil
               <br />
               Estabelecimento registrado no MAPA — PR

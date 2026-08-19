@@ -60,7 +60,8 @@ export function Footer() {
               letterSpacing: '0.04em',
             }}
           >
-            CNPJ 26.686.958/0001-71
+            {/* CNPJ removido em 18/08/2026 — o numero publicado nao era da empresa. */}
+            Paraná — Brasil
           </p>
         </div>
 
