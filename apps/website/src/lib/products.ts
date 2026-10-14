@@ -657,14 +657,14 @@ export const PRODUCTS: Product[] = [
     slug: 'operate-orange',
     name: 'Operate Orange',
     category: 'adjuvantes',
-    tagline: 'Adjuvante supermolhante e penetrante com óleo de laranja (D-limoneno 6%)',
+    tagline: 'Adjuvante supermolhante e penetrante com óleo de laranja 6%',
     description:
-      'Adjuvante supermolhante e penetrante à base de óleo da casca de laranja, com 6% de D-limoneno. Potencializa o molhamento das folhas e a penetração cuticular de defensivos e nutrientes sistêmicos. Adicionar por último no tanque. Dose: 1,5–2,0 mL/L de calda · em baixa vazão, 100–200 mL/ha. Produto isento de registro no MAPA.',
+      'Adjuvante supermolhante e penetrante com óleo de laranja 6%, extraído da casca. Potencializa o molhamento das folhas e a penetração cuticular de defensivos e nutrientes sistêmicos. Adicionar por último no tanque. Dose: 1,5–2,0 mL/L de calda · em baixa vazão, 100–200 mL/ha. Produto isento de registro no MAPA.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
     productType: 'Adjuvante Supermolhante e Penetrante',
     applicationModes: ['Via Foliar'],
-    composition: { others: { 'D-limoneno': 6.0 } },
+    composition: { others: { 'Óleo de laranja': 6.0 } },
     packaging: [
       { type: 'bottle', volumeL: 1, sku: 'OPERATE-ORANGE-1L' },
       { type: 'bottle', volumeL: 5, sku: 'OPERATE-ORANGE-5L' },
