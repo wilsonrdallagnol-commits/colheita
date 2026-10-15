@@ -476,7 +476,7 @@ export default function Home() {
         accent="var(--cat-adj)"
         accentRaw="oklch(0.62 0.130 78)"
         description="Condicionador multifuncional de calda: sequestrante de cátions, surfactantes não-iônicos, antideriva e antiespumante. Mais qualidade na água de pulverização e eficiência na aplicação — sem ajuste de pH (função do 4em1)."
-        tags={['Condicionador de calda', 'Antideriva + antiespumante', '0,5–1,0 mL/L']}
+        tags={['Condicionador de calda', 'Antideriva + antiespumante', '200–500 mL/ha']}
         image="/products/premium/operate-plus.jpg"
         imageAlt="Operate Plus 1L — Argho Agrosciences"
         href="/produtos/operate-plus"

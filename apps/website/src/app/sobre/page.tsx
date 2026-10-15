@@ -110,7 +110,7 @@ const EXPERTISE_ITEMS = [
     accent: 'var(--cat-adj)',
     arte: '/products/modo-acao/operate-plus.jpg',
     detail:
-      'Família Operate: surfactantes com óleos essenciais, sequestrante de cátions, ajuste de pH da calda e ação antideriva. Dose publicada em dois regimes — mL/L de calda e mL/ha em baixa vazão.',
+      'Família Operate: surfactantes com óleos essenciais, sequestrante de cátions, ajuste de pH da calda e ação antideriva. Dose por hectare e por 100 L de calda, conforme o rótulo.',
   },
 ];
 

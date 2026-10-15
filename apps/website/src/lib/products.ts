@@ -599,7 +599,7 @@ export const PRODUCTS: Product[] = [
     category: 'adjuvantes',
     tagline: 'Condicionador multifuncional de calda — qualidade da água e eficiência na aplicação',
     description:
-      'Condicionador multifuncional de calda que reúne sequestrante de cátions, blend de surfactantes não-iônicos, agente antideriva e antiespumante. Melhora a qualidade da água de pulverização, a cobertura e a estabilidade da calda, reduzindo perdas por deriva e formação de espuma. Adicionar primeiro no tanque. Dose: 0,5–1,0 mL/L de calda · em baixa vazão, 50–100 mL/ha. Produto isento de registro no MAPA.',
+      'Condicionador multifuncional de calda que reúne sequestrante de cátions, blend de surfactantes não-iônicos, agente antideriva e antiespumante. Melhora a qualidade da água de pulverização, a cobertura e a estabilidade da calda, reduzindo perdas por deriva e formação de espuma. Adicionar primeiro no tanque. Dose: 200 a 500 mL/ha, ou 25 a 50 mL por 100 L de calda. Produto isento de registro no MAPA.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
     productType: 'Condicionador Multifuncional de Calda',
@@ -619,7 +619,7 @@ export const PRODUCTS: Product[] = [
     category: 'adjuvantes',
     tagline: 'Adjuvante surfactante com óleo essencial de citronela (3%)',
     description:
-      'Adjuvante surfactante formulado com óleo essencial de citronela (3%). Reduz a tensão superficial da calda, melhorando o molhamento, o espalhamento e a absorção dos ativos. Adicionar por último no tanque (produto oleoso) — aplicação convencional, baixa vazão ou drone. Dose: 1,5–2,0 mL/L de calda · em baixa vazão, 100–200 mL/ha. Produto isento de registro no MAPA.',
+      'Adjuvante surfactante formulado com óleo essencial de citronela (3%). Reduz a tensão superficial da calda, melhorando o molhamento, o espalhamento e a absorção dos ativos. Adicionar primeiro no tanque. Aplicação convencional, baixa vazão ou drone. Dose: 200 a 500 mL/ha, ou 25 a 50 mL por 100 L de calda. Produto isento de registro no MAPA.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
     productType: 'Adjuvante Surfactante com Óleo Essencial',
@@ -639,7 +639,7 @@ export const PRODUCTS: Product[] = [
     category: 'adjuvantes',
     tagline: 'Condicionador multifuncional 4em1 — ajusta o pH e prepara a calda',
     description:
-      'O mais completo da família Operate: condicionador multifuncional que reúne sequestrante de cátions, redutor de pH à base de ácido fosfórico, surfactantes não-iônicos, antideriva e antiespumante. Ajusta o pH da calda para a faixa ideal de 4,0 a 6,5 e melhora a qualidade da aplicação em uma única adição ao tanque. Adicionar primeiro. Dose: 0,5–1,0 mL/L de calda · em baixa vazão, 50–100 mL/ha. Por conter ácido fosfórico, redobrar a atenção em misturas alcalinas e com produtos à base de cobre. Produto isento de registro no MAPA.',
+      'O mais completo da família Operate: condicionador multifuncional que reúne sequestrante de cátions, redutor de pH à base de ácido fosfórico, surfactantes não-iônicos, antideriva e antiespumante. Ajusta o pH da calda para a faixa ideal de 4,0 a 6,5 e melhora a qualidade da aplicação em uma única adição ao tanque. Adicionar primeiro no tanque. Dose: 200 a 500 mL/ha, ou 25 a 50 mL por 100 L de calda. Por conter ácido fosfórico, redobrar a atenção em misturas alcalinas e com produtos à base de cobre. Produto isento de registro no MAPA.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
     productType: 'Condicionador Multifuncional de Calda',
@@ -659,7 +659,7 @@ export const PRODUCTS: Product[] = [
     category: 'adjuvantes',
     tagline: 'Adjuvante supermolhante e penetrante com óleo de laranja 6%',
     description:
-      'Adjuvante supermolhante e penetrante com óleo de laranja 6%, extraído da casca. Potencializa o molhamento das folhas e a penetração cuticular de defensivos e nutrientes sistêmicos. Adicionar por último no tanque. Dose: 1,5–2,0 mL/L de calda · em baixa vazão, 100–200 mL/ha. Produto isento de registro no MAPA.',
+      'Adjuvante supermolhante e penetrante com óleo de laranja 6%, extraído da casca. Potencializa o molhamento das folhas e a penetração cuticular de defensivos e nutrientes sistêmicos. Adicionar primeiro no tanque. Dose: 200 a 500 mL/ha, ou 100 a 250 mL por 100 L de calda. Produto isento de registro no MAPA.',
     physicalState: 'fluido',
     originCountry: 'Brasil',
     productType: 'Adjuvante Supermolhante e Penetrante',
